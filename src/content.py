@@ -33,6 +33,74 @@ TWO_HARD_PROBLEMS = [
     "cache invalidation",
 ]
 
+# Human-readable shortnames for the CWEs that appear on compound-defect recipe
+# chips, keyed by id. The full MITRE titles are long and parenthetical; these
+# let a chip read "CWE-367 TOCTOU" instead of just the bare id. Authored once
+# per id (ids recur across examples). A missing id renders id-only.
+CWE_SHORT = {
+    "CWE-20": "Input Validation",
+    "CWE-59": "Link Following",
+    "CWE-79": "XSS (Cross-Site Scripting)",
+    "CWE-89": "SQL Injection",
+    "CWE-119": "Buffer Bounds",
+    "CWE-120": "Unchecked Buffer Copy",
+    "CWE-125": "OOB Read",
+    "CWE-130": "Length Mismatch",
+    "CWE-172": "Encoding Error",
+    "CWE-176": "Unicode Handling",
+    "CWE-190": "Integer Overflow",
+    "CWE-193": "Off-by-One",
+    "CWE-195": "Signed/Unsigned Conversion",
+    "CWE-240": "Structural Mismatch",
+    "CWE-241": "Unexpected Data Type",
+    "CWE-248": "Uncaught Exception",
+    "CWE-252": "Unchecked Return",
+    "CWE-330": "Weak Randomness",
+    "CWE-340": "Predictable IDs",
+    "CWE-345": "Unverified Authenticity",
+    "CWE-348": "Less Trusted Source",
+    "CWE-349": "Extraneous Data",
+    "CWE-362": "Race Condition",
+    "CWE-363": "Link-Following Race",
+    "CWE-366": "Thread Race",
+    "CWE-367": "TOCTOU (Time-of-Check to Time-of-Use)",
+    "CWE-369": "Divide by Zero",
+    "CWE-400": "Resource Exhaustion",
+    "CWE-407": "Quadratic Complexity",
+    "CWE-416": "Use After Free",
+    "CWE-444": "Request Smuggling",
+    "CWE-457": "Uninit Variable",
+    "CWE-459": "Incomplete Cleanup",
+    "CWE-471": "MAID (Modification of Immutable Data)",
+    "CWE-476": "NULL Deref",
+    "CWE-477": "Obsolete Function",
+    "CWE-488": "Session Bleed",
+    "CWE-502": "Unsafe Deserialization",
+    "CWE-543": "Unsynced Singleton",
+    "CWE-567": "Unsynchronized Access",
+    "CWE-573": "Spec Violation",
+    "CWE-609": "Double-Checked Locking",
+    "CWE-662": "Improper Sync",
+    "CWE-674": "Uncontrolled Recursion",
+    "CWE-680": "Integer to Buffer Overflow",
+    "CWE-682": "Incorrect Calculation",
+    "CWE-690": "Unchecked Return to NULL Deref",
+    "CWE-696": "Bad Operation Order",
+    "CWE-704": "Bad Cast",
+    "CWE-754": "Unchecked Condition",
+    "CWE-758": "Undefined Behavior",
+    "CWE-787": "OOB Write",
+    "CWE-820": "Missing Synchronization",
+    "CWE-821": "Incorrect Synchronization",
+    "CWE-825": "Expired Pointer",
+    "CWE-843": "Type Confusion",
+    "CWE-908": "Uninit Resource",
+    "CWE-915": "Object Attribute Injection",
+    "CWE-1108": "Global Reliance",
+    "CWE-1284": "Bad Quantity",
+    "CWE-1287": "Improper Type Validation",
+}
+
 DEFECTS = []
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -491,6 +559,7 @@ total = Decimal("0.1") + Decimal("0.2")   # Decimal('0.3')""",
                 {"id": "CWE-330", "name": "Use of Insufficiently Random Values", "url": "https://cwe.mitre.org/data/definitions/330.html"},
                 {"id": "CWE-338", "name": "Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)", "url": "https://cwe.mitre.org/data/definitions/338.html"},
                 {"id": "CWE-374", "name": "Passing Mutable Objects to an Untrusted Method", "url": "https://cwe.mitre.org/data/definitions/374.html"},
+                {"id": "CWE-1108", "name": "Excessive Reliance on Global Variables", "url": "https://cwe.mitre.org/data/definitions/1108.html"},
             ],
             "name": "Impure Functions",
             "tagline": "hidden inputs, hidden effects",
@@ -1721,6 +1790,8 @@ DEFECTS.append({
         "rows": [
             {"computer": "Cache Invalidation", "human": "Product Recalls",
              "note": "A product is supplied from a distribution point; changing it means changing every distribution. Invalidation is business logic, a work order that takes a process and happens now."},
+            {"computer": "Cross-Boundary State Exposure", "human": "Crossed Phone Lines",
+             "note": "On an old party line, one household could lift the receiver and hear another's call. Shared state reused across actors leaks one person's data to the next."},
             {"computer": "Resource Contention", "human": "Tragedy of the Commons",
              "note": "Independent actors each act in their own best interest and deplete a shared resource through uncoordinated allocation."},
             {"computer": "Async Misuse", "human": "Undeliverable Mail",
@@ -1842,6 +1913,90 @@ with lock:                       # (or a DB unique constraint)
         users[username] = create()""",
                          "explanation": "Reading 'is it free?' and writing 'claim it' must be one indivisible step, or two callers both win the check.",
                          "output": "unlocked: two duplicate accounts created\nlocked:   one wins, the other sees it taken"},
+                    ],
+                },
+            ],
+        },
+        {
+            "slug": "cross-boundary-state-exposure",
+            "cwes": [
+                {"id": "CWE-488", "name": "Exposure of Data Element to Wrong Session", "url": "https://cwe.mitre.org/data/definitions/488.html"},
+                {"id": "CWE-543", "name": "Use of Singleton Pattern Without Synchronization in a Multithreaded Context", "url": "https://cwe.mitre.org/data/definitions/543.html"},
+                {"id": "CWE-567", "name": "Unsynchronized Access to Shared Data in a Multithreaded Context", "url": "https://cwe.mitre.org/data/definitions/567.html"},
+                {"id": "CWE-1108", "name": "Excessive Reliance on Global Variables", "url": "https://cwe.mitre.org/data/definitions/1108.html"},
+            ],
+            "name": "Cross-Boundary State Exposure",
+            "tagline": "one actor's data, served to another",
+            "essence": "Per-actor state parked in a shared singleton, global, or pool bleeds across the boundary that was meant to keep actors apart.",
+            "description": "A singleton, module global, or pooled object is reused across requests, threads, or sessions without resetting its per-actor fields. Whoever touched it last leaves their data for whoever touches it next — so one user is handed another's state.",
+            "examples": [
+                {
+                    "title": "Shared Singleton Holds Per-Request State",
+                    "intent": "A single shared object with mutable, per-call state lets concurrent actors overwrite and read each other's data.",
+                    "languages": [
+                        {"name": "Java", "slug": "java", "code":
+"""// SMELL: one shared SimpleDateFormat for every thread
+static final SimpleDateFormat FMT = new SimpleDateFormat("yyyy-MM-dd");
+String render(Date d) { return FMT.format(d); }   // FMT keeps a mutable
+                                                  // Calendar -> threads read
+                                                  // each other's half-write
+
+// RIGHT: give each call its own formatter (no shared state)
+String render(Date d) {
+    return new SimpleDateFormat("yyyy-MM-dd").format(d);
+}""",
+                         "explanation": "SimpleDateFormat is not thread-safe; a static instance shares one mutable Calendar, so concurrent threads corrupt each other's formatting.",
+                         "output": "shared:   garbled / interleaved dates under load\nper-call: every thread formats its own date correctly"},
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: a module-level slot reused by every concurrent request
+_current_user = None
+def set_user(u):
+    global _current_user
+    _current_user = u
+def audit(action):
+    log(_current_user, action)   # another request may have overwritten it
+
+# RIGHT: carry per-request state with the request, not in a global
+def audit(user, action):
+    log(user, action)            # state travels with the caller""",
+                         "explanation": "A module global is one slot shared by every concurrent request; the last writer wins and everyone else reads its value.",
+                         "output": "global:   request B's action logged under user A\nper-call: each request keeps its own user"},
+                    ],
+                },
+                {
+                    "title": "Pooled Object Reused Without Reset",
+                    "intent": "An object returned to a pool still carrying its last user's fields hands that data to the next borrower.",
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: a pooled context handed out without clearing the last user
+ctx = pool.acquire()             # still holds the previous request's user
+ctx.run(request)                 # ...so this request acts as the wrong user
+pool.release(ctx)
+
+# RIGHT: reset the per-actor state on borrow, so nothing crosses over
+ctx = pool.acquire()
+ctx.reset()                      # wipe identity before reuse
+ctx.user = request.user
+ctx.run(request)
+pool.release(ctx)""",
+                         "explanation": "A pool recycles objects for speed; if per-actor fields are not reset on borrow, the previous borrower's identity leaks into the next request.",
+                         "output": "no reset: request acts under the prior user's identity\nreset:    each borrow starts from a clean object"},
+                        {"name": "Java", "slug": "java", "code":
+"""// SMELL: a ThreadLocal left set when the thread returns to the pool
+static final ThreadLocal<User> CURRENT = new ThreadLocal<>();
+void handle(Req r) {
+    CURRENT.set(r.user());
+    process();                   // pooled thread reused -> CURRENT still set
+}                                // for the *next* request on this thread
+
+// RIGHT: clear the ThreadLocal in a finally, before the thread is recycled
+void handle(Req r) {
+    CURRENT.set(r.user());
+    try { process(); }
+    finally { CURRENT.remove(); }
+}""",
+                         "explanation": "Servlet/worker threads are pooled and reused; a ThreadLocal left set bleeds into the next request that lands on the same thread.",
+                         "output": "leak:  next request inherits the prior user via ThreadLocal\nremove: state cleared before the thread is reused"},
                     ],
                 },
             ],
@@ -3404,22 +3559,30 @@ DEFECTS.append({
             "color_primary": "FFE599",
             "color_secondary": "FFF2CC",
             "color_deep": "BF9000",
-            "cwes": [
-                {"id": "CWE-362", "name": "Concurrent Execution using Shared Resource with Improper Synchronization ('Race Condition')", "url": "https://cwe.mitre.org/data/definitions/362.html"},
-                {"id": "CWE-367", "name": "Time-of-check Time-of-use (TOCTOU) Race Condition", "url": "https://cwe.mitre.org/data/definitions/367.html"},
-                {"id": "CWE-471", "name": "Modification of Assumed-Immutable Data (MAID)", "url": "https://cwe.mitre.org/data/definitions/471.html"},
-            ],
             "name": "Nondeterminism",
             "tagline": "mutated × shared — the answer changes between runs",
             "essence": "A value that varies, observed across actors without synchronization, lets timing pick the result instead of your code.",
             "description": "When an entropy source from mutated state meets an observation gap from shared state, the outcome depends on interleaving, not logic. The hallmark: you cannot reproduce it on demand.",
+            "categories": [
+                {"slug": "temporal-interleaving", "name": "Temporal Interleaving",
+                 "core": "The schedule, not the logic, picks the result.",
+                 "members": ["toctou-race", "lost-update", "out-of-order-async", "concurrent-modification", "pool-exhaustion-heisenbug"]},
+                {"slug": "observational-staleness", "name": "Observational Staleness",
+                 "core": "You act on a value that has already moved.",
+                 "members": ["stale-cache-heisenbug", "use-after-free", "pooled-resource-heisenbug", "lazy-init-visibility-race", "stale-replica-read"]},
+                {"slug": "entropic-divergence", "name": "Entropic Divergence",
+                 "core": "A hidden random or identity source makes runs differ.",
+                 "members": ["predictable-id-collision", "temp-file-race", "concurrent-singleton", "hash-order-divergence", "dispatch-order-divergence"]},
+            ],
             "examples": [
                 {
                     "title": "TOCTOU Race (Check-Then-Act)",
+                    "slug": "toctou-race",
                     "intent": "The gap between checking a resource and using it is a window another actor can slip through — so the bug only fires when the interleaving lines up.",
                     "ingredients": ["race-conditions", "improper-initialization"],
                     "cwes": [
-                        {"id": "CWE-362", "name": "Race Condition", "url": "https://cwe.mitre.org/data/definitions/362.html", "role": "base"},
+                        {"id": "CWE-665", "name": "Improper Initialization", "url": "https://cwe.mitre.org/data/definitions/665.html", "role": "base", "from": "improper-initialization"},
+                        {"id": "CWE-362", "name": "Race Condition", "url": "https://cwe.mitre.org/data/definitions/362.html", "role": "base", "from": "race-conditions"},
                         {"id": "CWE-367", "name": "Time-of-check Time-of-use (TOCTOU) Race Condition", "url": "https://cwe.mitre.org/data/definitions/367.html", "role": "compound"},
                     ],
                     "languages": [
@@ -3439,10 +3602,11 @@ os.makedirs(path, exist_ok=True)  # no window between check and use""",
                 },
                 {
                     "title": "Lost Update (Read-Modify-Write Race)",
+                    "slug": "lost-update",
                     "intent": "Incrementing shared state is three steps — read, add, write — and without a lock two actors overwrite each other's result.",
                     "ingredients": ["threading-mutexes", "increment-decrement-operators"],
                     "cwes": [
-                        {"id": "CWE-362", "name": "Race Condition", "url": "https://cwe.mitre.org/data/definitions/362.html", "role": "base"},
+                        {"id": "CWE-362", "name": "Race Condition", "url": "https://cwe.mitre.org/data/definitions/362.html", "role": "base", "from": "threading-mutexes"},
                         {"id": "CWE-567", "name": "Unsynchronized Access to Shared Data in a Multithreaded Context", "url": "https://cwe.mitre.org/data/definitions/567.html", "role": "compound"},
                     ],
                     "languages": [
@@ -3469,10 +3633,11 @@ def deposit():
                 },
                 {
                     "title": "Stale-Cache Heisenbug",
+                    "slug": "stale-cache-heisenbug",
                     "intent": "Caching a result that depends on hidden mutable state serves the old answer forever — nobody invalidated it.",
                     "ingredients": ["cache-invalidation", "impure-functions"],
                     "cwes": [
-                        {"id": "CWE-1108", "name": "Excessive Reliance on Global Variables", "url": "https://cwe.mitre.org/data/definitions/1108.html", "role": "base"},
+                        {"id": "CWE-1108", "name": "Excessive Reliance on Global Variables", "url": "https://cwe.mitre.org/data/definitions/1108.html", "role": "base", "from": "impure-functions"},
                         {"id": "CWE-471", "name": "Modification of Assumed-Immutable Data (MAID)", "url": "https://cwe.mitre.org/data/definitions/471.html", "role": "compound"},
                     ],
                     "languages": [
@@ -3496,10 +3661,12 @@ def price(item, tax):
                 },
                 {
                     "title": "Out-of-Order Async Completion",
+                    "slug": "out-of-order-async",
                     "intent": "Two requests write one variable; whichever resolves last wins — and completion order isn't the order you asked in.",
                     "ingredients": ["var-let-mut", "async-io-misuse"],
                     "cwes": [
-                        {"id": "CWE-662", "name": "Improper Synchronization", "url": "https://cwe.mitre.org/data/definitions/662.html", "role": "base"},
+                        {"id": "CWE-563", "name": "Assignment to Variable without Use", "url": "https://cwe.mitre.org/data/definitions/563.html", "role": "base", "from": "var-let-mut"},
+                        {"id": "CWE-662", "name": "Improper Synchronization", "url": "https://cwe.mitre.org/data/definitions/662.html", "role": "base", "from": "async-io-misuse"},
                         {"id": "CWE-362", "name": "Race Condition", "url": "https://cwe.mitre.org/data/definitions/362.html", "role": "compound"},
                         {"id": "CWE-696", "name": "Incorrect Behavior Order", "url": "https://cwe.mitre.org/data/definitions/696.html", "role": "compound"},
                     ],
@@ -3525,17 +3692,18 @@ async function search(q) {
                 },
                 {
                     "title": "Concurrent Modification During Iteration",
+                    "slug": "concurrent-modification",
                     "intent": "One actor mutates a shared collection while another walks it — the loop sometimes throws, sometimes silently skips.",
-                    "ingredients": ["for-loop-control-flow", "resource-contention"],
+                    "ingredients": ["for-loop-control-flow", "threading-mutexes"],
                     "cwes": [
-                        {"id": "CWE-820", "name": "Missing Synchronization", "url": "https://cwe.mitre.org/data/definitions/820.html", "role": "base"},
+                        {"id": "CWE-820", "name": "Missing Synchronization", "url": "https://cwe.mitre.org/data/definitions/820.html", "role": "base", "from": "threading-mutexes"},
                         {"id": "CWE-362", "name": "Race Condition", "url": "https://cwe.mitre.org/data/definitions/362.html", "role": "compound"},
                         {"id": "CWE-567", "name": "Unsynchronized Access to Shared Data in a Multithreaded Context", "url": "https://cwe.mitre.org/data/definitions/567.html", "role": "compound"},
                     ],
                     "languages": [
                         {"name": "Python", "slug": "python", "code":
 """# SMELL: iterate a shared collection while another thread mutates it.
-# (for-loop control flow x resource contention)
+# (for-loop control flow x threading & mutexes)
 for sid, s in sessions.items():      # another thread runs sessions.pop(...)
     if s.expired:
         reap(sid)                    # -> RuntimeError, or entries silently skipped
@@ -3551,11 +3719,13 @@ for sid, s in list(sessions.items()):    # stable copy to walk
                 },
                 {
                     "title": "Predictable ID Collision Under Load",
+                    "slug": "predictable-id-collision",
                     "intent": "Deriving a 'unique' id from the clock works until two requests land in the same tick.",
                     "ingredients": ["time-money-entropy", "race-conditions"],
                     "cwes": [
-                        {"id": "CWE-330", "name": "Use of Insufficiently Random Values", "url": "https://cwe.mitre.org/data/definitions/330.html", "role": "base"},
-                        {"id": "CWE-340", "name": "Generation of Predictable Numbers or Identifiers", "url": "https://cwe.mitre.org/data/definitions/340.html", "role": "base"},
+                        {"id": "CWE-330", "name": "Use of Insufficiently Random Values", "url": "https://cwe.mitre.org/data/definitions/330.html", "role": "base", "from": "time-money-entropy"},
+                        {"id": "CWE-366", "name": "Race Condition within a Thread", "url": "https://cwe.mitre.org/data/definitions/366.html", "role": "base", "from": "race-conditions"},
+                        {"id": "CWE-340", "name": "Generation of Predictable Numbers or Identifiers", "url": "https://cwe.mitre.org/data/definitions/340.html", "role": "compound"},
                         {"id": "CWE-362", "name": "Race Condition", "url": "https://cwe.mitre.org/data/definitions/362.html", "role": "compound"},
                     ],
                     "languages": [
@@ -3575,6 +3745,279 @@ def new_id():
                          "output": "race:  two requests share id 1718...204 -> one record overwrites the other\nright: independent ids; no timing-dependent collisions"},
                     ],
                 },
+                {
+                    "title": "Use-After-Free / Dangling Read",
+                    "slug": "use-after-free",
+                    "intent": "A freed allocation is still reachable through a second name; the stale read returns whatever reused the slot.",
+                    "ingredients": ["aliasing-mutable-defaults", "pointer-mismanagement"],
+                    "cwes": [
+                        {"id": "CWE-471", "name": "Modification of Assumed-Immutable Data (MAID)", "url": "https://cwe.mitre.org/data/definitions/471.html", "role": "base", "from": "aliasing-mutable-defaults"},
+                        {"id": "CWE-416", "name": "Use After Free", "url": "https://cwe.mitre.org/data/definitions/416.html", "role": "base", "from": "pointer-mismanagement"},
+                        {"id": "CWE-825", "name": "Expired Pointer Dereference", "url": "https://cwe.mitre.org/data/definitions/825.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "C", "slug": "c", "code":
+"""/* SMELL: a freed pointer is still aliased and read.
+   (aliasing-mutable-defaults x pointer-mismanagement) */
+char *p = malloc(32);
+strcpy(p, "session");
+char *alias = p;          /* a second name for the same allocation */
+free(p);                  /* the slot can now be handed to anyone */
+puts(alias);              /* use-after-free: prints whatever reused it */
+
+/* RIGHT: drop every alias at free; null it so a stale read is caught. */
+free(p);
+p = alias = NULL;         /* no live name points at freed memory */""",
+                         "explanation": "Two names share one allocation; freeing through one leaves the other dangling. What the stale read returns depends on what the allocator handed the freed slot to next -- so it changes run to run and only crashes sometimes.",
+                         "output": "uaf:   prints stale or reallocated bytes; intermittent crash\nright: dangling alias nulled -- a stale read fails loudly, not silently"},
+                    ],
+                },
+                {
+                    "title": "Concurrent Singleton Mutation",
+                    "slug": "concurrent-singleton",
+                    "intent": "One shared object with mutable per-call state, hit by many threads, lets one request's data bleed into another's.",
+                    "ingredients": ["this-mutation", "cross-boundary-state-exposure"],
+                    "cwes": [
+                        {"id": "CWE-471", "name": "Modification of Assumed-Immutable Data (MAID)", "url": "https://cwe.mitre.org/data/definitions/471.html", "role": "base", "from": "this-mutation"},
+                        {"id": "CWE-567", "name": "Unsynchronized Access to Shared Data in a Multithreaded Context", "url": "https://cwe.mitre.org/data/definitions/567.html", "role": "base", "from": "cross-boundary-state-exposure"},
+                        {"id": "CWE-488", "name": "Exposure of Data Element to Wrong Session", "url": "https://cwe.mitre.org/data/definitions/488.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Java", "slug": "java", "code":
+"""// SMELL: one shared instance with mutable state, used by every thread.
+// (this mutation x cross-boundary state exposure)
+static final SimpleDateFormat FMT = new SimpleDateFormat("yyyy-MM-dd");
+String format(Date d) { return FMT.format(d); }   // mutates FMT's internal
+                                                  // calendar fields on `this`
+
+// two requests interleave inside format() -> one sees the other's date,
+// or a garbled string. Never fails under a single-threaded test.
+
+// RIGHT: don't share mutable state; use an immutable, thread-safe type.
+String format(Date d) {
+    return DateTimeFormatter.ISO_DATE.format(
+        d.toInstant().atZone(ZoneOffset.UTC).toLocalDate());   // no `this` to corrupt
+}""",
+                         "explanation": "SimpleDateFormat mutates fields on `this` inside format(); a single shared instance hit by concurrent requests lets one thread's date bleed into another's output. The immutable DateTimeFormatter has no mutable receiver to race over.",
+                         "output": "shared: request A's output carries request B's date (sometimes)\nright: immutable formatter -- safe to share across all threads"},
+                    ],
+                },
+                {
+                    "title": "Pooled-Resource Heisenbug",
+                    "slug": "pooled-resource-heisenbug",
+                    "intent": "A pooled connection carries un-reset state from a prior borrower, so your result depends on who held it before you.",
+                    "ingredients": ["impure-functions", "resource-leaks"],
+                    "cwes": [
+                        {"id": "CWE-404", "name": "Improper Resource Shutdown or Release", "url": "https://cwe.mitre.org/data/definitions/404.html", "role": "base", "from": "resource-leaks"},
+                        {"id": "CWE-1108", "name": "Excessive Reliance on Global Variables", "url": "https://cwe.mitre.org/data/definitions/1108.html", "role": "base", "from": "impure-functions"},
+                        {"id": "CWE-459", "name": "Incomplete Cleanup", "url": "https://cwe.mitre.org/data/definitions/459.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: a pooled connection carries un-reset state from a prior user.
+# (impure-functions x resource-leaks)
+conn = pool.acquire()
+# the previous borrower left a transaction open / a session var set
+rows = conn.execute("SELECT * FROM report")   # sees the leftover state
+pool.release(conn)                            # returned dirty, never reset
+# whether you get clean or dirty results depends on who held conn before you.
+
+# RIGHT: reset on borrow and return; never trust pooled state.
+conn = pool.acquire()
+try:
+    conn.rollback()                # a known-clean starting state
+    rows = conn.execute("SELECT * FROM report")
+finally:
+    conn.rollback(); pool.release(conn)""",
+                         "explanation": "A connection returned to the pool without being reset leaks its session state to the next borrower. The result depends on which pooled object you draw and what ran on it before -- the textbook Heisenbug that vanishes when you add logging or run it alone.",
+                         "output": "leaked: results depend on the prior borrower's leftover state\nright: connection reset on borrow/return -- deterministic every draw"},
+                    ],
+                },
+                {
+                    "title": "Temp-File Check-Then-Use Race",
+                    "slug": "temp-file-race",
+                    "intent": "A predictable temp path plus a gap between checking and opening it is a window another actor can slip a symlink through -- so the write lands elsewhere only when the timing lines up.",
+                    "ingredients": ["file-network-access", "time-money-entropy"],
+                    "cwes": [
+                        {"id": "CWE-330", "name": "Use of Insufficiently Random Values", "url": "https://cwe.mitre.org/data/definitions/330.html", "role": "base", "from": "time-money-entropy"},
+                        {"id": "CWE-367", "name": "Time-of-check Time-of-use (TOCTOU) Race Condition", "url": "https://cwe.mitre.org/data/definitions/367.html", "role": "base", "from": "file-network-access"},
+                        {"id": "CWE-363", "name": "Race Condition Enabling Link Following", "url": "https://cwe.mitre.org/data/definitions/363.html", "role": "compound"},
+                        {"id": "CWE-59", "name": "Improper Link Resolution Before File Access ('Link Following')", "url": "https://cwe.mitre.org/data/definitions/59.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: predictable name + check-then-open lets a symlink slip in.
+# (file/network access x time/money/entropy)
+import os, time
+path = f"/tmp/job-{int(time.time())}.tmp"   # predictable, guessable name
+if not os.path.exists(path):                # time-of-check
+    with open(path, "w") as f:              # time-of-use -- another process
+        f.write(secret)                     # may have planted a symlink here
+
+# RIGHT: unpredictable name + atomic, no-follow create owns the check.
+import tempfile
+fd, path = tempfile.mkstemp()               # O_EXCL|O_CREAT, random name
+with os.fdopen(fd, "w") as f:               # no check/use gap, no symlink
+    f.write(secret)""",
+                         "explanation": "The guessable name (from a clock) plus the existence-check-then-open gap is a window: between check and open another actor can drop a symlink, redirecting the write. It fires only when the interleaving lines up -- otherwise it looks fine.",
+                         "output": "race:  the write follows a planted symlink (only sometimes)\nright: mkstemp creates atomically with O_EXCL -- no window, no follow"},
+                    ],
+                },
+                {
+                    "title": "Pool-Exhaustion Heisenbug",
+                    "slug": "pool-exhaustion-heisenbug",
+                    "intent": "Whether a request succeeds or stalls depends on how many others hold the pool right now -- so the same call passes alone and fails under load.",
+                    "ingredients": ["resource-contention", "time-money-entropy"],
+                    "cwes": [
+                        {"id": "CWE-400", "name": "Uncontrolled Resource Consumption", "url": "https://cwe.mitre.org/data/definitions/400.html", "role": "base", "from": "resource-contention"},
+                        {"id": "CWE-362", "name": "Race Condition", "url": "https://cwe.mitre.org/data/definitions/362.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: a short pool + a per-call timeout -> success depends on live load.
+# (resource contention x time/money/entropy)
+pool = ConnectionPool(size=4)
+def handler(req):
+    conn = pool.acquire(timeout=0.2)   # under load: sometimes returns None
+    return conn.query(req.sql)         # ...then AttributeError, only sometimes
+
+# RIGHT: size for peak, fail explicitly, never act on a missed acquire.
+def handler(req):
+    conn = pool.acquire(timeout=2.0)
+    if conn is None:
+        raise ServiceBusy()            # deterministic, observable backpressure
+    try:
+        return conn.query(req.sql)
+    finally:
+        pool.release(conn)""",
+                         "explanation": "With a pool smaller than peak concurrency, whether you get a connection depends on how many requests happen to overlap with yours -- pure timing. It passes alone and fails only in the demo under load. Size for peak and turn a missed acquire into explicit backpressure, not a silent None.",
+                         "output": "contended: intermittent None -> AttributeError under concurrency\nright: explicit ServiceBusy; outcome no longer depends on who else is in flight"},
+                    ],
+                },
+                {
+                    "title": "Lazy-Init Visibility Race (Double-Checked Locking)",
+                    "slug": "lazy-init-visibility-race",
+                    "intent": "A thread sees the singleton's reference published before its fields are -- so it reads a half-built object, but only on the rare interleaving.",
+                    "ingredients": ["improper-initialization", "threading-mutexes"],
+                    "cwes": [
+                        {"id": "CWE-667", "name": "Improper Locking", "url": "https://cwe.mitre.org/data/definitions/667.html", "role": "base", "from": "threading-mutexes"},
+                        {"id": "CWE-543", "name": "Use of Singleton Pattern Without Synchronization in a Multithreaded Context", "url": "https://cwe.mitre.org/data/definitions/543.html", "role": "base", "from": "improper-initialization"},
+                        {"id": "CWE-609", "name": "Double-Checked Locking", "url": "https://cwe.mitre.org/data/definitions/609.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Java", "slug": "java", "code":
+"""// SMELL: double-checked locking without volatile.
+// (improper initialization x threading & mutexes)
+static Config inst;                       // not volatile
+static Config get() {
+    if (inst == null) {                   // 1st check, no lock
+        synchronized (Config.class) {
+            if (inst == null)
+                inst = new Config();      // the ref can publish before the fields
+        }
+    }
+    return inst;                          // another thread may see a half-built Config
+}
+
+// RIGHT: volatile makes the publication safe (or use a holder class / enum).
+static volatile Config inst;
+static Config get() {
+    Config c = inst;
+    if (c == null) {
+        synchronized (Config.class) {
+            c = inst;
+            if (c == null) inst = c = new Config();
+        }
+    }
+    return c;
+}""",
+                         "explanation": "Without volatile, the constructor's writes and the reference assignment can be reordered, so a second thread reading inst can see a non-null reference to an object whose fields are still defaults. It only fires on the exact interleaving + visibility window, so it survives every single-threaded test. volatile (or an initialization-on-demand holder) makes the publication safe.",
+                         "output": "broken: rare reads of a half-initialized singleton; vanishes under a debugger\nright: safe publication -- every reader sees a fully-built Config"},
+                    ],
+                },
+                {
+                    "title": "Hash-Seed Serialization Divergence",
+                    "slug": "hash-order-divergence",
+                    "intent": "A cache key built by iterating an unordered set differs each process, because the hash seed is randomized -- so the cache never hits and 'it works on my machine.'",
+                    "ingredients": ["impure-functions", "cache-invalidation"],
+                    "cwes": [
+                        {"id": "CWE-758", "name": "Reliance on Undefined, Unspecified, or Implementation-Defined Behavior", "url": "https://cwe.mitre.org/data/definitions/758.html", "role": "base", "from": "impure-functions"},
+                        {"id": "CWE-340", "name": "Generation of Predictable Numbers or Identifiers", "url": "https://cwe.mitre.org/data/definitions/340.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: a cache key built from set iteration order (randomized per process).
+# (impure functions x cache invalidation)
+def cache_key(tags):
+    return ",".join(str(t) for t in set(tags))   # set order varies per process
+cache[cache_key(tags)] = render(tags)            # key differs across workers
+# -> each worker writes/reads a different key; the shared cache never hits.
+
+# RIGHT: impose a stable order so the key is a pure function of the inputs.
+def cache_key(tags):
+    return ",".join(sorted(set(map(str, tags))))  # deterministic across runs""",
+                         "explanation": "Python (and Go map) iteration order depends on a per-process-randomized hash seed -- implementation-defined behavior (CWE-758). A key derived from that order diverges between workers, so the shared cache constantly misses in production yet 'works' in a single-process dev run. Sort before joining to make the key a pure function of the inputs.",
+                         "output": "unsorted: every worker derives a different key -> cache hit-rate ~0 in prod\nsorted:   one stable key across all processes -> the cache actually hits"},
+                    ],
+                },
+                {
+                    "title": "Stale Read From a Lagging Async Replica",
+                    "slug": "stale-replica-read",
+                    "intent": "You write to the primary, then read back from a replica that hasn't caught up -- so you act on a value that has already moved, but only when replication lag outruns your round-trip.",
+                    "ingredients": ["var-let-mut", "async-io-misuse"],
+                    "cwes": [
+                        {"id": "CWE-563", "name": "Assignment to Variable without Use", "url": "https://cwe.mitre.org/data/definitions/563.html", "role": "base", "from": "var-let-mut"},
+                        {"id": "CWE-662", "name": "Improper Synchronization", "url": "https://cwe.mitre.org/data/definitions/662.html", "role": "base", "from": "async-io-misuse"},
+                        {"id": "CWE-821", "name": "Incorrect Synchronization", "url": "https://cwe.mitre.org/data/definitions/821.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "JavaScript", "slug": "javascript", "code":
+"""// SMELL: write to primary, immediately read from an async replica.
+// (var/let/mut x async I/O misuse)
+await primary.set(userId, profile);          // write
+let current = await replica.get(userId);     // replica lags -> stale read
+render(current);                             // acts on a value that moved
+
+// RIGHT: read-your-writes -- read from primary (or wait for the version).
+await primary.set(userId, profile);
+let current = await primary.get(userId);     // or replica.waitFor(version)
+render(current);""",
+                         "explanation": "Eventually-consistent replicas apply writes asynchronously, so a read issued right after a write can observe the prior value -- not a lost update (the data is consistent), just old at the moment you look. It only fails when lag happens to exceed the round-trip, so it survives every local test against a single node. Route read-your-writes reads to the primary or gate on a replication version token.",
+                         "output": "lagging: the just-written profile reads back as the old one (intermittently)\nright: read-your-writes -> you always observe your own write"},
+                    ],
+                },
+                {
+                    "title": "Plugin Registration / Dispatch-Order Divergence",
+                    "slug": "dispatch-order-divergence",
+                    "intent": "Handlers auto-register via a decorator whose effective order depends on import/await timing -- so when two claim the same route, which one wins changes run to run.",
+                    "ingredients": ["macro-mixin-misuse", "async-io-misuse"],
+                    "cwes": [
+                        {"id": "CWE-696", "name": "Incorrect Behavior Order", "url": "https://cwe.mitre.org/data/definitions/696.html", "role": "base", "from": "async-io-misuse"},
+                        {"id": "CWE-758", "name": "Reliance on Undefined, Unspecified, or Implementation-Defined Behavior", "url": "https://cwe.mitre.org/data/definitions/758.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: handlers self-register at import; last writer wins, order undefined.
+# (macro & mixin misuse x async I/O misuse)
+HANDLERS = {}
+def route(path):
+    def deco(fn):
+        HANDLERS[path] = fn      # silently overwrites any prior handler
+        return fn
+    return deco
+# two plugins both @route('/pay'); whichever module imports last wins,
+# and lazy/async import makes that order nondeterministic.
+
+# RIGHT: register explicitly with a priority; reject silent duplicates.
+def register(path, fn, priority):
+    cur = HANDLERS.get(path)
+    if cur and cur.priority >= priority:
+        return
+    HANDLERS[path] = Handler(fn, priority)   # deterministic resolution""",
+                         "explanation": "A decorator/metaclass that registers code out of sight (macro & mixin misuse) makes the registry a function of import order; when plugins load lazily or via async readiness, that order is unspecified, so duplicate routes resolve to a different handler between runs. Relying on that order is reliance on unspecified behavior (CWE-758). Register in one synchronous phase with explicit priorities and duplicate detection.",
+                         "output": "implicit: /pay resolves to a different plugin depending on import timing\nright: explicit priority -> the same handler wins every run"},
+                    ],
+                },
             ],
         },
         {
@@ -3582,23 +4025,32 @@ def new_id():
             "color_primary": "9FC5E8",
             "color_secondary": "CFE2F3",
             "color_deep": "3D85C6",
-            "cwes": [
-                {"id": "CWE-476", "name": "NULL Pointer Dereference", "url": "https://cwe.mitre.org/data/definitions/476.html"},
-                {"id": "CWE-843", "name": "Access of Resource Using Incompatible Type ('Type Confusion')", "url": "https://cwe.mitre.org/data/definitions/843.html"},
-                {"id": "CWE-754", "name": "Improper Check for Unusual or Exceptional Conditions", "url": "https://cwe.mitre.org/data/definitions/754.html"},
-            ],
             "name": "Runtime Errors",
             "tagline": "mutated × unstructured — blows up live on input you didn't expect",
             "essence": "Unvalidated input written into program state becomes an illegal value, and the program throws the moment it is used.",
             "description": "A chain: unstructured input with no contract is mutated into state the code has no handler for, then crashes downstream. The hallmark: it works in dev and explodes on the first unexpected input, live.",
+            "categories": [
+                {"slug": "structural-invalidation", "name": "Structural Invalidation",
+                 "core": "The data shape is wrong — types drift, properties vanish, slots stay uninitialized.",
+                 "members": ["null-dereference", "type-confusion", "shape-drift", "aliased-default-type-confusion", "unexpected-type-element"]},
+                {"slug": "computational-exhaustion", "name": "Computational Exhaustion",
+                 "core": "The math or scale is broken — loops run away, indexes overrun, formulas hit a wall.",
+                 "members": ["off-by-one-crash", "divide-by-zero-empty", "quadratic-blowup", "nan-poisons-consumer", "integer-overflow-buffer"]},
+                {"slug": "architectural-drift", "name": "Architectural Drift",
+                 "core": "The contract is severed — an external API, library, or payload no longer matches.",
+                 "members": ["integration-crash", "stale-api-upgrade", "deserialized-type-confusion", "config-drift-crash", "schema-drift-on-load"]},
+            ],
             "examples": [
                 {
                     "title": "Null / Undefined Dereference",
+                    "slug": "null-dereference",
                     "intent": "A function that sometimes returns nothing, used as if it always returns a value.",
                     "ingredients": ["improper-initialization", "missing-undefined-returns"],
                     "cwes": [
-                        {"id": "CWE-457", "name": "Use of Uninitialized Variable", "url": "https://cwe.mitre.org/data/definitions/457.html", "role": "base"},
+                        {"id": "CWE-457", "name": "Use of Uninitialized Variable", "url": "https://cwe.mitre.org/data/definitions/457.html", "role": "base", "from": "improper-initialization"},
+                        {"id": "CWE-252", "name": "Unchecked Return Value", "url": "https://cwe.mitre.org/data/definitions/252.html", "role": "base", "from": "missing-undefined-returns"},
                         {"id": "CWE-476", "name": "NULL Pointer Dereference", "url": "https://cwe.mitre.org/data/definitions/476.html", "role": "compound"},
+                        {"id": "CWE-690", "name": "Unchecked Return Value to NULL Pointer Dereference", "url": "https://cwe.mitre.org/data/definitions/690.html", "role": "compound"},
                     ],
                     "languages": [
                         {"name": "JavaScript", "slug": "javascript", "code":
@@ -3619,10 +4071,12 @@ const name = user ? user.name : "(unknown)";""",
                 },
                 {
                     "title": "Type Confusion / Bad Coercion",
+                    "slug": "type-confusion",
                     "intent": "State mutated to a new type that the next reader does not expect.",
                     "ingredients": ["this-mutation", "type-errors"],
                     "cwes": [
-                        {"id": "CWE-704", "name": "Incorrect Type Conversion or Cast", "url": "https://cwe.mitre.org/data/definitions/704.html", "role": "base"},
+                        {"id": "CWE-471", "name": "Modification of Assumed-Immutable Data (MAID)", "url": "https://cwe.mitre.org/data/definitions/471.html", "role": "base", "from": "this-mutation"},
+                        {"id": "CWE-704", "name": "Incorrect Type Conversion or Cast", "url": "https://cwe.mitre.org/data/definitions/704.html", "role": "base", "from": "type-errors"},
                         {"id": "CWE-843", "name": "Type Confusion", "url": "https://cwe.mitre.org/data/definitions/843.html", "role": "compound"},
                     ],
                     "languages": [
@@ -3645,10 +4099,12 @@ applyCoupon(code) { this.discount = lookup(code); }  // total stays a number""",
                 },
                 {
                     "title": "Integration Crash on Unexpected Input",
+                    "slug": "integration-crash",
                     "intent": "Trusting an external payload's shape, then mutating local state from it.",
                     "ingredients": ["impure-functions", "lack-of-input-validation"],
                     "cwes": [
-                        {"id": "CWE-20", "name": "Improper Input Validation", "url": "https://cwe.mitre.org/data/definitions/20.html", "role": "base"},
+                        {"id": "CWE-1108", "name": "Excessive Reliance on Global Variables", "url": "https://cwe.mitre.org/data/definitions/1108.html", "role": "base", "from": "impure-functions"},
+                        {"id": "CWE-20", "name": "Improper Input Validation", "url": "https://cwe.mitre.org/data/definitions/20.html", "role": "base", "from": "lack-of-input-validation"},
                         {"id": "CWE-248", "name": "Uncaught Exception", "url": "https://cwe.mitre.org/data/definitions/248.html", "role": "compound"},
                         {"id": "CWE-754", "name": "Improper Check for Unusual or Exceptional Conditions", "url": "https://cwe.mitre.org/data/definitions/754.html", "role": "compound"},
                     ],
@@ -3669,10 +4125,12 @@ user.age = data.profile.age""",
                 },
                 {
                     "title": "Off-by-One Index Crash",
+                    "slug": "off-by-one-crash",
                     "intent": "A counter advanced one step too far indexes past the end of the array.",
                     "ingredients": ["increment-decrement-operators", "index-out-of-bounds"],
                     "cwes": [
-                        {"id": "CWE-193", "name": "Off-by-one Error", "url": "https://cwe.mitre.org/data/definitions/193.html", "role": "base"},
+                        {"id": "CWE-129", "name": "Improper Validation of Array Index", "url": "https://cwe.mitre.org/data/definitions/129.html", "role": "base", "from": "index-out-of-bounds"},
+                        {"id": "CWE-193", "name": "Off-by-one Error", "url": "https://cwe.mitre.org/data/definitions/193.html", "role": "base", "from": "increment-decrement-operators"},
                         {"id": "CWE-125", "name": "Out-of-bounds Read", "url": "https://cwe.mitre.org/data/definitions/125.html", "role": "compound"},
                         {"id": "CWE-787", "name": "Out-of-bounds Write", "url": "https://cwe.mitre.org/data/definitions/787.html", "role": "compound"},
                     ],
@@ -3694,10 +4152,11 @@ for row in rows:               # no hand-rolled index to get wrong
                 },
                 {
                     "title": "Divide-by-Zero from an Empty Aggregate",
+                    "slug": "divide-by-zero-empty",
                     "intent": "An average over input that can be empty drives the denominator to zero.",
                     "ingredients": ["var-let-mut", "divide-by-zero"],
                     "cwes": [
-                        {"id": "CWE-682", "name": "Incorrect Calculation", "url": "https://cwe.mitre.org/data/definitions/682.html", "role": "base"},
+                        {"id": "CWE-682", "name": "Incorrect Calculation", "url": "https://cwe.mitre.org/data/definitions/682.html", "role": "base", "from": "divide-by-zero"},
                         {"id": "CWE-369", "name": "Divide By Zero", "url": "https://cwe.mitre.org/data/definitions/369.html", "role": "compound"},
                         {"id": "CWE-754", "name": "Improper Check for Unusual or Exceptional Conditions", "url": "https://cwe.mitre.org/data/definitions/754.html", "role": "compound"},
                     ],
@@ -3717,10 +4176,11 @@ avg = total / count if count else 0.0""",
                 },
                 {
                     "title": "Stale API After Upgrade (AttributeError)",
+                    "slug": "stale-api-upgrade",
                     "intent": "A mixin reaches for a method a dependency upgrade quietly renamed or removed.",
                     "ingredients": ["macro-mixin-misuse", "version-library-mismanagement"],
                     "cwes": [
-                        {"id": "CWE-477", "name": "Use of Obsolete Function", "url": "https://cwe.mitre.org/data/definitions/477.html", "role": "base"},
+                        {"id": "CWE-1104", "name": "Use of Unmaintained Third Party Components", "url": "https://cwe.mitre.org/data/definitions/1104.html", "role": "base", "from": "version-library-mismanagement"},
                         {"id": "CWE-758", "name": "Reliance on Undefined, Unspecified, or Implementation-Defined Behavior", "url": "https://cwe.mitre.org/data/definitions/758.html", "role": "compound"},
                         {"id": "CWE-754", "name": "Improper Check for Unusual or Exceptional Conditions", "url": "https://cwe.mitre.org/data/definitions/754.html", "role": "compound"},
                     ],
@@ -3742,6 +4202,272 @@ class Audited(Base):
                          "output": "bug:   AttributeError: 'Audited' object has no attribute 'log_change'\nright: missing hook degrades to a fallback, not a crash"},
                     ],
                 },
+                {
+                    "title": "Unbounded Input → Quadratic Blowup",
+                    "slug": "quadratic-blowup",
+                    "intent": "An accumulating loop with no cap on input size turns a linear scan into O(n²) — fine in dev, fatal on real volume.",
+                    "ingredients": ["for-loop-control-flow", "unconstrained-inputs"],
+                    "cwes": [
+                        {"id": "CWE-834", "name": "Excessive Iteration", "url": "https://cwe.mitre.org/data/definitions/834.html", "role": "base", "from": "for-loop-control-flow"},
+                        {"id": "CWE-1284", "name": "Improper Validation of Specified Quantity in Input", "url": "https://cwe.mitre.org/data/definitions/1284.html", "role": "base", "from": "unconstrained-inputs"},
+                        {"id": "CWE-400", "name": "Uncontrolled Resource Consumption", "url": "https://cwe.mitre.org/data/definitions/400.html", "role": "compound"},
+                        {"id": "CWE-407", "name": "Inefficient Algorithmic Complexity", "url": "https://cwe.mitre.org/data/definitions/407.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: O(n^2) over an input whose size nobody bounded.
+# (for-loop control flow x unconstrained inputs)
+seen = []
+for item in payload:            # payload size is caller-controlled
+    if item not in seen:        # 'in' on a list is O(n) each pass
+        seen.append(item)       # whole loop is O(n^2): 100k items -> 10^10 ops
+# fine on the dev's 50-row sample; the request times out / OOMs in prod.
+
+# RIGHT: bound the input, and pick the right data structure.
+if len(payload) > MAX_ITEMS:
+    raise ValueError("payload too large")
+seen = set(payload)             # O(n) de-dup, memory capped""",
+                         "explanation": "A linear scan inside the loop makes the whole pass quadratic; with no cap on input size, an input two orders of magnitude past the test data turns milliseconds into minutes. The failure -- a timeout or OOM kill -- is first seen on real volume.",
+                         "output": "unbounded: 100k-row input -> request times out, worker OOM-killed\nbounded:   oversize input rejected; set lookup stays O(n)"},
+                    ],
+                },
+                {
+                    "title": "Shape-Drift AttributeError",
+                    "slug": "shape-drift",
+                    "intent": "An attribute set on only some code paths, read on a path that assumes it always exists.",
+                    "ingredients": ["improper-initialization", "duck-typing-without-contracts"],
+                    "cwes": [
+                        {"id": "CWE-20", "name": "Improper Input Validation", "url": "https://cwe.mitre.org/data/definitions/20.html", "role": "base", "from": "duck-typing-without-contracts"},
+                        {"id": "CWE-908", "name": "Use of Uninitialized Resource", "url": "https://cwe.mitre.org/data/definitions/908.html", "role": "base", "from": "improper-initialization"},
+                        {"id": "CWE-754", "name": "Improper Check for Unusual or Exceptional Conditions", "url": "https://cwe.mitre.org/data/definitions/754.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: an attribute added only on one path; another path assumes it exists.
+# (improper-initialization x duck-typing-without-contracts)
+class Job:
+    def __init__(self): self.status = "new"
+
+def run(job):
+    if job.status == "retry":
+        job.result = recompute()     # 'result' set ONLY on the retry path
+    report(job.result)               # AttributeError when status != "retry"
+
+# RIGHT: give the shape a contract; every field exists from construction.
+class Job:
+    def __init__(self):
+        self.status = "new"
+        self.result = None           # always present""",
+                         "explanation": "Because result is added on only one branch, every other path reaches for an attribute that was never set. Duck typing hides it until the missing-attribute path runs on real data -- an AttributeError live, not in dev.",
+                         "output": "drift: AttributeError: 'Job' object has no attribute 'result'\nright: field present from construction; absence handled as None"},
+                    ],
+                },
+                {
+                    "title": "NaN / Infinity Poisons a Consumer",
+                    "slug": "nan-poisons-consumer",
+                    "intent": "Float math yields NaN or Infinity, which crashes the first consumer that needs a finite number.",
+                    "ingredients": ["time-money-entropy", "lack-of-input-validation"],
+                    "cwes": [
+                        {"id": "CWE-20", "name": "Improper Input Validation", "url": "https://cwe.mitre.org/data/definitions/20.html", "role": "base", "from": "lack-of-input-validation"},
+                        {"id": "CWE-682", "name": "Incorrect Calculation", "url": "https://cwe.mitre.org/data/definitions/682.html", "role": "base", "from": "time-money-entropy"},
+                        {"id": "CWE-754", "name": "Improper Check for Unusual or Exceptional Conditions", "url": "https://cwe.mitre.org/data/definitions/754.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: float math yields NaN/Infinity; a consumer assumes a finite number.
+# (time / money / entropy x lack of input validation)
+import math
+rate = spent / hours          # hours == 0.0 -> inf;  0.0 / 0.0 -> nan
+buckets[int(rate)] += 1       # int(inf) -> OverflowError; int(nan) -> ValueError
+                              # first seen on a real row with hours == 0
+
+# RIGHT: validate the numeric domain before you consume it.
+if not math.isfinite(rate):
+    raise ValueError("rate must be finite")
+buckets[int(rate)] += 1""",
+                         "explanation": "Float division silently produces inf or nan; nothing flags it until a consumer that needs a finite integer chokes. int(inf) raises OverflowError and int(nan) raises ValueError -- a crash whose root is the unchecked numeric domain, seen first on production data.",
+                         "output": "bad:   OverflowError / ValueError converting inf or nan to int\nright: non-finite rate rejected at the boundary, with a clear error"},
+                    ],
+                },
+                {
+                    "title": "Aliased-Default Type Confusion",
+                    "slug": "aliased-default-type-confusion",
+                    "intent": "A function's mutable default is shared across calls; one caller seeds it with a wrong-typed value, and a later caller crashes operating on it.",
+                    "ingredients": ["aliasing-mutable-defaults", "type-errors"],
+                    "cwes": [
+                        {"id": "CWE-704", "name": "Incorrect Type Conversion or Cast", "url": "https://cwe.mitre.org/data/definitions/704.html", "role": "base", "from": "type-errors"},
+                        {"id": "CWE-471", "name": "Modification of Assumed-Immutable Data (MAID)", "url": "https://cwe.mitre.org/data/definitions/471.html", "role": "base", "from": "aliasing-mutable-defaults"},
+                        {"id": "CWE-843", "name": "Access of Resource Using Incompatible Type ('Type Confusion')", "url": "https://cwe.mitre.org/data/definitions/843.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: a shared mutable default accumulates state across calls.
+# (aliasing mutable defaults x type errors)
+def collect(item, into=[]):     # one list, shared by every call
+    into.append(item)
+    return sum(into)            # crashes once a non-number slips in
+
+collect(1); collect(2)          # fine
+collect("x")                    # TypeError on the NEXT caller's sum(into)
+
+# RIGHT: a fresh container per call; the type stays local and predictable.
+def collect(item, into=None):
+    into = [] if into is None else into
+    into.append(item)
+    return sum(into)""",
+                         "explanation": "The default list is created once and aliased by every call, so values -- and their types -- leak between callers. One caller appending a string poisons the shared default; a later caller's sum() hits incompatible types, a crash with no obvious owner. Default to None and build a fresh container inside.",
+                         "output": "shared: TypeError in a caller that never touched a string\nright: each call owns its list; types stay local"},
+                    ],
+                },
+                {
+                    "title": "Deserialized Type Confusion Crash",
+                    "slug": "deserialized-type-confusion",
+                    "intent": "A payload reconstructs an object of an unexpected shape; the code mutates it as the type it assumed, and crashes on the first attribute that isn't there.",
+                    "ingredients": ["insecure-deserialization", "this-mutation"],
+                    "cwes": [
+                        {"id": "CWE-471", "name": "Modification of Assumed-Immutable Data (MAID)", "url": "https://cwe.mitre.org/data/definitions/471.html", "role": "base", "from": "this-mutation"},
+                        {"id": "CWE-502", "name": "Deserialization of Untrusted Data", "url": "https://cwe.mitre.org/data/definitions/502.html", "role": "base", "from": "insecure-deserialization"},
+                        {"id": "CWE-704", "name": "Incorrect Type Conversion or Cast", "url": "https://cwe.mitre.org/data/definitions/704.html", "role": "compound"},
+                        {"id": "CWE-843", "name": "Access of Resource Using Incompatible Type ('Type Confusion')", "url": "https://cwe.mitre.org/data/definitions/843.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: trust the deserialized shape, then mutate it as the assumed type.
+# (insecure deserialization x this-mutation)
+data = json.loads(body)          # could be a list, str, number -- anything
+data["seen"] = True              # assumes a dict; TypeError on a list/str
+return save(data)
+
+# RIGHT: parse into a known type at the boundary; reject the rest.
+raw = json.loads(body)
+if not isinstance(raw, dict):
+    raise BadRequest("object expected")
+record = Record(**raw)           # validated shape; safe to mutate
+record.seen = True
+return save(record)""",
+                         "explanation": "json.loads returns whatever the payload encodes; treating it as a dict and mutating it crashes the moment a client sends a list or scalar. Parse the untrusted bytes into a known type at the boundary (parse, don't validate) so the rest of the code operates on a shape it can trust.",
+                         "output": "trusting: TypeError: 'list' object does not support item assignment\nright: shape validated at the edge; a bad payload fails with a clear 400"},
+                    ],
+                },
+                {
+                    "title": "Config / Environment Drift Crash",
+                    "slug": "config-drift-crash",
+                    "intent": "An upgrade renames the config key the code still reads directly; the service boots fine and dies on the first request in the new environment.",
+                    "ingredients": ["impure-functions", "version-library-mismanagement"],
+                    "cwes": [
+                        {"id": "CWE-1108", "name": "Excessive Reliance on Global Variables", "url": "https://cwe.mitre.org/data/definitions/1108.html", "role": "base", "from": "impure-functions"},
+                        {"id": "CWE-1104", "name": "Use of Unmaintained Third Party Components", "url": "https://cwe.mitre.org/data/definitions/1104.html", "role": "base", "from": "version-library-mismanagement"},
+                        {"id": "CWE-248", "name": "Uncaught Exception", "url": "https://cwe.mitre.org/data/definitions/248.html", "role": "compound"},
+                        {"id": "CWE-754", "name": "Improper Check for Unusual or Exceptional Conditions", "url": "https://cwe.mitre.org/data/definitions/754.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: read a config key directly, assuming the deploy still provides it.
+# (impure functions x library/version mismanagement)
+TIMEOUT = os.environ["RPC_TIMEOUT_MS"]   # renamed to RPC_TIMEOUT_S in v2 -> KeyError
+def call():
+    client.invoke(timeout=int(TIMEOUT))
+
+# RIGHT: read through validated config -- presence check + migration-aware error.
+def get_timeout():
+    raw = os.environ.get("RPC_TIMEOUT_S")
+    if raw is None:
+        raise ConfigError("RPC_TIMEOUT_S required (was RPC_TIMEOUT_MS before v2)")
+    return float(raw)""",
+                         "explanation": "Reading os.environ by key couples the code to a contract the platform can change between versions. After an upgrade renames the key, the process imports fine and throws an uncaught KeyError on first use -- in the new environment only. Centralize config access with explicit presence checks and a migration-aware error.",
+                         "output": "drifted: KeyError: 'RPC_TIMEOUT_MS' on the first request after deploy\nright: a clear ConfigError naming the renamed key; no surprise mid-request"},
+                    ],
+                },
+                {
+                    "title": "Integer Overflow Sizes a Buffer Too Small",
+                    "slug": "integer-overflow-buffer",
+                    "intent": "A size computed by multiplying or incrementing wraps past the integer max to a tiny value; the allocation looks fine, then an in-range-looking index writes off the end.",
+                    "ingredients": ["increment-decrement-operators", "index-out-of-bounds"],
+                    "cwes": [
+                        {"id": "CWE-129", "name": "Improper Validation of Array Index", "url": "https://cwe.mitre.org/data/definitions/129.html", "role": "base", "from": "index-out-of-bounds"},
+                        {"id": "CWE-190", "name": "Integer Overflow or Wraparound", "url": "https://cwe.mitre.org/data/definitions/190.html", "role": "base", "from": "increment-decrement-operators"},
+                        {"id": "CWE-680", "name": "Integer Overflow to Buffer Overflow", "url": "https://cwe.mitre.org/data/definitions/680.html", "role": "compound"},
+                        {"id": "CWE-787", "name": "Out-of-bounds Write", "url": "https://cwe.mitre.org/data/definitions/787.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "C", "slug": "c", "code":
+"""// SMELL: the size multiply wraps, so the buffer is far too small.
+// (increment/decrement operators x index out of bounds)
+size_t n = count * width;          // count*width overflows size_t -> tiny n
+char *buf = malloc(n);             // allocates the wrapped (small) size
+for (size_t i = 0; i < count * width; i++)
+    buf[i] = src[i];               // runs to the true length -> OOB write
+
+// RIGHT: detect the overflow before allocating.
+if (width != 0 && count > SIZE_MAX / width)
+    return -1;                     // refuse the impossible size
+char *buf = malloc(count * width);""",
+                         "explanation": "Multiplying two attacker-influenced sizes overflows the integer and wraps to a small value (CWE-190); malloc honors the small size, but the copy loop runs to the true count*width and writes past the buffer -- the named chain CWE-680 'Integer Overflow to Buffer Overflow', ending in an out-of-bounds write. Check count > SIZE_MAX/width (or use a checked multiply) before allocating.",
+                         "output": "overflow: malloc(small) then a full-length copy -> heap corruption\nright: oversized request rejected; no wrap, no overflow"},
+                    ],
+                },
+                {
+                    "title": "Unexpected-Type Element in a Heterogeneous Collection",
+                    "slug": "unexpected-type-element",
+                    "intent": "A collection assumed to hold one shape gains an element of another type -- directly or because a method mutated one item -- and the consumer crashes when it reaches the odd one.",
+                    "ingredients": ["this-mutation", "duck-typing-without-contracts"],
+                    "cwes": [
+                        {"id": "CWE-471", "name": "Modification of Assumed-Immutable Data (MAID)", "url": "https://cwe.mitre.org/data/definitions/471.html", "role": "base", "from": "this-mutation"},
+                        {"id": "CWE-1287", "name": "Improper Validation of Specified Type of Input", "url": "https://cwe.mitre.org/data/definitions/1287.html", "role": "base", "from": "duck-typing-without-contracts"},
+                        {"id": "CWE-241", "name": "Improper Handling of Unexpected Data Type", "url": "https://cwe.mitre.org/data/definitions/241.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: a list assumed to be all numbers; one path appends a string.
+# (this-mutation x duck typing without contracts)
+def total(items):
+    return sum(x * 2 for x in items)    # assumes every x is numeric
+
+items.append(row["qty"])                # row["qty"] is "3" from a CSV -> str
+total(items)                            # TypeError on the one string element
+
+# RIGHT: validate the element's type at the boundary; coerce or reject.
+def add_qty(items, raw):
+    try:
+        items.append(int(raw))          # parse into the expected type
+    except (TypeError, ValueError):
+        raise BadRow(f"qty not an int: {raw!r}")""",
+                         "explanation": "Duck typing with no element contract (CWE-1287) lets a wrong-typed item slip into a collection the consumer treats as uniform; the code then mishandles the unexpected type (CWE-241) and crashes on the one odd element -- a shape failure, not arithmetic or timing. Validate or coerce each element where it enters, so the collection's type is an invariant.",
+                         "output": "mixed: TypeError: can't multiply sequence by non-int (one bad row)\nright: each element parsed at entry -> the collection stays homogeneous"},
+                    ],
+                },
+                {
+                    "title": "Schema-Drift on Load: Old Payload Sets Unexpected Attributes",
+                    "slug": "schema-drift-on-load",
+                    "intent": "A record serialized by an older class version is rehydrated by a mixin/ORM that blindly sets whatever attributes the payload names -- so a renamed or dropped field lands on the new object and a later access breaks.",
+                    "ingredients": ["macro-mixin-misuse", "insecure-deserialization"],
+                    "cwes": [
+                        {"id": "CWE-502", "name": "Deserialization of Untrusted Data", "url": "https://cwe.mitre.org/data/definitions/502.html", "role": "base", "from": "insecure-deserialization"},
+                        {"id": "CWE-915", "name": "Improperly Controlled Modification of Dynamically-Determined Object Attributes", "url": "https://cwe.mitre.org/data/definitions/915.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: a mixin rehydrates rows by setting every key from the payload.
+# (macro & mixin misuse x insecure deserialization)
+class FromDict:                         # shared across all models
+    @classmethod
+    def load(cls, d):
+        o = cls.__new__(cls)
+        o.__dict__.update(d)            # sets WHATEVER keys the old schema had
+        return o
+# v1 stored {"addr": ...}; v2 renamed it "address" -> o.address is missing
+# and a stale "addr" rides along. Later o.address -> AttributeError.
+
+# RIGHT: map through a versioned, allow-listed schema on load.
+class FromDict:
+    @classmethod
+    def load(cls, d):
+        d = migrate(d, d.get("_v", 1))  # bring the old shape to current
+        return cls(**{k: d[k] for k in cls.FIELDS})   # only known fields""",
+                         "explanation": "Blindly splatting a deserialized dict onto an object (CWE-502 feeding mass-assignment, CWE-915) couples your data to whatever schema wrote it; after a field is renamed across versions, old payloads set unexpected attributes and omit current ones, so a downstream access fails. The contract that drifted is the schema version between writer and reader. Migrate by version and assign only allow-listed fields.",
+                         "output": "drifted: old rows leave .address unset (+ a stale .addr) -> AttributeError\nright: versioned migration + field allow-list -> every object is current-shape"},
+                    ],
+                },
             ],
         },
         {
@@ -3749,23 +4475,30 @@ class Audited(Base):
             "color_primary": "C27BA0",
             "color_secondary": "E0B6CF",
             "color_deep": "8E5572",
-            "cwes": [
-                {"id": "CWE-787", "name": "Out-of-bounds Write", "url": "https://cwe.mitre.org/data/definitions/787.html"},
-                {"id": "CWE-502", "name": "Deserialization of Untrusted Data", "url": "https://cwe.mitre.org/data/definitions/502.html"},
-                {"id": "CWE-345", "name": "Insufficient Verification of Data Authenticity", "url": "https://cwe.mitre.org/data/definitions/345.html"},
-            ],
             "name": "Data Corruption",
             "tagline": "shared × unstructured — bad data written permanently, and it spreads",
             "essence": "Unvalidated data crossing a shared boundary persists and propagates, so the damage is permanent and reaches other actors.",
             "description": "When data without a contract is written across a shared boundary -- memory, a wire, a store -- the badness is durable: it overwrites, exposes, or poisons what others read. The hallmark: permanent damage and information exposure.",
+            "categories": [
+                {"slug": "memory-corruption", "name": "Memory Corruption",
+                 "core": "Memory-level positioning gone wrong — structural destruction and boundary smashes.",
+                 "members": ["buffer-overflow", "stack-smash", "type-confusion-corruption", "torn-write", "unchecked-sentinel-corruption"]},
+                {"slug": "semantic-corruption", "name": "Semantic Corruption",
+                 "core": "Logical poisoning, encoding failures, and mismatched representations.",
+                 "members": ["nan-shared-aggregate", "mojibake", "unframed-stream", "lossy-coercion-ledger", "signedness-poisons-aggregate"]},
+                {"slug": "representational-corruption", "name": "Representational Corruption",
+                 "core": "Session bleed and schema drift across boundaries.",
+                 "members": ["cross-session-contamination", "schema-drift", "stored-injection", "untrusted-deserialization", "web-cache-poisoning"]},
+            ],
             "examples": [
                 {
                     "title": "Buffer Overflow (Out-of-Bounds Write)",
+                    "slug": "buffer-overflow",
                     "intent": "An unchecked length writes past the buffer into adjacent, shared memory.",
                     "ingredients": ["pointer-mismanagement", "index-out-of-bounds"],
                     "cwes": [
-                        {"id": "CWE-787", "name": "Out-of-bounds Write", "url": "https://cwe.mitre.org/data/definitions/787.html", "role": "base"},
-                        {"id": "CWE-119", "name": "Improper Restriction of Operations within the Bounds of a Memory Buffer", "url": "https://cwe.mitre.org/data/definitions/119.html", "role": "compound"},
+                        {"id": "CWE-120", "name": "Buffer Copy without Checking Size of Input ('Classic Buffer Overflow')", "url": "https://cwe.mitre.org/data/definitions/120.html", "role": "base", "from": "index-out-of-bounds"},
+                        {"id": "CWE-787", "name": "Out-of-bounds Write", "url": "https://cwe.mitre.org/data/definitions/787.html", "role": "compound"},
                     ],
                     "languages": [
                         {"name": "C", "slug": "c", "code":
@@ -3783,10 +4516,12 @@ snprintf(name, sizeof name, "%s", input);   /* truncates, never overflows */""",
                 },
                 {
                     "title": "Untrusted Deserialization Across a Boundary",
+                    "slug": "untrusted-deserialization",
                     "intent": "Deserializing bytes that crossed a trust boundary turns a payload into live objects.",
                     "ingredients": ["file-network-access", "insecure-deserialization"],
                     "cwes": [
-                        {"id": "CWE-345", "name": "Insufficient Verification of Data Authenticity", "url": "https://cwe.mitre.org/data/definitions/345.html", "role": "base"},
+                        {"id": "CWE-345", "name": "Insufficient Verification of Data Authenticity", "url": "https://cwe.mitre.org/data/definitions/345.html", "role": "base", "from": "file-network-access"},
+                        {"id": "CWE-913", "name": "Improper Control of Dynamically-Managed Code Resources", "url": "https://cwe.mitre.org/data/definitions/913.html", "role": "base", "from": "insecure-deserialization"},
                         {"id": "CWE-502", "name": "Deserialization of Untrusted Data", "url": "https://cwe.mitre.org/data/definitions/502.html", "role": "compound"},
                     ],
                     "languages": [
@@ -3805,10 +4540,11 @@ record = Record(**validate(data))      # then check the shape""",
                 },
                 {
                     "title": "Schema Drift / Mixed-Version Write",
+                    "slug": "schema-drift",
                     "intent": "Two deployed versions share one store with no schema contract, so one writes what the other can't read.",
                     "ingredients": ["file-network-access", "unconstrained-inputs"],
                     "cwes": [
-                        {"id": "CWE-20", "name": "Improper Input Validation", "url": "https://cwe.mitre.org/data/definitions/20.html", "role": "base"},
+                        {"id": "CWE-20", "name": "Improper Input Validation", "url": "https://cwe.mitre.org/data/definitions/20.html", "role": "base", "from": "unconstrained-inputs"},
                         {"id": "CWE-345", "name": "Insufficient Verification of Data Authenticity", "url": "https://cwe.mitre.org/data/definitions/345.html", "role": "compound"},
                     ],
                     "languages": [
@@ -3829,10 +4565,11 @@ assert record["schema"] == READER_SCHEMA   # refuse mixed-version data""",
                 },
                 {
                     "title": "Stored / Second-Order Injection",
+                    "slug": "stored-injection",
                     "intent": "Unvalidated input is persisted once, then trusted every time it is read back out.",
                     "ingredients": ["file-network-access", "lack-of-input-validation"],
                     "cwes": [
-                        {"id": "CWE-20", "name": "Improper Input Validation", "url": "https://cwe.mitre.org/data/definitions/20.html", "role": "base"},
+                        {"id": "CWE-20", "name": "Improper Input Validation", "url": "https://cwe.mitre.org/data/definitions/20.html", "role": "base", "from": "lack-of-input-validation"},
                         {"id": "CWE-89", "name": "SQL Injection", "url": "https://cwe.mitre.org/data/definitions/89.html", "role": "compound"},
                         {"id": "CWE-79", "name": "Cross-site Scripting (XSS)", "url": "https://cwe.mitre.org/data/definitions/79.html", "role": "compound"},
                     ],
@@ -3854,11 +4591,11 @@ page += escape_html(row["body"])""",
                 },
                 {
                     "title": "Web Cache Poisoning",
+                    "slug": "web-cache-poisoning",
                     "intent": "An input the cache key ignores gets baked into a stored response and replayed to everyone.",
                     "ingredients": ["cache-invalidation", "unconstrained-inputs"],
                     "cwes": [
-                        {"id": "CWE-348", "name": "Use of Less Trusted Source", "url": "https://cwe.mitre.org/data/definitions/348.html", "role": "base"},
-                        {"id": "CWE-444", "name": "Inconsistent Interpretation of HTTP Requests ('HTTP Request/Response Smuggling')", "url": "https://cwe.mitre.org/data/definitions/444.html", "role": "base"},
+                        {"id": "CWE-348", "name": "Use of Less Trusted Source", "url": "https://cwe.mitre.org/data/definitions/348.html", "role": "base", "from": "unconstrained-inputs"},
                         {"id": "CWE-349", "name": "Acceptance of Extraneous Untrusted Data With Trusted Data", "url": "https://cwe.mitre.org/data/definitions/349.html", "role": "compound"},
                     ],
                     "languages": [
@@ -3878,10 +4615,11 @@ cache[(request.path, host)] = render(page, host=host)""",
                 },
                 {
                     "title": "Encoding / Charset Corruption (Mojibake)",
+                    "slug": "mojibake",
                     "intent": "Bytes written in one charset and read back assuming another corrupt the stored text permanently.",
                     "ingredients": ["file-network-access", "version-library-mismanagement"],
                     "cwes": [
-                        {"id": "CWE-176", "name": "Improper Handling of Unicode Encoding", "url": "https://cwe.mitre.org/data/definitions/176.html", "role": "base"},
+                        {"id": "CWE-176", "name": "Improper Handling of Unicode Encoding", "url": "https://cwe.mitre.org/data/definitions/176.html", "role": "base", "from": "file-network-access"},
                         {"id": "CWE-172", "name": "Encoding Error", "url": "https://cwe.mitre.org/data/definitions/172.html", "role": "compound"},
                     ],
                     "languages": [
@@ -3900,6 +4638,264 @@ with open("names.csv", "w", encoding="utf-8") as f:
 name = open("names.csv", encoding="utf-8").read()""",
                          "explanation": "Relying on a default encoding that differs across versions and hosts means bytes written as one charset are decoded as another. The text is corrupted in place -- permanently -- and the damage compounds on each re-save.",
                          "output": "mojibake: 'Jose' with an accent reads back garbled, then worse\npinned:   utf-8 on both ends -- bytes survive the round-trip"},
+                    ],
+                },
+                {
+                    "title": "Unframed Stream Corruption",
+                    "slug": "unframed-stream",
+                    "intent": "Reading a byte stream in fixed chunks with no length contract lets records split and merge — then persist mis-framed.",
+                    "ingredients": ["async-io-misuse", "unconstrained-inputs"],
+                    "cwes": [
+                        {"id": "CWE-400", "name": "Uncontrolled Resource Consumption", "url": "https://cwe.mitre.org/data/definitions/400.html", "role": "base", "from": "unconstrained-inputs"},
+                        {"id": "CWE-130", "name": "Improper Handling of Length Parameter Inconsistency", "url": "https://cwe.mitre.org/data/definitions/130.html", "role": "base", "from": "async-io-misuse"},
+                        {"id": "CWE-240", "name": "Improper Handling of Inconsistent Structural Elements", "url": "https://cwe.mitre.org/data/definitions/240.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: read fixed-size chunks from a stream with no framing contract.
+# (async I/O misuse x unconstrained inputs)
+async def read_msg(reader):
+    return await reader.read(1024)     # message length is unknown / unbounded
+# a 1500-byte message splits across two reads; a 300-byte one merges with the
+# next. Records run together and get persisted mis-framed -- corrupt at rest.
+
+# RIGHT: frame the stream; read exactly the declared length.
+async def read_msg(reader):
+    header = await reader.readexactly(4)
+    n = int.from_bytes(header, "big")
+    if n > MAX_MSG:
+        raise ValueError("frame too large")
+    return await reader.readexactly(n)   # exact message boundary, bounded""",
+                         "explanation": "A byte stream has no inherent message boundaries; reading fixed chunks with no length prefix lets one record split and the next merge. The mis-framed bytes are written to the store and read back as garbage -- durable corruption, not a transient glitch.",
+                         "output": "unframed: messages split/merge -> mis-framed records persisted corrupt\nframed:   exact length read; each record stored intact"},
+                    ],
+                },
+                {
+                    "title": "Stack Smash via Unbounded Recursion",
+                    "slug": "stack-smash",
+                    "intent": "Recursion depth driven by attacker-shaped nested input runs off the stack and corrupts adjacent memory.",
+                    "ingredients": ["stack-overflow", "unconstrained-inputs"],
+                    "cwes": [
+                        {"id": "CWE-400", "name": "Uncontrolled Resource Consumption", "url": "https://cwe.mitre.org/data/definitions/400.html", "role": "base", "from": "unconstrained-inputs"},
+                        {"id": "CWE-674", "name": "Uncontrolled Recursion", "url": "https://cwe.mitre.org/data/definitions/674.html", "role": "base", "from": "stack-overflow"},
+                        {"id": "CWE-787", "name": "Out-of-bounds Write", "url": "https://cwe.mitre.org/data/definitions/787.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "C", "slug": "c", "code":
+"""/* SMELL: recursion depth driven by attacker-shaped nested input.
+   (stack-overflow x unconstrained-inputs) */
+void parse(Node *n) {
+    char scratch[4096];              /* a frame, per level of nesting */
+    if (n->child) parse(n->child);   /* depth == nesting depth of input */
+    use(scratch, n);
+}
+/* deeply nested input blows past the stack guard page -> smashes adjacent
+   memory / crashes; in C this is memory corruption, not a clean exception. */
+
+/* RIGHT: bound the depth at the boundary (and prefer iteration). */
+void parse(Node *n, int depth) {
+    if (depth > MAX_DEPTH) { reject(); return; }
+    if (n->child) parse(n->child, depth + 1);
+}""",
+                         "explanation": "Each recursive call adds a frame; input nested deeper than the stack allows runs off the end. Unlike a managed runtime's clean error, in C the overrun corrupts whatever lies past the stack -- a durable, exploitable memory bug. Bound the nesting depth at the boundary.",
+                         "output": "unbounded: deep nesting overruns the stack -> memory corruption / crash\nbounded:   input past MAX_DEPTH rejected before recursing"},
+                    ],
+                },
+                {
+                    "title": "NaN Poisons a Shared Aggregate",
+                    "slug": "nan-shared-aggregate",
+                    "intent": "A single divide-by-zero feeds NaN into a shared running total; NaN is absorbing, so every later reader gets garbage forever.",
+                    "ingredients": ["divide-by-zero", "threading-mutexes"],
+                    "cwes": [
+                        {"id": "CWE-369", "name": "Divide By Zero", "url": "https://cwe.mitre.org/data/definitions/369.html", "role": "base", "from": "divide-by-zero"},
+                        {"id": "CWE-682", "name": "Incorrect Calculation", "url": "https://cwe.mitre.org/data/definitions/682.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: a /0 produces NaN that lands in a shared accumulator.
+# (divide-by-zero x threading / mutexes)
+import math
+stats = {"sum": 0.0}
+def record(latency, n):
+    with lock:
+        stats["sum"] += latency / n      # n == 0 -> NaN; NaN + x == NaN
+# one bad sample (n == 0) makes stats["sum"] NaN forever; every reader of the
+# shared aggregate now gets NaN -- the dashboard is permanently wrong.
+
+# RIGHT: reject the non-finite value before it touches shared state.
+def record(latency, n):
+    if n == 0: return
+    v = latency / n
+    if not math.isfinite(v): return
+    with lock:
+        stats["sum"] += v""",
+                         "explanation": "NaN is absorbing: once a single divide-by-zero feeds NaN into the shared running total, every later add stays NaN and every reader downstream sees garbage. The lock makes the write thread-safe but cannot un-poison the value -- the corruption is permanent and shared. Validate the numeric domain before it crosses into shared state.",
+                         "output": "poisoned: one n==0 sample -> shared sum is NaN for all readers, forever\nright: non-finite values rejected; the shared aggregate stays valid"},
+                    ],
+                },
+                {
+                    "title": "Type-Confusion Memory Corruption",
+                    "slug": "type-confusion-corruption",
+                    "intent": "A value read as one type but used as another writes through a bad pointer, corrupting whatever shared memory sits at that address.",
+                    "ingredients": ["type-errors", "pointer-mismanagement"],
+                    "cwes": [
+                        {"id": "CWE-787", "name": "Out-of-bounds Write", "url": "https://cwe.mitre.org/data/definitions/787.html", "role": "base", "from": "pointer-mismanagement"},
+                        {"id": "CWE-843", "name": "Access of Resource Using Incompatible Type ('Type Confusion')", "url": "https://cwe.mitre.org/data/definitions/843.html", "role": "base", "from": "type-errors"},
+                        {"id": "CWE-119", "name": "Improper Restriction of Operations within the Bounds of a Memory Buffer", "url": "https://cwe.mitre.org/data/definitions/119.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "C", "slug": "c", "code":
+"""// SMELL: an integer id reinterpreted as a pointer, then written through.
+// (type errors x pointer mismanagement)
+union { long handle; char *ptr; } u;
+u.handle = read_id();              // really an integer id from input
+memcpy(u.ptr, payload, len);       // ...used as a pointer -> writes to a wild
+                                   // address, corrupting adjacent shared state
+
+// RIGHT: keep the types distinct; resolve the id to a checked object.
+long id = read_id();
+Object *o = lookup(id);            // id -> a real, bounds-checked object
+if (o) memcpy(o->buf, payload, MIN(len, sizeof o->buf));""",
+                         "explanation": "Treating an integer id as a pointer is an incompatible-type access (CWE-843); the write through it lands at an out-of-bounds address, silently corrupting objects other code later reads. Keep the types separate and resolve the id to a checked object before any write.",
+                         "output": "confusion: bytes written to a wild address -- adjacent state corrupted\nright: id resolved to a bounds-checked object; the write stays in bounds"},
+                    ],
+                },
+                {
+                    "title": "Torn Write / Lost-Update Corruption",
+                    "slug": "torn-write",
+                    "intent": "Two threads write one shared buffer at an unvalidated offset with no lock; their writes overlap and run past the end, leaving permanent corruption no single thread would produce.",
+                    "ingredients": ["race-conditions", "lack-of-input-validation"],
+                    "cwes": [
+                        {"id": "CWE-366", "name": "Race Condition within a Thread", "url": "https://cwe.mitre.org/data/definitions/366.html", "role": "base", "from": "race-conditions"},
+                        {"id": "CWE-20", "name": "Improper Input Validation", "url": "https://cwe.mitre.org/data/definitions/20.html", "role": "base", "from": "lack-of-input-validation"},
+                        {"id": "CWE-787", "name": "Out-of-bounds Write", "url": "https://cwe.mitre.org/data/definitions/787.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "C", "slug": "c", "code":
+"""// SMELL: concurrent writers, unvalidated offset, no lock.
+// (race conditions x lack of input validation)
+char buf[256];
+void write_at(int off, const char *s, int n) {
+    memcpy(buf + off, s, n);      // off/n come from input, unchecked;
+}                                 // concurrent calls overlap -> torn, OOB write
+
+// RIGHT: validate the bounds, then serialize the writers with a lock.
+void write_at(int off, const char *s, int n) {
+    if (off < 0 || n < 0 || off + n > (int)sizeof buf) return;
+    pthread_mutex_lock(&m);
+    memcpy(buf + off, s, n);
+    pthread_mutex_unlock(&m);
+}""",
+                         "explanation": "An unvalidated offset plus no synchronization lets two writers interleave on one buffer; their writes overlap and spill past the end, leaving the shared buffer corrupted in a way no single thread would reach. Validate the bounds and serialize the writers.",
+                         "output": "race: concurrent unchecked writes overlap -> buffer corrupted (intermittent)\nright: bounds checked + writes serialized -> every write lands intact"},
+                    ],
+                },
+                {
+                    "title": "Cross-Session Contamination",
+                    "slug": "cross-session-contamination",
+                    "intent": "Per-request data written into a shared singleton with no validation lets one user's input overwrite the field another user then reads.",
+                    "ingredients": ["cross-boundary-state-exposure", "lack-of-input-validation"],
+                    "cwes": [
+                        {"id": "CWE-20", "name": "Improper Input Validation", "url": "https://cwe.mitre.org/data/definitions/20.html", "role": "base", "from": "lack-of-input-validation"},
+                        {"id": "CWE-567", "name": "Unsynchronized Access to Shared Data in a Multithreaded Context", "url": "https://cwe.mitre.org/data/definitions/567.html", "role": "base", "from": "cross-boundary-state-exposure"},
+                        {"id": "CWE-488", "name": "Exposure of Data Element to Wrong Session", "url": "https://cwe.mitre.org/data/definitions/488.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: per-request data written into a shared singleton, unguarded.
+# (cross-boundary state exposure x lack of input validation)
+class Config:                        # one shared instance for the whole process
+    locale = "en"
+cfg = Config()
+def handle(req):
+    cfg.locale = req.params["locale"]   # unvalidated, and shared by all requests
+    return render(cfg)                  # another request's locale bleeds in here
+
+# RIGHT: validate, and keep per-request state out of shared singletons.
+ALLOWED = {"en", "es", "fr"}
+def handle(req):
+    loc = req.params.get("locale", "en")
+    if loc not in ALLOWED:
+        loc = "en"
+    return render(locale=loc)           # local to this request; nothing shared""",
+                         "explanation": "A singleton holds one slot for a value every concurrent request writes; with no validation and no isolation, one user's input overwrites the field another user then reads -- their data crosses the session boundary. Validate the input and keep per-request state with the request.",
+                         "output": "shared: request B renders with request A's locale (and vice versa)\nright: validated, per-request value -- no state crosses the boundary"},
+                    ],
+                },
+                {
+                    "title": "Unchecked Sentinel Corrupts a Shared Record",
+                    "slug": "unchecked-sentinel-corruption",
+                    "intent": "A 'not found' sentinel return used unchecked as a write offset writes past the start of a shared file -- the same unchecked-return defect that elsewhere becomes the CWE-690 null dereference.",
+                    "ingredients": ["missing-undefined-returns", "file-network-access"],
+                    "cwes": [
+                        {"id": "CWE-252", "name": "Unchecked Return Value", "url": "https://cwe.mitre.org/data/definitions/252.html", "role": "base", "from": "missing-undefined-returns"},
+                        {"id": "CWE-787", "name": "Out-of-bounds Write", "url": "https://cwe.mitre.org/data/definitions/787.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "C", "slug": "c", "code":
+"""// SMELL: an unchecked -1 'not found' return used as a write offset.
+// (missing/undefined returns x file/network access)
+long off = index_of(key);         // returns -1 when key is absent -- unchecked
+pwrite(fd, rec, sizeof rec,
+       off * sizeof rec);         // off == -1 -> writes before the file start,
+                                  // corrupting the shared record
+
+// RIGHT: check the sentinel before trusting it as an offset.
+long off = index_of(key);
+if (off < 0) return -1;           // absent -> append or error, never write blind
+pwrite(fd, rec, sizeof rec, off * sizeof rec);""",
+                         "explanation": "index_of() signals 'not found' with -1, but the caller never checks it; using -1 as a record offset writes past the start of the shared file, corrupting it for every later reader. The same unchecked-return defect becomes a null dereference in the CWE-690 chain (Runtime Errors) and a bad write here. Check the sentinel before trusting it.",
+                         "output": "unchecked: a -1 'not found' used as offset -> shared file corrupted\nright: sentinel checked -> no blind write; the record stays intact"},
+                    ],
+                },
+                {
+                    "title": "Lossy Coercion Poisons a Shared Ledger",
+                    "slug": "lossy-coercion-ledger",
+                    "intent": "A value silently narrowed to the wrong type is added to a shared running total; the lock keeps the write safe but cannot restore the meaning the coercion threw away.",
+                    "ingredients": ["type-errors", "threading-mutexes"],
+                    "cwes": [
+                        {"id": "CWE-704", "name": "Incorrect Type Conversion or Cast", "url": "https://cwe.mitre.org/data/definitions/704.html", "role": "base", "from": "type-errors"},
+                        {"id": "CWE-682", "name": "Incorrect Calculation", "url": "https://cwe.mitre.org/data/definitions/682.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: cents truncated to int before adding to a shared ledger.
+# (type errors x threading & mutexes)
+with lock:
+    ledger["cents"] += int(amount)     # amount=10.99 -> 10; 0.99 lost every add
+# the lock serializes the write, but the truncation is already baked in;
+# the shared total drifts low and can never be reconciled.
+
+# RIGHT: keep an exact integer-cents type end to end; never coerce lossily.
+cents = round(Decimal(amount) * 100)   # exact, total-preserving
+with lock:
+    ledger["cents"] += cents""",
+                         "explanation": "int(amount) discards the fractional cents before the value ever reaches the shared ledger. The mutex makes the increment thread-safe, but it locks in an already-wrong number; every contributor under-reports and the shared total is permanently, unreconcilably low. Carry an exact type (integer cents / Decimal) so no meaning is lost at the coercion.",
+                         "output": "lossy: the shared total drifts low by the truncated remainder, forever\nright: exact integer cents; the aggregate reconciles to the penny"},
+                    ],
+                },
+                {
+                    "title": "Signed/Unsigned Conversion Poisons a Shared Aggregate",
+                    "slug": "signedness-poisons-aggregate",
+                    "intent": "A value that can be negative is converted to unsigned before being folded into a shared, contended total -- the conversion turns it into a huge positive number that permanently skews the aggregate.",
+                    "ingredients": ["type-errors", "resource-contention"],
+                    "cwes": [
+                        {"id": "CWE-195", "name": "Signed to Unsigned Conversion Error", "url": "https://cwe.mitre.org/data/definitions/195.html", "role": "base", "from": "type-errors"},
+                        {"id": "CWE-682", "name": "Incorrect Calculation", "url": "https://cwe.mitre.org/data/definitions/682.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "C", "slug": "c", "code":
+"""// SMELL: a signed delta cast to unsigned before joining a shared counter.
+// (type errors x resource contention)
+int delta = price_after - price_before;   // can be negative
+shared_total += (size_t)delta;            // -5 -> ~1.8e19; the total is garbage
+// many writers contend on shared_total; one negative delta poisons it for all.
+
+// RIGHT: keep signedness consistent end to end; aggregate as signed.
+long long delta = price_after - price_before;
+shared_total += delta;                    // negatives subtract correctly""",
+                         "explanation": "Casting a legitimately-negative value to an unsigned type implicitly maps it to a huge positive number (CWE-195); folded into a shared running total under contention, that one conversion produces an incorrect calculation (CWE-682) every reader of the aggregate now inherits -- permanent, not a crash. Keep the numeric type signed (and wide enough) from input through aggregation.",
+                         "output": "unsigned: one negative delta -> the shared total jumps by ~1.8e19, forever\nright: signed aggregation -> negatives subtract correctly; the total stays valid"},
                     ],
                 },
             ],

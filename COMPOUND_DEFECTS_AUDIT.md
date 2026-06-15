@@ -1,205 +1,348 @@
 # Compound Software Defects — Technical Audit
 
-**Source:** `src/content.py` → `DEFECTS[4]` (`"id": "compound-defects"`, lines 3355–3909)
-**Scope:** the 18 worked compound-defect examples (the three child classes × six examples each)
-**Date:** 2026-06-14
-**Status:** the 3 REVISE findings (#3, #15, #18) were applied on 2026-06-14 — see "Remediation applied" at the foot of each and the updated scoreboard.
-**CWE titles/relationships spot-checked against:** cwe.mitre.org (CWE-349, CWE-690, CWE-838, CWE-477 fetched live)
+**Source:** `src/content.py` → `DEFECTS[4]` (`"id": "compound-defects"`)
+**Scope:** **45** worked compound-defect examples — **15 nondeterminism + 15 runtime-errors + 15 data-corruption** (every one of the 9 categories now holds exactly **5**)
+**Date:** 2026-06-15 (category round-out pass; builds on the category-framework / symmetry / 27 / 18-example passes)
+**Structure:** each compound smell is organized into **three named failure-vector categories** (a
+category tier between smell and example), now **5 worked examples each**. `resource-contention`
+coexists with `cross-boundary-state-exposure` (10 shared children). See [[compound-defect-categories]].
+**CWE titles/relationships spot-checked live this pass:** CWE-609 (Double-Checked Locking), CWE-758,
+CWE-340, CWE-704, CWE-682, CWE-543, CWE-502, CWE-248 (+ all prior-pass IDs).
+
+> **Note on counts:** smells are now even at **15 / 15 / 15** — every category holds exactly **5**.
+> `coverage_report()` still tracks per-(family, smell) ingredient coverage; remaining gaps
+> (stack-overflow→nondeterminism, resource-leaks→data-corruption, duck-typing→data-corruption) are an
+> honest backlog, not a defect — each category is already full.
 
 ---
 
 ## What a "compound defect" is here
 
-The `compound-defects` family is modeled not on a CWE *pillar* but on a CWE *view* —
-**CWE-678 "Composites"** — and the prose correctly invokes MITRE's two combination
-structures:
+Modeled on the CWE *view* **CWE-678 "Composites"**, invoking MITRE's two combination structures:
+**Chain** (one weakness creates the conditions for the next, primary → resultant) and
+**Composite** (several must co-occur). Each child class is the intersection of two stateful families:
 
-- **Chain** — one weakness creates the conditions for the next (primary → resultant).
-- **Composite** — several weaknesses must all be present at once.
+| Child class | Intersection | Hallmark | Count |
+|---|---|---|---|
+| Nondeterminism | mutated × shared | won't reproduce | 15 |
+| Runtime Errors | mutated × unstructured | crashes live on unexpected input | 15 |
+| Data Corruption | shared × unstructured | permanent damage / exposure | 15 |
 
-Each of the three child classes is asserted to be the **intersection of two of the three
-stateful families**:
+Each example carries `ingredients` (two child slugs, one per family), a `cwes` list split by
+`role` (`base` vs `compound`) with a `from` tag linking each base CWE to its source ingredient,
+a per-example `slug` (its own detail page), a `category` membership, and a smell→right code sample.
 
-| Child class | Intersection | Hallmark symptom |
-|---|---|---|
-| Nondeterminism | mutated × shared | won't reproduce |
-| Runtime Errors | mutated × unstructured | crashes live on unexpected input |
-| Data Corruption | shared × unstructured | permanent damage / exposure |
+### The category framework (the failure-vector tier)
 
-Each example carries:
-- `ingredients`: two child-defect slugs (one from each intersecting family);
-- `cwes`: a list with `role: "base"` (the root weakness) and `role: "compound"` (the named chain/composite the combination forms);
-- a runnable smell→right code sample.
+Each smell carries a `categories` list (`slug`/`name`/`core`); examples render grouped under their
+category's sub-header. Three categories per smell, ≥4 examples each:
 
-### Audit criteria (each example scored on five axes)
+| Smell | Category | Core failure | Examples |
+|---|---|---|---|
+| **Nondeterminism** | Temporal Interleaving | the schedule picks the result | TOCTOU · Lost Update · Out-of-Order Async · Concurrent Modification · **Pool-Exhaustion Heisenbug** 🆕 |
+| | Observational Staleness | you act on a value that already moved | Stale-Cache · Use-After-Free · Pooled-Resource · **Lazy-Init Visibility Race** · **Stale Replica Read** 🆕 |
+| | Entropic Divergence | a hidden random/identity source diverges | Predictable-ID · Temp-File Race · Concurrent Singleton · **Hash-Seed Serialization Divergence** · **Dispatch-Order Divergence** 🆕 |
+| **Runtime Errors** | Structural Invalidation | the data shape is wrong | Null-Deref · Type-Confusion · Shape-Drift · **Aliased-Default Type Confusion** · **Unexpected-Type Element** 🆕 |
+| | Computational Exhaustion | the math/scale is broken | Off-by-One · Divide-by-Zero · Quadratic Blowup · NaN-Poison · **Integer Overflow → Buffer** 🆕 |
+| | Architectural Drift | the contract is severed | Integration Crash · Stale API · **Deserialized Type Confusion** 🆕 · **Config/Env Drift Crash** · **Schema-Drift on Load** 🆕 |
+| **Data Corruption** | Memory Corruption | positioning / structural destruction / boundary smashes | Buffer Overflow · Stack Smash · Type-Confusion Mem · Torn Write · Unchecked Sentinel |
+| | Semantic Corruption | logical poisoning / encoding / mismatched representation | NaN Aggregate · Mojibake · Unframed Stream · **Lossy Coercion Ledger** · **Signed/Unsigned Poison** 🆕 |
+| | Representational Corruption | session bleed / schema drift across boundaries | Cross-Session · Schema Drift · Stored Injection · Untrusted Deser · Web Cache Poisoning |
 
-1. **Intersection** — do the two ingredients actually come from the two claimed families?
-2. **Ingredient fit** — do the two named child defects plausibly produce this bug?
-3. **CWE accuracy** — are the CWE IDs/titles correct per MITRE?
-4. **Role logic** — is the base/compound (primary/resultant) split defensible?
-5. **Code soundness** — does the sample actually demonstrate the bug, and is the fix correct?
+The 7 new examples (🆕) each use a **distinct base→compound sub-CWE chain**: CWE-400→362
+(pool exhaustion), **CWE-543→609** (double-checked locking — verified live), CWE-758→340 (hash-seed
+order), CWE-471→843 (aliased default), CWE-502→843/704 (deserialized shape), CWE-573→248/754 (config
+drift), CWE-704→682 (lossy coercion).
 
-Verdict legend: **PASS** · **PASS (note)** = sound, minor improvement available · **REVISE** = a mapping/label is wrong and should change.
+### Chain-strength classification (the bar set by [[defect-taxonomy-symmetry-rule]])
 
----
+Every base→compound pairing is graded against cwe.mitre.org:
 
-## Summary scoreboard
+- **NAMED** — the compound is a MITRE *named* chain/composite, or a direct parent/child of the base.
+- **DOCUMENTED** — a real CanPrecede / CanFollow / PeerOf edge exists between base and compound.
+- **DEFENSIBLE** — technically correct and on-theme, but no formal MITRE edge (acceptable; track as backlog).
+- **STRETCH** — the base does not actually *cause* the compound. **Not allowed** — must be fixed.
 
-### 1 · Nondeterminism — mutated × shared (CWE-362 / 367 / 349)
+### Verdict legend
+**PASS** · **PASS (note)** = sound, minor improvement available · **REVISE** = a mapping/label is wrong.
 
-| # | Example | Ingredients | base → compound | Verdict |
-|---|---|---|---|---|
-| 1 | TOCTOU Race (Check-Then-Act) | race-conditions × improper-initialization | CWE-362 → CWE-367 | **PASS (note)** |
-| 2 | Lost Update (Read-Modify-Write) | threading-mutexes × increment/decrement | CWE-362 → CWE-567 | **PASS** |
-| 3 | Stale-Cache Heisenbug | cache-invalidation × impure-functions | CWE-1108 → CWE-471 | **PASS** *(fixed)* |
-| 4 | Out-of-Order Async Completion | var/let/mut × async-io-misuse | CWE-662 → CWE-362, CWE-696 | **PASS (note)** |
-| 5 | Concurrent Modification During Iteration | for-loop × resource-contention | CWE-820 → CWE-362, CWE-567 | **PASS** |
-| 6 | Predictable ID Collision Under Load | time-money-entropy × race-conditions | CWE-330, CWE-340 → CWE-362 | **PASS** |
-
-### 2 · Runtime Errors — mutated × unstructured (CWE-476 / 843 / 754)
-
-| # | Example | Ingredients | base → compound | Verdict |
-|---|---|---|---|---|
-| 7 | Null / Undefined Dereference | improper-initialization × missing-undefined-returns | CWE-457 → CWE-476 | **PASS (note)** |
-| 8 | Type Confusion / Bad Coercion | this-mutation × type-errors | CWE-704 → CWE-843 | **PASS** |
-| 9 | Integration Crash on Unexpected Input | impure-functions × lack-of-input-validation | CWE-20 → CWE-248, CWE-754 | **PASS** |
-| 10 | Off-by-One Index Crash | increment/decrement × index-out-of-bounds | CWE-193 → CWE-125, CWE-787 | **PASS** (textbook) |
-| 11 | Divide-by-Zero from Empty Aggregate | var/let/mut × divide-by-zero | CWE-682 → CWE-369, CWE-754 | **PASS (note)** |
-| 12 | Stale API After Upgrade (AttributeError) | macro-mixin-misuse × version-library-mismanagement | CWE-477 → CWE-758, CWE-754 | **PASS (note)** |
-
-### 3 · Data Corruption — shared × unstructured (CWE-787 / 502 / 345)
-
-| # | Example | Ingredients | base → compound | Verdict |
-|---|---|---|---|---|
-| 13 | Buffer Overflow (OOB Write) | pointer-mismanagement × index-out-of-bounds | CWE-787 → CWE-119 | **PASS (note)** |
-| 14 | Untrusted Deserialization Across a Boundary | file-network-access × insecure-deserialization | CWE-345 → CWE-502 | **PASS** |
-| 15 | Schema Drift / Mixed-Version Write | file-network-access × unconstrained-inputs | CWE-20 → CWE-345 | **PASS** *(fixed)* |
-| 16 | Stored / Second-Order Injection | file-network-access × lack-of-input-validation | CWE-20 → CWE-89, CWE-79 | **PASS** |
-| 17 | Web Cache Poisoning | cache-invalidation × unconstrained-inputs | CWE-348, CWE-444 → CWE-349 | **PASS (note)** |
-| 18 | Encoding / Charset Corruption (Mojibake) | file-network-access × version-library-mismanagement | CWE-176 → CWE-172 | **PASS** *(fixed)* |
-
-**Bottom line:** 18/18 are conceptually well-formed; every ingredient pair correctly spans the two
-claimed families and every code sample compiles to the bug it advertises. The **3 entries that needed a
-CWE or label correction** (#3, #15, #18) **have been fixed** (2026-06-14); **4 carry minor notes** (#7,
-#12, #13, #17) worth tightening but not blocking. No example fails outright.
+**Bottom line:** all **39** are conceptually well-formed and organized under the 3×3 category
+framework (≥4 per category); structure (`slug`/`from`/`category`/ingredients/roles) is uniform; every
+code sample compiles to the bug it advertises. The 7 new anchors each use a distinct sub-CWE chain
+(the Lazy-Init Visibility Race lands the named **CWE-609 Double-Checked Locking**). The detailed
+per-example scoreboards below predate the category tier but their CWE analysis still holds. Remaining
+`coverage_report()` gaps (macro-mixin→nondeterminism, stack-overflow→nondeterminism,
+resource-contention/resource-leaks→data-corruption, duck-typing→data-corruption) are an honest
+backlog — each category is already full, so they are expansion opportunities, not defects.
 
 ---
 
-## Per-defect findings
+## Scoreboard 1 · Nondeterminism — mutated × shared  (class CWEs 362/367/471)
 
-### 1. TOCTOU Race — **PASS (note)**
-- **Intersection ✓** race-conditions (shared) × improper-initialization (mutated).
-- **CWE ✓** CWE-362 "…('Race Condition')" → CWE-367 "TOCTOU" is the canonical specialization; role split (race is the genus, TOCTOU the named form) is correct.
-- **Code ✓** `os.path.exists` → `os.makedirs` is the archetypal check-then-act window; `exist_ok=True` is the right atomic fix.
-- **Note:** the *mutated* ingredient `improper-initialization` is the loosest of the pairing — the bug is really "creating a resource" rather than "reading before write." It holds (the directory is the resource being initialized), but `improper-initialization` is doing light lifting here compared with the obvious race half.
+| # | Example | Ingredients | base → compound | Strength | Verdict |
+|---|---|---|---|---|---|
+| 1 | TOCTOU Race (Check-Then-Act) | race-conditions × improper-initialization | 362 → 367 | NAMED | **PASS** |
+| 2 | Lost Update (RMW Race) | threading-mutexes × increment/decrement | 362 → 567 | DOCUMENTED | **PASS** |
+| 3 | Stale-Cache Heisenbug | cache-invalidation × impure-functions | 1108 → 471 | DEFENSIBLE | **PASS** *(fixed 06-14)* |
+| 4 | Out-of-Order Async Completion | var/let/mut × async-io-misuse | 662 → 362, 696 | DOCUMENTED | **PASS (note)** |
+| 5 | Concurrent Modification During Iteration | for-loop × threading-mutexes | 820 → 362, 567 | DOCUMENTED | **PASS** |
+| 6 | Predictable ID Collision Under Load | time-money-entropy × race-conditions | 330, 340 → 362 | DEFENSIBLE | **PASS** |
+| 7 | Use-After-Free / Dangling Read | aliasing-mutable-defaults × pointer-mismanagement | 416 → 825 | NAMED | **PASS** |
+| 8 | Concurrent Singleton Mutation | this-mutation × cross-boundary-state-exposure | 567 → 488 | DOCUMENTED | **PASS** (exemplary) |
+| 9 | Pooled-Resource Heisenbug | impure-functions × resource-leaks | 1108 → 459 | DEFENSIBLE | **PASS** |
+| 10 | Temp-File Check-Then-Use Race 🆕 | file-network-access × time-money-entropy | 367 → 363, 59 | NAMED | **PASS** (exemplary) |
 
-### 2. Lost Update (Read-Modify-Write) — **PASS**
-- **Intersection ✓** threading-mutexes (shared) × increment/decrement (mutated) — the cleanest pairing in the set.
-- **CWE ✓** CWE-362 → CWE-567 "Unsynchronized Access to Shared Data in a Multithreaded Context." Both titles exact; 567 is a faithful name for the non-atomic `balance = balance + 1`.
-- **Code ✓** Classic three-step race; `with lock:` fix correct. Output caveat ("often < 1000") is honest about nondeterminism.
+## Scoreboard 2 · Runtime Errors — mutated × unstructured  (class CWEs 476/843/754)
 
-### 3. Stale-Cache Heisenbug — **PASS** *(was REVISE; fixed 2026-06-14)*
-- **Intersection ✓** cache-invalidation (shared) × impure-functions (mutated).
-- **Was:** base CWE-471 → compound CWE-349. CWE-349 "Acceptance of Extraneous Untrusted Data With Trusted Data" is about *trust-boundary mixing* (MITRE confirmed) — a stale cache has no untrusted-data ingestion, so it was the wrong named weakness (copied from the `cache-invalidation` child's family list without re-checking the scenario).
-- **Remediation applied:** the `cwes` block is now a clean chain matching the code — **base CWE-1108 "Excessive Reliance on Global Variables"** (the impure half: the result depends on the mutable global `TAX_RATE`) → **compound CWE-471 "Modification of Assumed-Immutable Data (MAID)"** (the named weakness the combination forms). CWE-349 dropped. The orphaned CWE-349 in the **Nondeterminism class-header CWE list** was likewise swapped to CWE-471 for consistency. (CWE-349 remains correctly used in #17.)
+| # | Example | Ingredients | base → compound | Strength | Verdict |
+|---|---|---|---|---|---|
+| 11 | Null / Undefined Dereference | improper-initialization × missing-undefined-returns | 457, 252 → 476, 690 | NAMED | **PASS** *(refined: +252/690)* |
+| 12 | Type Confusion / Bad Coercion | this-mutation × type-errors | 704 → 843 | DOCUMENTED | **PASS** |
+| 13 | Integration Crash on Unexpected Input | impure-functions × lack-of-input-validation | 20 → 248, 754 | DEFENSIBLE | **PASS** |
+| 14 | Off-by-One Index Crash | increment/decrement × index-out-of-bounds | 193 → 125, 787 | NAMED | **PASS** (textbook) |
+| 15 | Divide-by-Zero from Empty Aggregate | var/let/mut × divide-by-zero | 682 → 369, 754 | DEFENSIBLE | **PASS (note)** |
+| 16 | Stale API After Upgrade (AttributeError) | macro-mixin-misuse × version-library-mismanagement | 573 → 758, 754 | DEFENSIBLE (weak) | **PASS (note)** 🔧 |
+| 17 | Unbounded Input → Quadratic Blowup | for-loop × unconstrained-inputs | 1284 → 400, 407 | DOCUMENTED | **PASS** *(fixed: 789→407)* |
+| 18 | Shape-Drift AttributeError | improper-initialization × duck-typing-without-contracts | 908 → 754 | DEFENSIBLE | **PASS** *(fixed: 628→908)* |
+| 19 | NaN / Infinity Poisons a Consumer | time-money-entropy × lack-of-input-validation | 369 → 754 | DEFENSIBLE | **PASS** *(fixed: 1339→369)* |
 
-### 4. Out-of-Order Async Completion — **PASS (note)**
-- **Intersection ✓** var/let/mut (mutated) × async-io-misuse (shared).
-- **CWE ✓ (mostly)** CWE-696 "Incorrect Behavior Order" is an excellent fit for "last to resolve wins." 
-- **Code ✓** The sequence-token fix (`const seq = ++latest`) is the standard stale-response guard and is correct.
-- **Note:** the role split labels CWE-662 (Improper Synchronization) as *base* and CWE-362 (Race Condition) as *compound*. In MITRE's hierarchy CWE-362 is the broader/sibling concept and CWE-662 is the class it lives under, so "662 → 362" reads slightly backwards. Functionally fine; if you want strict primary→resultant ordering, make the missing synchronization the base and the observable race the resultant by demoting 662's prominence.
+## Scoreboard 3 · Data Corruption — shared × unstructured  (class CWEs 787/502/345)
 
-### 5. Concurrent Modification During Iteration — **PASS**
-- **Intersection ✓** for-loop-control-flow (mutated) × resource-contention (shared).
-- **CWE ✓** CWE-820 "Missing Synchronization" as base, CWE-362/567 as the resultant composite — coherent.
-- **Code ✓** `dict changed size during iteration` under a mutating thread is real; `list(sessions.items())` snapshot + locked mutation is the correct fix. Output honestly marks it "(sometimes)."
+| # | Example | Ingredients | base → compound | Strength | Verdict |
+|---|---|---|---|---|---|
+| 20 | Buffer Overflow (OOB Write) | pointer-mismanagement × index-out-of-bounds | 120 → 787 | NAMED | **PASS** *(refined: 787→120/787)* |
+| 21 | Untrusted Deserialization | file-network-access × insecure-deserialization | 345 → 502 | DOCUMENTED | **PASS** |
+| 22 | Schema Drift / Mixed-Version Write | file-network-access × unconstrained-inputs | 20 → 345 | DEFENSIBLE | **PASS** *(fixed 06-14)* |
+| 23 | Stored / Second-Order Injection | file-network-access × lack-of-input-validation | 20 → 89, 79 | DOCUMENTED | **PASS** |
+| 24 | Web Cache Poisoning | cache-invalidation × unconstrained-inputs | 348 → 349 | DEFENSIBLE | **PASS** *(refined: −444)* |
+| 25 | Encoding / Charset Corruption (Mojibake) | file-network-access × version-library-mismanagement | 176 → 172 | DOCUMENTED | **PASS** *(fixed 06-14)* |
+| 26 | Unframed Stream Corruption | async-io-misuse × unconstrained-inputs | 130 → 240 | DEFENSIBLE | **PASS (note)** |
+| 27 | Stack Smash via Unbounded Recursion | stack-overflow × unconstrained-inputs | 674 → 787 | DOCUMENTED | **PASS (note)** |
+| 28 | NaN Poisons a Shared Aggregate | divide-by-zero × threading-mutexes | 369 → 682 | DEFENSIBLE | **PASS (note)** |
+| 29 | Type-Confusion Memory Corruption 🆕 | type-errors × pointer-mismanagement | 843 → 119 | DOCUMENTED | **PASS** (strong) |
+| 30 | Torn Write / Lost-Update Corruption 🆕 | race-conditions × lack-of-input-validation | 366, **20** → 787 | DOCUMENTED (composite) | **PASS** *(fixed: +CWE-20)* |
+| 31 | Cross-Session Contamination 🆕 | cross-boundary-state-exposure × lack-of-input-validation | **20**, 567 → 488 | DOCUMENTED | **PASS** *(fixed: +CWE-20)* |
+| 32 | Unchecked Sentinel Corrupts a Shared Record 🆕 | missing-undefined-returns × file-network-access | 252 → 787 | DOCUMENTED | **PASS** (strong) |
 
-### 6. Predictable ID Collision Under Load — **PASS**
-- **Intersection ✓** time-money-entropy (mutated) × race-conditions (shared).
-- **CWE ✓** CWE-330 + CWE-340 (predictable IDs) as base, CWE-362 (race) as the compound that makes the collision *fire* under concurrency. Good layering.
-- **Code ✓** `int(time.time()*1000)` collides within a tick; `uuid4().hex` is the correct collision-resistant fix.
-- (Minor framing: the deepest harm is *uniqueness/collision* more than *cryptographic predictability*, but CWE-340 covers "Predictable Identifiers," so it stands.)
-
-### 7. Null / Undefined Dereference — **PASS (note)**
-- **Intersection ✓** improper-initialization (mutated) × missing-undefined-returns (unstructured).
-- **Code ✓** `findUser` falls off the end → `undefined.name` only for unknown ids; the truthy-guard fix is right.
-- **Note:** base CWE-457 "Use of Uninitialized Variable" is a loose label for "a function with a missing return path." MITRE publishes the *exact* chain for this scenario: **CWE-690 "Unchecked Return Value to NULL Pointer Dereference"** (CWE-252 → CWE-476, confirmed live). **Recommend** base = CWE-252/CWE-394 (missing/unexpected return) → compound = CWE-476, or cite CWE-690 directly. The current 457→476 still lands on the right resultant, just via a less precise primary.
-
-### 8. Type Confusion / Bad Coercion — **PASS**
-- **Intersection ✓** this-mutation (mutated) × type-errors (unstructured).
-- **CWE ✓** CWE-704 "Incorrect Type Conversion or Cast" → CWE-843 "Type Confusion" is a recognized chain; titles exact.
-- **Code ✓** `this.total` mutated number→string, then `.toFixed` throws in a different method — the "drift and crash live apart" point is well made. (Pedantically the assignment is a *re-type*, not a *cast*, but CWE-704 is the closest standard primary and the resultant 843 is exactly right.)
-
-### 9. Integration Crash on Unexpected Input — **PASS**
-- **Intersection ✓** impure-functions/external-read (mutated) × lack-of-input-validation (unstructured).
-- **CWE ✓** CWE-20 → CWE-248 (Uncaught Exception) + CWE-754 is a clean primary→resultant chain.
-- **Code ✓** `resp["profile"]["age"]` KeyError on a renamed field; "parse, don't trust" with a schema is the correct boundary fix.
-
-### 10. Off-by-One Index Crash — **PASS (textbook)**
-- **Intersection ✓** increment/decrement (mutated) × index-out-of-bounds (unstructured).
-- **CWE ✓** CWE-193 "Off-by-one" → CWE-125 (OOB Read) / CWE-787 (OOB Write) is *the* canonical MITRE chain; the cross-language note (Python `IndexError` vs C OOB) is accurate and valuable.
-- **Code ✓** `while i <= len(rows)` overshoots by one; `for row in rows` removes the hand-rolled index. Strongest entry in the class.
-
-### 11. Divide-by-Zero from Empty Aggregate — **PASS (note)**
-- **Intersection ✓** var/let/mut (mutated) × divide-by-zero (unstructured).
-- **CWE ✓** CWE-682 → CWE-369 + CWE-754.
-- **Note:** CWE-369 is a *child* of CWE-682 in MITRE, so the "682 (base) → 369 (compound)" ordering is parent→child rather than two distinct links. It still reads correctly ("the calculation error specializes into the named divide-by-zero"), but be aware it's a refinement, not a true two-weakness chain. The `var/let/mut` ingredient is also light (the `count` is just `len(values)`); the real mutated half is "an aggregate computed from variable-length input."
-
-### 12. Stale API After Upgrade — **PASS (note)**
-- **Intersection ✓** macro-mixin-misuse (mutated) × version-library-mismanagement (unstructured).
-- **Code ✓** Mixin calls `self.log_change()` removed in v3 → `AttributeError` only when that path runs post-deploy; `getattr(..., fallback)` is a reasonable seam.
-- **Note:** base CWE-477 "Use of Obsolete Function" is a loose fit — MITRE (confirmed live) scopes 477 to *deprecated-but-present* functions, not methods that were **removed/renamed**. CWE-758 "Reliance on … Unspecified Behavior" (the compound) actually carries the scenario better. **Recommend** swapping the base toward CWE-1104 (Use of Unmaintained Components) or CWE-758 as primary, or reframing as a dependency-contract break.
-
-### 13. Buffer Overflow (OOB Write) — **PASS (note)**
-- **Intersection ✓** pointer-mismanagement (shared) × index-out-of-bounds (unstructured).
-- **Code ✓** `strcpy(name, input)` into `char[16]`; `snprintf(..., sizeof name, ...)` is the correct bounded fix. The "corrupts the return address" output is accurate.
-- **Note:** roles are CWE-787 (OOB Write) *base* → CWE-119 (Memory Buffer restriction) *compound*, but CWE-119 is the **parent** of CWE-787, so the arrow points up the tree. The classic MITRE chain here is **CWE-120 "Buffer Copy without Checking Size" (the `strcpy`) → CWE-787**. Consider base = CWE-120 → compound = CWE-787 for a true primary→resultant.
-
-### 14. Untrusted Deserialization Across a Boundary — **PASS**
-- **Intersection ✓** file-network-access (shared) × insecure-deserialization (unstructured).
-- **CWE ✓** CWE-345 (Insufficient Verification of Data Authenticity) → CWE-502 (Deserialization of Untrusted Data) is a sound chain; titles exact.
-- **Code ✓** `pickle.loads(sock.recv(...))` is the textbook RCE-on-load; `json.loads` + `validate` is the correct mitigation.
-
-### 15. Schema Drift / Mixed-Version Write — **PASS** *(was REVISE; fixed 2026-06-14)*
-- **CWE ✓** CWE-20 → CWE-345 is fine, and the rolling-deploy cents-vs-dollars example is genuinely good.
-- **Was:** the structured `ingredients` said `file-network-access × unconstrained-inputs` but the inline code comment said `(version/library mismanagement x unconstrained inputs)` — a different, wrong pair (both unstructured, which would break the shared×unstructured intersection).
-- **Remediation applied:** the code comment is now `# (file/network access x unconstrained inputs)`, matching the (correct) `ingredients`. `version-library-mismanagement` stays out of the ingredients precisely because it is unstructured-family; the shared anchor remains `file-network-access`.
-
-### 16. Stored / Second-Order Injection — **PASS**
-- **Intersection ✓** file-network-access (shared, the store) × lack-of-input-validation (unstructured).
-- **CWE ✓** CWE-20 → CWE-89 (SQLi) + CWE-79 (XSS) captures both second-order vectors; the "written once, trusted forever" framing is exactly the stored-injection thesis.
-- **Code ✓** Parameterized insert + `escape_html` on output ("validate in, encode out") is the correct dual fix.
-
-### 17. Web Cache Poisoning — **PASS (note)**
-- **Intersection ✓** cache-invalidation (shared) × unconstrained-inputs (unstructured).
-- **CWE ✓** CWE-348 (Less Trusted Source) base + CWE-349 (Extraneous Untrusted Data) compound is a *correct* use of CWE-349 (unlike #3) — an unkeyed `X-Forwarded-Host` is precisely untrusted data riding the trusted cache key.
-- **Code ✓** Keying on `(path, vetted host)` is the right fix.
-- **Note:** the second base CWE-444 "HTTP Request/Response Smuggling" is tangential to the *shown* example (unkeyed-header poisoning, not desync smuggling). It's defensible as a sibling cache-poisoning vector, but the code only demonstrates the CWE-348/349 path; consider dropping CWE-444 or adding a smuggling sentence so the CWE list matches the sample.
-
-### 18. Encoding / Charset Corruption (Mojibake) — **PASS** *(was REVISE; fixed 2026-06-14)*
-- **Intersection ✓** file-network-access (shared) × version-library-mismanagement (unstructured) — and the "platform-default encoding changed across versions" hook is a real, well-known trap.
-- **Base CWE ✓** CWE-176 "Improper Handling of Unicode Encoding" fits the round-trip corruption well (kept).
-- **Was:** compound CWE-838 "Inappropriate Encoding for Output Context" + CWE-116 "Improper Encoding or Escaping of Output" — both **injection-prevention / output-context** weaknesses (MITRE confirmed: 838 is about HTML-attribute-vs-body encoding to stop XSS). The example is *charset round-trip corruption*, not output-context escaping — no downstream interpreter is tricked.
-- **Remediation applied:** the two output-context CWEs were replaced by a single accurate compound — **CWE-172 "Encoding Error"** ("does not properly encode or decode the data, resulting in unexpected values"), the exact mojibake symptom. (CWE-175 "Improper Handling of Mixed Encoding" was considered but, per MITRE, targets mixed encodings *within one input* — a looser fit than this write/read mismatch, so CWE-172 was chosen.)
+🆕 = new this pass · 🔧 = improvement recommended (details below).
 
 ---
 
-## Cross-cutting observations
+## Findings on the 5 new anchors + the 3 flagged
 
-1. **CWE titles are accurate.** Every CWE ID/title spot-checked matches MITRE verbatim (a few are intentionally shortened — e.g. CWE-89 → "SQL Injection", CWE-79 → "Cross-site Scripting (XSS)" — which is fine and consistent with the rest of the catalog). All URLs follow the correct `/data/definitions/NNN.html` form.
+### 10. Temp-File Check-Then-Use Race — **PASS (exemplary)**
+Predictable `/tmp/job-<clock>.tmp` name (entropy, from time-money-entropy) + existence-check-then-open
+gap (from file-network-access) → a planted symlink redirects the write. **NAMED chain confirmed live:**
+CWE-363 "Race Condition Enabling Link Following" is a *child* of CWE-367 (TOCTOU) and *CanPrecede*
+CWE-59 (Link Following). `mkstemp()` (O_EXCL + random name) is the correct fix. Best of the new set.
 
-2. **Intersection discipline is strong.** All 18 ingredient pairs correctly straddle the two claimed families. The one place this slipped is a *comment* (#15), not the structured data.
+### 29. Type-Confusion Memory Corruption — **PASS (strong)**
+A `union { long handle; char *ptr; }` reads an integer id and writes through it as a pointer →
+wild write. base CWE-843 (Type Confusion) → compound CWE-119 (memory-buffer restriction) is the
+recognized type-confusion→memory-corruption primitive. Clean intersection (type-errors × pointer-mismanagement).
 
-3. **Two recurring "role" quirks** (#4, #11, #13): occasionally the `compound` CWE is the *parent* of the `base` CWE in MITRE's tree rather than a downstream resultant. The prose meaning ("the named weakness the combination forms") still works, but if you want every entry to be a strict primary→resultant **chain**, pick the narrower weakness as base and the observable named weakness as compound (e.g. #13: CWE-120 → CWE-787).
+### 32. Unchecked Sentinel Corrupts a Shared Record — **PASS (strong)**
+`index_of()` returns `-1` unchecked, used as a `pwrite` offset → writes before the file start. base
+CWE-252 (Unchecked Return Value) → compound CWE-787 (OOB Write) is a documented unchecked-return→OOB
+chain, and the intent text deliberately mirrors the CWE-690 null-deref chain in #11 — nice symmetry.
 
-4. **CWE-349 was used twice with opposite correctness** — wrong in #3 (stale cache, no trust mixing) and right in #17 (cache poisoning, literal trust mixing). The #3 fix removed that inconsistency; CWE-349 now appears only where it belongs.
+### 30. Torn Write / Lost-Update Corruption — **PASS** *(was STRETCH; fixed)*
+The code has *two independent* defects: a data race (concurrent `memcpy`, no lock) **and** an
+unvalidated `off`/`n` that runs past `buf[256]`. **Verified:** CWE-366 does legitimately cover a
+two-thread shared-buffer race (its title is misleading). **But the compound CWE-787 (OOB write) is
+produced by the unchecked offset, not by the race** — so base CWE-366 alone → CWE-787 read as "the race
+causes the overflow," which is false (the lone STRETCH). **Fix applied:** added base
+`CWE-20 (from: lack-of-input-validation)`. Now it is an honest composite — CWE-366 explains the
+torn/lost update, CWE-20 → CWE-787 explains the overflow — and the existing prose already names both halves.
 
-5. **Edits — status:**
-   - ✅ **#15** *(applied)* — inline comment corrected to `file/network access × unconstrained inputs` to match `ingredients`.
-   - ✅ **#18** *(applied)* — compound CWE-838/CWE-116 replaced by CWE-172 "Encoding Error"; CWE-176 kept.
-   - ✅ **#3** *(applied)* — CWE-349 dropped; now base CWE-1108 → compound CWE-471 (and the Nondeterminism class header swapped CWE-349 → CWE-471).
-   - ⬜ **#7** *(open, minor)* — prefer CWE-690 (or CWE-252→CWE-476) over CWE-457 as the primary.
-   - ⬜ **#12** *(open, minor)* — move base off CWE-477 toward CWE-1104/CWE-758.
-   - ⬜ **#13 / #17** *(open, optional)* — tighten base/compound ordering (#13: CWE-120 → CWE-787) and trim CWE-444 (#17).
+### 31. Cross-Session Contamination — **PASS** *(was CWE-twin of #8; fixed)*
+A shared `Config` singleton's field is overwritten per-request and read by another request. base
+CWE-567 → compound CWE-488 is the documented corruption edge — but it was **CWE-identical to #8**
+(Concurrent Singleton Mutation) and its `lack-of-input-validation` ingredient was unrepresented (the fix
+validates `locale`, yet no CWE-20 appeared). **Fix applied:** added base `CWE-20 (from: lack-of-input-validation)`,
+so it now reads CWE-20 + CWE-567 → CWE-488 — honoring the ingredient and differentiating it from #8.
 
-**Overall:** the compound-defects catalog is technically sound and pedagogically coherent. Every entry's *thesis* (which two families collide, and the symptom that results) holds, and every code sample demonstrates its bug with a correct fix. The three correctness fixes (#3, #15, #18) are applied and verified via a clean `build.py` run; the remaining items are minor, optional refinements.
+### 16. Stale API After Upgrade — **PASS (note) 🔧 weak anchor**
+base was CWE-477 (wrong — obsolete-but-present), now **CWE-573 "Improper Following of Specification by
+Caller."** **Verified:** CWE-573 is *Class*-level and MITRE marks it **ALLOWED-WITH-REVIEW** ("examine
+children for a better fit"). It is DEFENSIBLE but the weakest anchor in the catalog — the mixin calls a
+method an upgrade *removed*, which no MITRE child (CWE-253/628/475) captures cleanly either. → **Backlog:**
+either accept CWE-573 as the honest best-available, or re-base toward the version-mismanagement theme
+(e.g. CWE-1104) and let CWE-758 (unspecified behavior) carry the resultant. Leave as-is for now; documented.
+
+---
+
+## Reflection on the stateful-defect CWE sets (variety & accuracy)
+
+Dumped per-child CWE sets are mostly solid and on-theme. Two observations worth acting on:
+
+1. **`this-mutation` and `aliasing-mutable-defaults` carry the *identical* CWE triple {374, 375, 471}.**
+   They are CWE-indistinguishable, which is why #8/#12 (this-mutation) and #7 (aliasing) can feel
+   CWE-samey. → Differentiate `this-mutation` with a state-mutation-specific CWE (candidate: **CWE-1109**
+   "Use of Same Variable for Multiple Purposes" is *not* it; better is leaning on **CWE-471** alone +
+   adding a method-receiver/identity weakness). Low priority, but it's the clearest stateful-set redundancy.
+2. **`cache-invalidation` has the thinnest set {349, 524}**, and CWE-349 (extraneous untrusted data) is an
+   awkward fit for *staleness* (the actual cache-invalidation problem has no precise CWE). Defensible, but
+   the thinnest/most-stretched stateful set. The new **`cross-boundary-state-exposure` {488, 543, 567, 1108}**
+   is, by contrast, the strongest-curated set added — CWE-543 (singleton-without-sync) is exactly on theme.
+
+Everything else (race-conditions 362/367/366; pointer-mismanagement 476/416/415/787; file-network-access
+22/367/73; the unstructured sets) is accurate and varied.
+
+## Variety & novelty across the compound examples
+
+- **Data-corruption leans heavily on memory-safety in C.** Of 13 examples, **#20, #27, #29, #30, #32 all
+  resolve to CWE-787/119 and are all C** — ~38% of the class is "unvalidated thing → out-of-bounds write."
+  The more *distinctive* data-corruption stories (logical/persistent: schema drift #22, mojibake #25,
+  stored injection #23, cache poisoning #24) are under-weighted. → Future data-corruption additions should
+  avoid another "→ CWE-787 in C"; mine persistent/logical corruption instead.
+- **Runtime-errors leans on CWE-754 as a catch-all compound** (#13, #15, #18, #19 — four of nine end in
+  "Improper Check for Exceptional Conditions"). Honest, but slightly monotone; varied compounds (e.g. a
+  distinct CWE-617 assertion, CWE-617/CWE-241 type cases) would add color.
+- **CWE-567→488 appears twice** (#8, #31) and **CWE-787 appears six times** as a compound. Some reuse is
+  structural (cross-boundary-state-exposure must feed two smells), but #31's fix above reduces it.
+
+## Coverage gaps (from `coverage_report()` — 6 remaining, 8/9 each)
+
+| Family → smell | Unused stateful child |
+|---|---|
+| mutated → nondeterminism | **macro-mixin-misuse** |
+| mutated → runtime-errors | **aliasing-mutable-defaults** |
+| shared → nondeterminism | **stack-overflow** |
+| shared → data-corruption | **resource-leaks** |
+| unstructured → runtime-errors | **insecure-deserialization** |
+| unstructured → data-corruption | **duck-typing-without-contracts** |
+
+Each is an honest authoring opportunity (per the rule: author a strong-anchored example, never tag a
+child exempt). Quick strength reads for the gaps:
+- **insecure-deserialization → runtime-errors**: strong — CWE-502 deserialization triggering CWE-843/CWE-704 on a malformed-but-not-malicious payload is a clean NAMED-ish chain.
+- **duck-typing-without-contracts → data-corruption**: a wrong-shape object persisted across a boundary (CWE-843/CWE-20 → CWE-345) — defensible.
+- **stack-overflow → nondeterminism**: weakest — stack depth is deterministic per input; an *intermittent* stack-overflow needs a concurrency/entropy angle to be honest. Candidate for "no honest example; document as backlog."
+- **resource-leaks → data-corruption**, **macro-mixin → nondeterminism**, **aliasing → runtime-errors**: all authorable with DEFENSIBLE+ anchors.
+
+---
+
+## Prioritized improvement backlog
+
+1. ✅ **#30 (STRETCH → composite) — applied:** added `CWE-20 (from: lack-of-input-validation)` so CWE-787 has an honest cause.
+2. ✅ **#31 (CWE-twin) — applied:** added `CWE-20 (from: lack-of-input-validation)` to differentiate from #8 and honor the ingredient.
+3. ✅ **Report/data hygiene:** smell counts corrected to 10/9/13 (not 9/9/14).
+4. ⬜ **Close coverage gaps** with strong anchors first (insecure-deserialization→runtime, duck-typing→data-corruption); document `stack-overflow→nondeterminism` as backlog if no honest chain exists.
+5. ⬜ **Stateful-set variety:** differentiate `this-mutation` from `aliasing-mutable-defaults` (identical CWE triple); revisit the thin `cache-invalidation` set.
+6. ⬜ **#16 weak anchor:** revisit CWE-573 (class-level, allowed-with-review) when a better version-mismatch base surfaces.
+7. ⬜ **Class-level variety:** steer new data-corruption examples away from C/CWE-787; reduce runtime reliance on CWE-754.
+
+---
+
+## Remediation status
+
+- **This pass — applied by the symmetry edits:** `resource-contention` → `cross-boundary-state-exposure`;
+  +5 anchors (#10, #29, #30, #31, #32); refinements #11 (+CWE-252/690), #16 (477→573), #20 (787→120/787),
+  #24 (−CWE-444); `slug`/`from` backfilled to all 32. Build clean (`cd src && python build.py`).
+- **This pass — applied by this audit:** #30 +CWE-20 base (removes the lone STRETCH); #31 +CWE-20 base (differentiates from #8). Rebuilt clean (785 files).
+- **Earlier passes (applied):** 06-14 #3/#21/#24-mojibake; 06-15 #17/#18/#19 (789→407, 628→908, 1339→369).
+
+**Overall:** the 32-example catalog is technically rigorous and now structurally uniform. The replacement
+of `resource-contention` with `cross-boundary-state-exposure` was the right call (DoS-only → a real
+corruption edge). The single stretch (#30) and the CWE-twin (#31) are both fixable with one honest CWE-20
+addition each; everything else is PASS, with the strongest new anchors being #10, #29, and #32.
+
+---
+
+## Remediation status — category-framework pass (2026-06-15)
+
+- **Category tier:** each smell child gained a `categories` list (slug/name/core); every example
+  tagged with its `category`; `build.py subdefect_page` groups examples under category sub-headers
+  (`.excat` / `.excat__title` / `.excat__core`, styled in `style.css`).
+- **`resource-contention` re-added** as a shared-state child (CWE-400/770/833) + restored
+  `contention()` animation (coexists with `cross-boundary-state-exposure`; 10 shared children). It is
+  honestly featured only in nondeterminism (Pool-Exhaustion Heisenbug); its data-corruption story
+  stays a documented backlog, *not* a stretched composite.
+- **7 new examples** (distinct sub-CWE chains): Pool-Exhaustion Heisenbug (ND/Temporal, 400→362),
+  Lazy-Init Visibility Race (ND/Observational, **543→609** Double-Checked Locking — verified live),
+  Hash-Seed Serialization Divergence (ND/Entropic, 758→340), Aliased-Default Type Confusion
+  (RT/Structural, 471→843), Deserialized Type Confusion (RT/Architectural, 502→843/704), Config/Env
+  Drift Crash (RT/Architectural, 573→248/754), Lossy Coercion Poisons a Ledger (DC/Semantic, 704→682).
+  Closed the `aliasing→runtime` and `insecure-deser→runtime` coverage gaps.
+- **Verified:** clean build (858 files); each smell hub renders its three category sub-headers with
+  ≥4 examples (ND 5/4/4, RT 4/4/4, DC 5/4/5); both `resource-contention.json` and
+  `cross-boundary-state-exposure.json` animations present; CWE-609 renders.
+
+---
+
+## Remediation status — category round-out pass (2026-06-15)
+
+Rounded all 9 categories to **exactly 5** (39 → **45**; smells 15/15/15). **6 new examples**, each a
+distinct MITRE-verified base→compound chain, authored to **balance ingredient load** — leaning on the
+under-used children and never touching the over-used five:
+
+| Category | Example | base→compound | strength |
+|---|---|---|---|
+| Computational Exhaustion | Integer Overflow Sizes a Buffer | **CWE-190 → CWE-680/787** | NAMED (CWE-680 named chain) |
+| Observational Staleness | Stale Read From a Lagging Replica | CWE-662 → CWE-821 | DOCUMENTED |
+| Entropic Divergence | Dispatch-Order Divergence | CWE-696 → CWE-758 | DOCUMENTED |
+| Architectural Drift | Schema-Drift on Load | CWE-502 → CWE-915 | DOCUMENTED |
+| Structural Invalidation | Unexpected-Type Element | CWE-1287 → CWE-241 | DEFENSIBLE |
+| Semantic Corruption | Signed/Unsigned Poisons Aggregate | CWE-195 → CWE-682 | DOCUMENTED |
+
+- **Ingredient balance (verified):** the over-used five — impure-functions (5), threading-mutexes (5),
+  file-network-access (6), lack-of-input-validation (5), unconstrained-inputs (5) — are **unchanged**.
+  Promoted under-used: macro-mixin-misuse 1→3, async-io-misuse 2→4, resource-contention 1→2,
+  duck-typing 1→2, insecure-deserialization 2→3 (type-errors 4→5 is the one conscious exception — it
+  owns the signedness CWEs).
+- **Coverage:** this also closed `macro-mixin→nondeterminism` (Dispatch-Order) and
+  `resource-contention→data-corruption` (Signedness). Remaining honest backlog: stack-overflow→nondet,
+  resource-leaks→data-corruption, duck-typing→data-corruption.
+- **Verified:** clean build (912 files); all 9 categories render exactly 5 examples; the 6 new CWE
+  chains (680/821/696/915/241/195) render on their pages.
+
+---
+
+## Two-base composition pass — 2026-06-15
+
+**Requirement:** every compound must list **two base CWEs — one drawn from each stateful ingredient —
+composing into the compound**, made clear in the display.
+
+**Display:** already satisfied. `build.py:recipe_html()` groups base CWEs by their `from` ingredient and
+renders `IngredientA [baseCWE] × IngredientB [baseCWE] → compound`. Once each example carries one base
+per ingredient, the two-base composition shows automatically — verified on the rendered pages. No
+rendering change was needed.
+
+**Starting state:** only **3/45** examples had two bases (one per ingredient); the other 42 carried a
+single base, so one ingredient contributed nothing.
+
+**Applied (now 27/45 honestly two-based):**
+- **22 honest second-bases added**, each pulled from the *missing ingredient's own CWE set* (provenance
+  guaranteed): e.g. CWE-665←improper-initialization (#1), CWE-471←this-mutation/aliasing (#7/8/17/26/29),
+  CWE-129←index-out-of-bounds (#19/28), CWE-667←threading-mutexes (#12, the 543+667→609 DCL composite),
+  CWE-330←time-money-entropy (#10), CWE-834←for-loop (#22), CWE-704←type-errors (#25),
+  CWE-787←pointer-mismanagement (#40), CWE-400←unconstrained-inputs (#37/38), CWE-913←insecure-deser (#32).
+- **#6 Predictable-ID restructured** to one base per ingredient: CWE-330 (entropy) + CWE-366 (race) →
+  compound CWE-340/362 (was two bases both from entropy).
+- **Stateful-set enrichment:** `impure-functions` **+= CWE-1108** (Excessive Reliance on Global Variables) —
+  on-theme for hidden global/external state — which honestly two-bases #18 and #27.
+- **Provenance fixes** (base CWEs that weren't members of their `from` ingredient): #21/#27 CWE-573 →
+  **CWE-1104** (a real version-library-mismanagement member); #24 CWE-369 → **CWE-682** (a real
+  time-money-entropy member).
+
+**Honest backlog — 18 examples that cannot be two-based without a CWE stretch.** Per
+[[defect-taxonomy-symmetry-rule]] these are left single-based and documented, *not* forced. Grouped by
+the under-powered stateful set that blocks them:
+
+| Blocking stateful set (gap) | Examples |
+|---|---|
+| `cache-invalidation` {349,524} — **no staleness CWE** | #3 stale-cache, #13 hash-order, #35 web-cache-poisoning |
+| `macro-mixin-misuse` {783,682} — **no metaprogramming/dispatch CWE** | #15 dispatch-order, #21 stale-api, #30 schema-drift-on-load |
+| `file-network-access` {22,367,73} — **path-only, no shared-store CWE** | #33 schema-drift, #34 stored-injection, #43 unchecked-sentinel |
+| `threading-mutexes` {667,833,820} — **no "shared-poison" CWE** (locked, no sync bug) | #39 nan-aggregate, #44 lossy-ledger |
+| `increment-decrement` (overflow-only) / `for-loop` / `var-let-mut` / `time-money-entropy` / `resource-contention` / `version-library-mismanagement` — ingredient contributes no distinct weakness to this compound | #2 lost-update, #5 concurrent-mod, #20 divide-by-zero-empty, #11 pool-exhaustion, #45 signedness, #36 mojibake |
+
+**The meaningful improvement this surfaces:** the backlog is not a labeling problem — it shows which
+stateful defects' CWE sets are **too narrow to reach the compounds they feed**. The honest fix is to
+*enrich those sets with on-theme MITRE weaknesses* (a recognized staleness CWE for cache-invalidation; a
+cooperative-method/MRO weakness for macro-mixin-misuse; a persistence-boundary weakness for
+file-network-access), then two-base the dependent examples. Until such an honest CWE exists, the entry
+stays single-based — rigor over symmetry.
+
+**Verified:** clean build (912 files); two-base extraction = **27/45**; rendered recipe blocks show
+`A[cwe] × B[cwe] → compound`; source changes limited to `src/content.py` (+ this report).

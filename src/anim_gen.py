@@ -458,6 +458,23 @@ def race():
     return _comp("race-conditions", layers)
 
 
+def cross_boundary():
+    """A value parked on one actor's side bleeds across the boundary into another."""
+    layers = [_kicker(1, "WRONG  SESSION")]
+    # the boundary the per-actor state is never supposed to cross
+    layers.append(_rect(5, (W / 2, 150), [4, 92], RED_DEEP, roundness=2, name="boundary"))
+    # two actors, one either side of the boundary
+    layers.append(_text(10, _doc("A", 34, RED_SOFT), (62, 100), name="a"))
+    layers.append(_text(11, _doc("B", 34, RED_SOFT), (178, 100), name="b"))
+    # A's state leaks across to B, then the loop resets
+    pos = _prop([(0, [62, 150, 0]), (10, [62, 150, 0]), (44, [178, 150, 0]),
+                 (66, [178, 150, 0]), (74, [62, 150, 0]), (OP, [62, 150, 0])], spatial=True)
+    op = _prop([(0, 100), (44, 100), (66, 100), (67, 0), (73, 0), (74, 100), (OP, 100)])
+    layers.append(_text(20, _doc("state", 28, RED, tracking=6), (62, 150),
+                        position=pos, opacity=op, name="state"))
+    return _comp("cross-boundary-state-exposure", layers)
+
+
 def contention():
     """RESOURCE / CONTENTION stacked; the shared pool depletes and refills."""
     layers = [_kicker(1, "THE COMMONS")]
@@ -1059,6 +1076,7 @@ TREATMENTS = {
     "runtime-integration-flaws": runtime_integration,
     # shared-state causes
     "race-conditions": race,
+    "cross-boundary-state-exposure": cross_boundary,
     "resource-contention": contention,
     "stack-overflow": stack_of,
     "async-io-misuse": async_drop,

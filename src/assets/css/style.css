@@ -457,7 +457,9 @@ img,svg { max-width: 100%; display: block; }
   background: color-mix(in srgb, var(--accent) 6%, var(--paper-raised)); }
 .recipe__lbl { font-family: var(--mono); font-size: .68rem; letter-spacing: .08em;
   text-transform: uppercase; color: var(--accent-deep); }
-.recipe__pair { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.recipe__pair { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .5rem .7rem; }
+/* each ingredient + the base CWE chips it carries travel together */
+.recipe__group { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
 .recipe__ing { font-family: var(--display); font-weight: 600; font-size: .9rem;
   color: var(--ck, var(--ink)); text-decoration: none;
   border-bottom: 2px solid color-mix(in srgb, var(--ck, var(--accent)) 45%, transparent); }
@@ -466,9 +468,15 @@ img,svg { max-width: 100%; display: block; }
 .recipe__ing--unstructured { --ck: var(--unstructured-deep); }
 .recipe__ing--shared       { --ck: var(--shared-deep); }
 .recipe__ing--common       { --ck: var(--common-deep); }
+.recipe__ing-cwes { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .3rem; }
+/* base chips are tinted by their originating bug's family, not the page accent */
+.recipe__ing-cwes .recipe__cwe { color: var(--ck, var(--accent-deep));
+  border-color: color-mix(in srgb, var(--ck, var(--accent)) 32%, var(--line));
+  background: color-mix(in srgb, var(--ck, var(--accent)) 8%, transparent); }
+.recipe__ing-cwes .recipe__cwe:hover { border-color: var(--ck, var(--accent)); }
 .recipe__x { font-family: var(--mono); color: var(--text-faint); font-weight: 700; }
-.recipe__cwes { display: inline-flex; flex-wrap: wrap; align-items: center;
-  gap: .35rem .5rem; margin-left: auto; }
+.recipe__cwes { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .35rem .5rem; }
+.recipe__cwe-short { opacity: .7; font-weight: 500; }
 .recipe__cwe-grp { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .3rem; }
 .recipe__cwe-lbl { font-family: var(--mono); font-size: .6rem; letter-spacing: .07em;
   text-transform: uppercase; color: var(--text-faint); }
@@ -564,6 +572,65 @@ a:focus-visible, button:focus-visible, select:focus-visible, .lang-tab:focus-vis
 @media (max-width: 900px) { .subgrid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 640px) { .subgrid { grid-template-columns: 1fr; } }
 
+/* named failure-vector category sub-headers on a compound smell hub */
+.excat { margin-top: 1.6rem; }
+.excat:first-child { margin-top: .2rem; }
+.excat__title { font-family: var(--display); font-weight: 600; font-size: 1.05rem;
+  letter-spacing: .01em; color: var(--accent-deep); margin: 0; }
+.excat__core { font-size: .92rem; color: var(--text-soft); margin: .15rem 0 .2rem;
+  border-left: 2px solid var(--accent); padding-left: .6rem; }
+
+/* three category columns side by side, each stacking its worked-example cards */
+.excat-cols { display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1.6rem 1.25rem; align-items: start; }
+.excat-cols .excat { margin-top: 0; }
+.excat-cols .exgrid { grid-template-columns: 1fr; }
+.excat-cols .excard { padding: 1.1rem 1.15rem 1rem; }
+
+/* grid of worked-example cards on a compound smell hub */
+.exgrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: .4rem; }
+.excard { position: relative; display: flex; flex-direction: column; gap: .55rem;
+  background: var(--paper-raised); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 1.3rem 1.3rem 1.15rem; overflow: hidden;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s; }
+.excard::before { /* smell-accent spine */
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--accent); }
+.excard:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(20,28,40,.12);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.excard__title { font-family: var(--display); font-weight: 600; font-size: 1.1rem;
+  letter-spacing: -.01em; line-height: 1.25; color: var(--ink); text-decoration: none; }
+.excard__title:hover { color: var(--accent-deep); }
+.excard__intro { color: var(--text-soft); font-size: .9rem; }
+.excard .recipe { margin: .1rem 0 .2rem; }
+.excard .card__link { color: var(--accent-deep); margin-top: auto; }
+.excard .card__link svg { width: 15px; height: 15px; transition: transform .15s; }
+.excard:hover .card__link svg { transform: translateX(3px); }
+@media (max-width: 960px) {  /* tablet: stack the category columns, cards go 2-up */
+  .excat-cols { grid-template-columns: 1fr; gap: 1.6rem; }
+  .excat-cols .excat { margin-top: 1.6rem; }
+  .excat-cols .excat:first-child { margin-top: 0; }
+  .excat-cols .exgrid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 720px) { .exgrid, .excat-cols .exgrid { grid-template-columns: 1fr; } }
+
+/* "where this compounds" — from a stateful defect up to the compound smells it
+   feeds; one card per smell, tab-colored by that smell (--c spine, --cd text) */
+.compounds-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: .4rem; }
+.compounds-card { position: relative; background: var(--paper-raised);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 1.1rem 1.2rem 1rem 1.5rem; overflow: hidden; }
+.compounds-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 4px; background: var(--c); }
+.compounds-card__head { display: inline-block; font-family: var(--display); font-weight: 600;
+  font-size: 1.05rem; margin-bottom: .55rem; color: var(--ink); text-decoration: none; }
+.compounds-card__head:hover { color: var(--cd); }
+.compounds-card__list { list-style: none; display: flex; flex-direction: column; gap: .45rem; }
+.compounds-card__list a { color: var(--ink); font-weight: 500; text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--cd) 40%, transparent); }
+.compounds-card__list a:hover { border-bottom-color: var(--cd); color: var(--cd); }
+.compounds-card__x { color: var(--text-soft); font-size: .82rem; font-family: var(--mono); }
+@media (max-width: 720px) { .compounds-grid { grid-template-columns: 1fr; } }
+
 /* ============================================================ RTL (Arabic)
    Additive only — flips direction-sensitive layout for dir="rtl" pages while
    keeping code blocks left-to-right. No existing LTR rule is modified. */
@@ -578,7 +645,9 @@ a:focus-visible, button:focus-visible, select:focus-visible, .lang-tab:focus-vis
 
 /* category spines: left:0 -> right:0 */
 [dir="rtl"] .card::before,
-[dir="rtl"] .subcard::before { left: auto; right: 0; }
+[dir="rtl"] .subcard::before,
+[dir="rtl"] .excard::before,
+[dir="rtl"] .compounds-card::before { left: auto; right: 0; }
 
 /* left-bordered callouts -> right-bordered */
 [dir="rtl"] .dhero__essence,
