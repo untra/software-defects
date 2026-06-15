@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dependency Issues (SCA) — Common Software Defects</title>
+<meta name="description" content="A field guide to the four families of stateful software defect: mutated, unstructured, shared, and common.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/code-highlight.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="/en/"><svg class="glyph" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 12 3 7M12 12l9-5M12 12v10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" opacity=".5"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/></svg><span>Software&nbsp;Defects<small>field guide to stateful defects</small></span></a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav-links">
+        <a class="nav--mutated" href="/en/mutated-state/">Mutated</a>
+        <a class="nav--unstructured" href="/en/unstructured-state/">Unstructured</a>
+        <a class="nav--shared" href="/en/shared-state/">Shared</a>
+        <a class="nav--common" href="/en/common-defects/" aria-current="page">Common</a>
+        <select class="lang-select" aria-label="Language" onchange="location.href=this.value"><option value="/en/common-defects/" selected>EN</option><option value="/es/common-defects/">ES</option><option value="/fr/common-defects/">FR</option><option value="/de/common-defects/">DE</option><option value="/pt-br/common-defects/">PT</option><option value="/ja/common-defects/">JA</option><option value="/zh/common-defects/">ZH</option><option value="/ko/common-defects/">KO</option><option value="/ar/common-defects/">AR</option></select>
+    </nav>
+  </div>
+</header>
+<main>
+<section class="console dhero" style="--accent:#94A3B8;--accent-soft:#CBD5E1;--accent-deep:#64748B;">
+  <div class="wrap dhero__grid">
+    <div>
+      <nav class="dcrumb tag"><a href="/en/common-defects/">Common Software Defects</a><span aria-hidden="true">/</span><span>Dependency Issues (SCA)</span></nav>
+      <p class="tag dhero__kicker">unpinned, unscanned, and unreproducible supply chains</p>
+      <h1 class="dhero__title">Dependency Issues (SCA)</h1>
+      <p class="dhero__desc">Software Composition Analysis is about the code you depend on: unpinned versions make builds non-reproducible, missing lockfiles let the tree drift, and unscanned dependencies carry known CVEs straight into production.</p>
+      <p class="dhero__essence">Code you didn&#x27;t write still ships in your build -- pin it, lock it, and scan it.</p>
+    </div>
+    <div class="dhero__art"><span class="lottie-glyph" data-src="/assets/animations/dependency-issues.json"></span></div>
+  </div>
+</section><div class="section defect-body" style="--accent:#94A3B8;--accent-soft:#CBD5E1;--accent-deep:#64748B;"><div class="wrap"><section class="block">
+  <div class="block__head"><span class="num">01</span><span class="tag">in the wild</span><h2>In the wild</h2></div>
+  
+  <div class="example"><h3 class="example__title">Pin the Tree</h3><p class="example__intro">Caret ranges float to whatever published last; a committed lockfile makes installs byte-identical.</p><div class="code-viewer" data-cv="cv1336134"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="javascript" data-target="cv1336134-javascript" role="tab" aria-selected="true" type="button">JavaScript</button></div></div><div class="code-panel is-active" id="cv1336134-javascript" data-lang="javascript"><div class="code-head"><span class="fname">example.js</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// SMELL: caret ranges float to whatever published last</span>
+<span class="s2">&quot;dependencies&quot;</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;left-pad&quot;</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;^1.0.0&quot;</span><span class="w"> </span><span class="p">}</span><span class="w">   </span><span class="c1">// 1.0.0? 1.9.3? who knows</span>
+
+<span class="c1">// RIGHT: commit the lockfile so installs are byte-identical</span>
+<span class="c1">// package-lock.json / yarn.lock pins the entire tree.</span>
+<span class="c1">// CI: `npm ci` (not `npm install`) installs exactly the lock.</span></code></pre><div class="code-explain">^1.0.0 resolves differently over time. A committed lockfile makes every machine install the same tree -- the cure for &#x27;works on my machine&#x27;.</div><div class="code-out"><span class="tag">// observed</span><pre>no lock: two devs, two dependency trees
+npm ci:  identical install everywhere</pre></div></div></div></div>
+<div class="example"><h3 class="example__title">Pin the Versions (and Scan Them)</h3><p class="example__intro">Unpinned requirements drift on every install; pinning freezes the build and lets a scanner check for CVEs.</p><div class="code-viewer" data-cv="cv3213789"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="python" data-target="cv3213789-python" role="tab" aria-selected="true" type="button">Python</button></div></div><div class="code-panel is-active" id="cv3213789-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1"># SMELL: unpinned requirements drift on every install</span>
+<span class="n">requests</span>
+<span class="n">flask</span>
+
+<span class="c1"># RIGHT: pin exact versions (and hashes), then scan them</span>
+<span class="n">requests</span><span class="o">==</span><span class="mf">2.32.3</span>   <span class="c1"># produced by pip-compile (pip-tools)</span>
+<span class="n">flask</span><span class="o">==</span><span class="mf">3.0.3</span>
+<span class="c1"># CI: `pip-audit` flags pinned versions with known CVEs</span></code></pre><div class="code-explain">Pinning exact versions freezes the build; an SCA tool (pip-audit, Dependabot) then checks those pins against vulnerability databases.</div><div class="code-out"><span class="tag">// observed</span><pre>unpinned: surprise upgrade breaks prod at 2am
+pinned:   reproducible -- and auditable for CVEs</pre></div></div></div></div>
+<div class="example"><h3 class="example__title">Lock the Infrastructure</h3><p class="example__intro">Infrastructure dependencies drift too; a committed provider lock keeps applies deterministic.</p><div class="code-viewer" data-cv="cv7819069"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="hcl" data-target="cv7819069-hcl" role="tab" aria-selected="true" type="button">HCL</button></div></div><div class="code-panel is-active" id="cv7819069-hcl" data-lang="hcl"><div class="code-head"><span class="fname">example.tf</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1"># Terraform: same lesson, infrastructure edition</span>
+<span class="c1"># SMELL: unconstrained provider -&gt; drift between applies</span>
+<span class="nb">terraform</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nb">required_providers</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">aws</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1"># RIGHT: pin the provider and commit .terraform.lock.hcl</span>
+<span class="nb">terraform</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nb">required_providers</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nb">aws</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="na">source</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;hashicorp/aws&quot;, version = &quot;~&gt; 5.40&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span></code></pre><div class="code-explain">Infrastructure dependencies drift too. A committed provider lock keeps terraform apply reproducible across the team.</div><div class="code-out"><span class="tag">// observed</span><pre>unpinned: provider upgrades silently change infra
+locked:   plan/apply are deterministic</pre></div></div></div></div>
+</section><section class="block">
+  <div class="block__head"><span class="num">02</span><span class="tag">weakness catalog</span><h2>Mapped weaknesses (CWE)</h2></div>
+  <p class="block__intro">On its own, this defect is catalogued by MITRE as one or more of these weaknesses. The exploitable vulnerability usually appears only when it chains or combines with another.</p>
+  <ul class="phil-list"><li><a href="https://cwe.mitre.org/data/definitions/1395.html" target="_blank" rel="noopener"><b>CWE-1395</b> &mdash; Dependency on Vulnerable Third-Party Component</a></li><li><a href="https://cwe.mitre.org/data/definitions/1104.html" target="_blank" rel="noopener"><b>CWE-1104</b> &mdash; Use of Unmaintained Third Party Components</a></li><li><a href="https://cwe.mitre.org/data/definitions/937.html" target="_blank" rel="noopener"><b>CWE-937</b> &mdash; Using Components with Known Vulnerabilities</a></li></ul>
+</section></div></div><div class="section" style="--accent:#94A3B8;--accent-soft:#CBD5E1;--accent-deep:#64748B;;padding-top:0"><div class="wrap"><nav class="xnav"><a class="xnav--common" href="/en/common-defects/error-handling/"><span class="tag">Previous</span><b>Poor Error Handling</b></a><a class="xnav--common" href="/en/common-defects/"><span class="tag">All defects</span><b>Common Software Defects</b></a><a class="xnav--common" href="/en/common-defects/injection-taint-flaws/"><span class="tag">Next</span><b>Injection &amp; Taint Flaws (SAST)</b></a></nav></div></div>
+</main>
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <p>An interactive field guide built from talks by <em>Samuel&nbsp;Volin</em>. Four families of stateful defect, the smells that betray them, and the philosophies that defuse them.</p>
+    <nav class="flinks"><a href="/en/mutated-state/">Mutated</a> <a href="/en/unstructured-state/">Unstructured</a> <a href="/en/shared-state/">Shared</a> <a href="/en/common-defects/">Common</a></nav>
+  </div>
+</footer>
+<script src="/assets/js/app.js" defer></script>
+</body>
+</html>

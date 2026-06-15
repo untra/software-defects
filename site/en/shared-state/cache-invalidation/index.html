@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cache Invalidation — Bugs of Shared State</title>
+<meta name="description" content="A field guide to the four families of stateful software defect: mutated, unstructured, shared, and common.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/code-highlight.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="/en/"><svg class="glyph" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 12 3 7M12 12l9-5M12 12v10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" opacity=".5"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/></svg><span>Software&nbsp;Defects<small>field guide to stateful defects</small></span></a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav-links">
+        <a class="nav--mutated" href="/en/mutated-state/">Mutated</a>
+        <a class="nav--unstructured" href="/en/unstructured-state/">Unstructured</a>
+        <a class="nav--shared" href="/en/shared-state/" aria-current="page">Shared</a>
+        <a class="nav--common" href="/en/common-defects/">Common</a>
+        <select class="lang-select" aria-label="Language" onchange="location.href=this.value"><option value="/en/shared-state/" selected>EN</option><option value="/es/shared-state/">ES</option><option value="/fr/shared-state/">FR</option><option value="/de/shared-state/">DE</option><option value="/pt-br/shared-state/">PT</option><option value="/ja/shared-state/">JA</option><option value="/zh/shared-state/">ZH</option><option value="/ko/shared-state/">KO</option><option value="/ar/shared-state/">AR</option></select>
+    </nav>
+  </div>
+</header>
+<main>
+<section class="console dhero" style="--accent:#DD3333;--accent-soft:#F87171;--accent-deep:#B91C1C;">
+  <div class="wrap dhero__grid">
+    <div>
+      <nav class="dcrumb tag"><a href="/en/shared-state/">Bugs of Shared State</a><span aria-hidden="true">/</span><span>Cache Invalidation</span></nav>
+      <p class="tag dhero__kicker">stale data, served with confidence</p>
+      <h1 class="dhero__title">Cache Invalidation</h1>
+      <p class="dhero__desc">Invalidation isn&#x27;t a footnote — it&#x27;s business logic, a work order that takes a process and happens now. One of the two hard problems.</p>
+      <p class="dhero__essence">A write that does not invalidate is a bug waiting for the next read.</p>
+    </div>
+    <div class="dhero__art"><span class="lottie-glyph" data-src="/assets/animations/cache-invalidation.json"></span></div>
+  </div>
+</section><div class="section defect-body" style="--accent:#DD3333;--accent-soft:#F87171;--accent-deep:#B91C1C;"><div class="wrap"><section class="block">
+  <div class="block__head"><span class="num">01</span><span class="tag">in the wild</span><h2>In the wild</h2></div>
+  
+  <div class="example"><h3 class="example__title">Stale Reads After a Write</h3><p class="example__intro">Cache forever, never invalidate, and every reader sees the pre-update world.</p><div class="code-viewer" data-cv="cv6926847"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="python" data-target="cv6926847-python" role="tab" aria-selected="true" type="button">Python</button><button class="lang-tab" data-lang="go" data-target="cv6926847-go" role="tab" aria-selected="false" type="button">Go</button></div></div><div class="code-panel is-active" id="cv6926847-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="c1"># SMELL: cache forever, never invalidate -&gt; stale reads</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_user</span><span class="p">(</span><span class="n">uid</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">uid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">cache</span><span class="p">:</span>
+        <span class="n">cache</span><span class="p">[</span><span class="n">uid</span><span class="p">]</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">uid</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cache</span><span class="p">[</span><span class="n">uid</span><span class="p">]</span>               <span class="c1"># update in db? caller never sees it</span>
+
+<span class="c1"># RIGHT: invalidate on write; treat it as part of the work order</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_user</span><span class="p">(</span><span class="n">uid</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">uid</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="n">cache</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">uid</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>            <span class="c1"># the recall happens now</span></code></pre><div class="code-explain">A write that doesn&#x27;t invalidate the cache is a bug waiting for the next read. Invalidation is a process, and it happens right now.</div><div class="code-out"><span class="tag">// observed</span><pre>no invalidation: reads show pre-update data forever
+on-write pop:    next read is fresh from db</pre></div></div><div class="code-panel" id="cv6926847-go" data-lang="go"><div class="code-head"><span class="fname">example.go</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// SMELL: write the DB, forget the cache -&gt; stale forever</span>
+<span class="kd">func</span><span class="w"> </span><span class="nx">Update</span><span class="p">(</span><span class="nx">id</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">v</span><span class="w"> </span><span class="nx">Value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">db</span><span class="p">.</span><span class="nx">Write</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span><span class="w"> </span><span class="nx">v</span><span class="p">)</span><span class="w">               </span><span class="c1">// cache still holds the old value</span>
+<span class="p">}</span>
+
+<span class="c1">// RIGHT: invalidate (or update) the cache as part of the write</span>
+<span class="kd">func</span><span class="w"> </span><span class="nx">Update</span><span class="p">(</span><span class="nx">id</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">v</span><span class="w"> </span><span class="nx">Value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">db</span><span class="p">.</span><span class="nx">Write</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span><span class="w"> </span><span class="nx">v</span><span class="p">)</span>
+<span class="w">    </span><span class="nx">cache</span><span class="p">.</span><span class="nx">Delete</span><span class="p">(</span><span class="nx">id</span><span class="p">)</span><span class="w">              </span><span class="c1">// next read repopulates from db</span>
+<span class="p">}</span></code></pre><div class="code-explain">The cache is part of your write path, not a side concern. If a write doesn&#x27;t touch it, the cache lies until eviction.</div><div class="code-out"><span class="tag">// observed</span><pre>no delete: cached read stays stale indefinitely
+with delete: next read reflects the write</pre></div></div></div></div>
+<div class="example"><h3 class="example__title">Thundering Herd on Expiry</h3><p class="example__intro">Everything expires at the same instant and every miss stampedes the database.</p><div class="code-viewer" data-cv="cv7469253"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="go" data-target="cv7469253-go" role="tab" aria-selected="true" type="button">Go</button><button class="lang-tab" data-lang="python" data-target="cv7469253-python" role="tab" aria-selected="false" type="button">Python</button></div></div><div class="code-panel is-active" id="cv7469253-go" data-lang="go"><div class="code-head"><span class="fname">example.go</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// SMELL: TTL with no jitter -&gt; thundering herd on expiry</span>
+<span class="nx">cache</span><span class="p">.</span><span class="nx">Set</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span><span class="w"> </span><span class="nx">val</span><span class="p">,</span><span class="w"> </span><span class="mi">60</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span><span class="w">   </span><span class="c1">// 10k keys expire at once</span>
+
+<span class="c1">// RIGHT: add jitter so expirations spread out</span>
+<span class="nx">ttl</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">60</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span><span class="p">(</span><span class="nx">rand</span><span class="p">.</span><span class="nx">Intn</span><span class="p">(</span><span class="mi">15</span><span class="p">))</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span>
+<span class="nx">cache</span><span class="p">.</span><span class="nx">Set</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span><span class="w"> </span><span class="nx">val</span><span class="p">,</span><span class="w"> </span><span class="nx">ttl</span><span class="p">)</span></code></pre><div class="code-explain">If everything expires at the same instant, every miss hits the database simultaneously. Jittered TTLs smear the load.</div><div class="code-out"><span class="tag">// observed</span><pre>fixed TTL: synchronized stampede on the DB
+jitter:    misses spread across a 15s window</pre></div></div><div class="code-panel" id="cv7469253-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1"># SMELL: every concurrent miss recomputes the same hot key</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">expensive</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>         <span class="c1"># 1000 misses -&gt; 1000 calls</span>
+        <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">return</span> <span class="n">v</span>
+
+<span class="c1"># RIGHT: single-flight -- one loader, the rest wait on it</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">inflight</span><span class="o">.</span><span class="n">lock</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>       <span class="c1"># per-key lock</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">expensive</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">return</span> <span class="n">v</span></code></pre><div class="code-explain">On a cold hot key, every concurrent reader recomputes it. A per-key lock collapses the herd to a single load.</div><div class="code-out"><span class="tag">// observed</span><pre>naive:        N concurrent misses -&gt; N expensive() calls
+single-flight: 1 call, the rest reuse the result</pre></div></div></div></div>
+</section><section class="block">
+  <div class="block__head"><span class="num">02</span><span class="tag">weakness catalog</span><h2>Mapped weaknesses (CWE)</h2></div>
+  <p class="block__intro">On its own, this defect is catalogued by MITRE as one or more of these weaknesses. The exploitable vulnerability usually appears only when it chains or combines with another.</p>
+  <ul class="phil-list"><li><a href="https://cwe.mitre.org/data/definitions/349.html" target="_blank" rel="noopener"><b>CWE-349</b> &mdash; Acceptance of Extraneous Untrusted Data With Trusted Data</a></li><li><a href="https://cwe.mitre.org/data/definitions/524.html" target="_blank" rel="noopener"><b>CWE-524</b> &mdash; Use of Cache Containing Sensitive Information</a></li></ul>
+</section></div></div><div class="section" style="--accent:#DD3333;--accent-soft:#F87171;--accent-deep:#B91C1C;;padding-top:0"><div class="wrap"><nav class="xnav"><a class="xnav--shared" href="/en/shared-state/pointer-mismanagement/"><span class="tag">Previous</span><b>Pointer Mismanagement</b></a><a class="xnav--shared" href="/en/shared-state/"><span class="tag">All defects</span><b>Bugs of Shared State</b></a><a class="xnav--shared" href="/en/shared-state/threading-mutexes/"><span class="tag">Next</span><b>Threading &amp; Mutexes</b></a></nav></div></div>
+</main>
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <p>An interactive field guide built from talks by <em>Samuel&nbsp;Volin</em>. Four families of stateful defect, the smells that betray them, and the philosophies that defuse them.</p>
+    <nav class="flinks"><a href="/en/mutated-state/">Mutated</a> <a href="/en/unstructured-state/">Unstructured</a> <a href="/en/shared-state/">Shared</a> <a href="/en/common-defects/">Common</a></nav>
+  </div>
+</footer>
+<script src="/assets/js/app.js" defer></script>
+</body>
+</html>

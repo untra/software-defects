@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ko" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Missing &amp; Undefined Returns — Bugs of Unstructured State</title>
+<meta name="description" content="A field guide to the four families of stateful software defect: mutated, unstructured, shared, and common.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/code-highlight.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="/ko/"><svg class="glyph" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 12 3 7M12 12l9-5M12 12v10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" opacity=".5"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/></svg><span>Software&nbsp;Defects<small>상태 결함 현장 안내서</small></span></a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav-links">
+        <a class="nav--mutated" href="/ko/mutated-state/">변이</a>
+        <a class="nav--unstructured" href="/ko/unstructured-state/" aria-current="page">비구조화</a>
+        <a class="nav--shared" href="/ko/shared-state/">공유</a>
+        <a class="nav--common" href="/ko/common-defects/">일반</a>
+        <select class="lang-select" aria-label="Language" onchange="location.href=this.value"><option value="/en/unstructured-state/">EN</option><option value="/es/unstructured-state/">ES</option><option value="/fr/unstructured-state/">FR</option><option value="/de/unstructured-state/">DE</option><option value="/pt-br/unstructured-state/">PT</option><option value="/ja/unstructured-state/">JA</option><option value="/zh/unstructured-state/">ZH</option><option value="/ko/unstructured-state/" selected>KO</option><option value="/ar/unstructured-state/">AR</option></select>
+    </nav>
+  </div>
+</header>
+<main>
+<section class="console dhero" style="--accent:#3D85C6;--accent-soft:#6FA8DC;--accent-deep:#0B5394;">
+  <div class="wrap dhero__grid">
+    <div>
+      <nav class="dcrumb tag"><a href="/ko/unstructured-state/">Bugs of Unstructured State</a><span aria-hidden="true">/</span><span>Missing &amp; Undefined Returns</span></nav>
+      <p class="tag dhero__kicker">functions that quietly return nothing</p>
+      <h1 class="dhero__title">Missing &amp; Undefined Returns</h1>
+      <p class="dhero__desc">Some path through the function never hits a return, or returns null / undefined / None, and the caller treats that absence as data. Strongly typed languages drag this from a downstream mystery to a compile-time error.</p>
+      <p class="dhero__essence">A code path falls off the end, and &#x27;nothing&#x27; silently becomes a value.</p>
+    </div>
+    <div class="dhero__art"><span class="lottie-glyph" data-src="/assets/animations/missing-undefined-returns.json"></span></div>
+  </div>
+</section><div class="section defect-body" style="--accent:#3D85C6;--accent-soft:#6FA8DC;--accent-deep:#0B5394;"><div class="wrap"><section class="block">
+  <div class="block__head"><span class="num">01</span><span class="tag">in the wild</span><h2>실제 사례</h2></div>
+  
+  <div class="example"><h3 class="example__title">The Same Bug, Solved by Types</h3><p class="example__intro">Strongly typed languages move the unstructured-state failure from runtime to compile time, where it&#x27;s cheap.</p><div class="code-viewer" data-cv="cv733919"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="typescript" data-target="cv733919-typescript" role="tab" aria-selected="true" type="button">TypeScript</button><button class="lang-tab" data-lang="go" data-target="cv733919-go" role="tab" aria-selected="false" type="button">Go</button><button class="lang-tab" data-lang="kotlin" data-target="cv733919-kotlin" role="tab" aria-selected="false" type="button">Kotlin</button><button class="lang-tab" data-lang="rust" data-target="cv733919-rust" role="tab" aria-selected="false" type="button">Rust</button></div></div><div class="code-panel is-active" id="cv733919-typescript" data-lang="typescript"><div class="code-head"><span class="fname">example.ts</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// strictNullChecks turns a runtime crash into a red squiggle</span>
+<span class="kd">interface</span><span class="w"> </span><span class="nx">User</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span><span class="w"> </span><span class="nx">age?</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="kd">function</span><span class="w"> </span><span class="nx">birthday</span><span class="p">(</span><span class="nx">u</span><span class="o">:</span><span class="w"> </span><span class="kt">User</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">u</span><span class="p">.</span><span class="nx">age</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span><span class="w">   </span><span class="c1">// compile error: &#39;u.age&#39; is possibly undefined</span>
+<span class="p">}</span>
+
+<span class="c1">// RIGHT: the compiler forces you to handle absence</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">birthday</span><span class="p">(</span><span class="nx">u</span><span class="o">:</span><span class="w"> </span><span class="kt">User</span><span class="p">)</span><span class="o">:</span><span class="w"> </span><span class="kt">number</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="nx">u</span><span class="p">.</span><span class="nx">age</span><span class="w"> </span><span class="o">??</span><span class="w"> </span><span class="mf">0</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1</span><span class="p">;</span>
+<span class="p">}</span></code></pre><div class="code-explain">The optional field can&#x27;t be used until you account for undefined. The bug never reaches production.</div><div class="code-out"><span class="tag">// observed</span><pre>without guard: TS2532 at compile time
+with ??:       compiles, handles missing age</pre></div></div><div class="code-panel" id="cv733919-go" data-lang="go"><div class="code-head"><span class="fname">example.go</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// Errors are values you must thread through, not exceptions</span>
+<span class="kd">func</span><span class="w"> </span><span class="nx">current</span><span class="p">(</span><span class="nx">v</span><span class="p">,</span><span class="w"> </span><span class="nx">r</span><span class="w"> </span><span class="kt">float64</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">float64</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="nx">r</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Errorf</span><span class="p">(</span><span class="s">&quot;resistance is zero&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">v</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nx">r</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span>
+<span class="p">}</span>
+
+<span class="nx">i</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">current</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="p">}</span><span class="w">   </span><span class="c1">// the compiler nags if you ignore it</span></code></pre><div class="code-explain">Returning (value, error) makes the failure path part of the signature. Linters flag an ignored err.</div><div class="code-out"><span class="tag">// observed</span><pre>current(5, 0) -&gt; 0, error(&#x27;resistance is zero&#x27;)
+err is checked before i is used</pre></div></div><div class="code-panel" id="cv733919-kotlin" data-lang="kotlin"><div class="code-head"><span class="fname">example.kt</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// Nullability is in the type system: String vs String?</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">greet</span><span class="p">(</span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Hi, </span><span class="si">$</span><span class="n">name</span><span class="s">&quot;</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">maybe</span><span class="p">:</span><span class="w"> </span><span class="kt">String?</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lookup</span><span class="p">()</span>
+<span class="n">greet</span><span class="p">(</span><span class="n">maybe</span><span class="p">)</span><span class="w">          </span><span class="c1">// compile error: String? where String expected</span>
+
+<span class="c1">// RIGHT: the safe call / elvis operator handle the null</span>
+<span class="n">greet</span><span class="p">(</span><span class="n">maybe</span><span class="w"> </span><span class="o">?:</span><span class="w"> </span><span class="s">&quot;stranger&quot;</span><span class="p">)</span></code></pre><div class="code-explain">String and String? are different types. You cannot pass a nullable where a non-null is required without handling it.</div><div class="code-out"><span class="tag">// observed</span><pre>greet(maybe):       compile error
+greet(maybe ?: ...): &#x27;Hi, stranger&#x27;</pre></div></div><div class="code-panel" id="cv733919-rust" data-lang="rust"><div class="code-head"><span class="fname">example.rs</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// Absence is Option&lt;T&gt;; you cannot forget to handle None.</span>
+<span class="k">fn</span><span class="w"> </span><span class="nf">first_word</span><span class="p">(</span><span class="n">s</span><span class="p">:</span><span class="w"> </span><span class="kp">&amp;</span><span class="kt">str</span><span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Option</span><span class="o">&lt;&amp;</span><span class="kt">str</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">s</span><span class="p">.</span><span class="n">split_whitespace</span><span class="p">().</span><span class="n">next</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="k">match</span><span class="w"> </span><span class="n">first_word</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nb">Some</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;{w}&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="nb">None</span><span class="w">    </span><span class="o">=&gt;</span><span class="w"> </span><span class="fm">println!</span><span class="p">(</span><span class="s">&quot;(empty input)&quot;</span><span class="p">),</span><span class="w">   </span><span class="c1">// exhaustive</span>
+<span class="p">}</span></code></pre><div class="code-explain">Option&lt;T&gt; makes &#x27;nothing&#x27; a value the type system tracks. The match must cover None or it won&#x27;t compile.</div><div class="code-out"><span class="tag">// observed</span><pre>first_word(&quot;&quot;) -&gt; None
+match is exhaustive: &#x27;(empty input)&#x27;</pre></div></div></div></div>
+<div class="example"><h3 class="example__title">The Function That Forgets to Return</h3><p class="example__intro">A branch with no return doesn&#x27;t error; it hands back undefined / None and the caller runs with it.</p><div class="code-viewer" data-cv="cv6573810"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="javascript" data-target="cv6573810-javascript" role="tab" aria-selected="true" type="button">JavaScript</button><button class="lang-tab" data-lang="python" data-target="cv6573810-python" role="tab" aria-selected="false" type="button">Python</button></div></div><div class="code-panel is-active" id="cv6573810-javascript" data-lang="javascript"><div class="code-head"><span class="fname">example.js</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// BUG: the else path has no return -&gt; undefined</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">discount</span><span class="p">(</span><span class="nx">user</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">user</span><span class="p">.</span><span class="nx">isMember</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mf">0.1</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">// forgot the non-member case</span>
+<span class="p">}</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">price</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">base</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mf">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nx">discount</span><span class="p">(</span><span class="nx">guest</span><span class="p">));</span><span class="w">   </span><span class="c1">// NaN: 1 - undefined</span>
+
+<span class="c1">// RIGHT: every path returns; lint with consistent-return</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">discount</span><span class="p">(</span><span class="nx">user</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">user</span><span class="p">.</span><span class="nx">isMember</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mf">0.1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre><div class="code-explain">A missing return is undefined, and arithmetic on undefined is NaN: a wrong number with no stack trace.</div><div class="code-out"><span class="tag">// observed</span><pre>guest: 1 - undefined -&gt; NaN
+fixed: 1 - 0 -&gt; 1</pre></div></div><div class="code-panel" id="cv6573810-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1"># BUG: the loop may finish without returning -&gt; implicit None</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_admin</span><span class="p">(</span><span class="n">users</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">users</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">u</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s2">&quot;admin&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">u</span>
+    <span class="c1"># no admin? falls off the end -&gt; None</span>
+
+<span class="n">admin</span> <span class="o">=</span> <span class="n">find_admin</span><span class="p">(</span><span class="n">users</span><span class="p">)</span>
+<span class="n">admin</span><span class="o">.</span><span class="n">notify</span><span class="p">()</span>        <span class="c1"># AttributeError: &#39;NoneType&#39; has no &#39;notify&#39;</span>
+
+<span class="c1"># RIGHT: make the &#39;not found&#39; case explicit</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_admin</span><span class="p">(</span><span class="n">users</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">next</span><span class="p">((</span><span class="n">u</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">users</span> <span class="k">if</span> <span class="n">u</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s2">&quot;admin&quot;</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span></code></pre><div class="code-explain">Python returns None when execution falls off the end. The caller crashes later, far from the function that &#x27;forgot&#x27;.</div><div class="code-out"><span class="tag">// observed</span><pre>no admin: None -&gt; AttributeError downstream
+explicit: caller checks for None first</pre></div></div></div></div>
+</section><section class="block">
+  <div class="block__head"><span class="num">02</span><span class="tag">weakness catalog</span><h2>Mapped weaknesses (CWE)</h2></div>
+  <p class="block__intro">On its own, this defect is catalogued by MITRE as one or more of these weaknesses. The exploitable vulnerability usually appears only when it chains or combines with another.</p>
+  <ul class="phil-list"><li><a href="https://cwe.mitre.org/data/definitions/252.html" target="_blank" rel="noopener"><b>CWE-252</b> &mdash; Unchecked Return Value</a></li><li><a href="https://cwe.mitre.org/data/definitions/394.html" target="_blank" rel="noopener"><b>CWE-394</b> &mdash; Unexpected Status Code or Return Value</a></li><li><a href="https://cwe.mitre.org/data/definitions/476.html" target="_blank" rel="noopener"><b>CWE-476</b> &mdash; NULL Pointer Dereference</a></li></ul>
+</section></div></div><div class="section" style="--accent:#3D85C6;--accent-soft:#6FA8DC;--accent-deep:#0B5394;;padding-top:0"><div class="wrap"><nav class="xnav"><a class="xnav--unstructured" href="/ko/unstructured-state/duck-typing-without-contracts/"><span class="tag">이전</span><b>Duck Typing Without Contracts</b></a><a class="xnav--unstructured" href="/ko/unstructured-state/"><span class="tag">모든 결함</span><b>Bugs of Unstructured State</b></a><a class="xnav--unstructured" href="/ko/unstructured-state/version-library-mismanagement/"><span class="tag">다음</span><b>Version &amp; Library Mismanagement</b></a></nav></div></div>
+</main>
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <p>다음 강연을 바탕으로 제작된 인터랙티브 현장 안내서: <em>Samuel&nbsp;Volin</em>. Four families of stateful defect, the smells that betray them, and the philosophies that defuse them.</p>
+    <nav class="flinks"><a href="/ko/mutated-state/">변이</a> <a href="/ko/unstructured-state/">비구조화</a> <a href="/ko/shared-state/">공유</a> <a href="/ko/common-defects/">일반</a></nav>
+  </div>
+</footer>
+<script src="/assets/js/app.js" defer></script>
+</body>
+</html>

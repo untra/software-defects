@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ja" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insecure Deserialization — Bugs of Unstructured State</title>
+<meta name="description" content="A field guide to the four families of stateful software defect: mutated, unstructured, shared, and common.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/code-highlight.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="/ja/"><svg class="glyph" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 12 3 7M12 12l9-5M12 12v10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" opacity=".5"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/></svg><span>Software&nbsp;Defects<small>状態を持つ欠陥の野外図鑑</small></span></a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav-links">
+        <a class="nav--mutated" href="/ja/mutated-state/">変異</a>
+        <a class="nav--unstructured" href="/ja/unstructured-state/" aria-current="page">非構造化</a>
+        <a class="nav--shared" href="/ja/shared-state/">共有</a>
+        <a class="nav--common" href="/ja/common-defects/">一般的</a>
+        <select class="lang-select" aria-label="Language" onchange="location.href=this.value"><option value="/en/unstructured-state/">EN</option><option value="/es/unstructured-state/">ES</option><option value="/fr/unstructured-state/">FR</option><option value="/de/unstructured-state/">DE</option><option value="/pt-br/unstructured-state/">PT</option><option value="/ja/unstructured-state/" selected>JA</option><option value="/zh/unstructured-state/">ZH</option><option value="/ko/unstructured-state/">KO</option><option value="/ar/unstructured-state/">AR</option></select>
+    </nav>
+  </div>
+</header>
+<main>
+<section class="console dhero" style="--accent:#3D85C6;--accent-soft:#6FA8DC;--accent-deep:#0B5394;">
+  <div class="wrap dhero__grid">
+    <div>
+      <nav class="dcrumb tag"><a href="/ja/unstructured-state/">Bugs of Unstructured State</a><span aria-hidden="true">/</span><span>Insecure Deserialization</span></nav>
+      <p class="tag dhero__kicker">untrusted bytes become live objects</p>
+      <h1 class="dhero__title">Insecure Deserialization</h1>
+      <p class="dhero__desc">Deserialization is the purest form of consuming unknown input as state: bytes you did not create become objects with behavior. Native formats can execute code on the way in (chaining to RCE, CWE-94/78), and even &#x27;safe&#x27; formats over-assign attributes the caller never meant to expose.</p>
+      <p class="dhero__essence">Hydrating untrusted input straight into live objects runs code and sets state the caller never wrote.</p>
+    </div>
+    <div class="dhero__art"><span class="lottie-glyph" data-src="/assets/animations/insecure-deserialization.json"></span></div>
+  </div>
+</section><div class="section defect-body" style="--accent:#3D85C6;--accent-soft:#6FA8DC;--accent-deep:#0B5394;"><div class="wrap"><section class="block">
+  <div class="block__head"><span class="num">01</span><span class="tag">in the wild</span><h2>実例</h2></div>
+  
+  <div class="example"><h3 class="example__title">Hydrating Untrusted Bytes</h3><p class="example__intro">A native deserializer reconstructs objects — and can run their code — before any of your logic sees the data.</p><div class="code-viewer" data-cv="cv820940"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="python" data-target="cv820940-python" role="tab" aria-selected="true" type="button">Python</button><button class="lang-tab" data-lang="java" data-target="cv820940-java" role="tab" aria-selected="false" type="button">Java</button></div></div><div class="code-panel is-active" id="cv820940-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+
+<span class="c1"># DANGER: pickle reconstructs arbitrary objects -- and runs __reduce__</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">untrusted_bytes</span><span class="p">)</span>   <span class="c1"># attacker payload = RCE</span>
+
+<span class="c1"># An attacker&#39;s class can do this on load:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Exploit</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;rm -rf /&quot;</span><span class="p">,))</span>   <span class="c1"># runs during loads()</span>
+
+<span class="c1"># RIGHT: a data-only format + an explicit schema</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Order</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">;</span> <span class="n">qty</span><span class="p">:</span> <span class="nb">int</span>
+<span class="n">order</span> <span class="o">=</span> <span class="n">Order</span><span class="p">(</span><span class="o">**</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">untrusted_bytes</span><span class="p">))</span>   <span class="c1"># validated, no code</span></code></pre><div class="code-explain">pickle.loads will execute an object&#x27;s __reduce__ as it rebuilds it, so loading attacker bytes is arbitrary code execution. Parse a data-only format and validate against a schema instead.</div><div class="code-out"><span class="tag">// observed</span><pre>pickle: __reduce__ runs -&gt; shell command
+schema: bad shape -&gt; ValidationError, no code</pre></div></div><div class="code-panel" id="cv820940-java" data-lang="java"><div class="code-head"><span class="fname">example.java</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// DANGER: readObject rebuilds any serializable type on the classpath</span>
+<span class="n">ObjectInputStream</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ObjectInputStream</span><span class="p">(</span><span class="n">socket</span><span class="p">.</span><span class="na">getInputStream</span><span class="p">());</span>
+<span class="n">Object</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">in</span><span class="p">.</span><span class="na">readObject</span><span class="p">();</span><span class="w">        </span><span class="c1">// gadget chains -&gt; RCE</span>
+
+<span class="c1">// RIGHT: don&#39;t deserialize untrusted native streams.</span>
+<span class="c1">// Use a data format with a known target type:</span>
+<span class="n">ObjectMapper</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="p">();</span>
+<span class="n">m</span><span class="p">.</span><span class="na">activateDefaultTyping</span><span class="p">(...);</span><span class="w">      </span><span class="c1">// &lt;- do NOT; this re-opens the hole</span>
+<span class="n">Order</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="na">readValue</span><span class="p">(</span><span class="n">json</span><span class="p">,</span><span class="w"> </span><span class="n">Order</span><span class="p">.</span><span class="na">class</span><span class="p">);</span><span class="w">   </span><span class="c1">// fixed target type</span></code></pre><div class="code-explain">Java&#x27;s native readObject instantiates whatever the stream names, letting gadget chains reach dangerous code. Avoid native serialization for untrusted data; bind a known type from a data format.</div><div class="code-out"><span class="tag">// observed</span><pre>readObject: gadget chain -&gt; code execution
+readValue:  bound to Order.class only</pre></div></div></div></div>
+<div class="example"><h3 class="example__title">Over-Permissive Hydration</h3><p class="example__intro">Splatting raw input onto an object sets fields the caller never intended — like a privilege flag.</p><div class="code-viewer" data-cv="cv8209680"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="ruby" data-target="cv8209680-ruby" role="tab" aria-selected="true" type="button">Ruby</button><button class="lang-tab" data-lang="javascript" data-target="cv8209680-javascript" role="tab" aria-selected="false" type="button">JavaScript</button></div></div><div class="code-panel is-active" id="cv8209680-ruby" data-lang="ruby"><div class="code-head"><span class="fname">example.rb</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1"># WRONG: mass assignment trusts every key in the payload</span>
+<span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">User</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">params</span><span class="p">)</span><span class="w">         </span><span class="c1"># params has admin: true -&gt; privilege escalation</span>
+<span class="n">user</span><span class="o">.</span><span class="n">save</span>
+
+<span class="c1"># RIGHT: strong params -- an explicit allowlist of fields</span>
+<span class="n">permitted</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">params</span><span class="o">.</span><span class="n">require</span><span class="p">(</span><span class="ss">:user</span><span class="p">)</span><span class="o">.</span><span class="n">permit</span><span class="p">(</span><span class="ss">:name</span><span class="p">,</span><span class="w"> </span><span class="ss">:email</span><span class="p">)</span>
+<span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="no">User</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">permitted</span><span class="p">)</span><span class="w">      </span><span class="c1"># admin can&#39;t be set from input</span></code></pre><div class="code-explain">Handing the whole params hash to a model lets a caller set any attribute, including admin. An allowlist (strong params) makes the writable set explicit.</div><div class="code-out"><span class="tag">// observed</span><pre>mass assign: admin: true -&gt; account escalated
+allowlist:   only name/email accepted</pre></div></div><div class="code-panel" id="cv8209680-javascript" data-lang="javascript"><div class="code-head"><span class="fname">example.js</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// WRONG: copy every field from the request onto the record</span>
+<span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span><span class="w">   </span><span class="c1">// req.body.role = &quot;admin&quot; sticks</span>
+<span class="k">await</span><span class="w"> </span><span class="nx">user</span><span class="p">.</span><span class="nx">save</span><span class="p">();</span>
+
+<span class="c1">// RIGHT: pick only the fields you mean to accept</span>
+<span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">name</span><span class="p">,</span><span class="w"> </span><span class="nx">email</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">body</span><span class="p">;</span>
+<span class="nb">Object</span><span class="p">.</span><span class="nx">assign</span><span class="p">(</span><span class="nx">user</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">name</span><span class="p">,</span><span class="w"> </span><span class="nx">email</span><span class="w"> </span><span class="p">});</span><span class="w">   </span><span class="c1">// role is untouched</span></code></pre><div class="code-explain">Object.assign with raw req.body lets the client overwrite any property, including role. Destructure the known-safe fields and assign only those.</div><div class="code-out"><span class="tag">// observed</span><pre>assign body: role -&gt; &#x27;admin&#x27; (overwritten)
+pick fields: role unchanged, name/email set</pre></div></div></div></div>
+</section><section class="block">
+  <div class="block__head"><span class="num">02</span><span class="tag">weakness catalog</span><h2>Mapped weaknesses (CWE)</h2></div>
+  <p class="block__intro">On its own, this defect is catalogued by MITRE as one or more of these weaknesses. The exploitable vulnerability usually appears only when it chains or combines with another.</p>
+  <ul class="phil-list"><li><a href="https://cwe.mitre.org/data/definitions/502.html" target="_blank" rel="noopener"><b>CWE-502</b> &mdash; Deserialization of Untrusted Data</a></li><li><a href="https://cwe.mitre.org/data/definitions/915.html" target="_blank" rel="noopener"><b>CWE-915</b> &mdash; Improperly Controlled Modification of Dynamically-Determined Object Attributes</a></li><li><a href="https://cwe.mitre.org/data/definitions/913.html" target="_blank" rel="noopener"><b>CWE-913</b> &mdash; Improper Control of Dynamically-Managed Code Resources</a></li><li><a href="https://cwe.mitre.org/data/definitions/20.html" target="_blank" rel="noopener"><b>CWE-20</b> &mdash; Improper Input Validation</a></li></ul>
+</section></div></div><div class="section" style="--accent:#3D85C6;--accent-soft:#6FA8DC;--accent-deep:#0B5394;;padding-top:0"><div class="wrap"><nav class="xnav"><a class="xnav--unstructured" href="/ja/unstructured-state/version-library-mismanagement/"><span class="tag">前へ</span><b>Version &amp; Library Mismanagement</b></a><a class="xnav--unstructured" href="/ja/unstructured-state/"><span class="tag">すべての欠陥</span><b>Bugs of Unstructured State</b></a><a class="xnav--unstructured" href="/ja/unstructured-state/divide-by-zero/"><span class="tag">次へ</span><b>Divide by Zero</b></a></nav></div></div>
+</main>
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <p>次の講演をもとに構築されたインタラクティブな図鑑： <em>Samuel&nbsp;Volin</em>. Four families of stateful defect, the smells that betray them, and the philosophies that defuse them.</p>
+    <nav class="flinks"><a href="/ja/mutated-state/">変異</a> <a href="/ja/unstructured-state/">非構造化</a> <a href="/ja/shared-state/">共有</a> <a href="/ja/common-defects/">一般的</a></nav>
+  </div>
+</footer>
+<script src="/assets/js/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unconstrained Inputs — Bugs of Unstructured State</title>
+<meta name="description" content="A field guide to the four families of stateful software defect: mutated, unstructured, shared, and common.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/code-highlight.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="/fr/"><svg class="glyph" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 12 3 7M12 12l9-5M12 12v10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" opacity=".5"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/></svg><span>Software&nbsp;Defects<small>guide des défauts avec état</small></span></a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav-links">
+        <a class="nav--mutated" href="/fr/mutated-state/">Muté</a>
+        <a class="nav--unstructured" href="/fr/unstructured-state/" aria-current="page">Non structuré</a>
+        <a class="nav--shared" href="/fr/shared-state/">Partagé</a>
+        <a class="nav--common" href="/fr/common-defects/">Communs</a>
+        <select class="lang-select" aria-label="Language" onchange="location.href=this.value"><option value="/en/unstructured-state/">EN</option><option value="/es/unstructured-state/">ES</option><option value="/fr/unstructured-state/" selected>FR</option><option value="/de/unstructured-state/">DE</option><option value="/pt-br/unstructured-state/">PT</option><option value="/ja/unstructured-state/">JA</option><option value="/zh/unstructured-state/">ZH</option><option value="/ko/unstructured-state/">KO</option><option value="/ar/unstructured-state/">AR</option></select>
+    </nav>
+  </div>
+</header>
+<main>
+<section class="console dhero" style="--accent:#3D85C6;--accent-soft:#6FA8DC;--accent-deep:#0B5394;">
+  <div class="wrap dhero__grid">
+    <div>
+      <nav class="dcrumb tag"><a href="/fr/unstructured-state/">Bugs of Unstructured State</a><span aria-hidden="true">/</span><span>Unconstrained Inputs</span></nav>
+      <p class="tag dhero__kicker">input with no bounds on size or range</p>
+      <h1 class="dhero__title">Unconstrained Inputs</h1>
+      <p class="dhero__desc">Validation that checks type but not magnitude. An input with no upper bound on length, size, or value becomes unbounded memory, catastrophic backtracking, integer overflow, or a denial of service. Constrain the range, not just the shape.</p>
+      <p class="dhero__essence">Nothing limits how big, how long, or how extreme an input can be — so something downstream pays for it.</p>
+    </div>
+    <div class="dhero__art"><span class="lottie-glyph" data-src="/assets/animations/unconstrained-inputs.json"></span></div>
+  </div>
+</section><div class="section defect-body" style="--accent:#3D85C6;--accent-soft:#6FA8DC;--accent-deep:#0B5394;"><div class="wrap"><section class="block">
+  <div class="block__head"><span class="num">01</span><span class="tag">in the wild</span><h2>Sur le terrain</h2></div>
+  
+  <div class="example"><h3 class="example__title">No Bound on Size</h3><p class="example__intro">An input with no maximum length is a denial-of-service waiting for a big enough request.</p><div class="code-viewer" data-cv="cv4127522"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="javascript" data-target="cv4127522-javascript" role="tab" aria-selected="true" type="button">JavaScript</button><button class="lang-tab" data-lang="python" data-target="cv4127522-python" role="tab" aria-selected="false" type="button">Python</button></div></div><div class="code-panel is-active" id="cv4127522-javascript" data-lang="javascript"><div class="code-head"><span class="fname">example.js</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// WRONG: a catastrophic-backtracking regex on unbounded input</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">re</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sr">/^(a+)+$/</span><span class="p">;</span>
+<span class="nx">re</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="s2">&quot;aaaaaaaaaaaaaaaaaaaaaaaa!&quot;</span><span class="p">);</span><span class="w">   </span><span class="c1">// hangs the event loop (ReDoS)</span>
+
+<span class="c1">// RIGHT: bound the input first, then use a linear matcher</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">input</span><span class="p">.</span><span class="nx">length</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">256</span><span class="p">)</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="ne">Error</span><span class="p">(</span><span class="s2">&quot;too long&quot;</span><span class="p">);</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">re</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sr">/^a+$/</span><span class="p">;</span></code></pre><div class="code-explain">Nested quantifiers make match time exponential in input length. Capping length (and avoiding the pattern) keeps one request from freezing the server.</div><div class="code-out"><span class="tag">// observed</span><pre>unbounded: one request pins the CPU at 100%
+bounded:   rejected at 256 chars, linear match</pre></div></div><div class="code-panel" id="cv4127522-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1"># WRONG: read the whole upload into memory</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>           <span class="c1"># a 10GB POST is now 10GB of RAM</span>
+
+<span class="c1"># RIGHT: enforce a limit before you ever allocate</span>
+<span class="n">MAX</span> <span class="o">=</span> <span class="mi">5</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">MAX</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MAX</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;payload too large&quot;</span><span class="p">)</span></code></pre><div class="code-explain">An unconstrained read trusts the client to be reasonable. A hard cap turns a memory-exhaustion attack into a clean rejection.</div><div class="code-out"><span class="tag">// observed</span><pre>unbounded: OOM kill under a large upload
+bounded:   &#x27;payload too large&#x27; at 5MB</pre></div></div></div></div>
+<div class="example"><h3 class="example__title">No Bound on Range</h3><p class="example__intro">A number that type-checks can still be negative, zero, or astronomically large.</p><div class="code-viewer" data-cv="cv5542669"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="python" data-target="cv5542669-python" role="tab" aria-selected="true" type="button">Python</button><button class="lang-tab" data-lang="go" data-target="cv5542669-go" role="tab" aria-selected="false" type="button">Go</button></div></div><div class="code-panel is-active" id="cv5542669-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1"># WRONG: limit is an int, so it must be fine... right?</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">paginate</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">limit</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">items</span><span class="p">[:</span><span class="n">limit</span><span class="p">]</span>          <span class="c1"># limit=-1 silently drops the last row</span>
+                                  <span class="c1"># limit=10**9 tries to slice everything</span>
+
+<span class="c1"># RIGHT: constrain the range at the boundary</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">paginate</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">limit</span><span class="p">):</span>
+    <span class="n">limit</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">limit</span><span class="p">),</span> <span class="mi">100</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">items</span><span class="p">[:</span><span class="n">limit</span><span class="p">]</span></code></pre><div class="code-explain">Type checking proved limit is an integer; it never proved limit is sane. Clamp to a valid range before use.</div><div class="code-out"><span class="tag">// observed</span><pre>limit=-1:  drops a row, no error
+clamped:   limit forced into 1..100</pre></div></div><div class="code-panel" id="cv5542669-go" data-lang="go"><div class="code-head"><span class="fname">example.go</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// WRONG: trust a count from the wire, then allocate it</span>
+<span class="nx">n</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">Count</span><span class="w">                 </span><span class="c1">// int from an untrusted client</span>
+<span class="nx">buf</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span><span class="w"> </span><span class="nx">n</span><span class="p">)</span><span class="w">         </span><span class="c1">// n negative -&gt; panic; n huge -&gt; OOM</span>
+
+<span class="c1">// RIGHT: validate the range before allocating</span>
+<span class="k">if</span><span class="w"> </span><span class="nx">n</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">n</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="nx">maxCount</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">fmt</span><span class="p">.</span><span class="nx">Errorf</span><span class="p">(</span><span class="s">&quot;count out of range: %d&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">n</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="nx">buf</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span><span class="w"> </span><span class="nx">n</span><span class="p">)</span></code></pre><div class="code-explain">make() with a hostile size panics or exhausts memory. A range check is the difference between a rejected request and a crashed process.</div><div class="code-out"><span class="tag">// observed</span><pre>unchecked: panic: makeslice: len out of range
+checked:   error(&#x27;count out of range: -1&#x27;)</pre></div></div></div></div>
+</section><section class="block">
+  <div class="block__head"><span class="num">02</span><span class="tag">weakness catalog</span><h2>Mapped weaknesses (CWE)</h2></div>
+  <p class="block__intro">On its own, this defect is catalogued by MITRE as one or more of these weaknesses. The exploitable vulnerability usually appears only when it chains or combines with another.</p>
+  <ul class="phil-list"><li><a href="https://cwe.mitre.org/data/definitions/1333.html" target="_blank" rel="noopener"><b>CWE-1333</b> &mdash; Inefficient Regular Expression Complexity</a></li><li><a href="https://cwe.mitre.org/data/definitions/400.html" target="_blank" rel="noopener"><b>CWE-400</b> &mdash; Uncontrolled Resource Consumption</a></li><li><a href="https://cwe.mitre.org/data/definitions/190.html" target="_blank" rel="noopener"><b>CWE-190</b> &mdash; Integer Overflow or Wraparound</a></li></ul>
+</section></div></div><div class="section" style="--accent:#3D85C6;--accent-soft:#6FA8DC;--accent-deep:#0B5394;;padding-top:0"><div class="wrap"><nav class="xnav"><a class="xnav--unstructured" href="/fr/unstructured-state/lack-of-input-validation/"><span class="tag">Précédent</span><b>Lack of Input Validation</b></a><a class="xnav--unstructured" href="/fr/unstructured-state/"><span class="tag">Tous les défauts</span><b>Bugs of Unstructured State</b></a><a class="xnav--unstructured" href="/fr/unstructured-state/duck-typing-without-contracts/"><span class="tag">Suivant</span><b>Duck Typing Without Contracts</b></a></nav></div></div>
+</main>
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <p>Un guide interactif construit à partir des conférences de <em>Samuel&nbsp;Volin</em>. Four families of stateful defect, the smells that betray them, and the philosophies that defuse them.</p>
+    <nav class="flinks"><a href="/fr/mutated-state/">Muté</a> <a href="/fr/unstructured-state/">Non structuré</a> <a href="/fr/shared-state/">Partagé</a> <a href="/fr/common-defects/">Communs</a></nav>
+  </div>
+</footer>
+<script src="/assets/js/app.js" defer></script>
+</body>
+</html>

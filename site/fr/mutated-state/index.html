@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bugs of Mutated State — Software Defects</title>
+<meta name="description" content="A field guide to the four families of stateful software defect: mutated, unstructured, shared, and common.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/code-highlight.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="/fr/"><svg class="glyph" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 12 3 7M12 12l9-5M12 12v10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" opacity=".5"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/></svg><span>Software&nbsp;Defects<small>guide des défauts avec état</small></span></a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav-links">
+        <a class="nav--mutated" href="/fr/mutated-state/" aria-current="page">Muté</a>
+        <a class="nav--unstructured" href="/fr/unstructured-state/">Non structuré</a>
+        <a class="nav--shared" href="/fr/shared-state/">Partagé</a>
+        <a class="nav--common" href="/fr/common-defects/">Communs</a>
+        <select class="lang-select" aria-label="Language" onchange="location.href=this.value"><option value="/en/mutated-state/">EN</option><option value="/es/mutated-state/">ES</option><option value="/fr/mutated-state/" selected>FR</option><option value="/de/mutated-state/">DE</option><option value="/pt-br/mutated-state/">PT</option><option value="/ja/mutated-state/">JA</option><option value="/zh/mutated-state/">ZH</option><option value="/ko/mutated-state/">KO</option><option value="/ar/mutated-state/">AR</option></select>
+    </nav>
+  </div>
+</header>
+<main>
+<section class="console dhero" style="--accent:#78A65A;--accent-soft:#93C47D;--accent-deep:#4F7942;">
+  <div class="wrap dhero__grid">
+    <div>
+      <p class="tag dhero__kicker">changing the state of a program</p>
+      <h1 class="dhero__title">Bugs of Mutated State</h1>
+      <p class="dhero__desc">Bugs caused by changing the state of a program in ways that create unpredictability, where information and control flow become untraced.</p>
+      <p class="dhero__essence">Results diverge from expectations when state changes go untracked.</p>
+    </div>
+    <div class="dhero__art"><span class="lottie-glyph" data-src="/assets/animations/fr/mutated-state.json"></span></div>
+  </div>
+</section><div class="section defect-body" style="--accent:#78A65A;--accent-soft:#93C47D;--accent-deep:#4F7942;"><div class="wrap"><section class="block">
+  <div class="block__head"><span class="num">01</span><span class="tag">symptoms</span><h2>Comment ça se manifeste</h2></div>
+  
+  <ul class="symptoms"><li>Wrong or unexpected results</li><li>Unpredictable function output or operation</li><li>Edge cases abounding in code</li><li>Test flakiness and complexity</li></ul>
+</section>
+<section class="block">
+  <div class="block__head"><span class="num">02</span><span class="tag">smells</span><h2>Ce qui le cause</h2></div>
+  
+  <div class="chips"><span>var / let / mut declarations</span><span>off-by-one errors</span><span>for-loop control flow</span><span>this mutation</span><span>time / money / entropy</span><span>impure functions</span><span>macro / mixin misuse</span><span>++ / -- &amp; integer overflow</span><span>improper initialization</span></div><p class="block__intro" style="margin:1.4rem 0 .6rem">Outils qui blessent — language features that make it easy:</p><div class="chips"><span>let / var / mut</span><span>for loops and control flow</span><span>classes and this misuse</span><span>uninitialized state / defaults</span><span>Math.random() &amp; Date.now()</span><span>macros &amp; mixin misuse</span><span>++ / -- &amp; overflow</span><span>binary operators</span></div>
+</section>
+<section class="block">
+  <div class="block__head"><span class="num">03</span><span class="tag">the dream</span><h2>The pure-function fantasy</h2></div>
+  
+  <figure class="pullquote"><q>Through gradual practice and research, write entirely pure functions in typed languages on sandboxed VMs in a Faraday cage — only then can you never make a mistake when writing software.</q><cite>the unreachable ideal (said with a wink)</cite></figure>
+</section>
+<section class="block">
+  <div class="block__head"><span class="num">04</span><span class="tag">the defects</span><h2>The defects in detail</h2></div>
+  <p class="block__intro">This family breaks down into specific defects — each its own failure mode. Every one has its own page, worked examples, and animated signature.</p>
+  <div class="subgrid"><a class="subcard" href="/fr/mutated-state/var-let-mut/"><span class="subcard__glyph lottie-glyph" data-src="/assets/animations/var-let-mut.json"></span><span class="subcard__body"><span class="tag subcard__kicker">mutable bindings that drift out from under you</span><b class="subcard__title">var / let / mut Declarations</b><span class="subcard__essence">A binding you can reassign is a binding the next reader cannot trust.</span><span class="card__link">Read the defect <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></a><a class="subcard" href="/fr/mutated-state/aliasing-mutable-defaults/"><span class="subcard__glyph lottie-glyph" data-src="/assets/animations/aliasing-mutable-defaults.json"></span><span class="subcard__body"><span class="tag subcard__kicker">two names for one value that changes under both</span><b class="subcard__title">Aliasing &amp; Mutable Defaults</b><span class="subcard__essence">When two references share one mutable value, a write through either is a surprise to the other.</span><span class="card__link">Read the defect <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></a><a class="subcard" href="/fr/mutated-state/for-loop-control-flow/"><span class="subcard__glyph lottie-glyph" data-src="/assets/animations/for-loop-control-flow.json"></span><span class="subcard__body"><span class="tag subcard__kicker">hand-rolled counters and tangled break / continue</span><b class="subcard__title">for-Loop Control Flow</b><span class="subcard__essence">Manual loop control invites the index and the collection to disagree.</span><span class="card__link">Read the defect <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></a><a class="subcard" href="/fr/mutated-state/this-mutation/"><span class="subcard__glyph lottie-glyph" data-src="/assets/animations/this-mutation.json"></span><span class="subcard__body"><span class="tag subcard__kicker">methods that rewrite the object they live on</span><b class="subcard__title">this Mutation</b><span class="subcard__essence">When a method mutates this, every caller is coupled to call order.</span><span class="card__link">Read the defect <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></a><a class="subcard" href="/fr/mutated-state/time-money-entropy/"><span class="subcard__glyph lottie-glyph" data-src="/assets/animations/time-money-entropy.json"></span><span class="subcard__body"><span class="tag subcard__kicker">reading the clock, the coin, and the dice</span><b class="subcard__title">Time, Money &amp; Entropy</b><span class="subcard__essence">A function that consults wall-clock time or money in floats answers differently every call.</span><span class="card__link">Read the defect <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></a><a class="subcard" href="/fr/mutated-state/impure-functions/"><span class="subcard__glyph lottie-glyph" data-src="/assets/animations/impure-functions.json"></span><span class="subcard__body"><span class="tag subcard__kicker">hidden inputs, hidden effects</span><b class="subcard__title">Impure Functions</b><span class="subcard__essence">A function whose result depends on more than its arguments cannot be trusted or tested.</span><span class="card__link">Read the defect <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></a><a class="subcard" href="/fr/mutated-state/macro-mixin-misuse/"><span class="subcard__glyph lottie-glyph" data-src="/assets/animations/macro-mixin-misuse.json"></span><span class="subcard__body"><span class="tag subcard__kicker">code that rewrites code, out of sight</span><b class="subcard__title">Macro &amp; Mixin Misuse</b><span class="subcard__essence">Metaprogramming expands or mixes behavior the reader never sees.</span><span class="card__link">Read the defect <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></a><a class="subcard" href="/fr/mutated-state/increment-decrement-operators/"><span class="subcard__glyph lottie-glyph" data-src="/assets/animations/increment-decrement-operators.json"></span><span class="subcard__body"><span class="tag subcard__kicker">bump a number past the edge and it wraps</span><b class="subcard__title">++ / -- &amp; Integer Overflow</b><span class="subcard__essence">Pre- versus post-increment hides off-by-one and double-counting; bump a fixed-width integer past its max and it silently wraps to the bottom.</span><span class="card__link">Read the defect <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></a><a class="subcard" href="/fr/mutated-state/improper-initialization/"><span class="subcard__glyph lottie-glyph" data-src="/assets/animations/improper-initialization.json"></span><span class="subcard__body"><span class="tag subcard__kicker">read before it was ever written</span><b class="subcard__title">Improper Initialization</b><span class="subcard__essence">The first state transition — undefined to defined — is the purest mutated-state bug: use a value before it exists and every later read inherits garbage.</span><span class="card__link">Read the defect <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></a></div>
+</section>
+<section class="block">
+  <div class="block__head"><span class="num">05</span><span class="tag">antidotes</span><h2>Philosophies et antidotes</h2></div>
+  
+  <ul class="phil-list"><li><a href="https://www.reactivemanifesto.org" target="_blank" rel="noopener">Reactive Manifesto</a></li><li><a href="https://www.cs.kent.ac.uk/people/staff/dat/miranda/whyfp90.pdf" target="_blank" rel="noopener">Why Functional Programming Matters</a></li><li><a href="https://tidyverse.tidyverse.org/articles/manifesto.html" target="_blank" rel="noopener">Tidy Tools Manifesto</a></li><li><a href="https://refactoring.guru/design-patterns/state" target="_blank" rel="noopener">Refactoring Guru: State</a></li></ul><p class="block__intro" style="margin-top:1.4rem">This family maps to the CWE pillar: <a href="https://cwe.mitre.org/data/definitions/664.html" target="_blank" rel="noopener"><b>CWE-664</b> &mdash; Improper Control of a Resource Through its Lifetime</a></p>
+</section></div></div><div class="section" style="--accent:#78A65A;--accent-soft:#93C47D;--accent-deep:#4F7942;;padding-top:0"><div class="wrap"><nav class="xnav"><a class="xnav--common" href="/fr/common-defects/"><span class="tag">Précédent</span><b>Common Software Defects</b></a><a class="xnav--mutated" href="/fr/"><span class="tag">Tous les défauts</span><b>Les quatre familles</b></a><a class="xnav--unstructured" href="/fr/unstructured-state/"><span class="tag">Suivant</span><b>Bugs of Unstructured State</b></a></nav></div></div>
+</main>
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <p>Un guide interactif construit à partir des conférences de <em>Samuel&nbsp;Volin</em>. Four families of stateful defect, the smells that betray them, and the philosophies that defuse them.</p>
+    <nav class="flinks"><a href="/fr/mutated-state/">Muté</a> <a href="/fr/unstructured-state/">Non structuré</a> <a href="/fr/shared-state/">Partagé</a> <a href="/fr/common-defects/">Communs</a></nav>
+  </div>
+</footer>
+<script src="/assets/js/app.js" defer></script>
+</body>
+</html>

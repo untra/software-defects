@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Threading &amp; Mutexes — Bugs of Shared State</title>
+<meta name="description" content="A field guide to the four families of stateful software defect: mutated, unstructured, shared, and common.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/code-highlight.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="/es/"><svg class="glyph" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 12 3 7M12 12l9-5M12 12v10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" opacity=".5"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/></svg><span>Software&nbsp;Defects<small>guía de defectos con estado</small></span></a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav-links">
+        <a class="nav--mutated" href="/es/mutated-state/">Mutado</a>
+        <a class="nav--unstructured" href="/es/unstructured-state/">No estructurado</a>
+        <a class="nav--shared" href="/es/shared-state/" aria-current="page">Compartido</a>
+        <a class="nav--common" href="/es/common-defects/">Comunes</a>
+        <select class="lang-select" aria-label="Language" onchange="location.href=this.value"><option value="/en/shared-state/">EN</option><option value="/es/shared-state/" selected>ES</option><option value="/fr/shared-state/">FR</option><option value="/de/shared-state/">DE</option><option value="/pt-br/shared-state/">PT</option><option value="/ja/shared-state/">JA</option><option value="/zh/shared-state/">ZH</option><option value="/ko/shared-state/">KO</option><option value="/ar/shared-state/">AR</option></select>
+    </nav>
+  </div>
+</header>
+<main>
+<section class="console dhero" style="--accent:#DD3333;--accent-soft:#F87171;--accent-deep:#B91C1C;">
+  <div class="wrap dhero__grid">
+    <div>
+      <nav class="dcrumb tag"><a href="/es/shared-state/">Bugs of Shared State</a><span aria-hidden="true">/</span><span>Threading &amp; Mutexes</span></nav>
+      <p class="tag dhero__kicker">locks held, ordered, or forgotten</p>
+      <h1 class="dhero__title">Threading &amp; Mutexes</h1>
+      <p class="dhero__desc">Mutexes serialize access — until one is acquired out of order (deadlock) or retried in lockstep (livelock). Both achieve nothing.</p>
+      <p class="dhero__essence">The lock that protects you from a race is the lock that deadlocks you.</p>
+    </div>
+    <div class="dhero__art"><span class="lottie-glyph" data-src="/assets/animations/threading-mutexes.json"></span></div>
+  </div>
+</section><div class="section defect-body" style="--accent:#DD3333;--accent-soft:#F87171;--accent-deep:#B91C1C;"><div class="wrap"><section class="block">
+  <div class="block__head"><span class="num">01</span><span class="tag">in the wild</span><h2>En la práctica</h2></div>
+  
+  <div class="example"><h3 class="example__title">Deadlock: Acquire in One Order</h3><p class="example__intro">Two locks taken in opposite orders freeze forever, each thread waiting on the other.</p><div class="code-viewer" data-cv="cv9543202"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="python" data-target="cv9543202-python" role="tab" aria-selected="true" type="button">Python</button><button class="lang-tab" data-lang="java" data-target="cv9543202-java" role="tab" aria-selected="false" type="button">Java</button></div></div><div class="code-panel is-active" id="cv9543202-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1"># DEADLOCK: two locks taken in opposite orders</span>
+<span class="c1"># thread 1: lock(a) ; lock(b)</span>
+<span class="c1"># thread 2: lock(b) ; lock(a)   &lt;- each waits on the other</span>
+
+<span class="c1"># RIGHT: impose a global lock ordering</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">transfer</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="n">amount</span><span class="p">):</span>
+    <span class="n">first</span><span class="p">,</span> <span class="n">second</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">((</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">),</span> <span class="n">key</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">first</span><span class="o">.</span><span class="n">lock</span><span class="p">,</span> <span class="n">second</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>        <span class="c1"># always same order</span>
+        <span class="n">src</span><span class="o">.</span><span class="n">balance</span> <span class="o">-=</span> <span class="n">amount</span>
+        <span class="n">dst</span><span class="o">.</span><span class="n">balance</span> <span class="o">+=</span> <span class="n">amount</span></code></pre><div class="code-explain">Deadlock needs a cycle in the wait graph. Acquire locks in one consistent order and the cycle can&#x27;t form.</div><div class="code-out"><span class="tag">// observed</span><pre>unordered: threads freeze, NOTHING ACHIEVED
+ordered:   no cycle, transfers complete</pre></div></div><div class="code-panel" id="cv9543202-java" data-lang="java"><div class="code-head"><span class="fname">example.java</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// SMELL: lock order depends on argument order -&gt; deadlock</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">transfer</span><span class="p">(</span><span class="n">Account</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">Account</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">amt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">synchronized</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kd">synchronized</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* ... */</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// RIGHT: order locks by a stable key (e.g. account id)</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">transfer</span><span class="p">(</span><span class="n">Account</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">Account</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">amt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Account</span><span class="w"> </span><span class="n">first</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="na">id</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="na">id</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">second</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="na">id</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="na">id</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">synchronized</span><span class="w"> </span><span class="p">(</span><span class="n">first</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kd">synchronized</span><span class="w"> </span><span class="p">(</span><span class="n">second</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* ... */</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span></code></pre><div class="code-explain">transfer(x, y) and transfer(y, x) grab the locks in opposite orders. Sorting by a stable key gives every thread the same order.</div><div class="code-out"><span class="tag">// observed</span><pre>by-arg order: two transfers deadlock
+by-id order:  no cycle possible</pre></div></div></div></div>
+<div class="example"><h3 class="example__title">Livelock: Back Off With Jitter</h3><p class="example__intro">Both threads politely release and retry in lockstep, busy forever, achieving nothing.</p><div class="code-viewer" data-cv="cv9491150"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="java" data-target="cv9491150-java" role="tab" aria-selected="true" type="button">Java</button><button class="lang-tab" data-lang="go" data-target="cv9491150-go" role="tab" aria-selected="false" type="button">Go</button></div></div><div class="code-panel is-active" id="cv9491150-java" data-lang="java"><div class="code-head"><span class="fname">example.java</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// LIVELOCK: both threads politely back off forever</span>
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">acquireBoth</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">releaseAll</span><span class="p">();</span>
+<span class="w">    </span><span class="n">Thread</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="w">     </span><span class="c1">// both retry in lockstep, get nowhere</span>
+<span class="p">}</span>
+
+<span class="c1">// RIGHT: randomized backoff breaks the symmetry</span>
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">acquireBoth</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">releaseAll</span><span class="p">();</span>
+<span class="w">    </span><span class="n">Thread</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="n">random</span><span class="p">.</span><span class="na">nextInt</span><span class="p">(</span><span class="mi">50</span><span class="p">));</span><span class="w">   </span><span class="c1">// jitter</span>
+<span class="p">}</span></code></pre><div class="code-explain">Livelock is deadlock&#x27;s busy cousin: lots of activity, zero progress. Random jitter desynchronizes the retries.</div><div class="code-out"><span class="tag">// observed</span><pre>lockstep: SO MUCH IS HAPPENING, nothing done
+jitter:   one thread wins, work proceeds</pre></div></div><div class="code-panel" id="cv9491150-go" data-lang="go"><div class="code-head"><span class="fname">example.go</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// SMELL: spin-retry with no backoff -&gt; two goroutines livelock</span>
+<span class="k">for</span><span class="w"> </span><span class="p">!</span><span class="nx">tryAcquire</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">release</span><span class="p">()</span>
+<span class="w">    </span><span class="c1">// immediately retry, in perfect step with the other</span>
+<span class="p">}</span>
+
+<span class="c1">// RIGHT: exponential backoff with jitter</span>
+<span class="k">for</span><span class="w"> </span><span class="nx">attempt</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">!</span><span class="nx">tryAcquire</span><span class="p">();</span><span class="w"> </span><span class="nx">attempt</span><span class="o">++</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">release</span><span class="p">()</span>
+<span class="w">    </span><span class="nx">d</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">time</span><span class="p">.</span><span class="nx">Duration</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="nx">attempt</span><span class="p">)</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Millisecond</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">jitter</span><span class="p">()</span>
+<span class="w">    </span><span class="nx">time</span><span class="p">.</span><span class="nx">Sleep</span><span class="p">(</span><span class="nx">d</span><span class="p">)</span>
+<span class="p">}</span></code></pre><div class="code-explain">Tight retry loops keep two actors in sync so neither makes progress. Growing, jittered sleeps break the symmetry.</div><div class="code-out"><span class="tag">// observed</span><pre>no backoff: 100% CPU, no progress
+backoff:    one acquires, the other follows</pre></div></div></div></div>
+</section><section class="block">
+  <div class="block__head"><span class="num">02</span><span class="tag">weakness catalog</span><h2>Mapped weaknesses (CWE)</h2></div>
+  <p class="block__intro">On its own, this defect is catalogued by MITRE as one or more of these weaknesses. The exploitable vulnerability usually appears only when it chains or combines with another.</p>
+  <ul class="phil-list"><li><a href="https://cwe.mitre.org/data/definitions/667.html" target="_blank" rel="noopener"><b>CWE-667</b> &mdash; Improper Locking</a></li><li><a href="https://cwe.mitre.org/data/definitions/833.html" target="_blank" rel="noopener"><b>CWE-833</b> &mdash; Deadlock</a></li><li><a href="https://cwe.mitre.org/data/definitions/820.html" target="_blank" rel="noopener"><b>CWE-820</b> &mdash; Missing Synchronization</a></li></ul>
+</section></div></div><div class="section" style="--accent:#DD3333;--accent-soft:#F87171;--accent-deep:#B91C1C;;padding-top:0"><div class="wrap"><nav class="xnav"><a class="xnav--shared" href="/es/shared-state/cache-invalidation/"><span class="tag">Anterior</span><b>Cache Invalidation</b></a><a class="xnav--shared" href="/es/shared-state/"><span class="tag">Todos los defectos</span><b>Bugs of Shared State</b></a><a class="xnav--shared" href="/es/shared-state/file-network-access/"><span class="tag">Siguiente</span><b>File &amp; Network Access</b></a></nav></div></div>
+</main>
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <p>Una guía interactiva creada a partir de charlas de <em>Samuel&nbsp;Volin</em>. Four families of stateful defect, the smells that betray them, and the philosophies that defuse them.</p>
+    <nav class="flinks"><a href="/es/mutated-state/">Mutado</a> <a href="/es/unstructured-state/">No estructurado</a> <a href="/es/shared-state/">Compartido</a> <a href="/es/common-defects/">Comunes</a></nav>
+  </div>
+</footer>
+<script src="/assets/js/app.js" defer></script>
+</body>
+</html>

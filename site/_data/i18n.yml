@@ -1,0 +1,331 @@
+en:
+  nav_home: Home
+  nav_mutated: Mutated
+  nav_unstructured: Unstructured
+  nav_shared: Shared
+  nav_common: Common
+  anim_mutated: mutated
+  anim_unstructured: unstructured
+  anim_shared: shared
+  anim_common: common defects
+  brand_tagline: field guide to stateful defects
+  hero_eyebrow: A code smell hints at a defect — a defect suggests a vulnerability
+  hero_title_a: Stateful code smells
+  hero_title_b: stink the loudest
+  hero_sub: Bugs are not random; they follow patterns. These are the four families of stateful defects
+    — how they read on the page, why they happen, and the philosophies that defuse them.
+  defects_tag: the catalog
+  defects_title: Four families of defect
+  essence: The essence
+  symptoms: How it shows up
+  causes: What causes it
+  tools_hurt: Tools that hurt
+  examples: In the wild
+  philosophies: Philosophies & antidotes
+  cwes: Mapped weaknesses (CWE)
+  cwes_intro: On its own, this defect is catalogued by MITRE as one or more of these weaknesses. The exploitable
+    vulnerability usually appears only when it chains or combines with another.
+  cwe_pillar: 'This family maps to the CWE pillar:'
+  why: Why it's a defect
+  output: Observed
+  copy: copy
+  copied: copied
+  learn_more: Read the family
+  view_all: All four families
+  subdefects: The defects in detail
+  read_defect: Read the defect
+  subdefects_intro: This family breaks down into specific defects — each its own failure mode. Every one
+    has its own page, worked examples, and animated signature.
+  back: All defects
+  prev: Previous
+  next: Next
+  more_reading: Further reading
+  footer_note: An interactive field guide built from talks by
+es:
+  nav_home: Inicio
+  nav_mutated: Mutado
+  nav_unstructured: No estructurado
+  nav_shared: Compartido
+  nav_common: Comunes
+  anim_mutated: mutado
+  anim_unstructured: no estructurado
+  anim_shared: compartido
+  anim_common: defectos comunes
+  brand_tagline: guía de defectos con estado
+  hero_eyebrow: Un olor de código insinúa un defecto — un defecto sugiere una vulnerabilidad
+  hero_title_a: Los olores de código con estado
+  hero_title_b: apestan más fuerte
+  hero_sub: 'Los errores no son aleatorios; siguen patrones. Estas son las cuatro familias de defectos
+    con estado: cómo se leen en el código, por qué ocurren y las filosofías que los desactivan.'
+  defects_tag: el catálogo
+  defects_title: Cuatro familias de defectos
+  essence: La esencia
+  symptoms: Cómo se manifiesta
+  causes: Qué lo causa
+  tools_hurt: Herramientas que dañan
+  examples: En la práctica
+  philosophies: Filosofías y antídotos
+  why: Por qué es un defecto
+  output: Observado
+  copy: copiar
+  copied: copiado
+  learn_more: Leer la familia
+  view_all: Las cuatro familias
+  back: Todos los defectos
+  prev: Anterior
+  next: Siguiente
+  more_reading: Más lecturas
+  footer_note: Una guía interactiva creada a partir de charlas de
+fr:
+  nav_home: Accueil
+  nav_mutated: Muté
+  nav_unstructured: Non structuré
+  nav_shared: Partagé
+  nav_common: Communs
+  anim_mutated: muté
+  anim_unstructured: non structuré
+  anim_shared: partagé
+  anim_common: défauts communs
+  brand_tagline: guide des défauts avec état
+  hero_eyebrow: Une odeur de code laisse présager un défaut — un défaut suggère une vulnérabilité
+  hero_title_a: Les odeurs de code avec état
+  hero_title_b: sentent le plus fort
+  hero_sub: 'Les bugs ne sont pas aléatoires ; ils suivent des schémas. Voici les quatre familles de défauts
+    avec état : comment ils se lisent dans le code, pourquoi ils surviennent et les philosophies qui les
+    désamorcent.'
+  defects_tag: le catalogue
+  defects_title: Quatre familles de défauts
+  essence: L'essence
+  symptoms: Comment ça se manifeste
+  causes: Ce qui le cause
+  tools_hurt: Outils qui blessent
+  examples: Sur le terrain
+  philosophies: Philosophies et antidotes
+  why: Pourquoi c'est un défaut
+  output: Observé
+  copy: copier
+  copied: copié
+  learn_more: Lire la famille
+  view_all: Les quatre familles
+  back: Tous les défauts
+  prev: Précédent
+  next: Suivant
+  more_reading: Pour aller plus loin
+  footer_note: Un guide interactif construit à partir des conférences de
+de:
+  nav_home: Start
+  nav_mutated: Mutiert
+  nav_unstructured: Unstrukturiert
+  nav_shared: Geteilt
+  nav_common: Häufige
+  anim_mutated: mutiert
+  anim_unstructured: unstrukturiert
+  anim_shared: geteilt
+  anim_common: häufige fehler
+  brand_tagline: Feldführer für Zustandsdefekte
+  hero_eyebrow: Ein Code-Geruch deutet auf einen Defekt — ein Defekt auf eine Schwachstelle
+  hero_title_a: Stateful-Code-Gerüche
+  hero_title_b: stinken am lautesten
+  hero_sub: Fehler sind nicht zufällig; sie folgen Mustern. Dies sind die vier Familien zustandsbehafteter
+    Defekte — wie sie im Code aussehen, warum sie entstehen und welche Philosophien sie entschärfen.
+  defects_tag: der Katalog
+  defects_title: Vier Defektfamilien
+  essence: Die Essenz
+  symptoms: Wie es sich zeigt
+  causes: Was es verursacht
+  tools_hurt: Werkzeuge, die schaden
+  examples: In freier Wildbahn
+  philosophies: Philosophien & Gegenmittel
+  why: Warum es ein Defekt ist
+  output: Beobachtet
+  copy: kopieren
+  copied: kopiert
+  learn_more: Familie lesen
+  view_all: Alle vier Familien
+  back: Alle Defekte
+  prev: Zurück
+  next: Weiter
+  more_reading: Weiterführendes
+  footer_note: Ein interaktiver Feldführer auf Basis von Vorträgen von
+pt-br:
+  nav_home: Início
+  nav_mutated: Mutado
+  nav_unstructured: Não estruturado
+  nav_shared: Compartilhado
+  nav_common: Comuns
+  anim_mutated: mutado
+  anim_unstructured: não estruturado
+  anim_shared: compartilhado
+  anim_common: defeitos comuns
+  brand_tagline: guia de defeitos com estado
+  hero_eyebrow: Um cheiro de código insinua um defeito — um defeito sugere uma vulnerabilidade
+  hero_title_a: Cheiros de código com estado
+  hero_title_b: fedem mais alto
+  hero_sub: 'Bugs não são aleatórios; seguem padrões. Estas são as quatro famílias de defeitos com estado:
+    como aparecem no código, por que acontecem e as filosofias que os neutralizam.'
+  defects_tag: o catálogo
+  defects_title: Quatro famílias de defeitos
+  essence: A essência
+  symptoms: Como se manifesta
+  causes: O que causa
+  tools_hurt: Ferramentas que ferem
+  examples: Na prática
+  philosophies: Filosofias e antídotos
+  why: Por que é um defeito
+  output: Observado
+  copy: copiar
+  copied: copiado
+  learn_more: Ler a família
+  view_all: As quatro famílias
+  back: Todos os defeitos
+  prev: Anterior
+  next: Próximo
+  more_reading: Leitura adicional
+  footer_note: Um guia interativo construído a partir de palestras de
+ja:
+  nav_home: ホーム
+  nav_mutated: 変異
+  nav_unstructured: 非構造化
+  nav_shared: 共有
+  nav_common: 一般的
+  anim_mutated: 変異
+  anim_unstructured: 非構造化
+  anim_shared: 共有
+  anim_common: 一般的な欠陥
+  brand_tagline: 状態を持つ欠陥の野外図鑑
+  hero_eyebrow: コードの臭いは欠陥を示唆し、欠陥は脆弱性を示唆する
+  hero_title_a: 状態を持つコードの臭いは
+  hero_title_b: 最も強く漂う
+  hero_sub: バグはランダムではなく、パターンに従います。これは状態を持つ欠陥の4つの系統です。コード上でどう見えるか、なぜ起きるか、そしてそれを解除する哲学を紹介します。
+  defects_tag: カタログ
+  defects_title: 欠陥の4系統
+  essence: 本質
+  symptoms: 現れ方
+  causes: 原因
+  tools_hurt: 害になる道具
+  examples: 実例
+  philosophies: 哲学と対策
+  why: なぜ欠陥なのか
+  output: 観測結果
+  copy: コピー
+  copied: コピー済み
+  learn_more: この系統を読む
+  view_all: 4系統すべて
+  back: すべての欠陥
+  prev: 前へ
+  next: 次へ
+  more_reading: 参考資料
+  footer_note: 次の講演をもとに構築されたインタラクティブな図鑑：
+zh:
+  nav_home: 首页
+  nav_mutated: 可变
+  nav_unstructured: 非结构化
+  nav_shared: 共享
+  nav_common: 常见
+  anim_mutated: 可变
+  anim_unstructured: 非结构化
+  anim_shared: 共享
+  anim_common: 常见缺陷
+  brand_tagline: 状态缺陷实地指南
+  hero_eyebrow: 代码异味暗示缺陷 — 缺陷预示漏洞
+  hero_title_a: 有状态的代码异味
+  hero_title_b: 气味最为刺鼻
+  hero_sub: 缺陷并非随机，而是遵循模式。这是有状态缺陷的四大类别——它们在代码中如何呈现、为何发生，以及化解它们的理念。
+  defects_tag: 目录
+  defects_title: 缺陷的四大类别
+  essence: 本质
+  symptoms: 如何显现
+  causes: 成因
+  tools_hurt: 帮倒忙的工具
+  examples: 实战中
+  philosophies: 理念与解药
+  why: 为何是缺陷
+  output: 观察到
+  copy: 复制
+  copied: 已复制
+  learn_more: 阅读该类别
+  view_all: 全部四大类别
+  subdefects: 缺陷详解
+  read_defect: 阅读该缺陷
+  subdefects_intro: 这一类别可细分为具体缺陷——每个都是独立的失效模式。每个缺陷都有自己的页面、实例和动态签名。
+  back: 所有缺陷
+  prev: 上一个
+  next: 下一个
+  more_reading: 延伸阅读
+  footer_note: 一份基于以下演讲构建的交互式实地指南：
+ko:
+  nav_home: 홈
+  nav_mutated: 변이
+  nav_unstructured: 비구조화
+  nav_shared: 공유
+  nav_common: 일반
+  anim_mutated: 변이
+  anim_unstructured: 비구조화
+  anim_shared: 공유
+  anim_common: 일반 결함
+  brand_tagline: 상태 결함 현장 안내서
+  hero_eyebrow: 코드 냄새는 결함을 암시하고 — 결함은 취약점을 시사한다
+  hero_title_a: 상태를 가진 코드 냄새가
+  hero_title_b: 가장 지독하게 풍긴다
+  hero_sub: 버그는 무작위가 아니라 패턴을 따릅니다. 이것이 상태 결함의 네 가지 계열입니다 — 코드에서 어떻게 보이는지, 왜 발생하는지, 그리고 이를 해소하는 철학을 소개합니다.
+  defects_tag: 카탈로그
+  defects_title: 결함의 네 가지 계열
+  essence: 본질
+  symptoms: 어떻게 나타나는가
+  causes: 무엇이 원인인가
+  tools_hurt: 해가 되는 도구
+  examples: 실제 사례
+  philosophies: 철학과 해독제
+  why: 왜 결함인가
+  output: 관측됨
+  copy: 복사
+  copied: 복사됨
+  learn_more: 계열 읽기
+  view_all: 네 계열 모두
+  subdefects: 결함 상세
+  read_defect: 결함 읽기
+  subdefects_intro: 이 계열은 구체적인 결함으로 나뉩니다 — 각각이 고유한 실패 양상입니다. 모든 결함은 자체 페이지, 실제 예제, 애니메이션 시그니처를 갖습니다.
+  back: 모든 결함
+  prev: 이전
+  next: 다음
+  more_reading: 더 읽을거리
+  footer_note: '다음 강연을 바탕으로 제작된 인터랙티브 현장 안내서:'
+ar:
+  nav_home: الرئيسية
+  nav_mutated: متغيّر
+  nav_unstructured: غير منظّم
+  nav_shared: مشترَك
+  nav_common: شائع
+  anim_mutated: متغيّر
+  anim_unstructured: غير منظّم
+  anim_shared: مشترَك
+  anim_common: عيوب شائعة
+  brand_tagline: دليل ميداني لعيوب الحالة
+  hero_eyebrow: رائحة الكود تلمّح إلى عيب — والعيب يوحي بثغرة
+  hero_title_a: روائح الكود ذات الحالة
+  hero_title_b: هي الأنتن
+  hero_sub: الأخطاء ليست عشوائية، بل تتبع أنماطًا. هذه هي العائلات الأربع لعيوب الحالة — كيف تبدو في الكود،
+    ولماذا تحدث، والفلسفات التي تُبطل مفعولها.
+  defects_tag: الفهرس
+  defects_title: أربع عائلات من العيوب
+  essence: الجوهر
+  symptoms: كيف يظهر
+  causes: ما الذي يسبّبه
+  tools_hurt: أدوات تضرّ
+  examples: في الواقع
+  philosophies: الفلسفات والعلاجات
+  why: لماذا هو عيب
+  output: مُلاحَظ
+  copy: نسخ
+  copied: تم النسخ
+  learn_more: اقرأ العائلة
+  view_all: العائلات الأربع كاملة
+  subdefects: العيوب بالتفصيل
+  read_defect: اقرأ العيب
+  subdefects_intro: تنقسم هذه العائلة إلى عيوب محددة — كل منها نمط فشل مستقل. لكلٍّ صفحته الخاصة وأمثلته
+    العملية وتوقيعه المتحرك.
+  back: كل العيوب
+  prev: السابق
+  next: التالي
+  more_reading: قراءات إضافية
+  footer_note: دليل ميداني تفاعلي مبني على محاضرات لـ

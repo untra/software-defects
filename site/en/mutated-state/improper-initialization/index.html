@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Improper Initialization — Bugs of Mutated State</title>
+<meta name="description" content="A field guide to the four families of stateful software defect: mutated, unstructured, shared, and common.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/code-highlight.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="/en/"><svg class="glyph" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 12 3 7M12 12l9-5M12 12v10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" opacity=".5"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/></svg><span>Software&nbsp;Defects<small>field guide to stateful defects</small></span></a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav-links">
+        <a class="nav--mutated" href="/en/mutated-state/" aria-current="page">Mutated</a>
+        <a class="nav--unstructured" href="/en/unstructured-state/">Unstructured</a>
+        <a class="nav--shared" href="/en/shared-state/">Shared</a>
+        <a class="nav--common" href="/en/common-defects/">Common</a>
+        <select class="lang-select" aria-label="Language" onchange="location.href=this.value"><option value="/en/mutated-state/" selected>EN</option><option value="/es/mutated-state/">ES</option><option value="/fr/mutated-state/">FR</option><option value="/de/mutated-state/">DE</option><option value="/pt-br/mutated-state/">PT</option><option value="/ja/mutated-state/">JA</option><option value="/zh/mutated-state/">ZH</option><option value="/ko/mutated-state/">KO</option><option value="/ar/mutated-state/">AR</option></select>
+    </nav>
+  </div>
+</header>
+<main>
+<section class="console dhero" style="--accent:#78A65A;--accent-soft:#93C47D;--accent-deep:#4F7942;">
+  <div class="wrap dhero__grid">
+    <div>
+      <nav class="dcrumb tag"><a href="/en/mutated-state/">Bugs of Mutated State</a><span aria-hidden="true">/</span><span>Improper Initialization</span></nav>
+      <p class="tag dhero__kicker">read before it was ever written</p>
+      <h1 class="dhero__title">Improper Initialization</h1>
+      <p class="dhero__desc">A binding read before it is assigned, a field a constructor forgot, a resource left at its default: the undefined → defined transition is where state begins, and skipping it makes illegal states representable from the very first line.</p>
+      <p class="dhero__essence">The first state transition — undefined to defined — is the purest mutated-state bug: use a value before it exists and every later read inherits garbage.</p>
+    </div>
+    <div class="dhero__art"><span class="lottie-glyph" data-src="/assets/animations/improper-initialization.json"></span></div>
+  </div>
+</section><div class="section defect-body" style="--accent:#78A65A;--accent-soft:#93C47D;--accent-deep:#4F7942;"><div class="wrap"><section class="block">
+  <div class="block__head"><span class="num">01</span><span class="tag">in the wild</span><h2>In the wild</h2></div>
+  
+  <div class="example"><h3 class="example__title">Used Before Assigned</h3><p class="example__intro">A variable or field read before anything wrote to it hands back whatever was already there.</p><div class="code-viewer" data-cv="cv7003525"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="c" data-target="cv7003525-c" role="tab" aria-selected="true" type="button">C</button><button class="lang-tab" data-lang="go" data-target="cv7003525-go" role="tab" aria-selected="false" type="button">Go</button></div></div><div class="code-panel is-active" id="cv7003525-c" data-lang="c"><div class="code-head"><span class="fname">example.c</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// SMELL: local is never initialized -- reads indeterminate memory</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">total</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">sum</span><span class="p">;</span><span class="w">                 </span><span class="c1">// garbage value</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">        </span><span class="n">sum</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w">            </span><span class="c1">// adds to garbage; result is nonsense</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">sum</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// RIGHT: initialize at the point of declaration</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">total</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">sum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">             </span><span class="c1">// a defined starting state</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">        </span><span class="n">sum</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">sum</span><span class="p">;</span>
+<span class="p">}</span></code></pre><div class="code-explain">An uninitialized automatic variable holds whatever bytes were on the stack. Reading it is undefined behavior; initialize at declaration so the starting state is real.</div><div class="code-out"><span class="tag">// observed</span><pre>uninit: sum += i over garbage -&gt; nonsense
+init:   sum starts at 0 -&gt; 45</pre></div></div><div class="code-panel" id="cv7003525-go" data-lang="go"><div class="code-head"><span class="fname">example.go</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// SMELL: the zero value of a map is nil, and writing to nil panics</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">counts</span><span class="w"> </span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="w">          </span><span class="c1">// nil, not empty</span>
+<span class="nx">counts</span><span class="p">[</span><span class="s">&quot;a&quot;</span><span class="p">]</span><span class="o">++</span><span class="w">                      </span><span class="c1">// panic: assignment to entry in nil map</span>
+
+<span class="c1">// RIGHT: make() gives a real, writable map</span>
+<span class="nx">counts</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nb">make</span><span class="p">(</span><span class="kd">map</span><span class="p">[</span><span class="kt">string</span><span class="p">]</span><span class="kt">int</span><span class="p">)</span><span class="w">     </span><span class="c1">// initialized</span>
+<span class="nx">counts</span><span class="p">[</span><span class="s">&quot;a&quot;</span><span class="p">]</span><span class="o">++</span><span class="w">                      </span><span class="c1">// 1</span>
+
+<span class="c1">// (reading a nil map is fine -- it&#39;s the WRITE that needs init)</span></code></pre><div class="code-explain">Go zero-values everything, but a map&#x27;s zero value is nil and only readable. You must make() it before writing, or the first assignment panics.</div><div class="code-out"><span class="tag">// observed</span><pre>nil map:  counts[&quot;a&quot;]++ -&gt; panic
+made map: counts[&quot;a&quot;]++ -&gt; 1</pre></div></div></div></div>
+<div class="example"><h3 class="example__title">Insecure Default Initialization</h3><p class="example__intro">A field left at a permissive default — or a constructor that skips it — is a security hole, not just a bug.</p><div class="code-viewer" data-cv="cv7763732"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="python" data-target="cv7763732-python" role="tab" aria-selected="true" type="button">Python</button><button class="lang-tab" data-lang="javascript" data-target="cv7763732-javascript" role="tab" aria-selected="false" type="button">JavaScript</button></div></div><div class="code-panel is-active" id="cv7763732-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="k">class</span><span class="w"> </span><span class="nc">Session</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">user</span>
+        <span class="c1"># SMELL: is_admin never set; some paths read it -&gt; AttributeError,</span>
+        <span class="c1"># or a __getattr__ shim quietly returns a truthy default</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_admin</span>          <span class="c1"># AttributeError, or worse: True</span>
+
+<span class="c1"># RIGHT: initialize every field to a safe, explicit default</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Session</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">user</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_admin</span> <span class="o">=</span> <span class="kc">False</span>         <span class="c1"># deny by default</span></code></pre><div class="code-explain">A field the constructor forgets is either a crash or, with a permissive fallback, an open door. Initialize every field — and make the default the safe one.</div><div class="code-out"><span class="tag">// observed</span><pre>missing: self.is_admin -&gt; AttributeError / unsafe
+default: is_admin = False -&gt; deny by default</pre></div></div><div class="code-panel" id="cv7763732-javascript" data-lang="javascript"><div class="code-head"><span class="fname">example.js</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// SMELL: a half-built object escapes before it&#39;s fully set up</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">makeUser</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">u</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
+<span class="w">  </span><span class="nx">u</span><span class="p">.</span><span class="nx">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">name</span><span class="p">;</span>
+<span class="w">  </span><span class="nx">save</span><span class="p">(</span><span class="nx">u</span><span class="p">);</span><span class="w">                 </span><span class="c1">// saved with role === undefined</span>
+<span class="w">  </span><span class="nx">u</span><span class="p">.</span><span class="nx">role</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;member&quot;</span><span class="p">;</span><span class="w">       </span><span class="c1">// too late -- the saved copy is broken</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="nx">u</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// RIGHT: build the whole value, then let it escape</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">makeUser</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="nx">req</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span><span class="w"> </span><span class="nx">role</span><span class="o">:</span><span class="w"> </span><span class="s2">&quot;member&quot;</span><span class="w"> </span><span class="p">};</span><span class="w">   </span><span class="c1">// fully initialized</span>
+<span class="p">}</span></code></pre><div class="code-explain">Letting a partially-initialized object escape (saved, passed, returned) exposes the undefined window. Construct the complete value first, then release it.</div><div class="code-out"><span class="tag">// observed</span><pre>leaked: save() sees role === undefined
+whole:  object is complete before it escapes</pre></div></div></div></div>
+</section><section class="block">
+  <div class="block__head"><span class="num">02</span><span class="tag">weakness catalog</span><h2>Mapped weaknesses (CWE)</h2></div>
+  <p class="block__intro">On its own, this defect is catalogued by MITRE as one or more of these weaknesses. The exploitable vulnerability usually appears only when it chains or combines with another.</p>
+  <ul class="phil-list"><li><a href="https://cwe.mitre.org/data/definitions/665.html" target="_blank" rel="noopener"><b>CWE-665</b> &mdash; Improper Initialization</a></li><li><a href="https://cwe.mitre.org/data/definitions/457.html" target="_blank" rel="noopener"><b>CWE-457</b> &mdash; Use of Uninitialized Variable</a></li><li><a href="https://cwe.mitre.org/data/definitions/456.html" target="_blank" rel="noopener"><b>CWE-456</b> &mdash; Missing Initialization of a Variable</a></li><li><a href="https://cwe.mitre.org/data/definitions/908.html" target="_blank" rel="noopener"><b>CWE-908</b> &mdash; Use of Uninitialized Resource</a></li><li><a href="https://cwe.mitre.org/data/definitions/1188.html" target="_blank" rel="noopener"><b>CWE-1188</b> &mdash; Insecure Default Initialization of Resource</a></li></ul>
+</section></div></div><div class="section" style="--accent:#78A65A;--accent-soft:#93C47D;--accent-deep:#4F7942;;padding-top:0"><div class="wrap"><nav class="xnav"><a class="xnav--mutated" href="/en/mutated-state/increment-decrement-operators/"><span class="tag">Previous</span><b>++ / -- &amp; Integer Overflow</b></a><a class="xnav--mutated" href="/en/mutated-state/"><span class="tag">All defects</span><b>Bugs of Mutated State</b></a><a class="xnav--mutated" href="/en/mutated-state/var-let-mut/"><span class="tag">Next</span><b>var / let / mut Declarations</b></a></nav></div></div>
+</main>
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <p>An interactive field guide built from talks by <em>Samuel&nbsp;Volin</em>. Four families of stateful defect, the smells that betray them, and the philosophies that defuse them.</p>
+    <nav class="flinks"><a href="/en/mutated-state/">Mutated</a> <a href="/en/unstructured-state/">Unstructured</a> <a href="/en/shared-state/">Shared</a> <a href="/en/common-defects/">Common</a></nav>
+  </div>
+</footer>
+<script src="/assets/js/app.js" defer></script>
+</body>
+</html>

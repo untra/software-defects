@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="de" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stack Overflow Bugs — Bugs of Shared State</title>
+<meta name="description" content="A field guide to the four families of stateful software defect: mutated, unstructured, shared, and common.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/code-highlight.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="/de/"><svg class="glyph" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 12 3 7M12 12l9-5M12 12v10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" opacity=".5"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/></svg><span>Software&nbsp;Defects<small>Feldführer für Zustandsdefekte</small></span></a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav-links">
+        <a class="nav--mutated" href="/de/mutated-state/">Mutiert</a>
+        <a class="nav--unstructured" href="/de/unstructured-state/">Unstrukturiert</a>
+        <a class="nav--shared" href="/de/shared-state/" aria-current="page">Geteilt</a>
+        <a class="nav--common" href="/de/common-defects/">Häufige</a>
+        <select class="lang-select" aria-label="Language" onchange="location.href=this.value"><option value="/en/shared-state/">EN</option><option value="/es/shared-state/">ES</option><option value="/fr/shared-state/">FR</option><option value="/de/shared-state/" selected>DE</option><option value="/pt-br/shared-state/">PT</option><option value="/ja/shared-state/">JA</option><option value="/zh/shared-state/">ZH</option><option value="/ko/shared-state/">KO</option><option value="/ar/shared-state/">AR</option></select>
+    </nav>
+  </div>
+</header>
+<main>
+<section class="console dhero" style="--accent:#DD3333;--accent-soft:#F87171;--accent-deep:#B91C1C;">
+  <div class="wrap dhero__grid">
+    <div>
+      <nav class="dcrumb tag"><a href="/de/shared-state/">Bugs of Shared State</a><span aria-hidden="true">/</span><span>Stack Overflow Bugs</span></nav>
+      <p class="tag dhero__kicker">recursion with no floor</p>
+      <h1 class="dhero__title">Stack Overflow Bugs</h1>
+      <p class="dhero__desc">Unbounded recursion exhausts the stack; runaway allocation exhausts the heap and the OOM killer steps in. Either way the program is reaped.</p>
+      <p class="dhero__essence">A call stack that never unwinds, or a heap that never stops growing, runs out of room.</p>
+    </div>
+    <div class="dhero__art"><span class="lottie-glyph" data-src="/assets/animations/stack-overflow.json"></span></div>
+  </div>
+</section><div class="section defect-body" style="--accent:#DD3333;--accent-soft:#F87171;--accent-deep:#B91C1C;"><div class="wrap"><section class="block">
+  <div class="block__head"><span class="num">01</span><span class="tag">in the wild</span><h2>In freier Wildbahn</h2></div>
+  
+  <div class="example"><h3 class="example__title">Unbounded Recursion</h3><p class="example__intro">No base case is reached, so the stack grows until it is gone.</p><div class="code-viewer" data-cv="cv6004217"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="python" data-target="cv6004217-python" role="tab" aria-selected="true" type="button">Python</button><button class="lang-tab" data-lang="c" data-target="cv6004217-c" role="tab" aria-selected="false" type="button">C</button><button class="lang-tab" data-lang="java" data-target="cv6004217-java" role="tab" aria-selected="false" type="button">Java</button></div></div><div class="code-panel is-active" id="cv6004217-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1"># SMELL: no base case reached (e.g. a cyclic list)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">depth</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">depth</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">next</span><span class="p">)</span>   <span class="c1"># recurses forever</span>
+
+<span class="c1"># RIGHT: iterate -- constant stack, any length</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">depth</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">next</span>
+    <span class="k">return</span> <span class="n">n</span></code></pre><div class="code-explain">Python caps recursion at ~1000 frames and raises RecursionError. An explicit loop uses O(1) stack and handles any input.</div><div class="code-out"><span class="tag">// observed</span><pre>recursive: RecursionError at ~1000 frames
+iterative: returns, constant stack</pre></div></div><div class="code-panel" id="cv6004217-c" data-lang="c"><div class="code-head"><span class="fname">example.c</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="cm">/* SMELL: deep recursion smashes the fixed-size stack */</span>
+<span class="kt">long</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="kt">long</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">sum</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="n">sum</span><span class="p">(</span><span class="mi">10000000</span><span class="p">);</span><span class="w">   </span><span class="cm">/* segfault: stack overflow, no exception */</span>
+
+<span class="cm">/* RIGHT: a loop uses constant stack */</span>
+<span class="kt">long</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="kt">long</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">--</span><span class="p">)</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">n</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">s</span><span class="p">;</span>
+<span class="p">}</span></code></pre><div class="code-explain">C does not check stack depth. Overflow is undefined behavior — usually a segfault, sometimes silent corruption.</div><div class="code-out"><span class="tag">// observed</span><pre>recursive: segmentation fault (stack overflow)
+iterative: returns, constant stack</pre></div></div><div class="code-panel" id="cv6004217-java" data-lang="java"><div class="code-head"><span class="fname">example.java</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// SMELL: recursion deeper than the thread stack</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">sum</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="n">sum</span><span class="p">(</span><span class="mi">1_000_000</span><span class="p">);</span><span class="w">   </span><span class="c1">// throws StackOverflowError</span>
+
+<span class="c1">// RIGHT: iterate</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">n</span><span class="o">--</span><span class="p">)</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">n</span><span class="p">;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">s</span><span class="p">;</span>
+<span class="p">}</span></code></pre><div class="code-explain">The JVM turns overflow into a catchable StackOverflowError rather than a crash — but it is still a bug, not a recovery strategy.</div><div class="code-out"><span class="tag">// observed</span><pre>recursive: StackOverflowError
+iterative: returns, constant stack</pre></div></div></div></div>
+<div class="example"><h3 class="example__title">Runaway Allocation &amp; the OOM Killer</h3><p class="example__intro">Holding the whole dataset in memory invites the kernel to reap the process.</p><div class="code-viewer" data-cv="cv3039361"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="python" data-target="cv3039361-python" role="tab" aria-selected="true" type="button">Python</button></div></div><div class="code-panel is-active" id="cv3039361-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1"># SMELL: materialize everything in RAM -&gt; the OOM killer wins</span>
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[</span><span class="n">transform</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">fetch_all</span><span class="p">()]</span>   <span class="c1"># 50M rows at once</span>
+<span class="k">return</span> <span class="n">summarize</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+
+<span class="c1"># RIGHT: stream and process in bounded chunks</span>
+<span class="n">total</span> <span class="o">=</span> <span class="n">Summary</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">iter_batches</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">10_000</span><span class="p">):</span>
+    <span class="n">total</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">transform</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">)</span>
+<span class="k">return</span> <span class="n">total</span></code></pre><div class="code-explain">fetch_all() loads the entire result set; memory scales with the data and the kernel kills the process. Streaming keeps memory bounded.</div><div class="code-out"><span class="tag">// observed</span><pre>all-in-RAM: Killed  (reaped by the OOM killer)
+streamed:  steady memory, completes</pre></div></div></div></div>
+</section><section class="block">
+  <div class="block__head"><span class="num">02</span><span class="tag">weakness catalog</span><h2>Mapped weaknesses (CWE)</h2></div>
+  <p class="block__intro">On its own, this defect is catalogued by MITRE as one or more of these weaknesses. The exploitable vulnerability usually appears only when it chains or combines with another.</p>
+  <ul class="phil-list"><li><a href="https://cwe.mitre.org/data/definitions/674.html" target="_blank" rel="noopener"><b>CWE-674</b> &mdash; Uncontrolled Recursion</a></li><li><a href="https://cwe.mitre.org/data/definitions/121.html" target="_blank" rel="noopener"><b>CWE-121</b> &mdash; Stack-based Buffer Overflow</a></li><li><a href="https://cwe.mitre.org/data/definitions/787.html" target="_blank" rel="noopener"><b>CWE-787</b> &mdash; Out-of-bounds Write</a></li></ul>
+</section></div></div><div class="section" style="--accent:#DD3333;--accent-soft:#F87171;--accent-deep:#B91C1C;;padding-top:0"><div class="wrap"><nav class="xnav"><a class="xnav--shared" href="/de/shared-state/resource-contention/"><span class="tag">Zurück</span><b>Resource Contention</b></a><a class="xnav--shared" href="/de/shared-state/"><span class="tag">Alle Defekte</span><b>Bugs of Shared State</b></a><a class="xnav--shared" href="/de/shared-state/async-io-misuse/"><span class="tag">Weiter</span><b>Async IO Misuse</b></a></nav></div></div>
+</main>
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <p>Ein interaktiver Feldführer auf Basis von Vorträgen von <em>Samuel&nbsp;Volin</em>. Four families of stateful defect, the smells that betray them, and the philosophies that defuse them.</p>
+    <nav class="flinks"><a href="/de/mutated-state/">Mutiert</a> <a href="/de/unstructured-state/">Unstrukturiert</a> <a href="/de/shared-state/">Geteilt</a> <a href="/de/common-defects/">Häufige</a></nav>
+  </div>
+</footer>
+<script src="/assets/js/app.js" defer></script>
+</body>
+</html>

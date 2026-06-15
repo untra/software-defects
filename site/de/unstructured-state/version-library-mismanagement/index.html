@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="de" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Version &amp; Library Mismanagement — Bugs of Unstructured State</title>
+<meta name="description" content="A field guide to the four families of stateful software defect: mutated, unstructured, shared, and common.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/code-highlight.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="/de/"><svg class="glyph" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 12 3 7M12 12l9-5M12 12v10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" opacity=".5"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/></svg><span>Software&nbsp;Defects<small>Feldführer für Zustandsdefekte</small></span></a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav-links">
+        <a class="nav--mutated" href="/de/mutated-state/">Mutiert</a>
+        <a class="nav--unstructured" href="/de/unstructured-state/" aria-current="page">Unstrukturiert</a>
+        <a class="nav--shared" href="/de/shared-state/">Geteilt</a>
+        <a class="nav--common" href="/de/common-defects/">Häufige</a>
+        <select class="lang-select" aria-label="Language" onchange="location.href=this.value"><option value="/en/unstructured-state/">EN</option><option value="/es/unstructured-state/">ES</option><option value="/fr/unstructured-state/">FR</option><option value="/de/unstructured-state/" selected>DE</option><option value="/pt-br/unstructured-state/">PT</option><option value="/ja/unstructured-state/">JA</option><option value="/zh/unstructured-state/">ZH</option><option value="/ko/unstructured-state/">KO</option><option value="/ar/unstructured-state/">AR</option></select>
+    </nav>
+  </div>
+</header>
+<main>
+<section class="console dhero" style="--accent:#3D85C6;--accent-soft:#6FA8DC;--accent-deep:#0B5394;">
+  <div class="wrap dhero__grid">
+    <div>
+      <nav class="dcrumb tag"><a href="/de/unstructured-state/">Bugs of Unstructured State</a><span aria-hidden="true">/</span><span>Version &amp; Library Mismanagement</span></nav>
+      <p class="tag dhero__kicker">dependencies drifting out from under you</p>
+      <h1 class="dhero__title">Version &amp; Library Mismanagement</h1>
+      <p class="dhero__desc">Floating version ranges, unpinned lockfiles, and copy-pasted helpers make the dependency tree itself unstructured input. A &#x27;patch&#x27; bump changes behavior, two libraries demand incompatible versions, and &#x27;works on my machine&#x27; becomes a deployment incident.</p>
+      <p class="dhero__essence">The code you tested and the code that ships resolve to different library versions.</p>
+    </div>
+    <div class="dhero__art"><span class="lottie-glyph" data-src="/assets/animations/version-library-mismanagement.json"></span></div>
+  </div>
+</section><div class="section defect-body" style="--accent:#3D85C6;--accent-soft:#6FA8DC;--accent-deep:#0B5394;"><div class="wrap"><section class="block">
+  <div class="block__head"><span class="num">01</span><span class="tag">in the wild</span><h2>In freier Wildbahn</h2></div>
+  
+  <div class="example"><h3 class="example__title">The Caret That Shipped a Surprise</h3><p class="example__intro">A floating range pulls a new version you never tested at build time.</p><div class="code-viewer" data-cv="cv1639753"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="json" data-target="cv1639753-json" role="tab" aria-selected="true" type="button">JSON</button><button class="lang-tab" data-lang="python" data-target="cv1639753-python" role="tab" aria-selected="false" type="button">Python</button></div></div><div class="code-panel is-active" id="cv1639753-json" data-lang="json"><div class="code-head"><span class="fname">example.txt</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// package.json -- WRONG: ranges float on every install</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;dependencies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;date-utils&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;^1.2.0&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">// ^1.2.0 allows any 1.x; a 1.3.0 with a regression slips in silently.</span>
+<span class="c1">// RIGHT: commit package-lock.json and install with `npm ci`,</span>
+<span class="c1">// which installs the locked tree verbatim.</span></code></pre><div class="code-explain">^1.2.0 means &#x27;any 1.x&#x27; -- a minor release with a behavior change installs silently. A committed lockfile plus npm ci makes installs reproducible.</div><div class="code-out"><span class="tag">// observed</span><pre>^1.2.0: build A gets 1.2.0, build B gets 1.4.7
+npm ci: every build gets the locked version</pre></div></div><div class="code-panel" id="cv1639753-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1"># requirements.txt -- WRONG: unpinned, resolves differently over time</span>
+<span class="n">requests</span>
+<span class="n">urllib3</span>
+
+<span class="c1"># RIGHT: pin exact versions for reproducible installs</span>
+<span class="n">requests</span><span class="o">==</span><span class="mf">2.31.0</span>
+<span class="n">urllib3</span><span class="o">==</span><span class="mf">2.2.1</span></code></pre><div class="code-explain">Unpinned requirements resolve to &#x27;whatever is newest today&#x27;. Pinning makes the dependency set part of the code you reviewed.</div><div class="code-out"><span class="tag">// observed</span><pre>unpinned: prod pulls a newer, untested urllib3
+pinned:   prod matches the tested set exactly</pre></div></div></div></div>
+<div class="example"><h3 class="example__title">Copy-Pasta Drift</h3><p class="example__intro">A helper copied into three services becomes three subtly different helpers.</p><div class="code-viewer" data-cv="cv7048671"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="javascript" data-target="cv7048671-javascript" role="tab" aria-selected="true" type="button">JavaScript</button><button class="lang-tab" data-lang="json" data-target="cv7048671-json" role="tab" aria-selected="false" type="button">JSON</button></div></div><div class="code-panel is-active" id="cv7048671-javascript" data-lang="javascript"><div class="code-head"><span class="fname">example.js</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// service-a: the original, later patched for a leap-year bug</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">daysInMonth</span><span class="p">(</span><span class="nx">y</span><span class="p">,</span><span class="w"> </span><span class="nx">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* ...fixed... */</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// service-b: a copy-paste from a year ago -- never got the fix</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">daysInMonth</span><span class="p">(</span><span class="nx">y</span><span class="p">,</span><span class="w"> </span><span class="nx">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* ...buggy in February... */</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// The &#39;same&#39; function now disagrees across services.</span></code></pre><div class="code-explain">Copied code forks silently: a fix applied to one copy never reaches the others. The duplication is the version-mismanagement.</div><div class="code-out"><span class="tag">// observed</span><pre>service-a: Feb 2024 -&gt; 29 (fixed)
+service-b: Feb 2024 -&gt; 28 (stale copy)</pre></div></div><div class="code-panel" id="cv7048671-json" data-lang="json"><div class="code-head"><span class="fname">example.txt</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// RIGHT: one source of truth, versioned as a real dependency</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;dependencies&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;@acme/dates&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.4.0&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">// One place to fix, one version to bump everywhere.</span></code></pre><div class="code-explain">Extracting the helper into a versioned package replaces N drifting copies with one dependency every consumer pins.</div><div class="code-out"><span class="tag">// observed</span><pre>copies:  N forks, fixes diverge
+package: one fix, bump the version everywhere</pre></div></div></div></div>
+</section><section class="block">
+  <div class="block__head"><span class="num">02</span><span class="tag">weakness catalog</span><h2>Mapped weaknesses (CWE)</h2></div>
+  <p class="block__intro">On its own, this defect is catalogued by MITRE as one or more of these weaknesses. The exploitable vulnerability usually appears only when it chains or combines with another.</p>
+  <ul class="phil-list"><li><a href="https://cwe.mitre.org/data/definitions/1395.html" target="_blank" rel="noopener"><b>CWE-1395</b> &mdash; Dependency on Vulnerable Third-Party Component</a></li><li><a href="https://cwe.mitre.org/data/definitions/1104.html" target="_blank" rel="noopener"><b>CWE-1104</b> &mdash; Use of Unmaintained Third Party Components</a></li><li><a href="https://cwe.mitre.org/data/definitions/937.html" target="_blank" rel="noopener"><b>CWE-937</b> &mdash; Using Components with Known Vulnerabilities</a></li></ul>
+</section></div></div><div class="section" style="--accent:#3D85C6;--accent-soft:#6FA8DC;--accent-deep:#0B5394;;padding-top:0"><div class="wrap"><nav class="xnav"><a class="xnav--unstructured" href="/de/unstructured-state/missing-undefined-returns/"><span class="tag">Zurück</span><b>Missing &amp; Undefined Returns</b></a><a class="xnav--unstructured" href="/de/unstructured-state/"><span class="tag">Alle Defekte</span><b>Bugs of Unstructured State</b></a><a class="xnav--unstructured" href="/de/unstructured-state/insecure-deserialization/"><span class="tag">Weiter</span><b>Insecure Deserialization</b></a></nav></div></div>
+</main>
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <p>Ein interaktiver Feldführer auf Basis von Vorträgen von <em>Samuel&nbsp;Volin</em>. Four families of stateful defect, the smells that betray them, and the philosophies that defuse them.</p>
+    <nav class="flinks"><a href="/de/mutated-state/">Mutiert</a> <a href="/de/unstructured-state/">Unstrukturiert</a> <a href="/de/shared-state/">Geteilt</a> <a href="/de/common-defects/">Häufige</a></nav>
+  </div>
+</footer>
+<script src="/assets/js/app.js" defer></script>
+</body>
+</html>

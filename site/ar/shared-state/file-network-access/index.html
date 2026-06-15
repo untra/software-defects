@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>File &amp; Network Access — Bugs of Shared State</title>
+<meta name="description" content="A field guide to the four families of stateful software defect: mutated, unstructured, shared, and common.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/code-highlight.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="/ar/"><svg class="glyph" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 12 3 7M12 12l9-5M12 12v10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" opacity=".5"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/></svg><span>Software&nbsp;Defects<small>دليل ميداني لعيوب الحالة</small></span></a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav-links">
+        <a class="nav--mutated" href="/ar/mutated-state/">متغيّر</a>
+        <a class="nav--unstructured" href="/ar/unstructured-state/">غير منظّم</a>
+        <a class="nav--shared" href="/ar/shared-state/" aria-current="page">مشترَك</a>
+        <a class="nav--common" href="/ar/common-defects/">شائع</a>
+        <select class="lang-select" aria-label="Language" onchange="location.href=this.value"><option value="/en/shared-state/">EN</option><option value="/es/shared-state/">ES</option><option value="/fr/shared-state/">FR</option><option value="/de/shared-state/">DE</option><option value="/pt-br/shared-state/">PT</option><option value="/ja/shared-state/">JA</option><option value="/zh/shared-state/">ZH</option><option value="/ko/shared-state/">KO</option><option value="/ar/shared-state/" selected>AR</option></select>
+    </nav>
+  </div>
+</header>
+<main>
+<section class="console dhero" style="--accent:#DD3333;--accent-soft:#F87171;--accent-deep:#B91C1C;">
+  <div class="wrap dhero__grid">
+    <div>
+      <nav class="dcrumb tag"><a href="/ar/shared-state/">Bugs of Shared State</a><span aria-hidden="true">/</span><span>File &amp; Network Access</span></nav>
+      <p class="tag dhero__kicker">the world between processes is unreliable</p>
+      <h1 class="dhero__title">File &amp; Network Access</h1>
+      <p class="dhero__desc">TOCTOU file races, partial writes, dropped packets, and retries without idempotency — the failures the Fallacies of Distributed Computing warn about.</p>
+      <p class="dhero__essence">Disk and network calls fail partway, arrive twice, or never arrive at all.</p>
+    </div>
+    <div class="dhero__art"><span class="lottie-glyph" data-src="/assets/animations/file-network-access.json"></span></div>
+  </div>
+</section><div class="section defect-body" style="--accent:#DD3333;--accent-soft:#F87171;--accent-deep:#B91C1C;"><div class="wrap"><section class="block">
+  <div class="block__head"><span class="num">01</span><span class="tag">in the wild</span><h2>في الواقع</h2></div>
+  
+  <div class="example"><h3 class="example__title">TOCTOU File Race</h3><p class="example__intro">Checking then using a path leaves a gap where the file can change underneath you.</p><div class="code-viewer" data-cv="cv9445479"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="python" data-target="cv9445479-python" role="tab" aria-selected="true" type="button">Python</button><button class="lang-tab" data-lang="bash" data-target="cv9445479-bash" role="tab" aria-selected="false" type="button">Bash</button></div></div><div class="code-panel is-active" id="cv9445479-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1"># SMELL: check-then-use -- the file can change in the gap (TOCTOU)</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>          <span class="c1"># an attacker swaps the file here...</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>          <span class="c1"># ...so you open something else</span>
+        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+<span class="c1"># RIGHT: just try to open it; let one syscall decide atomically</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+    <span class="k">return</span> <span class="kc">None</span></code></pre><div class="code-explain">Between exists() and open() the path can be replaced (a symlink swap). Opening directly collapses check and use into one atomic operation.</div><div class="code-out"><span class="tag">// observed</span><pre>check-then-open: races, symlink swaps, surprises
+try/except:     one atomic syscall, no gap</pre></div></div><div class="code-panel" id="cv9445479-bash" data-lang="bash"><div class="code-head"><span class="fname">example.sh</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1"># SMELL: test then act -- classic TOCTOU window</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$f</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">  </span>rm<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$f</span><span class="s2">&quot;</span><span class="w">          </span><span class="c1"># $f may have changed between test and rm</span>
+<span class="k">fi</span>
+
+<span class="c1"># RIGHT: act and tolerate the race</span>
+rm<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$f</span><span class="s2">&quot;</span><span class="w">         </span><span class="c1"># idempotent: no error if it is already gone</span></code></pre><div class="code-explain">The [ -f ] test and the rm are two steps with a gap between them. rm -f is a single idempotent action that doesn&#x27;t care about the race.</div><div class="code-out"><span class="tag">// observed</span><pre>[ -f ] then rm: window for a swap
+rm -f:         atomic, idempotent</pre></div></div></div></div>
+<div class="example"><h3 class="example__title">Retry &amp; Timeout</h3><p class="example__intro">A timed-out call may have already succeeded; a call with no deadline can hang forever.</p><div class="code-viewer" data-cv="cv4454424"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="python" data-target="cv4454424-python" role="tab" aria-selected="true" type="button">Python</button><button class="lang-tab" data-lang="go" data-target="cv4454424-go" role="tab" aria-selected="false" type="button">Go</button></div></div><div class="code-panel is-active" id="cv4454424-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1"># SMELL: blind retry of a non-idempotent call -&gt; double charge</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">charge</span><span class="p">(</span><span class="n">card</span><span class="p">,</span> <span class="n">amount</span><span class="p">)</span>   <span class="c1"># a timeout is not a failure!</span>
+    <span class="k">except</span> <span class="n">Timeout</span><span class="p">:</span>
+        <span class="k">continue</span>                       <span class="c1"># the first call may have won</span>
+
+<span class="c1"># RIGHT: an idempotency key makes retries safe to repeat</span>
+<span class="n">key</span> <span class="o">=</span> <span class="n">idempotency_key</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">charge</span><span class="p">(</span><span class="n">card</span><span class="p">,</span> <span class="n">amount</span><span class="p">,</span> <span class="n">idempotency_key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">Timeout</span><span class="p">:</span>
+        <span class="k">continue</span>        <span class="c1"># the server dedupes by key -&gt; at most one charge</span></code></pre><div class="code-explain">A timeout means &#x27;unknown&#x27;, not &#x27;failed&#x27;. Retrying a non-idempotent call can double it; an idempotency key lets the server collapse retries to one effect.</div><div class="code-out"><span class="tag">// observed</span><pre>blind retry: a timed-out success is charged again
+idem key:    server collapses retries to one charge</pre></div></div><div class="code-panel" id="cv4454424-go" data-lang="go"><div class="code-head"><span class="fname">example.go</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// SMELL: no timeout -- a stalled peer hangs the caller forever</span>
+<span class="nx">resp</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">http</span><span class="p">.</span><span class="nx">Get</span><span class="p">(</span><span class="nx">url</span><span class="p">)</span><span class="w">            </span><span class="c1">// can block indefinitely</span>
+
+<span class="c1">// RIGHT: bound every network call with a context deadline</span>
+<span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="nx">cancel</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">context</span><span class="p">.</span><span class="nx">WithTimeout</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">*</span><span class="nx">time</span><span class="p">.</span><span class="nx">Second</span><span class="p">)</span>
+<span class="k">defer</span><span class="w"> </span><span class="nx">cancel</span><span class="p">()</span>
+<span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">_</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">http</span><span class="p">.</span><span class="nx">NewRequestWithContext</span><span class="p">(</span><span class="nx">ctx</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;GET&quot;</span><span class="p">,</span><span class="w"> </span><span class="nx">url</span><span class="p">,</span><span class="w"> </span><span class="kc">nil</span><span class="p">)</span>
+<span class="nx">resp</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">http</span><span class="p">.</span><span class="nx">DefaultClient</span><span class="p">.</span><span class="nx">Do</span><span class="p">(</span><span class="nx">req</span><span class="p">)</span></code></pre><div class="code-explain">Without a deadline, one slow peer ties up a connection (and a goroutine) forever. A context timeout fails fast and frees the resource.</div><div class="code-out"><span class="tag">// observed</span><pre>no timeout: one slow peer exhausts the pool
+with ctx:   fails fast at 2s, resources freed</pre></div></div></div></div>
+</section><section class="block">
+  <div class="block__head"><span class="num">02</span><span class="tag">weakness catalog</span><h2>Mapped weaknesses (CWE)</h2></div>
+  <p class="block__intro">On its own, this defect is catalogued by MITRE as one or more of these weaknesses. The exploitable vulnerability usually appears only when it chains or combines with another.</p>
+  <ul class="phil-list"><li><a href="https://cwe.mitre.org/data/definitions/22.html" target="_blank" rel="noopener"><b>CWE-22</b> &mdash; Improper Limitation of a Pathname to a Restricted Directory (&#x27;Path Traversal&#x27;)</a></li><li><a href="https://cwe.mitre.org/data/definitions/367.html" target="_blank" rel="noopener"><b>CWE-367</b> &mdash; Time-of-check Time-of-use (TOCTOU) Race Condition</a></li><li><a href="https://cwe.mitre.org/data/definitions/73.html" target="_blank" rel="noopener"><b>CWE-73</b> &mdash; External Control of File Name or Path</a></li></ul>
+</section></div></div><div class="section" style="--accent:#DD3333;--accent-soft:#F87171;--accent-deep:#B91C1C;;padding-top:0"><div class="wrap"><nav class="xnav"><a class="xnav--shared" href="/ar/shared-state/threading-mutexes/"><span class="tag">السابق</span><b>Threading &amp; Mutexes</b></a><a class="xnav--shared" href="/ar/shared-state/"><span class="tag">كل العيوب</span><b>Bugs of Shared State</b></a><a class="xnav--shared" href="/ar/shared-state/resource-leaks/"><span class="tag">التالي</span><b>Resource Leaks &amp; Improper Shutdown</b></a></nav></div></div>
+</main>
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <p>دليل ميداني تفاعلي مبني على محاضرات لـ <em>Samuel&nbsp;Volin</em>. Four families of stateful defect, the smells that betray them, and the philosophies that defuse them.</p>
+    <nav class="flinks"><a href="/ar/mutated-state/">متغيّر</a> <a href="/ar/unstructured-state/">غير منظّم</a> <a href="/ar/shared-state/">مشترَك</a> <a href="/ar/common-defects/">شائع</a></nav>
+  </div>
+</footer>
+<script src="/assets/js/app.js" defer></script>
+</body>
+</html>

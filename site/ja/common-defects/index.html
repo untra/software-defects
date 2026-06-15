@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ja" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Common Software Defects — Software Defects</title>
+<meta name="description" content="A field guide to the four families of stateful software defect: mutated, unstructured, shared, and common.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/code-highlight.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="/ja/"><svg class="glyph" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 12 3 7M12 12l9-5M12 12v10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" opacity=".5"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/></svg><span>Software&nbsp;Defects<small>状態を持つ欠陥の野外図鑑</small></span></a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav-links">
+        <a class="nav--mutated" href="/ja/mutated-state/">変異</a>
+        <a class="nav--unstructured" href="/ja/unstructured-state/">非構造化</a>
+        <a class="nav--shared" href="/ja/shared-state/">共有</a>
+        <a class="nav--common" href="/ja/common-defects/" aria-current="page">一般的</a>
+        <select class="lang-select" aria-label="Language" onchange="location.href=this.value"><option value="/en/common-defects/">EN</option><option value="/es/common-defects/">ES</option><option value="/fr/common-defects/">FR</option><option value="/de/common-defects/">DE</option><option value="/pt-br/common-defects/">PT</option><option value="/ja/common-defects/" selected>JA</option><option value="/zh/common-defects/">ZH</option><option value="/ko/common-defects/">KO</option><option value="/ar/common-defects/">AR</option></select>
+    </nav>
+  </div>
+</header>
+<main>
+<section class="console dhero" style="--accent:#94A3B8;--accent-soft:#CBD5E1;--accent-deep:#64748B;">
+  <div class="wrap dhero__grid">
+    <div>
+      <p class="tag dhero__kicker">the everyday smells beneath the stateful ones</p>
+      <h1 class="dhero__title">Common Software Defects</h1>
+      <p class="dhero__desc">The everyday defects in every codebase, read by how they&#x27;re caught: readability smells a reviewer sees (duplication, magic numbers, bad names), correctness bugs tests catch (DRY violations, off-by-one, sloppy error handling), and security defects a scanner finds (SCA, SAST, DAST). Most don&#x27;t crash on their own -- they make the stateful bugs harder to see, and the worst of them become vulnerabilities.</p>
+      <p class="dhero__essence">Code smells suggest software defects; software defects suggest vulnerabilities. These are the smells everyone makes.</p>
+    </div>
+    <div class="dhero__art"><span class="lottie-glyph" data-src="/assets/animations/ja/common-defects.json"></span></div>
+  </div>
+</section><div class="section defect-body" style="--accent:#94A3B8;--accent-soft:#CBD5E1;--accent-deep:#64748B;"><div class="wrap"><section class="block">
+  <div class="block__head"><span class="num">01</span><span class="tag">symptoms</span><h2>現れ方</h2></div>
+  
+  <ul class="symptoms"><li>The same change has to be made in several places</li><li>Numbers and strings with no explanation</li><li>Names that have to be decoded before they&#x27;re understood</li><li>Errors swallowed by empty catch blocks</li><li>“Works on my machine” traced to a version drift</li><li>A scanner flags an injectable query or an exposed endpoint</li></ul>
+</section>
+<section class="block">
+  <div class="block__head"><span class="num">02</span><span class="tag">smells</span><h2>原因</h2></div>
+  
+  <div class="chips"><span>copy-pasta &amp; DRY violations</span><span>magic numbers and strings</span><span>off-by-one boundaries</span><span>naming problems</span><span>swallowed or fail-open error handling</span><span>unpinned, unscanned dependencies</span><span>untrusted input reaching a dangerous sink</span></div><p class="block__intro" style="margin:1.4rem 0 .6rem">害になる道具 — language features that make it easy:</p><div class="chips"><span>copy &amp; paste</span><span>hard-coded literals</span><span>abbreviations &amp; single letters</span><span>empty catch / except blocks</span><span>unpinned dependencies</span><span>string-built SQL, shells, and paths</span></div>
+</section>
+<section class="block">
+  <div class="block__head"><span class="num">03</span><span class="tag">naming things</span><h2>Good names have these qualities</h2></div>
+  
+  <div class="qualities"><div class="qualities__item"><b>Explicit</b><span>say what it is, not what it abbreviates</span></div><div class="qualities__item"><b>Grokable</b><span>understood at a glance, in context</span></div><div class="qualities__item"><b>Consistent</b><span>the same idea wears the same word everywhere</span></div><div class="qualities__item"><b>Meaningful</b><span>carries intent, not implementation</span></div><div class="qualities__item"><b>Pronounceable</b><span>you can say it out loud in a standup</span></div><div class="qualities__item"><b>Intentional</b><span>chosen, not whatever was typed first</span></div><div class="qualities__item"><b>Namespaced</b><span>scoped so two ideas don&#x27;t collide</span></div></div><p class="qualities__rule">Objects &amp; classes are noun phrases. Methods &amp; functions are verb phrases.</p>
+</section>
+<section class="block">
+  <div class="block__head"><span class="num">04</span><span class="tag">the defects</span><h2>The defects in detail</h2></div>
+  <p class="block__intro">This family breaks down into specific defects — each its own failure mode. Every one has its own page, worked examples, and animated signature.</p>
+  <div class="subgrid"><a class="subcard" href="/ja/common-defects/copy-pasta/"><span class="subcard__glyph lottie-glyph" data-src="/assets/animations/copy-pasta.json"></span><span class="subcard__body"><span class="tag subcard__kicker">the same logic pasted until the copies disagree</span><b class="subcard__title">Copy-Pasta Mistakes</b><span class="subcard__essence">Every paste is a future bug: one copy gets fixed, the others rot.</span><span class="card__link">Read the defect <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></a><a class="subcard" href="/ja/common-defects/dry-rule-of-three/"><span class="subcard__glyph lottie-glyph" data-src="/assets/animations/dry-rule-of-three.json"></span><span class="subcard__body"><span class="tag subcard__kicker">extract on the third repeat, not the first</span><b class="subcard__title">DRY -- Don&#x27;t Repeat Yourself</b><span class="subcard__essence">Two copies is a coincidence; three is a pattern that has earned a name.</span><span class="card__link">Read the defect <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></a><a class="subcard" href="/ja/common-defects/magic-numbers/"><span class="subcard__glyph lottie-glyph" data-src="/assets/animations/magic-numbers.json"></span><span class="subcard__body"><span class="tag subcard__kicker">literals with no name and no explanation</span><b class="subcard__title">Magic Numbers</b><span class="subcard__essence">A number the reader has to decode is a comment you forgot to write.</span><span class="card__link">Read the defect <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></a><a class="subcard" href="/ja/common-defects/off-by-one-errors/"><span class="subcard__glyph lottie-glyph" data-src="/assets/animations/off-by-one-errors.json"></span><span class="subcard__body"><span class="tag subcard__kicker">the boundary every stateful tool gets wrong</span><b class="subcard__title">Off-by-One Errors</b><span class="subcard__essence">Off-by-one isn&#x27;t one language&#x27;s bug -- it&#x27;s what every counter, cursor, and pointer drifts into.</span><span class="card__link">Read the defect <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></a><a class="subcard" href="/ja/common-defects/naming-problems/"><span class="subcard__glyph lottie-glyph" data-src="/assets/animations/naming-problems.json"></span><span class="subcard__body"><span class="tag subcard__kicker">names that have to be decoded before they&#x27;re understood</span><b class="subcard__title">Naming Problems</b><span class="subcard__essence">Good names are the cheapest documentation you&#x27;ll ever write.</span><span class="card__link">Read the defect <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></a><a class="subcard" href="/ja/common-defects/error-handling/"><span class="subcard__glyph lottie-glyph" data-src="/assets/animations/error-handling.json"></span><span class="subcard__body"><span class="tag subcard__kicker">swallowed failures that surface later as something worse</span><b class="subcard__title">Poor Error Handling</b><span class="subcard__essence">An error you ignore becomes a crash, a corruption, or a breach.</span><span class="card__link">Read the defect <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></a><a class="subcard" href="/ja/common-defects/dependency-issues/"><span class="subcard__glyph lottie-glyph" data-src="/assets/animations/dependency-issues.json"></span><span class="subcard__body"><span class="tag subcard__kicker">unpinned, unscanned, and unreproducible supply chains</span><b class="subcard__title">Dependency Issues (SCA)</b><span class="subcard__essence">Code you didn&#x27;t write still ships in your build -- pin it, lock it, and scan it.</span><span class="card__link">Read the defect <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></a><a class="subcard" href="/ja/common-defects/injection-taint-flaws/"><span class="subcard__glyph lottie-glyph" data-src="/assets/animations/injection-taint-flaws.json"></span><span class="subcard__body"><span class="tag subcard__kicker">untrusted input flowing into a dangerous sink</span><b class="subcard__title">Injection &amp; Taint Flaws (SAST)</b><span class="subcard__essence">Static analysis traces a tainted source to a sink; the fix is to break the flow.</span><span class="card__link">Read the defect <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></a><a class="subcard" href="/ja/common-defects/runtime-integration-flaws/"><span class="subcard__glyph lottie-glyph" data-src="/assets/animations/runtime-integration-flaws.json"></span><span class="subcard__body"><span class="tag subcard__kicker">defects you only see when the app is running</span><b class="subcard__title">Runtime &amp; Integration Flaws (DAST)</b><span class="subcard__essence">DAST pokes the live app from outside; these bugs hide in behavior, not source.</span><span class="card__link">Read the defect <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span></a></div>
+</section>
+<section class="block">
+  <div class="block__head"><span class="num">05</span><span class="tag">antidotes</span><h2>哲学と対策</h2></div>
+  
+  <ul class="phil-list"><li><a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself" target="_blank" rel="noopener">DRY: Don&#x27;t Repeat Yourself</a></li><li><a href="https://refactoring.guru/refactoring/smells" target="_blank" rel="noopener">Refactoring Guru: Code Smells</a></li><li><a href="https://owasp.org/www-project-top-ten/" target="_blank" rel="noopener">OWASP Top Ten</a></li><li><a href="https://semver.org/" target="_blank" rel="noopener">Semantic Versioning</a></li><li><a href="https://classic.yarnpkg.com/blog/2016/11/24/lockfiles-for-all/" target="_blank" rel="noopener">Lockfiles for all</a></li></ul><p class="block__intro" style="margin-top:1.4rem">This family maps to the CWE pillar: <a href="https://cwe.mitre.org/data/definitions/710.html" target="_blank" rel="noopener"><b>CWE-710</b> &mdash; Improper Adherence to Coding Standards</a></p>
+</section></div></div><div class="section" style="--accent:#94A3B8;--accent-soft:#CBD5E1;--accent-deep:#64748B;;padding-top:0"><div class="wrap"><nav class="xnav"><a class="xnav--shared" href="/ja/shared-state/"><span class="tag">前へ</span><b>Bugs of Shared State</b></a><a class="xnav--common" href="/ja/"><span class="tag">すべての欠陥</span><b>4系統すべて</b></a><a class="xnav--mutated" href="/ja/mutated-state/"><span class="tag">次へ</span><b>Bugs of Mutated State</b></a></nav></div></div>
+</main>
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <p>次の講演をもとに構築されたインタラクティブな図鑑： <em>Samuel&nbsp;Volin</em>. Four families of stateful defect, the smells that betray them, and the philosophies that defuse them.</p>
+    <nav class="flinks"><a href="/ja/mutated-state/">変異</a> <a href="/ja/unstructured-state/">非構造化</a> <a href="/ja/shared-state/">共有</a> <a href="/ja/common-defects/">一般的</a></nav>
+  </div>
+</footer>
+<script src="/assets/js/app.js" defer></script>
+</body>
+</html>

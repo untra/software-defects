@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Async IO Misuse — Bugs of Shared State</title>
+<meta name="description" content="A field guide to the four families of stateful software defect: mutated, unstructured, shared, and common.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/code-highlight.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="/ar/"><svg class="glyph" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 12 3 7M12 12l9-5M12 12v10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" opacity=".5"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/></svg><span>Software&nbsp;Defects<small>دليل ميداني لعيوب الحالة</small></span></a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav-links">
+        <a class="nav--mutated" href="/ar/mutated-state/">متغيّر</a>
+        <a class="nav--unstructured" href="/ar/unstructured-state/">غير منظّم</a>
+        <a class="nav--shared" href="/ar/shared-state/" aria-current="page">مشترَك</a>
+        <a class="nav--common" href="/ar/common-defects/">شائع</a>
+        <select class="lang-select" aria-label="Language" onchange="location.href=this.value"><option value="/en/shared-state/">EN</option><option value="/es/shared-state/">ES</option><option value="/fr/shared-state/">FR</option><option value="/de/shared-state/">DE</option><option value="/pt-br/shared-state/">PT</option><option value="/ja/shared-state/">JA</option><option value="/zh/shared-state/">ZH</option><option value="/ko/shared-state/">KO</option><option value="/ar/shared-state/" selected>AR</option></select>
+    </nav>
+  </div>
+</header>
+<main>
+<section class="console dhero" style="--accent:#DD3333;--accent-soft:#F87171;--accent-deep:#B91C1C;">
+  <div class="wrap dhero__grid">
+    <div>
+      <nav class="dcrumb tag"><a href="/ar/shared-state/">Bugs of Shared State</a><span aria-hidden="true">/</span><span>Async IO Misuse</span></nav>
+      <p class="tag dhero__kicker">messages sent, never delivered</p>
+      <h1 class="dhero__title">Async IO Misuse</h1>
+      <p class="dhero__desc">Floating promises, un-awaited tasks, and unhandled rejections: async work whose ordering and errors vanish. The computer&#x27;s undeliverable mail.</p>
+      <p class="dhero__essence">Fire-and-forget work drops results and failures no one notices are gone.</p>
+    </div>
+    <div class="dhero__art"><span class="lottie-glyph" data-src="/assets/animations/async-io-misuse.json"></span></div>
+  </div>
+</section><div class="section defect-body" style="--accent:#DD3333;--accent-soft:#F87171;--accent-deep:#B91C1C;"><div class="wrap"><section class="block">
+  <div class="block__head"><span class="num">01</span><span class="tag">in the wild</span><h2>في الواقع</h2></div>
+  
+  <div class="example"><h3 class="example__title">Floating Promises</h3><p class="example__intro">Promises no one awaits run in undefined order and swallow their own errors.</p><div class="code-viewer" data-cv="cv6685169"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="javascript" data-target="cv6685169-javascript" role="tab" aria-selected="true" type="button">JavaScript</button><button class="lang-tab" data-lang="python" data-target="cv6685169-python" role="tab" aria-selected="false" type="button">Python</button></div></div><div class="code-panel is-active" id="cv6685169-javascript" data-lang="javascript"><div class="code-head"><span class="fname">example.js</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// SMELL: floating promise -- errors vanish, order is undefined</span>
+<span class="nx">items</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="k">async</span><span class="w"> </span><span class="p">(</span><span class="nx">i</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">save</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span><span class="w"> </span><span class="p">});</span><span class="w">  </span><span class="c1">// not awaited</span>
+<span class="nx">doNext</span><span class="p">();</span><span class="w">   </span><span class="c1">// runs before any save() finishes</span>
+
+<span class="c1">// RIGHT: await the whole batch, surface failures</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nb">Promise</span><span class="p">.</span><span class="nx">allSettled</span><span class="p">(</span><span class="nx">items</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">save</span><span class="p">));</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">failed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">results</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">r</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">r</span><span class="p">.</span><span class="nx">status</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s2">&quot;rejected&quot;</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">failed</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">AggregateError</span><span class="p">(</span><span class="nx">failed</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;some saves failed&quot;</span><span class="p">);</span></code></pre><div class="code-explain">forEach ignores the returned promises, so doNext() races ahead and rejections are swallowed. allSettled waits and reports.</div><div class="code-out"><span class="tag">// observed</span><pre>forEach: doNext() runs early; errors lost
+allSettled: waits for all; failures collected</pre></div></div><div class="code-panel" id="cv6685169-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+
+<span class="c1"># SMELL: task created but never awaited -&gt; may be GC&#39;d mid-flight</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">save</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>   <span class="c1"># warning: never awaited</span>
+    <span class="k">return</span>
+
+<span class="c1"># RIGHT: gather and await, propagate exceptions</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">save</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">items</span><span class="p">))</span></code></pre><div class="code-explain">An un-awaited task can be garbage-collected before it finishes. gather() keeps references and re-raises errors.</div><div class="code-out"><span class="tag">// observed</span><pre>create_task only: &#x27;Task was destroyed but it is pending!&#x27;
+gather:           all complete or first error raised</pre></div></div></div></div>
+<div class="example"><h3 class="example__title">Awaiting in a Loop</h3><p class="example__intro">Awaiting each call in turn serializes I/O that could have run concurrently.</p><div class="code-viewer" data-cv="cv2272157"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="javascript" data-target="cv2272157-javascript" role="tab" aria-selected="true" type="button">JavaScript</button><button class="lang-tab" data-lang="python" data-target="cv2272157-python" role="tab" aria-selected="false" type="button">Python</button></div></div><div class="code-panel is-active" id="cv2272157-javascript" data-lang="javascript"><div class="code-head"><span class="fname">example.js</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// SMELL: awaiting in a loop runs requests one at a time</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[];</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">const</span><span class="w"> </span><span class="nx">id</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="nx">ids</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">out</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="k">await</span><span class="w"> </span><span class="nx">fetchUser</span><span class="p">(</span><span class="nx">id</span><span class="p">));</span><span class="w">   </span><span class="c1">// N round-trips, strictly serial</span>
+<span class="p">}</span>
+
+<span class="c1">// RIGHT: start them together, await as a batch</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">ids</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">fetchUser</span><span class="p">));</span></code></pre><div class="code-explain">Each await blocks the next iteration, so total time is the sum of every request. Promise.all overlaps them.</div><div class="code-out"><span class="tag">// observed</span><pre>serial:      ~1.2s for 20 ids
+Promise.all: ~60ms (bounded by the slowest)</pre></div></div><div class="code-panel" id="cv2272157-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1"># SMELL: awaiting inside the loop serializes the I/O</span>
+<span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">uid</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="k">await</span> <span class="n">fetch_user</span><span class="p">(</span><span class="n">uid</span><span class="p">))</span>   <span class="c1"># one at a time</span>
+
+<span class="c1"># RIGHT: schedule together, await once</span>
+<span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">fetch_user</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">))</span></code></pre><div class="code-explain">await suspends the coroutine until that one call returns before starting the next. gather lets them run at the same time.</div><div class="code-out"><span class="tag">// observed</span><pre>serial: sum of every request&#x27;s latency
+gather: bounded by the slowest single request</pre></div></div></div></div>
+</section><section class="block">
+  <div class="block__head"><span class="num">02</span><span class="tag">weakness catalog</span><h2>Mapped weaknesses (CWE)</h2></div>
+  <p class="block__intro">On its own, this defect is catalogued by MITRE as one or more of these weaknesses. The exploitable vulnerability usually appears only when it chains or combines with another.</p>
+  <ul class="phil-list"><li><a href="https://cwe.mitre.org/data/definitions/362.html" target="_blank" rel="noopener"><b>CWE-362</b> &mdash; Concurrent Execution using Shared Resource with Improper Synchronization (&#x27;Race Condition&#x27;)</a></li><li><a href="https://cwe.mitre.org/data/definitions/662.html" target="_blank" rel="noopener"><b>CWE-662</b> &mdash; Improper Synchronization</a></li><li><a href="https://cwe.mitre.org/data/definitions/696.html" target="_blank" rel="noopener"><b>CWE-696</b> &mdash; Incorrect Behavior Order</a></li></ul>
+</section></div></div><div class="section" style="--accent:#DD3333;--accent-soft:#F87171;--accent-deep:#B91C1C;;padding-top:0"><div class="wrap"><nav class="xnav"><a class="xnav--shared" href="/ar/shared-state/stack-overflow/"><span class="tag">السابق</span><b>Stack Overflow Bugs</b></a><a class="xnav--shared" href="/ar/shared-state/"><span class="tag">كل العيوب</span><b>Bugs of Shared State</b></a><a class="xnav--shared" href="/ar/shared-state/pointer-mismanagement/"><span class="tag">التالي</span><b>Pointer Mismanagement</b></a></nav></div></div>
+</main>
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <p>دليل ميداني تفاعلي مبني على محاضرات لـ <em>Samuel&nbsp;Volin</em>. Four families of stateful defect, the smells that betray them, and the philosophies that defuse them.</p>
+    <nav class="flinks"><a href="/ar/mutated-state/">متغيّر</a> <a href="/ar/unstructured-state/">غير منظّم</a> <a href="/ar/shared-state/">مشترَك</a> <a href="/ar/common-defects/">شائع</a></nav>
+  </div>
+</footer>
+<script src="/assets/js/app.js" defer></script>
+</body>
+</html>

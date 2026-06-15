@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ko" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>for-Loop Control Flow — Bugs of Mutated State</title>
+<meta name="description" content="A field guide to the four families of stateful software defect: mutated, unstructured, shared, and common.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/code-highlight.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="/ko/"><svg class="glyph" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 12 3 7M12 12l9-5M12 12v10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" opacity=".5"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/></svg><span>Software&nbsp;Defects<small>상태 결함 현장 안내서</small></span></a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav-links">
+        <a class="nav--mutated" href="/ko/mutated-state/" aria-current="page">변이</a>
+        <a class="nav--unstructured" href="/ko/unstructured-state/">비구조화</a>
+        <a class="nav--shared" href="/ko/shared-state/">공유</a>
+        <a class="nav--common" href="/ko/common-defects/">일반</a>
+        <select class="lang-select" aria-label="Language" onchange="location.href=this.value"><option value="/en/mutated-state/">EN</option><option value="/es/mutated-state/">ES</option><option value="/fr/mutated-state/">FR</option><option value="/de/mutated-state/">DE</option><option value="/pt-br/mutated-state/">PT</option><option value="/ja/mutated-state/">JA</option><option value="/zh/mutated-state/">ZH</option><option value="/ko/mutated-state/" selected>KO</option><option value="/ar/mutated-state/">AR</option></select>
+    </nav>
+  </div>
+</header>
+<main>
+<section class="console dhero" style="--accent:#78A65A;--accent-soft:#93C47D;--accent-deep:#4F7942;">
+  <div class="wrap dhero__grid">
+    <div>
+      <nav class="dcrumb tag"><a href="/ko/mutated-state/">Bugs of Mutated State</a><span aria-hidden="true">/</span><span>for-Loop Control Flow</span></nav>
+      <p class="tag dhero__kicker">hand-rolled counters and tangled break / continue</p>
+      <h1 class="dhero__title">for-Loop Control Flow</h1>
+      <p class="dhero__desc">When you drive iteration by hand — a counter, a captured variable, an in-place edit — the loop and the data fall out of sync.</p>
+      <p class="dhero__essence">Manual loop control invites the index and the collection to disagree.</p>
+    </div>
+    <div class="dhero__art"><span class="lottie-glyph" data-src="/assets/animations/for-loop-control-flow.json"></span></div>
+  </div>
+</section><div class="section defect-body" style="--accent:#78A65A;--accent-soft:#93C47D;--accent-deep:#4F7942;"><div class="wrap"><section class="block">
+  <div class="block__head"><span class="num">01</span><span class="tag">in the wild</span><h2>실제 사례</h2></div>
+  
+  <div class="example"><h3 class="example__title">Closure Captures the Loop Variable</h3><p class="example__intro">Every closure created in the loop shares one binding, so they all see its final value.</p><div class="code-viewer" data-cv="cv955024"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="javascript" data-target="cv955024-javascript" role="tab" aria-selected="true" type="button">JavaScript</button><button class="lang-tab" data-lang="python" data-target="cv955024-python" role="tab" aria-selected="false" type="button">Python</button></div></div><div class="code-panel is-active" id="cv955024-javascript" data-lang="javascript"><div class="code-head"><span class="fname">example.js</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// SMELL: var shares ONE binding across the whole loop</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">fns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[];</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">3</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">fns</span><span class="p">.</span><span class="nx">push</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">i</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">fns</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">f</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">f</span><span class="p">());</span><span class="w">   </span><span class="c1">// [3, 3, 3]</span>
+
+<span class="c1">// RIGHT: let gives each iteration its own binding</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">let</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">3</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nx">fns</span><span class="p">.</span><span class="nx">push</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">i</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">fns</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="nx">f</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">f</span><span class="p">());</span><span class="w">   </span><span class="c1">// [0, 1, 2]</span></code></pre><div class="code-explain">var is one binding mutated in place; every closure reads its last value. let is fresh per iteration.</div><div class="code-out"><span class="tag">// observed</span><pre>var: [3, 3, 3]
+let: [0, 1, 2]</pre></div></div><div class="code-panel" id="cv955024-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1"># SMELL: lambdas close over the variable, not its value</span>
+<span class="n">fns</span> <span class="o">=</span> <span class="p">[</span><span class="k">lambda</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">f</span><span class="p">()</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fns</span><span class="p">]</span>          <span class="c1"># [2, 2, 2]</span>
+
+<span class="c1"># RIGHT: bind the current value as a default argument</span>
+<span class="n">fns</span> <span class="o">=</span> <span class="p">[</span><span class="k">lambda</span> <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">f</span><span class="p">()</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fns</span><span class="p">]</span>          <span class="c1"># [0, 1, 2]</span></code></pre><div class="code-explain">Python closures capture the variable by reference. A default argument snapshots the value at definition time.</div><div class="code-out"><span class="tag">// observed</span><pre>late-binding: [2, 2, 2]
+snapshot:    [0, 1, 2]</pre></div></div></div></div>
+<div class="example"><h3 class="example__title">Mutating a Collection While Iterating</h3><p class="example__intro">Removing from the very list you are looping over makes the cursor skip elements.</p><div class="code-viewer" data-cv="cv1441521"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="python" data-target="cv1441521-python" role="tab" aria-selected="true" type="button">Python</button><button class="lang-tab" data-lang="java" data-target="cv1441521-java" role="tab" aria-selected="false" type="button">Java</button></div></div><div class="code-panel is-active" id="cv1441521-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1"># SMELL: deleting while iterating shifts items under the cursor</span>
+<span class="n">nums</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nums</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">nums</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>      <span class="c1"># skips the second 2</span>
+<span class="c1"># nums -&gt; [1, 2, 3]</span>
+
+<span class="c1"># RIGHT: build a new list; never mutate what you iterate</span>
+<span class="n">nums</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nums</span> <span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">]</span>   <span class="c1"># [1, 3]</span></code></pre><div class="code-explain">remove() shifts every later element down one, so the loop&#x27;s index jumps past the next match.</div><div class="code-out"><span class="tag">// observed</span><pre>in-place: [1, 2, 3]   (one 2 survives)
+filter:   [1, 3]</pre></div></div><div class="code-panel" id="cv1441521-java" data-lang="java"><div class="code-head"><span class="fname">example.java</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// SMELL: structural change during iteration -&gt; exception</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">list</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="na">isBlank</span><span class="p">())</span><span class="w"> </span><span class="n">list</span><span class="p">.</span><span class="na">remove</span><span class="p">(</span><span class="n">s</span><span class="p">);</span><span class="w">   </span><span class="c1">// ConcurrentModificationException</span>
+<span class="p">}</span>
+
+<span class="c1">// RIGHT: removeIf, or an explicit Iterator.remove()</span>
+<span class="n">list</span><span class="p">.</span><span class="na">removeIf</span><span class="p">(</span><span class="n">String</span><span class="p">::</span><span class="n">isBlank</span><span class="p">);</span></code></pre><div class="code-explain">The for-each iterator fails fast when the collection changes under it. removeIf mutates safely in one pass.</div><div class="code-out"><span class="tag">// observed</span><pre>for-each: ConcurrentModificationException
+removeIf: blanks removed cleanly</pre></div></div></div></div>
+</section><section class="block">
+  <div class="block__head"><span class="num">02</span><span class="tag">weakness catalog</span><h2>Mapped weaknesses (CWE)</h2></div>
+  <p class="block__intro">On its own, this defect is catalogued by MITRE as one or more of these weaknesses. The exploitable vulnerability usually appears only when it chains or combines with another.</p>
+  <ul class="phil-list"><li><a href="https://cwe.mitre.org/data/definitions/193.html" target="_blank" rel="noopener"><b>CWE-193</b> &mdash; Off-by-one Error</a></li><li><a href="https://cwe.mitre.org/data/definitions/834.html" target="_blank" rel="noopener"><b>CWE-834</b> &mdash; Excessive Iteration</a></li></ul>
+</section></div></div><div class="section" style="--accent:#78A65A;--accent-soft:#93C47D;--accent-deep:#4F7942;;padding-top:0"><div class="wrap"><nav class="xnav"><a class="xnav--mutated" href="/ko/mutated-state/aliasing-mutable-defaults/"><span class="tag">이전</span><b>Aliasing &amp; Mutable Defaults</b></a><a class="xnav--mutated" href="/ko/mutated-state/"><span class="tag">모든 결함</span><b>Bugs of Mutated State</b></a><a class="xnav--mutated" href="/ko/mutated-state/this-mutation/"><span class="tag">다음</span><b>this Mutation</b></a></nav></div></div>
+</main>
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <p>다음 강연을 바탕으로 제작된 인터랙티브 현장 안내서: <em>Samuel&nbsp;Volin</em>. Four families of stateful defect, the smells that betray them, and the philosophies that defuse them.</p>
+    <nav class="flinks"><a href="/ko/mutated-state/">변이</a> <a href="/ko/unstructured-state/">비구조화</a> <a href="/ko/shared-state/">공유</a> <a href="/ko/common-defects/">일반</a></nav>
+  </div>
+</footer>
+<script src="/assets/js/app.js" defer></script>
+</body>
+</html>

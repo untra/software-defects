@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pt-br" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Race Conditions — Bugs of Shared State</title>
+<meta name="description" content="A field guide to the four families of stateful software defect: mutated, unstructured, shared, and common.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/code-highlight.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap nav">
+    <a class="brand" href="/pt-br/"><svg class="glyph" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 12 3 7M12 12l9-5M12 12v10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" opacity=".5"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/></svg><span>Software&nbsp;Defects<small>guia de defeitos com estado</small></span></a>
+    <button class="nav-toggle" aria-label="Menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <nav class="nav-links">
+        <a class="nav--mutated" href="/pt-br/mutated-state/">Mutado</a>
+        <a class="nav--unstructured" href="/pt-br/unstructured-state/">Não estruturado</a>
+        <a class="nav--shared" href="/pt-br/shared-state/" aria-current="page">Compartilhado</a>
+        <a class="nav--common" href="/pt-br/common-defects/">Comuns</a>
+        <select class="lang-select" aria-label="Language" onchange="location.href=this.value"><option value="/en/shared-state/">EN</option><option value="/es/shared-state/">ES</option><option value="/fr/shared-state/">FR</option><option value="/de/shared-state/">DE</option><option value="/pt-br/shared-state/" selected>PT</option><option value="/ja/shared-state/">JA</option><option value="/zh/shared-state/">ZH</option><option value="/ko/shared-state/">KO</option><option value="/ar/shared-state/">AR</option></select>
+    </nav>
+  </div>
+</header>
+<main>
+<section class="console dhero" style="--accent:#DD3333;--accent-soft:#F87171;--accent-deep:#B91C1C;">
+  <div class="wrap dhero__grid">
+    <div>
+      <nav class="dcrumb tag"><a href="/pt-br/shared-state/">Bugs of Shared State</a><span aria-hidden="true">/</span><span>Race Conditions</span></nav>
+      <p class="tag dhero__kicker">timing, not logic, picks the answer</p>
+      <h1 class="dhero__title">Race Conditions</h1>
+      <p class="dhero__desc">Two threads read-modify-write the same state, and the order they happen to interleave — not your code — chooses what survives.</p>
+      <p class="dhero__essence">When two actors touch one value at once, the interleaving decides the (wrong) result.</p>
+    </div>
+    <div class="dhero__art"><span class="lottie-glyph" data-src="/assets/animations/race-conditions.json"></span></div>
+  </div>
+</section><div class="section defect-body" style="--accent:#DD3333;--accent-soft:#F87171;--accent-deep:#B91C1C;"><div class="wrap"><section class="block">
+  <div class="block__head"><span class="num">01</span><span class="tag">in the wild</span><h2>Na prática</h2></div>
+  
+  <div class="example"><h3 class="example__title">Lost-Update Counter</h3><p class="example__intro">Two actors read-modify-write the same value, and the interleaving loses updates.</p><div class="code-viewer" data-cv="cv2192884"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="python" data-target="cv2192884-python" role="tab" aria-selected="true" type="button">Python</button><button class="lang-tab" data-lang="go" data-target="cv2192884-go" role="tab" aria-selected="false" type="button">Go</button><button class="lang-tab" data-lang="rust" data-target="cv2192884-rust" role="tab" aria-selected="false" type="button">Rust</button></div></div><div class="code-panel is-active" id="cv2192884-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">bump</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">counter</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100_000</span><span class="p">):</span>
+        <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>           <span class="c1"># read, +1, write -- not atomic</span>
+
+<span class="c1"># Two threads race; final value is &lt; 200000</span>
+<span class="n">t1</span><span class="p">,</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">bump</span><span class="p">),</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">bump</span><span class="p">)</span>
+
+<span class="c1"># RIGHT: a lock makes the read-modify-write atomic</span>
+<span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bump_safe</span><span class="p">():</span>
+    <span class="k">global</span> <span class="n">counter</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100_000</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">lock</span><span class="p">:</span>
+            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span></code></pre><div class="code-explain">counter += 1 is three operations. Without a lock, two threads interleave and lose updates.</div><div class="code-out"><span class="tag">// observed</span><pre>racy:  counter = 137422  (lost updates)
+locked: counter = 200000  (correct)</pre></div></div><div class="code-panel" id="cv2192884-go" data-lang="go"><div class="code-head"><span class="fname">example.go</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// Detect races before they ship:  go test -race</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">count</span><span class="w"> </span><span class="kt">int</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">wg</span><span class="w"> </span><span class="nx">sync</span><span class="p">.</span><span class="nx">WaitGroup</span>
+<span class="k">for</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="w"> </span><span class="p">&lt;</span><span class="w"> </span><span class="mi">1000</span><span class="p">;</span><span class="w"> </span><span class="nx">i</span><span class="o">++</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nx">wg</span><span class="p">.</span><span class="nx">Add</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">    </span><span class="k">go</span><span class="w"> </span><span class="kd">func</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">count</span><span class="o">++</span><span class="p">;</span><span class="w"> </span><span class="nx">wg</span><span class="p">.</span><span class="nx">Done</span><span class="p">()</span><span class="w"> </span><span class="p">}()</span><span class="w">   </span><span class="c1">// -race flags this</span>
+<span class="p">}</span>
+
+<span class="c1">// RIGHT: a mutex, or a channel to serialize access</span>
+<span class="kd">var</span><span class="w"> </span><span class="nx">mu</span><span class="w"> </span><span class="nx">sync</span><span class="p">.</span><span class="nx">Mutex</span>
+<span class="k">go</span><span class="w"> </span><span class="kd">func</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">mu</span><span class="p">.</span><span class="nx">Lock</span><span class="p">();</span><span class="w"> </span><span class="nx">count</span><span class="o">++</span><span class="p">;</span><span class="w"> </span><span class="nx">mu</span><span class="p">.</span><span class="nx">Unlock</span><span class="p">();</span><span class="w"> </span><span class="nx">wg</span><span class="p">.</span><span class="nx">Done</span><span class="p">()</span><span class="w"> </span><span class="p">}()</span></code></pre><div class="code-explain">Go ships a race detector. Run it in CI and the data race fails the build instead of production.</div><div class="code-out"><span class="tag">// observed</span><pre>go test -race: WARNING: DATA RACE
+with mutex:    clean, deterministic</pre></div></div><div class="code-panel" id="cv2192884-rust" data-lang="rust"><div class="code-head"><span class="fname">example.rs</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// Rust refuses to compile a data race. Shared + mutable</span>
+<span class="c1">// must go through a synchronizing type.</span>
+<span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">sync</span><span class="p">::{</span><span class="n">Arc</span><span class="p">,</span><span class="w"> </span><span class="n">Mutex</span><span class="p">};</span>
+<span class="k">use</span><span class="w"> </span><span class="n">std</span><span class="p">::</span><span class="n">thread</span><span class="p">;</span>
+
+<span class="kd">let</span><span class="w"> </span><span class="n">counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Arc</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="n">Mutex</span><span class="p">::</span><span class="n">new</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+<span class="kd">let</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Arc</span><span class="p">::</span><span class="n">clone</span><span class="p">(</span><span class="o">&amp;</span><span class="n">counter</span><span class="p">);</span>
+<span class="n">thread</span><span class="p">::</span><span class="n">spawn</span><span class="p">(</span><span class="k">move</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="o">*</span><span class="n">c</span><span class="p">.</span><span class="n">lock</span><span class="p">().</span><span class="n">unwrap</span><span class="p">()</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="p">});</span></code></pre><div class="code-explain">The borrow checker enforces &#x27;shared XOR mutable&#x27; at compile time. A data race is not expressible.</div><div class="code-out"><span class="tag">// observed</span><pre>raw shared &amp;mut across threads: won&#x27;t compile
+Arc&lt;Mutex&lt;T&gt;&gt;: safe, checked statically</pre></div></div></div></div>
+<div class="example"><h3 class="example__title">Check-Then-Act (TOCTOU)</h3><p class="example__intro">The gap between testing a condition and acting on it is where a second actor slips in.</p><div class="code-viewer" data-cv="cv850290"><div class="code-window"><span class="dots"><i></i><i></i><i></i></span><div class="lang-tabs"><button class="lang-tab is-active" data-lang="java" data-target="cv850290-java" role="tab" aria-selected="true" type="button">Java</button><button class="lang-tab" data-lang="python" data-target="cv850290-python" role="tab" aria-selected="false" type="button">Python</button></div></div><div class="code-panel is-active" id="cv850290-java" data-lang="java"><div class="code-head"><span class="fname">example.java</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1">// SMELL: check-then-act across threads</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">instance</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">        </span><span class="c1">// thread A and B both see null</span>
+<span class="w">    </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Service</span><span class="p">();</span><span class="w">  </span><span class="c1">// two instances created</span>
+<span class="p">}</span>
+
+<span class="c1">// RIGHT: atomic or properly synchronized init</span>
+<span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">AtomicReference</span><span class="o">&lt;</span><span class="n">Service</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ref</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AtomicReference</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="n">ref</span><span class="p">.</span><span class="na">compareAndSet</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Service</span><span class="p">());</span></code></pre><div class="code-explain">The gap between the check and the act is where the race lives. compareAndSet closes it atomically.</div><div class="code-out"><span class="tag">// observed</span><pre>naive:  two Service instances under load
+CAS:    exactly one wins, the rest reuse it</pre></div></div><div class="code-panel" id="cv850290-python" data-lang="python"><div class="code-head"><span class="fname">example.py</span><button class="copy-btn" data-copied="copied" type="button">copy</button></div><pre><code class="hl"><span class="c1"># SMELL: check-then-act on shared state</span>
+<span class="k">if</span> <span class="n">username</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">users</span><span class="p">:</span>        <span class="c1"># two requests both see it free</span>
+    <span class="n">users</span><span class="p">[</span><span class="n">username</span><span class="p">]</span> <span class="o">=</span> <span class="n">create</span><span class="p">()</span>   <span class="c1"># both create -&gt; duplicate user</span>
+
+<span class="c1"># RIGHT: make the check-and-set one atomic step</span>
+<span class="k">with</span> <span class="n">lock</span><span class="p">:</span>                       <span class="c1"># (or a DB unique constraint)</span>
+    <span class="k">if</span> <span class="n">username</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">users</span><span class="p">:</span>
+        <span class="n">users</span><span class="p">[</span><span class="n">username</span><span class="p">]</span> <span class="o">=</span> <span class="n">create</span><span class="p">()</span></code></pre><div class="code-explain">Reading &#x27;is it free?&#x27; and writing &#x27;claim it&#x27; must be one indivisible step, or two callers both win the check.</div><div class="code-out"><span class="tag">// observed</span><pre>unlocked: two duplicate accounts created
+locked:   one wins, the other sees it taken</pre></div></div></div></div>
+</section><section class="block">
+  <div class="block__head"><span class="num">02</span><span class="tag">weakness catalog</span><h2>Mapped weaknesses (CWE)</h2></div>
+  <p class="block__intro">On its own, this defect is catalogued by MITRE as one or more of these weaknesses. The exploitable vulnerability usually appears only when it chains or combines with another.</p>
+  <ul class="phil-list"><li><a href="https://cwe.mitre.org/data/definitions/362.html" target="_blank" rel="noopener"><b>CWE-362</b> &mdash; Concurrent Execution using Shared Resource with Improper Synchronization (&#x27;Race Condition&#x27;)</a></li><li><a href="https://cwe.mitre.org/data/definitions/367.html" target="_blank" rel="noopener"><b>CWE-367</b> &mdash; Time-of-check Time-of-use (TOCTOU) Race Condition</a></li><li><a href="https://cwe.mitre.org/data/definitions/366.html" target="_blank" rel="noopener"><b>CWE-366</b> &mdash; Race Condition within a Thread</a></li></ul>
+</section></div></div><div class="section" style="--accent:#DD3333;--accent-soft:#F87171;--accent-deep:#B91C1C;;padding-top:0"><div class="wrap"><nav class="xnav"><a class="xnav--shared" href="/pt-br/shared-state/resource-leaks/"><span class="tag">Anterior</span><b>Resource Leaks &amp; Improper Shutdown</b></a><a class="xnav--shared" href="/pt-br/shared-state/"><span class="tag">Todos os defeitos</span><b>Bugs of Shared State</b></a><a class="xnav--shared" href="/pt-br/shared-state/resource-contention/"><span class="tag">Próximo</span><b>Resource Contention</b></a></nav></div></div>
+</main>
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <p>Um guia interativo construído a partir de palestras de <em>Samuel&nbsp;Volin</em>. Four families of stateful defect, the smells that betray them, and the philosophies that defuse them.</p>
+    <nav class="flinks"><a href="/pt-br/mutated-state/">Mutado</a> <a href="/pt-br/unstructured-state/">Não estruturado</a> <a href="/pt-br/shared-state/">Compartilhado</a> <a href="/pt-br/common-defects/">Comuns</a></nav>
+  </div>
+</footer>
+<script src="/assets/js/app.js" defer></script>
+</body>
+</html>
