@@ -42,6 +42,11 @@ GRAY      = [0.5804, 0.6392, 0.7216]   # #94A3B8  primary (slate)
 GRAY_SOFT = [0.7961, 0.8353, 0.8824]   # #CBD5E1  soft / highlight
 GRAY_DEEP = [0.3922, 0.4549, 0.5451]   # #64748B  deep / kicker
 
+# ── compound-defects child colors (the three emergent classes) ──────────────
+ND_YEL = [1.0000, 0.8980, 0.6000]      # #FFE599  nondeterminism (yellow)
+DC_MAG = [0.7608, 0.4824, 0.6275]      # #C27BA0  data-corruption (magenta)
+RT_CYN = [0.6235, 0.7725, 0.9098]      # #9FC5E8  runtime-errors (cyan)
+
 FONT_MONO = "JetBrainsMono-Bold"
 FONT_MONO_REG = "JetBrainsMono-Regular"
 FONT_MONO_ITAL = "JetBrainsMono-Italic"
@@ -784,6 +789,101 @@ def common_family_glyph(lang):
     return _comp("common-defects", layers)
 
 
+def compound_family_glyph(lang):
+    """compound-defects family glyph: every other family's signature motion in
+    one word. Characters are assigned, round-robin, one of four treatments so the
+    glyph 'utilizes all aspects of the other animations':
+      0  mutated      -- green case-flip (lower->UPPER) + scale pop (entropy that
+                         keeps changing the letters)
+      1  unstructured -- blue char with an up/down wiggle that damps and settles
+      2  shared       -- red italic char in a fade wave (left as-is)
+      3  compound     -- a character that strobes/phases through the three child
+                         colors (nondeterminism yellow, data-corruption magenta,
+                         runtime-errors cyan)
+    Non-Latin scripts keep the glyph and drop case-flip/italic (color + motion
+    still read)."""
+    latin = lang in LATIN_LANGS
+    word = i18n.t(lang, "anim_compound")
+    parts = word.split()
+    lines = [parts[0], " ".join(parts[1:])] if len(parts) >= 2 else [word]
+    if len(lines) == 2:
+        size, ys = 30, [104, 150]
+    else:
+        size, ys = 40, [128]
+    total = max(1, sum(len(ln.replace(" ", "")) for ln in lines))
+    layers, ind, gidx = [], 10, 0
+
+    # strobe timeline shared by treatment 3: phase through the three child colors,
+    # flashing opacity at each swap. Independent of the per-char stagger.
+    s = [OP // 6, OP // 3, OP // 2, 2 * OP // 3, 5 * OP // 6]
+    strobe_cols = [ND_YEL, DC_MAG, RT_CYN, ND_YEL, DC_MAG, RT_CYN]
+
+    for li, line in enumerate(lines):
+        yl = ys[li]
+        for ch, x in _char_layout(line, size):
+            if ch == " ":
+                continue
+            t0 = 6 + (gidx / total) * (OP - 34)   # traveling-wave onset
+            kind = gidx % 4
+            alt = (gidx // 4) % 2
+
+            if kind == 0:  # mutated: case-flip + scale pop, green
+                up = ch.upper() if latin else ch
+                hold = 6
+                frames = [
+                    (0, ch, FONT_MONO_REG, GREEN),
+                    (t0, ch, FONT_MONO_REG, GREEN),
+                    (t0 + 4, up, FONT_MONO, BRIGHT),
+                    (t0 + 4 + hold, up, FONT_MONO, BRIGHT),
+                    (t0 + 4 + hold + 5, ch, FONT_MONO_REG, GREEN),
+                    (OP, ch, FONT_MONO_REG, GREEN),
+                ]
+                sc = _prop([(0, [100, 100, 100]), (t0, [100, 100, 100]),
+                            (t0 + 4, [120, 120, 100]),
+                            (t0 + 4 + hold, [120, 120, 100]),
+                            (t0 + 4 + hold + 5, [100, 100, 100]),
+                            (OP, [100, 100, 100])])
+                layers.append(_text(ind, _doc_styled(frames, size), (x, yl),
+                                    scale=sc, name="c%d" % gidx))
+
+            elif kind == 1:  # unstructured: damped up/down wiggle that settles, blue
+                col = BLUE_SOFT if alt == 0 else BLUE
+                pos = _prop([(0, [x, yl, 0]), (t0, [x, yl, 0]),
+                             (t0 + 4, [x, yl - 11, 0]), (t0 + 8, [x, yl + 8, 0]),
+                             (t0 + 12, [x, yl - 5, 0]), (t0 + 16, [x, yl + 3, 0]),
+                             (t0 + 20, [x, yl, 0]), (OP, [x, yl, 0])], spatial=True)
+                sc = _prop([(0, [100, 100, 100]), (t0, [100, 100, 100]),
+                            (t0 + 4, [113, 113, 100]), (t0 + 20, [100, 100, 100]),
+                            (OP, [100, 100, 100])])
+                layers.append(_text(ind, _doc(ch, size, col), (x, yl),
+                                    position=pos, scale=sc, name="c%d" % gidx))
+
+            elif kind == 2:  # shared: italic fade wave, red (unchanged treatment)
+                font = FONT_MONO_ITAL if latin else FONT_MONO
+                col = RED_SOFT if alt == 0 else RED
+                lo, hi = t0 - 11, t0 + 11
+                op = _prop([(0, 100), (lo, 100), (t0, 15), (hi, 100), (OP, 100)])
+                layers.append(_text(ind, _doc(ch, size, col, font=font), (x, yl),
+                                    opacity=op, name="c%d" % gidx))
+
+            else:  # compound: strobe/phase through the three child colors
+                frames = [(0, ch, FONT_MONO, strobe_cols[0])]
+                for j, t in enumerate(s):
+                    frames.append((t, ch, FONT_MONO, strobe_cols[j]))
+                    frames.append((t + 1, ch, FONT_MONO, strobe_cols[j + 1]))
+                frames.append((OP, ch, FONT_MONO, strobe_cols[-1]))
+                okeys = [(0, 100)]
+                for t in s:
+                    okeys += [(t, 100), (t + 1, 45), (t + 4, 100)]
+                okeys.append((OP, 100))
+                layers.append(_text(ind, _doc_styled(frames, size), (x, yl),
+                                    opacity=_prop(okeys), name="c%d" % gidx))
+
+            ind += 1
+            gidx += 1
+    return _comp("compound-defects", layers)
+
+
 # ── mutated-state replacement treatment (green) ─────────────────────────────
 def aliasing_defaults():
     """`a` and `b` both point at one box; a write through b shows up in a."""
@@ -977,6 +1077,11 @@ TREATMENTS = {
     "missing-undefined-returns": missing_return,
     "version-library-mismanagement": version_drift,
     "insecure-deserialization": hydrate,
+    # compound defects (gold) -- emergent from pairs of the families above;
+    # they reuse on-brand treatments that echo each compound's smell.
+    "nondeterminism": ticker,
+    "runtime-errors": error_handling,
+    "data-corruption": corrupt,
 }
 
 
@@ -986,6 +1091,7 @@ FAMILY_GLYPHS = {
     "unstructured-state": unstructured_family_glyph,
     "shared-state": shared_family_glyph,
     "common-defects": common_family_glyph,
+    "compound-defects": compound_family_glyph,
 }
 
 

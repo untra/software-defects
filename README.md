@@ -86,14 +86,16 @@ Requires Python 3.10+.
 
 ```bash
 cd src
-pip install pygments pyyaml
+pip install -r requirements.txt
 python build.py        # writes ../site/
 ```
 
 `build.py` emits the full site (family hubs + per-defect child pages), copies assets,
 **generates** the mutated-state animations via `anim_gen.py`, copies the other families'
-static glyphs, generates the highlight theme, writes `.nojekyll`, and dumps `_data/*.yml`
-for architecture fidelity.
+static glyphs, generates the highlight theme, writes `.nojekyll` and `CNAME`, and dumps
+`_data/*.yml` for architecture fidelity.
+
+The generated `site/` directory is **not** committed — it is rebuilt by CI on every deploy.
 
 ---
 
@@ -122,11 +124,22 @@ for architecture fidelity.
 
 ## Deploying
 
-Any static host. For **GitHub Pages**, push the contents of `site/` to your Pages
-branch (the included `.nojekyll` ensures every file is served verbatim). For Netlify,
-Vercel, S3, or Cloudflare Pages, set `site/` as the publish directory. Links and assets
-use root-absolute paths, so serve from the domain root (or adjust the paths if hosting
-under a sub-path).
+Deployment is automated via GitHub Actions (`.github/workflows/deploy.yml`): every push
+to `main` builds the site and publishes it to **GitHub Pages** at the custom domain
+**https://softwaredefects.untra.io**. The build writes `.nojekyll` (serve files verbatim)
+and `CNAME` (the custom domain) into the output. You can also trigger a deploy manually
+from the Actions tab (`workflow_dispatch`).
+
+One-time setup (in the GitHub repo):
+
+1. **Settings → Pages → Source = "GitHub Actions".**
+2. **DNS:** add a `CNAME` record `softwaredefects` → `untra.github.io` at the `untra.io`
+   DNS provider.
+3. After the first deploy, enable **"Enforce HTTPS"** in Pages settings.
+
+To host elsewhere (Netlify, Vercel, S3, Cloudflare Pages), build locally and set `site/`
+as the publish directory. Links and assets use root-absolute paths, so serve from the
+domain root (or adjust the paths if hosting under a sub-path).
 
 ---
 

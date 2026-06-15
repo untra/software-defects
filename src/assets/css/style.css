@@ -30,6 +30,8 @@
   --unstructured:   #3D85C6;  --unstructured-deep:#0B5394; --unstructured-soft:#6FA8DC;
   --shared:         #DD3333;  --shared-deep:#B91C1C;   --shared-soft:#F87171;
   --common:         #94A3B8;  --common-deep:#64748B;   --common-soft:#CBD5E1;
+  --compound:       #C9A227;  --compound-deep:#8A6D1B; --compound-soft:#E6CF6A;
+  --compound-nd:    #FFE599;  --compound-rt:#9FC5E8;   --compound-dc:#C27BA0;
   --danger:         #EF4444;
   --good:           #22C55E;
 
@@ -111,6 +113,22 @@ img,svg { max-width: 100%; display: block; }
 .nav--unstructured { --c: var(--unstructured); }
 .nav--shared       { --c: var(--shared); }
 .nav--common       { --c: var(--common); }
+.nav--compound     { --c: var(--compound); }
+/* the compound chip rotates through the full wheel of stateful + compound hues:
+   green -> cyan -> blue -> magenta -> red -> yellow -> (loop). background is
+   animatable (custom properties are not, without @property), so drive it here. */
+.nav--compound::before { animation: compound-chip 6s linear infinite; }
+@keyframes compound-chip {
+  0%, 100% { background: var(--mutated); }       /* green   */
+  17%      { background: var(--compound-rt); }   /* cyan    */
+  33%      { background: var(--unstructured); }  /* blue    */
+  50%      { background: var(--compound-dc); }   /* magenta */
+  67%      { background: var(--shared); }         /* red     */
+  83%      { background: var(--compound-nd); }   /* yellow  */
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav--compound::before { animation: none; }
+}
 
 .lang-select {
   font-family: var(--mono); font-size: .72rem; letter-spacing: .08em;
@@ -223,6 +241,7 @@ img,svg { max-width: 100%; display: block; }
 .card--unstructured { --c: var(--unstructured); --cd: var(--unstructured-deep); }
 .card--shared       { --c: var(--shared); --cd: var(--shared-deep); }
 .card--common       { --c: var(--common); --cd: var(--common-deep); }
+.card--compound     { --c: var(--compound); --cd: var(--compound-deep); }
 
 /* ============================================================ CONTEXT BAND */
 .context p { max-width: 60ch; color: var(--on-dark-soft); font-size: 1.05rem; }
@@ -427,6 +446,43 @@ img,svg { max-width: 100%; display: block; }
 .xnav--unstructured{--c:var(--unstructured);--cd:var(--unstructured-deep);}
 .xnav--shared{--c:var(--shared);--cd:var(--shared-deep);}
 .xnav--common{--c:var(--common);--cd:var(--common-deep);}
+.xnav--compound{--c:var(--compound);--cd:var(--compound-deep);}
+
+/* ============================================================ COMPOUND RECIPE
+   the "A x B" ingredient link pair + chained CWE chips above a compound
+   defect's code example. Each ingredient is tinted by its source family. */
+.recipe { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .7rem;
+  margin: 0 0 1rem; padding: .7rem .9rem; border: 1px solid var(--line);
+  border-left: 3px solid var(--accent); border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 6%, var(--paper-raised)); }
+.recipe__lbl { font-family: var(--mono); font-size: .68rem; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--accent-deep); }
+.recipe__pair { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.recipe__ing { font-family: var(--display); font-weight: 600; font-size: .9rem;
+  color: var(--ck, var(--ink)); text-decoration: none;
+  border-bottom: 2px solid color-mix(in srgb, var(--ck, var(--accent)) 45%, transparent); }
+.recipe__ing:hover { border-bottom-color: var(--ck, var(--accent)); }
+.recipe__ing--mutated      { --ck: var(--mutated-deep); }
+.recipe__ing--unstructured { --ck: var(--unstructured-deep); }
+.recipe__ing--shared       { --ck: var(--shared-deep); }
+.recipe__ing--common       { --ck: var(--common-deep); }
+.recipe__x { font-family: var(--mono); color: var(--text-faint); font-weight: 700; }
+.recipe__cwes { display: inline-flex; flex-wrap: wrap; align-items: center;
+  gap: .35rem .5rem; margin-left: auto; }
+.recipe__cwe-grp { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .3rem; }
+.recipe__cwe-lbl { font-family: var(--mono); font-size: .6rem; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--text-faint); }
+.recipe__cwe-arrow { font-family: var(--mono); color: var(--text-faint); font-weight: 700; }
+.recipe__cwe { font-family: var(--mono); font-size: .7rem; text-decoration: none;
+  color: var(--accent-deep); padding: .12rem .4rem; border-radius: 5px;
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--line));
+  background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.recipe__cwe:hover { border-color: var(--accent); }
+/* the emergent compound weakness reads as filled, distinct from its base parts */
+.recipe__cwe--compound { color: var(--paper); border-color: var(--accent-deep);
+  background: var(--accent-deep); font-weight: 600; }
+.recipe__cwe--compound:hover { border-color: var(--accent-deep);
+  background: color-mix(in srgb, var(--accent-deep) 85%, #000); }
 
 /* ============================================================ FOOTER */
 .site-footer { background: var(--ink); color: var(--on-dark-soft); padding: 3rem 0;

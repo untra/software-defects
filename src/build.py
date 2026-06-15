@@ -25,12 +25,17 @@ ASSETS_SRC = os.path.join(HERE, "assets")
 DEFECTS = content.DEFECTS
 BY_ID = {d["id"]: d for d in DEFECTS}
 ORDER = [d["id"] for d in DEFECTS]
+# slug -> (family_id, child dict); lets compound defects resolve their
+# ingredient links back to the existing defect pages.
+SLUG_INDEX = {ch["slug"]: (d["id"], ch)
+              for d in DEFECTS for ch in d.get("defects", [])}
 
 CAT_OF = {
     "mutated-state": "mutated",
     "unstructured-state": "unstructured",
     "shared-state": "shared",
     "common-defects": "common",
+    "compound-defects": "compound",
 }
 
 # ---------------------------------------------------------------- helpers
@@ -85,6 +90,7 @@ def header(lang, active):
         ("unstructured-state", "nav_unstructured", "unstructured"),
         ("shared-state", "nav_shared", "shared"),
         ("common-defects", "nav_common", "common"),
+        ("compound-defects", "nav_compound", "compound"),
     ]
     for did, key, cat in nav_map:
         cur = ' aria-current="page"' if active == did else ""
@@ -121,7 +127,7 @@ def footer(lang):
     )
     return f"""<footer class="site-footer">
   <div class="wrap site-footer__inner">
-    <p>{L('footer_note')} <em>Samuel&nbsp;Volin</em>. Four families of stateful defect, the smells that betray them, and the philosophies that defuse them.</p>
+    <p>{L('footer_note')} <em>Samuel&nbsp;Volin</em>. Families of stateful defect, the smells that betray them, and the philosophies that defuse them.</p>
     <nav class="flinks">{links}</nav>
   </div>
 </footer>"""
@@ -134,7 +140,7 @@ def page(lang, active, title, body, extra_head=""):
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{e(title)}</title>
-<meta name="description" content="A field guide to the four families of stateful software defect: mutated, unstructured, shared, and common.">
+<meta name="description" content="A field guide to the families of stateful software defect — mutated, unstructured, shared, common, and the compound defects that emerge between them.">
 {fonts_head()}
 <link rel="stylesheet" href="/assets/css/style.css">
 <link rel="stylesheet" href="/assets/css/code-highlight.css">
@@ -303,6 +309,50 @@ def cwes_html(cwes):
     return f'<ul class="phil-list">{lis}</ul>'
 
 
+def recipe_html(lang, ex):
+    """For a compound defect example: the 'A x B' ingredient link pair (each
+    tinted by its source family) plus the chained/composed CWE chips."""
+    ings = []
+    for slug in ex.get("ingredients", []):
+        ref = SLUG_INDEX.get(slug)
+        if not ref:
+            continue
+        fam_id, ch = ref
+        cat = CAT_OF[fam_id]
+        ings.append(
+            f'<a class="recipe__ing recipe__ing--{cat}" '
+            f'href="/{lang}/{fam_id}/{slug}/">{e(ch["name"])}</a>'
+        )
+    pair = '<span class="recipe__x" aria-hidden="true">&times;</span>'.join(ings)
+
+    # CWEs split into the base weaknesses each ingredient carries and the
+    # compound (chain/composite) weakness their combination forms.
+    cwes = ex.get("cwes", [])
+    base = [c for c in cwes if c.get("role") != "compound"]
+    comp = [c for c in cwes if c.get("role") == "compound"]
+
+    def cwe_grp(items, key, extra=""):
+        if not items:
+            return ""
+        chips = "".join(
+            f'<a class="recipe__cwe{extra}" href="{e(c["url"])}" target="_blank" '
+            f'rel="noopener" title="{e(c["name"])}">{e(c["id"])}</a>'
+            for c in items
+        )
+        lbl = f'<span class="recipe__cwe-lbl">{e(i18n.t(lang, key))}</span>'
+        return f'<span class="recipe__cwe-grp">{lbl}{chips}</span>'
+
+    base_html = cwe_grp(base, "cwe_base")
+    comp_html = cwe_grp(comp, "cwe_compound", extra=" recipe__cwe--compound")
+    arrow = ('<span class="recipe__cwe-arrow" aria-hidden="true">&rarr;</span>'
+             if base_html and comp_html else "")
+    chips_html = (f'<span class="recipe__cwes">{base_html}{arrow}{comp_html}</span>'
+                  if (base_html or comp_html) else "")
+    return (f'<div class="recipe"><span class="recipe__lbl">'
+            f'{e(i18n.t(lang, "compound_of"))}</span>'
+            f'<span class="recipe__pair">{pair}</span>{chips_html}</div>')
+
+
 def pullquote_html(pq):
     cite = f"<cite>{e(pq['attribution'])}</cite>" if pq.get("attribution") else ""
     return f'<figure class="pullquote"><q>{e(pq["text"])}</q>{cite}</figure>'
@@ -367,8 +417,10 @@ def subdefect_grid(lang, family):
     L = lambda k: e(i18n.t(lang, k))
     cards = []
     for c in family["defects"]:
+        # a child may carry its own accent (compound defects do); fall back to family
+        cstyle = f' style="{accent_style(c)}"' if c.get("color_primary") else ""
         cards.append(
-            f'<a class="subcard" href="/{lang}/{family["id"]}/{c["slug"]}/">'
+            f'<a class="subcard" href="/{lang}/{family["id"]}/{c["slug"]}/"{cstyle}>'
             f'<span class="subcard__glyph lottie-glyph" '
             f'data-src="/assets/animations/{c["slug"]}.json"></span>'
             f'<span class="subcard__body">'
@@ -385,7 +437,8 @@ def subdefect_page(lang, family, c):
     """Detail page for one child defect: hero + examples + sibling/back nav."""
     L = lambda k: e(i18n.t(lang, k))
     cat = CAT_OF[family["id"]]
-    style = accent_style(family)
+    # a child may carry its own accent (compound defects do); fall back to family
+    style = accent_style(c if c.get("color_primary") else family)
 
     crumb = (f'<a href="/{lang}/{family["id"]}/">{e(family["name"])}</a>'
              f'<span aria-hidden="true">/</span><span>{e(c["name"])}</span>')
@@ -405,9 +458,10 @@ def subdefect_page(lang, family, c):
 
     ex_html = []
     for ex in c["examples"]:
+        recipe = recipe_html(lang, ex) if ex.get("ingredients") else ""
         ex_html.append(
             f'<div class="example"><h3 class="example__title">{e(ex["title"])}</h3>'
-            f'<p class="example__intro">{e(ex["intent"])}</p>{code_viewer(ex)}</div>'
+            f'<p class="example__intro">{e(ex["intent"])}</p>{recipe}{code_viewer(ex)}</div>'
         )
     examples = block("01", "in the wild", i18n.t(lang, "examples"), "\n".join(ex_html))
 
@@ -463,21 +517,37 @@ def defect_page(lang, d):
     blocks = []
     n = 1
 
-    # symptoms
+    # 01 — the defects grid first: the animated signature, in a consistent spot
+    # right under the hero (or family-level examples for a leaf family). No intro
+    # paragraph here — the old "this family breaks down into…" copy is dropped.
+    if d.get("defects"):
+        blocks.append(block(f"{n:02d}", "the defects", i18n.t(lang, "subdefects"),
+                            subdefect_grid(lang, d))); n += 1
+    else:
+        ex_html = []
+        for ex in d["examples"]:
+            ex_html.append(
+                f'<div class="example"><h3 class="example__title">{e(ex["title"])}</h3>'
+                f'<p class="example__intro">{e(ex["intent"])}</p>{code_viewer(ex)}</div>'
+            )
+        blocks.append(block(f"{n:02d}", "in the wild", i18n.t(lang, "examples"),
+                            "\n".join(ex_html))); n += 1
+
+    # 02 — in practice: one theme paragraph (the tl;dr), then how it shows up
+    # (symptoms) and the tools that make it easy. "What causes it" is dropped:
+    # the defects above ARE the causes, and the paragraph says so.
     syms = "".join(f"<li>{e(s)}</li>" for s in d["symptoms"])
-    blocks.append(block(f"{n:02d}", "symptoms", i18n.t(lang, "symptoms"),
-                        f'<ul class="symptoms">{syms}</ul>')); n += 1
-
-    # causes / tools that hurt
-    causes = "".join(f"<span>{e(s)}</span>" for s in d["causes"])
     tools = "".join(f"<span>{e(s)}</span>" for s in d["tools_hurt"])
-    causes_inner = (f'<div class="chips">{causes}</div>'
-                    f'<p class="block__intro" style="margin:1.4rem 0 .6rem">'
-                    f'{e(i18n.t(lang, "tools_hurt"))} — language features that make it easy:</p>'
-                    f'<div class="chips">{tools}</div>')
-    blocks.append(block(f"{n:02d}", "smells", i18n.t(lang, "causes"), causes_inner)); n += 1
+    sublabel = lambda label, mt: (f'<p class="tag" style="margin:{mt} 0 .7rem;'
+                                  f'color:var(--accent-deep)">{e(label)}</p>')
+    practice_inner = (sublabel(i18n.t(lang, "symptoms"), ".2rem")
+                      + f'<ul class="symptoms">{syms}</ul>'
+                      + sublabel(i18n.t(lang, "tools_hurt"), "1.7rem")
+                      + f'<div class="chips">{tools}</div>')
+    blocks.append(block(f"{n:02d}", "the smell", i18n.t(lang, "practice"),
+                        practice_inner, intro=e(d.get("practice", "")))); n += 1
 
-    # special narrative block (pre-examples) per category
+    # special narrative blocks per category (after the core backbone)
     if d.get("pullquote"):
         pq = d["pullquote"]
         blocks.append(block(f"{n:02d}", pq.get("tag", "the dream"),
@@ -489,21 +559,6 @@ def defect_page(lang, d):
     if d.get("name_qualities"):
         blocks.append(block(f"{n:02d}", "naming things", d["name_qualities"]["title"],
                             qualities_html(d["name_qualities"]))); n += 1
-
-    # examples — or, for a family with child defects, the sub-defect hub grid
-    if d.get("defects"):
-        blocks.append(block(f"{n:02d}", "the defects", i18n.t(lang, "subdefects"),
-                            subdefect_grid(lang, d),
-                            intro=i18n.t(lang, "subdefects_intro"))); n += 1
-    else:
-        ex_html = []
-        for ex in d["examples"]:
-            ex_html.append(
-                f'<div class="example"><h3 class="example__title">{e(ex["title"])}</h3>'
-                f'<p class="example__intro">{e(ex["intent"])}</p>{code_viewer(ex)}</div>'
-            )
-        blocks.append(block(f"{n:02d}", "in the wild", i18n.t(lang, "examples"),
-                            "\n".join(ex_html))); n += 1
 
     # post-example special blocks
     if d.get("case_study"):
@@ -597,7 +652,7 @@ def build():
     # code highlight theme
     write(os.path.join(OUT, "assets", "css", "code-highlight.css"), THEME_CSS)
     # animations — generated programmatically (text-based Lottie glyphs).
-    # Sub-defects are language-agnostic; the four family glyphs are emitted once
+    # Sub-defects are language-agnostic; the family glyphs are emitted once
     # per language under assets/animations/<lang>/ using language-native words.
     anim_out = os.path.join(OUT, "assets", "animations")
     anim_gen.write_all(anim_out)
@@ -613,6 +668,8 @@ def build():
 
     # GitHub Pages: serve every file verbatim (no Jekyll processing)
     write(os.path.join(OUT, ".nojekyll"), "")
+    # GitHub Pages: custom domain (served from the domain root)
+    write(os.path.join(OUT, "CNAME"), "softwaredefects.untra.io\n")
 
     # root redirect
     write(os.path.join(OUT, "index.html"),

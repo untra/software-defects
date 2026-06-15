@@ -50,6 +50,7 @@ DEFECTS.append({
     "color_deep": "4F7942",
     "description": "Bugs caused by changing the state of a program in ways that create unpredictability, where information and control flow become untraced.",
     "essence": "Results diverge from expectations when state changes go untracked.",
+    "practice": "These nine defects share one root: state that changes where nobody is watching. It shows up downstream — wrong results, flaky tests, output that won't reproduce — long after the mutation that caused it. The tools that make it easy are the everyday ones: a reassignable binding, a hand-rolled loop counter, a method that quietly rewrites its object.",
     "symptoms": [
         "Wrong or unexpected results",
         "Unpredictable function output or operation",
@@ -878,6 +879,7 @@ DEFECTS.append({
     "color_deep": "0B5394",
     "description": "Bugs caused by consuming unknown or inadequately validated input as state, without type checking or structural contracts.",
     "essence": "Data without shape, type, or contract; the mismatch cascades downstream.",
+    "practice": "Each defect here starts the same way: input consumed as state with no shape or contract to hold it. It shows up as data that doesn't fit its container and bugs that linger no matter how many tests you add. The tools that make it easy are dynamic types, missing validation, and eval/parse that trust whatever they're handed.",
     "symptoms": [
         "Information doesn't fit its expected container",
         "Latent, lingering bugs even with more tests",
@@ -1678,6 +1680,7 @@ DEFECTS.append({
     "color_deep": "B91C1C",
     "description": "Bugs caused by concurrency, caching, and the distribution of state across multiple independent actors or processes.",
     "essence": "State changes may not be instantaneous, may not be everywhere, and may not be complete.",
+    "practice": "Every defect on this page comes from state shared across actors that don't move in lockstep. It shows up as data that's stale, out of order, or 'works on my machine.' The tools that make it easy are threads and mutexes, caches, pass-by-reference, and async code that drops the ball.",
     "symptoms": [
         "Data is inaccessible or out of order",
         "Resources are slow or unavailable",
@@ -2491,6 +2494,7 @@ DEFECTS.append({
     "color_deep": "64748B",
     "description": "The everyday defects in every codebase, read by how they're caught: readability smells a reviewer sees (duplication, magic numbers, bad names), correctness bugs tests catch (DRY violations, off-by-one, sloppy error handling), and security defects a scanner finds (SCA, SAST, DAST). Most don't crash on their own -- they make the stateful bugs harder to see, and the worst of them become vulnerabilities.",
     "essence": "Code smells suggest software defects; software defects suggest vulnerabilities. These are the smells everyone makes.",
+    "practice": "Unlike the three stateful families, these defects rarely crash on their own — they're the everyday smells that make the stateful bugs harder to see, and the worst of them harden into vulnerabilities. Read them as a 3×3 by how each is caught: a reviewer or linter spots the readability smells (copy-pasta, magic numbers, bad names), tests and types catch the correctness bugs (DRY violations, off-by-one, sloppy error handling), and a scanner finds the security defects (dependency drift via SCA, injectable code via SAST, runtime exposure via DAST). It shows up as anything from a fix you must make in five places to a query a pen-tester turns into a breach — and the tools that make it easy are the most ordinary ones in the editor: copy & paste, a hard-coded literal, an empty catch, an unpinned dependency.",
     "symptoms": [
         "The same change has to be made in several places",
         "Numbers and strings with no explanation",
@@ -3337,6 +3341,565 @@ resource "aws_s3_bucket_acl" "data" {
 }""",
                          "explanation": "Infrastructure misconfiguration is the same defect at the cloud layer -- a public bucket is a runtime exposure a config scan or DAST will flag.",
                          "output": "public-read: objects exposed to the internet\nprivate:     access only via explicit grants"},
+                    ],
+                },
+            ],
+        },
+    ],
+})
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 5. COMPOUND STATE  (emergent defects from pairs of the three stateful families)
+# ─────────────────────────────────────────────────────────────────────────────
+DEFECTS.append({
+    "id": "compound-defects",
+    # Not a CWE pillar but a CWE *view*: defects made of other defects.
+    "cwe_pillar": {"id": "CWE-678", "name": "Composites", "url": "https://cwe.mitre.org/data/definitions/678.html"},
+    "name": "Compound Defects",
+    "short_name": "Compound",
+    "category": "compound",
+    "tagline": "defects that emerge from other defects",
+    "color_primary": "C9A227",
+    "color_secondary": "E6CF6A",
+    "color_deep": "8A6D1B",
+    "description": "Bugs with no single line number: they emerge where two stateful defects meet. You can only name them by their symptom, because the cause lives in the interaction.",
+    "essence": "Two correct-looking defects combine into one that classifies by symptom, not by root cause.",
+    "practice": "These three defects are not roots but symptoms. Each is the intersection of two of the stateful families — mutated, shared, and unstructured — and you recognize it by how it feels: an answer that won't reproduce, a crash that only happens live, data that's quietly, permanently wrong. MITRE calls combinations like these Compound weaknesses: Chains (one defect creates the conditions for the next) and Composites (several must occur at once). Fix one ingredient and the smell often persists, because the other half is still there.",
+    "symptoms": [
+        "The bug cannot be reproduced consistently",
+        "Whack-a-mole fixes that won't stay fixed",
+        "Crashes first seen live, in the demo",
+        "Permanent damage or information exposure",
+    ],
+    "causes": [
+        "mutated × shared state (nondeterminism)",
+        "mutated × unstructured state (runtime errors)",
+        "shared × unstructured state (data corruption)",
+        "an entropy source meeting an observation gap",
+        "unvalidated input mutated into illegal state",
+        "bad data crossing a shared boundary",
+    ],
+    "tools_hurt": [
+        "concurrency over mutable state",
+        "caches over hidden inputs",
+        "external input without a contract",
+        "rolling deploys / mixed versions",
+        "shared memory & deserialization",
+        "trust across a boundary",
+    ],
+    "philosophies": [
+        {"name": "MITRE: Chains and Composites", "url": "https://cwe.mitre.org/data/reports/chains_and_composites.html"},
+        {"name": "Heisenbug", "url": "https://en.wikipedia.org/wiki/Heisenbug"},
+        {"name": "Fallacies of Distributed Computing", "url": "https://en.wikipedia.org/wiki/Fallacies_of_distributed_computing"},
+        {"name": "Parse, don't validate", "url": "https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/"},
+    ],
+    "pullquote": {
+        "text": "A compound defect has no home. Point at the race and the fix is in the cache; point at the cache and the fix is in the clock. The bug lives in the space between two files that each look correct.",
+        "attribution": "on debugging the unreproducible",
+    },
+    "two_hard_note": None,
+    "defects": [
+        {
+            "slug": "nondeterminism",
+            "color_primary": "FFE599",
+            "color_secondary": "FFF2CC",
+            "color_deep": "BF9000",
+            "cwes": [
+                {"id": "CWE-362", "name": "Concurrent Execution using Shared Resource with Improper Synchronization ('Race Condition')", "url": "https://cwe.mitre.org/data/definitions/362.html"},
+                {"id": "CWE-367", "name": "Time-of-check Time-of-use (TOCTOU) Race Condition", "url": "https://cwe.mitre.org/data/definitions/367.html"},
+                {"id": "CWE-471", "name": "Modification of Assumed-Immutable Data (MAID)", "url": "https://cwe.mitre.org/data/definitions/471.html"},
+            ],
+            "name": "Nondeterminism",
+            "tagline": "mutated × shared — the answer changes between runs",
+            "essence": "A value that varies, observed across actors without synchronization, lets timing pick the result instead of your code.",
+            "description": "When an entropy source from mutated state meets an observation gap from shared state, the outcome depends on interleaving, not logic. The hallmark: you cannot reproduce it on demand.",
+            "examples": [
+                {
+                    "title": "TOCTOU Race (Check-Then-Act)",
+                    "intent": "The gap between checking a resource and using it is a window another actor can slip through — so the bug only fires when the interleaving lines up.",
+                    "ingredients": ["race-conditions", "improper-initialization"],
+                    "cwes": [
+                        {"id": "CWE-362", "name": "Race Condition", "url": "https://cwe.mitre.org/data/definitions/362.html", "role": "base"},
+                        {"id": "CWE-367", "name": "Time-of-check Time-of-use (TOCTOU) Race Condition", "url": "https://cwe.mitre.org/data/definitions/367.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: check and use are two steps; state can change between them.
+# (race-conditions x improper-initialization)
+import os
+if not os.path.exists(path):      # time-of-check
+    os.makedirs(path)             # time-of-use -- another thread or process
+                                  # may have created it in the gap -> crash
+
+# RIGHT: act atomically; let the operation own the check.
+os.makedirs(path, exist_ok=True)  # no window between check and use""",
+                         "explanation": "The window between the existence check and the create is something another actor can race into. It surfaces only when threads interleave just so -- the textbook 'can't reproduce it.'",
+                         "output": "race:  intermittent FileExistsError under concurrency\nright: deterministic, no check-use gap"},
+                    ],
+                },
+                {
+                    "title": "Lost Update (Read-Modify-Write Race)",
+                    "intent": "Incrementing shared state is three steps — read, add, write — and without a lock two actors overwrite each other's result.",
+                    "ingredients": ["threading-mutexes", "increment-decrement-operators"],
+                    "cwes": [
+                        {"id": "CWE-362", "name": "Race Condition", "url": "https://cwe.mitre.org/data/definitions/362.html", "role": "base"},
+                        {"id": "CWE-567", "name": "Unsynchronized Access to Shared Data in a Multithreaded Context", "url": "https://cwe.mitre.org/data/definitions/567.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: read-modify-write on shared state with no lock.
+# (threading-mutexes x increment / decrement)
+balance = 0
+def deposit():
+    global balance
+    balance = balance + 1          # read, +1, write -- not atomic
+
+# 1000 threads each deposit() -> balance is often < 1000:
+# updates interleave and clobber one another.
+
+# RIGHT: serialize the critical section.
+lock = Lock()
+def deposit():
+    global balance
+    with lock:
+        balance += 1""",
+                         "explanation": "Two threads read the same value, both add one, both write back -- one increment vanishes. The final count differs every run.",
+                         "output": "race:  balance = 987 (varies every run)\nright: balance = 1000 (always)"},
+                    ],
+                },
+                {
+                    "title": "Stale-Cache Heisenbug",
+                    "intent": "Caching a result that depends on hidden mutable state serves the old answer forever — nobody invalidated it.",
+                    "ingredients": ["cache-invalidation", "impure-functions"],
+                    "cwes": [
+                        {"id": "CWE-1108", "name": "Excessive Reliance on Global Variables", "url": "https://cwe.mitre.org/data/definitions/1108.html", "role": "base"},
+                        {"id": "CWE-471", "name": "Modification of Assumed-Immutable Data (MAID)", "url": "https://cwe.mitre.org/data/definitions/471.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: cache a value that depends on hidden, mutable state.
+# (cache-invalidation x impure-functions)
+_cache = {}
+def price(item):
+    if item not in _cache:
+        _cache[item] = item.base * TAX_RATE   # TAX_RATE: a mutable global
+    return _cache[item]
+
+TAX_RATE = 1.2     # later, far away, this changes -- the cache never hears
+
+# RIGHT: make the function pure; key on every input.
+def price(item, tax):
+    return item.base * tax        # same inputs -> same output""",
+                         "explanation": "The first call freezes a value computed from a global that later moves. Whether you see fresh or stale output depends on call order and cache warmth.",
+                         "output": "stale: first call wins; later TAX_RATE changes ignored\nright: result tracks its inputs, every call"},
+                    ],
+                },
+                {
+                    "title": "Out-of-Order Async Completion",
+                    "intent": "Two requests write one variable; whichever resolves last wins — and completion order isn't the order you asked in.",
+                    "ingredients": ["var-let-mut", "async-io-misuse"],
+                    "cwes": [
+                        {"id": "CWE-662", "name": "Improper Synchronization", "url": "https://cwe.mitre.org/data/definitions/662.html", "role": "base"},
+                        {"id": "CWE-362", "name": "Race Condition", "url": "https://cwe.mitre.org/data/definitions/362.html", "role": "compound"},
+                        {"id": "CWE-696", "name": "Incorrect Behavior Order", "url": "https://cwe.mitre.org/data/definitions/696.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "JavaScript", "slug": "javascript", "code":
+"""// SMELL: two requests write one variable; last to resolve wins, not last asked.
+// (var/let/mut x async I/O misuse)
+let results;
+async function search(q) {
+  results = await fetchJSON(q);   // a slow early query can land AFTER a fast late one
+  render(results);                // -> stale results overwrite the fresh ones
+}
+
+// RIGHT: tie the write to the latest request; drop out-of-order completions.
+let latest = 0;
+async function search(q) {
+  const seq = ++latest;
+  const r = await fetchJSON(q);
+  if (seq === latest) render(r);  // ignore anything but the newest query""",
+                         "explanation": "Async completions arrive in an order the code never fixed; a mutable, shared 'results' lets whichever finishes last win. Type fast and an earlier request's answer can clobber the one you are looking at.",
+                         "output": "race:  a slow 'a' lands after 'ab' and overwrites it\nright: stale responses dropped; newest query always wins"},
+                    ],
+                },
+                {
+                    "title": "Concurrent Modification During Iteration",
+                    "intent": "One actor mutates a shared collection while another walks it — the loop sometimes throws, sometimes silently skips.",
+                    "ingredients": ["for-loop-control-flow", "resource-contention"],
+                    "cwes": [
+                        {"id": "CWE-820", "name": "Missing Synchronization", "url": "https://cwe.mitre.org/data/definitions/820.html", "role": "base"},
+                        {"id": "CWE-362", "name": "Race Condition", "url": "https://cwe.mitre.org/data/definitions/362.html", "role": "compound"},
+                        {"id": "CWE-567", "name": "Unsynchronized Access to Shared Data in a Multithreaded Context", "url": "https://cwe.mitre.org/data/definitions/567.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: iterate a shared collection while another thread mutates it.
+# (for-loop control flow x resource contention)
+for sid, s in sessions.items():      # another thread runs sessions.pop(...)
+    if s.expired:
+        reap(sid)                    # -> RuntimeError, or entries silently skipped
+
+# RIGHT: iterate a snapshot; mutate the original under a lock.
+for sid, s in list(sessions.items()):    # stable copy to walk
+    if s.expired:
+        with lock:
+            sessions.pop(sid, None)""",
+                         "explanation": "Reading and writing one collection from two actors with no lock makes the iterator's behavior depend on timing: sometimes it raises, sometimes it skips or double-visits entries. The failure mode changes run to run.",
+                         "output": "race:  RuntimeError: dictionary changed size during iteration (sometimes)\nright: snapshot iterated; mutation serialized, no surprise"},
+                    ],
+                },
+                {
+                    "title": "Predictable ID Collision Under Load",
+                    "intent": "Deriving a 'unique' id from the clock works until two requests land in the same tick.",
+                    "ingredients": ["time-money-entropy", "race-conditions"],
+                    "cwes": [
+                        {"id": "CWE-330", "name": "Use of Insufficiently Random Values", "url": "https://cwe.mitre.org/data/definitions/330.html", "role": "base"},
+                        {"id": "CWE-340", "name": "Generation of Predictable Numbers or Identifiers", "url": "https://cwe.mitre.org/data/definitions/340.html", "role": "base"},
+                        {"id": "CWE-362", "name": "Race Condition", "url": "https://cwe.mitre.org/data/definitions/362.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: derive a 'unique' id from the clock; two requests in one tick collide.
+# (time / money / entropy x race conditions)
+import time
+def new_id():
+    return int(time.time() * 1000)    # ms timestamp -- not unique under load
+# two concurrent requests can read the same millisecond -> duplicate id.
+
+# RIGHT: use a real source of uniqueness, not the clock.
+import uuid
+def new_id():
+    return uuid.uuid4().hex           # collision-resistant regardless of timing""",
+                         "explanation": "A timestamp looks unique until two requests share a tick; under concurrency that window is hit constantly, and the duplicate id appears only under load -- never on a developer's single call.",
+                         "output": "race:  two requests share id 1718...204 -> one record overwrites the other\nright: independent ids; no timing-dependent collisions"},
+                    ],
+                },
+            ],
+        },
+        {
+            "slug": "runtime-errors",
+            "color_primary": "9FC5E8",
+            "color_secondary": "CFE2F3",
+            "color_deep": "3D85C6",
+            "cwes": [
+                {"id": "CWE-476", "name": "NULL Pointer Dereference", "url": "https://cwe.mitre.org/data/definitions/476.html"},
+                {"id": "CWE-843", "name": "Access of Resource Using Incompatible Type ('Type Confusion')", "url": "https://cwe.mitre.org/data/definitions/843.html"},
+                {"id": "CWE-754", "name": "Improper Check for Unusual or Exceptional Conditions", "url": "https://cwe.mitre.org/data/definitions/754.html"},
+            ],
+            "name": "Runtime Errors",
+            "tagline": "mutated × unstructured — blows up live on input you didn't expect",
+            "essence": "Unvalidated input written into program state becomes an illegal value, and the program throws the moment it is used.",
+            "description": "A chain: unstructured input with no contract is mutated into state the code has no handler for, then crashes downstream. The hallmark: it works in dev and explodes on the first unexpected input, live.",
+            "examples": [
+                {
+                    "title": "Null / Undefined Dereference",
+                    "intent": "A function that sometimes returns nothing, used as if it always returns a value.",
+                    "ingredients": ["improper-initialization", "missing-undefined-returns"],
+                    "cwes": [
+                        {"id": "CWE-457", "name": "Use of Uninitialized Variable", "url": "https://cwe.mitre.org/data/definitions/457.html", "role": "base"},
+                        {"id": "CWE-476", "name": "NULL Pointer Dereference", "url": "https://cwe.mitre.org/data/definitions/476.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "JavaScript", "slug": "javascript", "code":
+"""// SMELL: a function that sometimes returns nothing, dereferenced anyway.
+// (improper-initialization x missing/undefined returns)
+function findUser(id) {
+  for (const u of users) if (u.id === id) return u;
+  // no match -> falls off the end -> returns undefined
+}
+const name = findUser(42).name;   // TypeError, but only for unknown ids
+
+// RIGHT: make 'not found' explicit and handle it.
+const user = findUser(42);
+const name = user ? user.name : "(unknown)";""",
+                         "explanation": "The missing return path yields undefined; the caller assumes an object. The crash waits for an id that isn't there -- often a production-only input.",
+                         "output": "bad input: Cannot read properties of undefined (reading 'name')\nguarded:   '(unknown)'"},
+                    ],
+                },
+                {
+                    "title": "Type Confusion / Bad Coercion",
+                    "intent": "State mutated to a new type that the next reader does not expect.",
+                    "ingredients": ["this-mutation", "type-errors"],
+                    "cwes": [
+                        {"id": "CWE-704", "name": "Incorrect Type Conversion or Cast", "url": "https://cwe.mitre.org/data/definitions/704.html", "role": "base"},
+                        {"id": "CWE-843", "name": "Type Confusion", "url": "https://cwe.mitre.org/data/definitions/843.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "JavaScript", "slug": "javascript", "code":
+"""// SMELL: a field mutated to a different type than the next line assumes.
+// (this mutation x type errors)
+class Cart {
+  constructor() { this.total = 0; }         // number
+  applyCoupon(code) { this.total = code; }  // oops: now a string
+}
+const c = new Cart();
+c.applyCoupon("SAVE10");
+c.total.toFixed(2);   // TypeError: c.total.toFixed is not a function
+
+// RIGHT: keep the field's type stable; parse input into the right shape.
+applyCoupon(code) { this.discount = lookup(code); }  // total stays a number""",
+                         "explanation": "Mutating this.total to a string keeps the program running until something treats it as a number. The type drift and the crash are in different methods.",
+                         "output": "confused: total is a string; .toFixed is not a function\nstable:   total stays numeric"},
+                    ],
+                },
+                {
+                    "title": "Integration Crash on Unexpected Input",
+                    "intent": "Trusting an external payload's shape, then mutating local state from it.",
+                    "ingredients": ["impure-functions", "lack-of-input-validation"],
+                    "cwes": [
+                        {"id": "CWE-20", "name": "Improper Input Validation", "url": "https://cwe.mitre.org/data/definitions/20.html", "role": "base"},
+                        {"id": "CWE-248", "name": "Uncaught Exception", "url": "https://cwe.mitre.org/data/definitions/248.html", "role": "compound"},
+                        {"id": "CWE-754", "name": "Improper Check for Unusual or Exceptional Conditions", "url": "https://cwe.mitre.org/data/definitions/754.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: trust a third party's shape; mutate local state from it.
+# (impure-functions / external read x lack-of-input-validation)
+resp = requests.get(url).json()      # third party, shape not guaranteed
+user.age = resp["profile"]["age"]    # KeyError the day they rename a field
+                                     # -- first seen live, in the demo
+
+# RIGHT: validate at the boundary; fail with a clear, handled error.
+data = UserSchema.parse(resp)        # parse, don't trust
+user.age = data.profile.age""",
+                         "explanation": "The crash isn't in your logic -- it's the contract you never enforced at the edge. It appears the first time the integration sends a shape you didn't anticipate.",
+                         "output": "unexpected: KeyError 'profile' when their API changes\nvalidated: a clear ValidationError you handle, not a 500"},
+                    ],
+                },
+                {
+                    "title": "Off-by-One Index Crash",
+                    "intent": "A counter advanced one step too far indexes past the end of the array.",
+                    "ingredients": ["increment-decrement-operators", "index-out-of-bounds"],
+                    "cwes": [
+                        {"id": "CWE-193", "name": "Off-by-one Error", "url": "https://cwe.mitre.org/data/definitions/193.html", "role": "base"},
+                        {"id": "CWE-125", "name": "Out-of-bounds Read", "url": "https://cwe.mitre.org/data/definitions/125.html", "role": "compound"},
+                        {"id": "CWE-787", "name": "Out-of-bounds Write", "url": "https://cwe.mitre.org/data/definitions/787.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: a counter advanced one step too far indexes past the end.
+# (increment / decrement x index out of bounds)
+i = 0
+while i <= len(rows):          # <= overshoots by one
+    process(rows[i])           # IndexError on the last turn -- only for some sizes
+    i += 1
+
+# RIGHT: stop before the length; let the language bound the walk.
+for row in rows:               # no hand-rolled index to get wrong
+    process(row)""",
+                         "explanation": "An off-by-one in the loop bound (<= instead of <) pushes the index one past the array. In Python it is an IndexError; in C the same slip is an out-of-bounds read or write. It survives every test whose input length never reached the last step.",
+                         "output": "bug:   IndexError: list index out of range on the final element\nright: every row processed; no manual index to overshoot"},
+                    ],
+                },
+                {
+                    "title": "Divide-by-Zero from an Empty Aggregate",
+                    "intent": "An average over input that can be empty drives the denominator to zero.",
+                    "ingredients": ["var-let-mut", "divide-by-zero"],
+                    "cwes": [
+                        {"id": "CWE-682", "name": "Incorrect Calculation", "url": "https://cwe.mitre.org/data/definitions/682.html", "role": "base"},
+                        {"id": "CWE-369", "name": "Divide By Zero", "url": "https://cwe.mitre.org/data/definitions/369.html", "role": "compound"},
+                        {"id": "CWE-754", "name": "Improper Check for Unusual or Exceptional Conditions", "url": "https://cwe.mitre.org/data/definitions/754.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: average a list that can be empty; the denominator reaches zero.
+# (var/let/mut x divide by zero)
+total = sum(values)
+count = len(values)            # 0 when the input is empty
+avg = total / count            # ZeroDivisionError, first seen on real data
+
+# RIGHT: guard the exceptional input before you divide.
+avg = total / count if count else 0.0""",
+                         "explanation": "A mutable count fed straight into a division blows up the moment the input is empty -- a case dev data never had. The crash reads as a divide-by-zero, but the root is the unchecked exceptional condition.",
+                         "output": "bug:   ZeroDivisionError: division by zero on an empty list\nright: empty input yields 0.0, not a 500"},
+                    ],
+                },
+                {
+                    "title": "Stale API After Upgrade (AttributeError)",
+                    "intent": "A mixin reaches for a method a dependency upgrade quietly renamed or removed.",
+                    "ingredients": ["macro-mixin-misuse", "version-library-mismanagement"],
+                    "cwes": [
+                        {"id": "CWE-477", "name": "Use of Obsolete Function", "url": "https://cwe.mitre.org/data/definitions/477.html", "role": "base"},
+                        {"id": "CWE-758", "name": "Reliance on Undefined, Unspecified, or Implementation-Defined Behavior", "url": "https://cwe.mitre.org/data/definitions/758.html", "role": "compound"},
+                        {"id": "CWE-754", "name": "Improper Check for Unusual or Exceptional Conditions", "url": "https://cwe.mitre.org/data/definitions/754.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: a mixin assumes a method a dependency upgrade renamed/removed.
+# (macro / mixin misuse x version / library mismanagement)
+class Audited(Base):
+    def save(self):
+        self.log_change()       # provided by Base... until v3 renamed it
+        super().save()          # AttributeError the first time this path runs
+
+# RIGHT: pin the contract and adapt at the seam, not deep in a mixin.
+class Audited(Base):
+    def save(self):
+        getattr(self, "log_change", self._audit_fallback)()
+        super().save()""",
+                         "explanation": "A mixin reaches for an inherited method a library upgrade quietly dropped; nothing fails at import, only when that path executes after deploy. It relies on behavior the new version no longer guarantees.",
+                         "output": "bug:   AttributeError: 'Audited' object has no attribute 'log_change'\nright: missing hook degrades to a fallback, not a crash"},
+                    ],
+                },
+            ],
+        },
+        {
+            "slug": "data-corruption",
+            "color_primary": "C27BA0",
+            "color_secondary": "E0B6CF",
+            "color_deep": "8E5572",
+            "cwes": [
+                {"id": "CWE-787", "name": "Out-of-bounds Write", "url": "https://cwe.mitre.org/data/definitions/787.html"},
+                {"id": "CWE-502", "name": "Deserialization of Untrusted Data", "url": "https://cwe.mitre.org/data/definitions/502.html"},
+                {"id": "CWE-345", "name": "Insufficient Verification of Data Authenticity", "url": "https://cwe.mitre.org/data/definitions/345.html"},
+            ],
+            "name": "Data Corruption",
+            "tagline": "shared × unstructured — bad data written permanently, and it spreads",
+            "essence": "Unvalidated data crossing a shared boundary persists and propagates, so the damage is permanent and reaches other actors.",
+            "description": "When data without a contract is written across a shared boundary -- memory, a wire, a store -- the badness is durable: it overwrites, exposes, or poisons what others read. The hallmark: permanent damage and information exposure.",
+            "examples": [
+                {
+                    "title": "Buffer Overflow (Out-of-Bounds Write)",
+                    "intent": "An unchecked length writes past the buffer into adjacent, shared memory.",
+                    "ingredients": ["pointer-mismanagement", "index-out-of-bounds"],
+                    "cwes": [
+                        {"id": "CWE-787", "name": "Out-of-bounds Write", "url": "https://cwe.mitre.org/data/definitions/787.html", "role": "base"},
+                        {"id": "CWE-119", "name": "Improper Restriction of Operations within the Bounds of a Memory Buffer", "url": "https://cwe.mitre.org/data/definitions/119.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "C", "slug": "c", "code":
+"""/* SMELL: unchecked length writes past the buffer into adjacent memory.
+   (pointer-mismanagement x index-out-of-bounds) */
+char name[16];
+strcpy(name, input);     /* input over 15 chars -> overwrites the stack */
+
+/* RIGHT: bound the write to the buffer you actually own. */
+char name[16];
+snprintf(name, sizeof name, "%s", input);   /* truncates, never overflows */""",
+                         "explanation": "The missing bounds check (unstructured) plus a raw pointer write (shared memory) corrupts whatever sits past the buffer -- often the return address.",
+                         "output": "overflow: corrupts the return address; crash or code exec\nbounded:  safely truncated, memory intact"},
+                    ],
+                },
+                {
+                    "title": "Untrusted Deserialization Across a Boundary",
+                    "intent": "Deserializing bytes that crossed a trust boundary turns a payload into live objects.",
+                    "ingredients": ["file-network-access", "insecure-deserialization"],
+                    "cwes": [
+                        {"id": "CWE-345", "name": "Insufficient Verification of Data Authenticity", "url": "https://cwe.mitre.org/data/definitions/345.html", "role": "base"},
+                        {"id": "CWE-502", "name": "Deserialization of Untrusted Data", "url": "https://cwe.mitre.org/data/definitions/502.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: deserialize bytes that crossed a trust boundary.
+# (file-network-access x insecure-deserialization)
+data = pickle.loads(sock.recv(4096))   # attacker-controlled bytes ->
+                                       # arbitrary objects / code on load
+
+# RIGHT: use a data-only format and validate the result.
+data = json.loads(sock.recv(4096))     # no code execution on parse
+record = Record(**validate(data))      # then check the shape""",
+                         "explanation": "Untrusted input (unstructured) arriving over the network (shared boundary) executes during load. The corruption is the foreign object graph now inside your process.",
+                         "output": "pickle: a crafted payload runs code during load\njson:   inert data; validated before use"},
+                    ],
+                },
+                {
+                    "title": "Schema Drift / Mixed-Version Write",
+                    "intent": "Two deployed versions share one store with no schema contract, so one writes what the other can't read.",
+                    "ingredients": ["file-network-access", "unconstrained-inputs"],
+                    "cwes": [
+                        {"id": "CWE-20", "name": "Improper Input Validation", "url": "https://cwe.mitre.org/data/definitions/20.html", "role": "base"},
+                        {"id": "CWE-345", "name": "Insufficient Verification of Data Authenticity", "url": "https://cwe.mitre.org/data/definitions/345.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: two deployed versions share one store, no schema contract.
+# (file/network access x unconstrained inputs)
+# during a rolling deploy:
+record["amount"] = 1050      # v1 writes cents (int)
+record["amount"] = 10.50     # v2 writes dollars (float) -- same field
+# readers can no longer tell which; the ledger is now corrupt.
+
+# RIGHT: version the payload and validate on read.
+record = {"schema": 2, "amount_cents": 1050}
+assert record["schema"] == READER_SCHEMA   # refuse mixed-version data""",
+                         "explanation": "Two versions out of lockstep (shared) writing a field with no contract (unstructured) silently poison the store. Nothing crashes; the data just means two things at once.",
+                         "output": "drift:     amount means cents OR dollars by writer\nversioned: reader rejects data it can't interpret"},
+                    ],
+                },
+                {
+                    "title": "Stored / Second-Order Injection",
+                    "intent": "Unvalidated input is persisted once, then trusted every time it is read back out.",
+                    "ingredients": ["file-network-access", "lack-of-input-validation"],
+                    "cwes": [
+                        {"id": "CWE-20", "name": "Improper Input Validation", "url": "https://cwe.mitre.org/data/definitions/20.html", "role": "base"},
+                        {"id": "CWE-89", "name": "SQL Injection", "url": "https://cwe.mitre.org/data/definitions/89.html", "role": "compound"},
+                        {"id": "CWE-79", "name": "Cross-site Scripting (XSS)", "url": "https://cwe.mitre.org/data/definitions/79.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: store unvalidated input, then trust it on the way back out.
+# (file / network access x lack of input validation)
+db.execute("INSERT INTO notes(body) VALUES (?)", [body])   # raw user HTML stored
+...
+page += row["body"]            # later rendered to every viewer -> stored XSS
+# or: db.execute("... WHERE name = '" + row["name"] + "'")  # second-order SQLi
+
+# RIGHT: validate on the way in, encode on the way out, parameterize always.
+db.execute("INSERT INTO notes(body) VALUES (?)", [clean(body)])
+page += escape_html(row["body"])""",
+                         "explanation": "The poison is written once and read forever: unvalidated input persisted to a shared store comes back as executable markup or SQL. The damage is durable and reaches every later reader, not just the attacker.",
+                         "output": "stored:   one bad row scripts every viewer / re-injects on read\nsanitized: cleaned in, encoded out -- inert at rest"},
+                    ],
+                },
+                {
+                    "title": "Web Cache Poisoning",
+                    "intent": "An input the cache key ignores gets baked into a stored response and replayed to everyone.",
+                    "ingredients": ["cache-invalidation", "unconstrained-inputs"],
+                    "cwes": [
+                        {"id": "CWE-348", "name": "Use of Less Trusted Source", "url": "https://cwe.mitre.org/data/definitions/348.html", "role": "base"},
+                        {"id": "CWE-444", "name": "Inconsistent Interpretation of HTTP Requests ('HTTP Request/Response Smuggling')", "url": "https://cwe.mitre.org/data/definitions/444.html", "role": "base"},
+                        {"id": "CWE-349", "name": "Acceptance of Extraneous Untrusted Data With Trusted Data", "url": "https://cwe.mitre.org/data/definitions/349.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: cache a response keyed on trusted parts, ignoring an input that shapes it.
+# (cache invalidation x unconstrained inputs)
+key = request.path                        # ignores the X-Forwarded-Host header...
+cache[key] = render(page, host=request.headers["X-Forwarded-Host"])
+# attacker sets the header once -> poisoned page served to everyone after.
+
+# RIGHT: key on every input that affects the output, or don't trust it at all.
+host = allowlist(request.headers.get("X-Forwarded-Host"))   # vetted
+cache[(request.path, host)] = render(page, host=host)""",
+                         "explanation": "An attacker-influenced input the cache key ignores gets stored in a response and replayed to every subsequent user. One request poisons the shared cache; the blast radius is everyone downstream.",
+                         "output": "poisoned: one crafted header rewrites the page for all users\nkeyed:    host vetted and part of the key -- no shared poisoning"},
+                    ],
+                },
+                {
+                    "title": "Encoding / Charset Corruption (Mojibake)",
+                    "intent": "Bytes written in one charset and read back assuming another corrupt the stored text permanently.",
+                    "ingredients": ["file-network-access", "version-library-mismanagement"],
+                    "cwes": [
+                        {"id": "CWE-176", "name": "Improper Handling of Unicode Encoding", "url": "https://cwe.mitre.org/data/definitions/176.html", "role": "base"},
+                        {"id": "CWE-172", "name": "Encoding Error", "url": "https://cwe.mitre.org/data/definitions/172.html", "role": "compound"},
+                    ],
+                    "languages": [
+                        {"name": "Python", "slug": "python", "code":
+"""# SMELL: write bytes in one charset, read them back assuming another.
+# (file / network access x version / library mismanagement)
+with open("names.csv", "w") as f:        # platform-default encoding (changed across versions)
+    f.write(name)
+...
+name = open("names.csv", encoding="utf-8").read()   # decoded as UTF-8 -> mojibake
+# every round-trip mangles the bytes further; the store is now corrupt.
+
+# RIGHT: pin the encoding on both ends; never rely on the default.
+with open("names.csv", "w", encoding="utf-8") as f:
+    f.write(name)
+name = open("names.csv", encoding="utf-8").read()""",
+                         "explanation": "Relying on a default encoding that differs across versions and hosts means bytes written as one charset are decoded as another. The text is corrupted in place -- permanently -- and the damage compounds on each re-save.",
+                         "output": "mojibake: 'Jose' with an accent reads back garbled, then worse\npinned:   utf-8 on both ends -- bytes survive the round-trip"},
                     ],
                 },
             ],
