@@ -122,25 +122,6 @@ The generated `site/` directory is **not** committed — it is rebuilt by CI on 
   C, Bash, Solidity, Terraform/HCL.
 - UI languages: English, Spanish, French, German, Brazilian Portuguese, Japanese.
 
-## Deploying
-
-Deployment is automated via GitHub Actions (`.github/workflows/deploy.yml`): every push
-to `main` builds the site and publishes it to **GitHub Pages** at the custom domain
-**https://softwaredefects.untra.io**. The build writes `.nojekyll` (serve files verbatim)
-and `CNAME` (the custom domain) into the output. You can also trigger a deploy manually
-from the Actions tab (`workflow_dispatch`).
-
-One-time setup (in the GitHub repo):
-
-1. **Settings → Pages → Source = "GitHub Actions".**
-2. **DNS:** add a `CNAME` record `softwaredefects` → `untra.github.io` at the `untra.io`
-   DNS provider.
-3. After the first deploy, enable **"Enforce HTTPS"** in Pages settings.
-
-To host elsewhere (Netlify, Vercel, S3, Cloudflare Pages), build locally and set `site/`
-as the publish directory. Links and assets use root-absolute paths, so serve from the
-domain root (or adjust the paths if hosting under a sub-path).
-
 ---
 
-*Content © its respective authors; field guide assembled from presentations by Samuel Volin.*
+*Content © 2019-2026 Samuel Volin*

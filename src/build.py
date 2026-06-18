@@ -863,7 +863,7 @@ def build():
     # GitHub Pages: serve every file verbatim (no Jekyll processing)
     write(os.path.join(OUT, ".nojekyll"), "")
     # GitHub Pages: custom domain (served from the domain root)
-    write(os.path.join(OUT, "CNAME"), "softwaredefects.untra.io\n")
+    write(os.path.join(OUT, "CNAME"), "badsoftware.untra.io\n")
 
     # root redirect
     write(os.path.join(OUT, "index.html"),
