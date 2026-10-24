@@ -1,0 +1,157 @@
+{
+  "family": "compound-defects",
+  "class": "data-corruption",
+  "category": "semantic-corruption",
+  "defect": "signedness-poisons-aggregate",
+  "name": "Signed/Unsigned Conversion Poisons a Shared Aggregate",
+  "essence": "A negative refund cast to unsigned is added, under a lock, to the shared balance.",
+  "cwes": [
+    "CWE-682",
+    "CWE-195"
+  ],
+  "scores": {
+    "python": 1,
+    "typescript": 1,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "rust/01_refund_as_u32.rs",
+      "language": "rust",
+      "bug_lines": [
+        9
+      ],
+      "summary": "A refund of -1 becomes 4294967295 and is added to the locked balance.",
+      "mechanism": "as u32 reinterprets the i32 bit pattern. The Mutex makes the addition race-free and does not recover the sign (CWE-195, CWE-682). The ledger is u64 so the poisoned add does not wrap.",
+      "observed_output": "balance 4294967305",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "balance 9",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "The negative refund is cast to an unsigned credit before addition.",
+          "evidence": [
+            "const REFUND: i32 = -1;",
+            "REFUND as u32"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "resource-contention",
+          "suggests": "Every ledger update must acquire the single shared ledger Mutex.",
+          "evidence": [
+            "static LEDGER: Mutex<u64>",
+            "let mut balance = LEDGER.lock().unwrap();"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "typescript/01_refund_balance.ts",
+      "language": "typescript",
+      "bug_lines": [
+        11,
+        12
+      ],
+      "summary": "A refund becomes a huge credit while competing callers share a single posting slot.",
+      "mechanism": "The >>> 0 escape hatch converts -1 to 4294967295; concurrent posting attempts contend for one slot, and the accepted posting adds that unsigned value to the shared balance.",
+      "observed_output": "busy 1\nbalance 4294967395",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "The accepted refund leaves balance 99; excess work is queued or reported busy.",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "The negative refund is converted to an unsigned 32-bit credit.",
+          "evidence": [
+            "const credit = refund >>> 0;",
+            "const REFUND = -1;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "resource-contention",
+          "suggests": "Two refund calls contend for one shared posting slot held across an await.",
+          "evidence": [
+            "const POSTING_CAPACITY = 1;",
+            "if (inFlight > POSTING_CAPACITY) throw new Error(\"ledger busy\");",
+            "await Promise.allSettled([postRefund(REFUND), postRefund(REFUND)])"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_refund_balance.py",
+      "language": "python",
+      "bug_lines": [
+        18,
+        19
+      ],
+      "summary": "ctypes converts a negative refund to an unsigned credit while callers contend for a shared posting slot, inflating the balance..",
+      "mechanism": "ctypes converts a negative refund to an unsigned credit while callers contend for a shared posting slot, inflating the balance.",
+      "observed_output": "ledger busy\nbalance 4294967395",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "One accepted refund leaves balance 99.",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "The negative refund is narrowed to an unsigned integer before posting.",
+          "evidence": [
+            "REFUND = -1",
+            "ctypes.c_uint32(refund).value"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "resource-contention",
+          "suggests": "Two callers contend for a single posting slot held across a wait.",
+          "evidence": [
+            "POSTING_CAPACITY = 1",
+            "if in_flight == POSTING_CAPACITY:",
+            "await ready.wait()"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_refund_balance.go",
+      "language": "go",
+      "bug_lines": [
+        18
+      ],
+      "summary": "A negative refund becomes a huge unsigned credit while another caller finds the posting slot occupied.",
+      "mechanism": "A negative refund becomes a huge unsigned credit while another caller finds the posting slot occupied.",
+      "observed_output": "pool busy\nbalance 4294967395",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "balance 99",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "The signed refund is narrowed to uint32 before addition.",
+          "evidence": [
+            "balance += uint64(uint32(value))",
+            "const refund int32 = -1"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "resource-contention",
+          "suggests": "A shared one-slot pool is occupied across the posting wait.",
+          "evidence": [
+            "var slots = make(chan struct{}, postingCapacity)",
+            "slots <- struct{}{}",
+            "<-ready"
+          ]
+        }
+      ]
+    }
+  ]
+}

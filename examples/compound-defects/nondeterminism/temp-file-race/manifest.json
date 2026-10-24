@@ -1,0 +1,159 @@
+{
+  "family": "compound-defects",
+  "class": "nondeterminism",
+  "category": "entropic-divergence",
+  "defect": "temp-file-race",
+  "name": "Temp File Race",
+  "essence": "An export overwrites another document planted at its predictable filename after the existence check.",
+  "cwes": [
+    "CWE-363",
+    "CWE-59"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_invoice_export.ts",
+      "language": "typescript",
+      "bug_lines": [
+        17,
+        19,
+        25
+      ],
+      "summary": "An export overwrites another document planted at its predictable filename after the existence check.",
+      "mechanism": "A timestamp-derived filename is checked separately from a nonexclusive write, allowing another file to occupy the path.",
+      "observed_output": "existing document orchard invoice",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "existing document harbor invoice",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "File creation relies on a prior existence check rather than exclusive creation.",
+          "evidence": [
+            "if (!existsSync(path)) {",
+            "writeFileSync(path, DOCUMENT);"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "The file name is formed from a fixed prefix and predictable timestamp.",
+          "evidence": [
+            "const STAMP = 1700000000000;",
+            "const path = join(directory, PREFIX + STAMP);"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_invoice_export.py",
+      "language": "python",
+      "bug_lines": [
+        11,
+        13,
+        17
+      ],
+      "summary": "A predictable export path is occupied after its check and then overwritten by a nonexclusive write..",
+      "mechanism": "A predictable export path is occupied after its check and then overwritten by a nonexclusive write.",
+      "observed_output": "existing document orchard invoice",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Preserve the harbor invoice and create a distinct export.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "A file is written based on a separate existence check.",
+          "evidence": [
+            "if not path.exists():",
+            "path.write_text(DOCUMENT)"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "The path uses a fixed prefix and predictable timestamp.",
+          "evidence": [
+            "STAMP = 1700000000000",
+            "PREFIX + str(STAMP)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_invoice_export.go",
+      "language": "go",
+      "bug_lines": [
+        14,
+        17,
+        29
+      ],
+      "summary": "A predictable filename is occupied after the check and then overwritten.",
+      "mechanism": "A predictable filename is occupied after the check and then overwritten.",
+      "observed_output": "existing document orchard",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "existing document harbor",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "File creation relies on a prior Stat rather than exclusive creation.",
+          "evidence": [
+            "os.Stat(path)",
+            "os.WriteFile(path, []byte(\"orchard\"), fileMode)"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "The export filename uses a fixed prefix and predictable timestamp.",
+          "evidence": [
+            "const stamp = 1700000000000",
+            "fmt.Sprint(prefix, stamp)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_invoice_export.rs",
+      "language": "rust",
+      "bug_lines": [
+        6,
+        11,
+        14
+      ],
+      "summary": "The export overwrites a different invoice planted at the predictable path.",
+      "mechanism": "The destination is checked separately from a truncating filesystem write. The filename uses a fixed prefix and predictable millisecond stamp.",
+      "observed_output": "invoice orchard",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "The existing harbor invoice remains intact.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "The destination is checked separately from a truncating filesystem write.",
+          "evidence": [
+            "if !destination.exists() {",
+            "fs::write(destination, \"orchard\").unwrap();"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "The filename uses a fixed prefix and predictable millisecond stamp.",
+          "evidence": [
+            "directory.join(format!(\"invoice-{STAMP}\"))"
+          ]
+        }
+      ]
+    }
+  ]
+}

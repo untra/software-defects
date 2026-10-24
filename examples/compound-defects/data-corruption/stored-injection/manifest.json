@@ -1,0 +1,154 @@
+{
+  "family": "compound-defects",
+  "class": "data-corruption",
+  "category": "representational-corruption",
+  "defect": "stored-injection",
+  "name": "Stored Injection",
+  "essence": "A persisted customer name breaks the quoting of a later query.",
+  "cwes": [
+    "CWE-89",
+    "CWE-79"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_customer_lookup.ts",
+      "language": "typescript",
+      "bug_lines": [
+        13
+      ],
+      "summary": "A persisted customer name breaks the quoting of a later query.",
+      "mechanism": "Text from a storage boundary is trusted and concatenated directly into SQL syntax without parameterization or validation.",
+      "observed_output": "SELECT id FROM customers WHERE name = 'O'Neil'",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "The name is passed as a bound parameter rather than inserted into query syntax.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "The customer name is persisted and later read from the file boundary.",
+          "evidence": [
+            "writeFileSync(path, CUSTOMER_NAME);",
+            "const name = readFileSync(path, \"utf8\");"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "A name containing a quote is concatenated into the query unchanged.",
+          "evidence": [
+            "const CUSTOMER_NAME = \"O'Neil\";",
+            "+ name + \"'\""
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_customer_lookup.py",
+      "language": "python",
+      "bug_lines": [
+        12
+      ],
+      "summary": "A persisted name containing a quote is concatenated directly into SQL syntax on readback..",
+      "mechanism": "A persisted name containing a quote is concatenated directly into SQL syntax on readback.",
+      "observed_output": "SELECT id FROM customers WHERE name = 'O'Neil'",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Represent the name as a query parameter rather than query syntax.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "The customer name is stored and later read through a file boundary.",
+          "evidence": [
+            "path.write_text(CUSTOMER_NAME)",
+            "name = path.read_text()"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "A quote-containing name is concatenated into query syntax without validation or parameterization.",
+          "evidence": [
+            "CUSTOMER_NAME = \"O'Neil\"",
+            "+ name + \"'\""
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_customer_lookup.go",
+      "language": "go",
+      "bug_lines": [
+        19,
+        22,
+        26
+      ],
+      "summary": "A stored name containing a quote is concatenated into a query unchanged.",
+      "mechanism": "A stored name containing a quote is concatenated into a query unchanged.",
+      "observed_output": "SELECT id FROM customers WHERE name = 'O'Neil'",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Use a parameterized query and keep the name separate from query syntax.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "The customer name is saved and later loaded from a file boundary.",
+          "evidence": [
+            "os.WriteFile(path, []byte(customerName), fileMode)",
+            "os.ReadFile(path)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "The quote-containing value is concatenated into the SQL string.",
+          "evidence": [
+            "const customerName = \"O'Neil\"",
+            "+ string(body) + \"'\""
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_customer_lookup.rs",
+      "language": "rust",
+      "bug_lines": [
+        7
+      ],
+      "summary": "The stored quote changes the generated query syntax.",
+      "mechanism": "The customer value is persisted and read back across a file boundary. A stored quote is concatenated into SQL without validation or parameterization.",
+      "observed_output": "SELECT id FROM customers WHERE name = 'O'Neil'",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "The name is supplied as a bound query parameter.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "The customer value is persisted and read back across a file boundary.",
+          "evidence": [
+            "fs::write(&path, CUSTOMER).unwrap();",
+            "fs::read_to_string(&path).unwrap()"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "A stored quote is concatenated into SQL without validation or parameterization.",
+          "evidence": [
+            "const CUSTOMER: &str = \"O'Neil\";",
+            "+ &name + \"'\""
+          ]
+        }
+      ]
+    }
+  ]
+}

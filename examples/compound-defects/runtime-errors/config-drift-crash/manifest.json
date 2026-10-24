@@ -1,0 +1,153 @@
+{
+  "family": "compound-defects",
+  "class": "runtime-errors",
+  "category": "architectural-drift",
+  "defect": "config-drift-crash",
+  "name": "Config Drift Crash",
+  "essence": "The settings writer uses DB_URL while the reader expects DATABASE_URL and calls slice on undefined.",
+  "cwes": [
+    "CWE-248",
+    "CWE-754"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_database_settings.ts",
+      "language": "typescript",
+      "bug_lines": [
+        5,
+        9
+      ],
+      "summary": "The settings writer uses DB_URL while the reader expects DATABASE_URL and calls slice on undefined.",
+      "mechanism": "The impure configuration function writes process-wide environment state under a key that the consumer no longer reads; the absent value is used as a string.",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'slice')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Use one agreed setting name and print database postgres.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "The configuration function changes the process environment instead of returning settings.",
+          "evidence": [
+            "process.env.DB_URL = DATABASE_ADDRESS;"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "version-library-mismanagement",
+          "suggests": "The writer and reader use incompatible environment-key conventions.",
+          "evidence": [
+            "process.env.DB_URL = DATABASE_ADDRESS;",
+            "return process.env.DATABASE_URL.slice(0, PREFIX_LENGTH);"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_database_settings.py",
+      "language": "python",
+      "bug_lines": [
+        9,
+        13
+      ],
+      "summary": "A configuration writer sets DB_URL but a consumer still reads DATABASE_URL and slices the missing value..",
+      "mechanism": "A configuration writer sets DB_URL but a consumer still reads DATABASE_URL and slices the missing value.",
+      "observed_output": "TypeError: 'NoneType' object is not subscriptable",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "database postgres",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "Configuration mutates global process settings.",
+          "evidence": [
+            "os.environ[\"DB_URL\"] = DATABASE_ADDRESS"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "version-library-mismanagement",
+          "suggests": "The writer and reader use incompatible configuration-key conventions.",
+          "evidence": [
+            "os.environ[\"DB_URL\"]",
+            "os.environ.get(\"DATABASE_URL\")[:PREFIX_LENGTH]"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_database_settings.go",
+      "language": "go",
+      "bug_lines": [
+        12,
+        34,
+        35
+      ],
+      "summary": "Configuration writes DB_URL while the reader slices the absent DATABASE_URL value.",
+      "mechanism": "Configuration writes DB_URL while the reader slices the absent DATABASE_URL value.",
+      "observed_output": "panic: runtime error: slice bounds out of range [:8] with length 0",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "Read the same environment key written by configuration.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "Configuration changes the process environment as a side effect.",
+          "evidence": [
+            "os.Setenv(\"DB_URL\", databaseAddress)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "version-library-mismanagement",
+          "suggests": "Writer and reader use incompatible environment variable names.",
+          "evidence": [
+            "os.Setenv(\"DB_URL\", databaseAddress)",
+            "os.Getenv(\"DATABASE_URL\")"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_database_settings.rs",
+      "language": "rust",
+      "bug_lines": [
+        5,
+        6
+      ],
+      "summary": "The reader fails because configuration writes the earlier key name.",
+      "mechanism": "Configuration mutates the process environment instead of returning settings. The consumer reads a different environment-key convention from the producer.",
+      "observed_output": "called `Result::unwrap()` on an `Err` value: NotPresent",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "The configured address is available through the consumer key.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "Configuration mutates the process environment instead of returning settings.",
+          "evidence": [
+            "env::set_var(\"DB_URL\", ADDRESS)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "version-library-mismanagement",
+          "suggests": "The consumer reads a different environment-key convention from the producer.",
+          "evidence": [
+            "env::var(\"DATABASE_URL\").unwrap()",
+            "env::set_var(\"DB_URL\", ADDRESS)"
+          ]
+        }
+      ]
+    }
+  ]
+}

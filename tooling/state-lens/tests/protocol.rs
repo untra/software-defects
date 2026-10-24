@@ -174,8 +174,8 @@ fn cli_and_server_share_findings() {
     server.stop();
 }
 #[test]
-fn diagnostics_are_opt_in() {
-    let mut server = Server::start();
+fn diagnostics_can_be_disabled() {
+    let mut server = Server::start_with(json!({"diagnostics":false}));
     server.open_clock();
     thread::sleep(Duration::from_millis(50));
     server.request(
@@ -187,12 +187,12 @@ fn diagnostics_are_opt_in() {
 }
 #[test]
 fn diagnostics_track_versions_and_clear_on_close() {
-    let mut server = Server::start_with(json!({"diagnostics":true}));
+    let mut server = Server::start();
     server.open_clock();
     let first = server.published(CLOCK_URI);
     assert_eq!(first["version"], 1);
     let diagnostic = &first["diagnostics"][0];
-    assert_eq!(diagnostic["severity"], 4);
+    assert_eq!(diagnostic["severity"], 3);
     assert_eq!(diagnostic["source"], "state-lens");
     assert!(diagnostic["codeDescription"]["href"]
         .as_str()

@@ -9,12 +9,14 @@ use tree_sitter::{
     InputEdit, Language, Node, Parser, Point, Query, QueryCursor, StreamingIterator, Tree,
 };
 use url::Url;
-fn related_cwes(rule_id: &str) -> Vec<String> {
+fn rule_metadata() -> &'static serde_json::Value {
     static METADATA: OnceLock<serde_json::Value> = OnceLock::new();
-    let metadata = METADATA.get_or_init(|| {
+    METADATA.get_or_init(|| {
         serde_json::from_str(include_str!("../../../queries/rules.json")).expect("rule metadata")
-    });
-    metadata["rules"]
+    })
+}
+fn related_cwes(rule_id: &str) -> Vec<String> {
+    rule_metadata()["rules"]
         .as_array()
         .unwrap()
         .iter()
@@ -59,12 +61,14 @@ pub fn language_name(path: &Path) -> Option<&'static str> {
         "go" => Some("go"),
         "rs" => Some("rust"),
         "ts" => Some("typescript"),
+        "py" => Some("python"),
         _ => None,
     }
 }
 fn grammar(name: &str) -> Result<Language> {
     Ok(match name {
         "go" => tree_sitter_go::LANGUAGE.into(),
+        "python" => tree_sitter_python::LANGUAGE.into(),
         "rust" => tree_sitter_rust::LANGUAGE.into(),
         "typescript" => tree_sitter_typescript::LANGUAGE_TYPESCRIPT.into(),
         _ => bail!("unsupported language: {name}"),
@@ -92,14 +96,32 @@ fn point(source: &str, offset: usize) -> Point {
     )
 }
 fn scope(node: Node<'_>, root: Span) -> Span {
+    let mut ancestor = Some(node);
+    let mut python = false;
+    while let Some(n) = ancestor {
+        python |= n.kind() == "module";
+        ancestor = n.parent();
+    }
     let mut current = node.parent();
     while let Some(n) = current {
+        if python {
+            if matches!(
+                n.kind(),
+                "function_definition" | "lambda" | "class_definition"
+            ) {
+                return Span::of(n);
+            }
+            current = n.parent();
+            continue;
+        }
         if matches!(
             n.kind(),
             "statement_block"
                 | "block"
                 | "for_statement"
                 | "for_expression"
+                | "function_definition"
+                | "lambda"
                 | "function_declaration"
                 | "function_item"
                 | "method_declaration"
@@ -370,6 +392,7 @@ fn binding<'a>(bindings: &'a [Binding], name: &str, at: Span) -> Option<&'a Bind
                 && (b.parameter.is_some()
                     || b.function.is_none()
                     || b.language == "typescript"
+                    || b.language == "python"
                     || b.range.start <= at.start)
         })
         .min_by_key(|b| (b.scope.len(), usize::MAX - b.range.start))
@@ -447,7 +470,14 @@ fn add(
     resolution: &str,
 ) {
     let trigger = Span::of(node);
-    let rule_id = format!("{}.{}.{}", facts.report.language, FAMILY, defect);
+    let family = rule_metadata()["rules"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|rule| rule["defect"] == defect)
+        .and_then(|rule| rule["family"].as_str())
+        .expect("finding must have registered rule metadata");
+    let rule_id = format!("{}.{}.{}", facts.report.language, family, defect);
     if facts
         .report
         .findings
@@ -474,7 +504,8 @@ fn add(
     }
     facts.report.findings.push(Finding {
         rule_id: rule_id.clone(),
-        family: FAMILY.into(),
+        family: family.into(),
+        compound: None,
         defect: defect.into(),
         trigger,
         function: owner(&facts.report.functions, trigger).map(|i| facts.report.functions[i].range),
@@ -568,6 +599,45 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
                         .is_some_and(|p| p.kind() == "declaration_list"))),
         );
     }
+    if parsed.language == "python" {
+        for (index, function) in facts.report.functions.iter_mut().enumerate() {
+            let node = all
+                .iter()
+                .find(|n| Span::of(**n) == function.range)
+                .unwrap();
+            if let Some(parameters) = node.child_by_field_name("parameters") {
+                let mut cursor = parameters.walk();
+                for parameter in parameters.named_children(&mut cursor) {
+                    let name = if parameter.kind() == "identifier" {
+                        Some(parameter)
+                    } else {
+                        parameter.child_by_field_name("name").or_else(|| {
+                            parameter
+                                .named_child(0)
+                                .filter(|n| n.kind() == "identifier")
+                        })
+                    };
+                    if let Some(name) = name {
+                        let value = text(name, source).to_string();
+                        facts.bindings.push(Binding {
+                            name: value.clone(),
+                            range: Span::of(name),
+                            scope: function.range,
+                            function: Some(index),
+                            parameter: Some(function.parameters.len()),
+                            mutable: true,
+                            type_name: String::new(),
+                            language: parsed.language.clone(),
+                            alias: None,
+                            fresh: false,
+                            callable: None,
+                        });
+                        function.parameters.push(value);
+                    }
+                }
+            }
+        }
+    }
     for n in &all {
         let span = Span::of(*n);
         if matches!(
@@ -630,6 +700,7 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
                 | "const_spec"
                 | "short_var_declaration"
                 | "static_item"
+                | "assignment"
         ) {
             let name = n
                 .child_by_field_name("name")
@@ -646,6 +717,22 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
                     vec![name]
                 };
                 for name in names.into_iter().filter(|n| n.kind() == "identifier") {
+                    if parsed.language == "python" {
+                        let function = owner(&facts.report.functions, span);
+                        let declared_outer = all.iter().any(|declaration| {
+                            matches!(
+                                declaration.kind(),
+                                "global_statement" | "nonlocal_statement"
+                            ) && owner(&facts.report.functions, Span::of(*declaration)) == function
+                                && nodes(*declaration).iter().any(|part| {
+                                    part.kind() == "identifier"
+                                        && text(*part, source) == text(name, source)
+                                })
+                        });
+                        if declared_outer {
+                            continue;
+                        }
+                    }
                     let value = value.and_then(|v| {
                         if v.kind() == "expression_list" && v.named_child_count() == 1 {
                             v.named_child(0)
@@ -715,7 +802,11 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
         }
         if matches!(
             n.kind(),
-            "function_declaration" | "function_item" | "class_declaration" | "struct_item"
+            "function_definition"
+                | "function_declaration"
+                | "function_item"
+                | "class_declaration"
+                | "struct_item"
         ) {
             if let Some(name) = n.child_by_field_name("name") {
                 facts.bindings.push(Binding {
@@ -759,7 +850,7 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
             }
             "alias" => add(&mut facts,node,defect,Effect::StructuralSignal,"Copy or clone may retain aliases; type and escape behavior are not proven.","candidate"),
             "loop" => {
-                let has_write=all.iter().any(|n| at.contains(Span::of(*n)) && owner(&facts.report.functions,Span::of(*n))==owner(&facts.report.functions,at) && matches!(n.kind(),"assignment_expression"|"augmented_assignment_expression"|"assignment_statement"|"compound_assignment_expr"|"update_expression"|"inc_statement"|"dec_statement"));
+                let has_write=all.iter().any(|n| at.contains(Span::of(*n)) && owner(&facts.report.functions,Span::of(*n))==owner(&facts.report.functions,at) && matches!(n.kind(),"assignment_expression"|"augmented_assignment_expression"|"assignment_statement"|"compound_assignment_expr"|"update_expression"|"inc_statement"|"dec_statement"|"assignment"|"augmented_assignment"));
                 if has_write {add(&mut facts,node,defect,Effect::StructuralSignal,"Loop contains state updates; ordering and iteration boundaries require review.","syntax");}
             }
             "receiver_signature" => add(&mut facts,node,defect,Effect::StructuralSignal,"Receiver permits mutation; signature alone does not prove a write.","syntax"),
@@ -782,6 +873,12 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
                 model_call(&mut facts,node,callee,source);
             }
             "reference" => {
+                if parsed.language == "python" && node.parent().is_some_and(|parent| {
+                    matches!(parent.kind(), "global_statement" | "nonlocal_statement" | "import_statement" | "import_from_statement" | "aliased_import" | "dotted_name")
+                        || parent.kind() == "attribute" && parent.child_by_field_name("attribute") == Some(node)
+                        || parent.kind() == "assignment" && parent.child_by_field_name("left") == Some(node)
+                        || parent.kind() == "function_definition" && parent.child_by_field_name("name") == Some(node)
+                }) { continue; }
                 if let Some(b)=binding(&facts.bindings,text(node,source),at) {
                     if b.mutable && b.range != at && b.function != owner(&facts.report.functions,at) {
                         add(&mut facts,node,"impure-functions",Effect::ExternalRead,"Read of mutable state outside this executable scope.","binding-analysis");

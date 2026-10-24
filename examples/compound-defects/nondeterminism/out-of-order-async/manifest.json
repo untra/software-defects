@@ -1,0 +1,154 @@
+{
+  "family": "compound-defects",
+  "class": "nondeterminism",
+  "category": "temporal-interleaving",
+  "defect": "out-of-order-async",
+  "name": "Out-of-Order Async Completion",
+  "essence": "Two requests write one binding, and the one that finishes last wins.",
+  "cwes": [
+    "CWE-362",
+    "CWE-696"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_last_write_wins.ts",
+      "language": "typescript",
+      "bug_lines": [
+        13
+      ],
+      "summary": "beta is released first, then alpha overwrites the binding.",
+      "mechanism": "shown is a single let. Each completion assigns it with no generation check, so finish order, not request order, picks the value (CWE-362, CWE-696).",
+      "observed_output": "shown alpha",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "shown beta, the request that was meant to land last",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "var-let-mut",
+          "suggests": "Each completion reassigns the same module-level shown binding.",
+          "evidence": [
+            "let shown = \"\";",
+            "shown = id;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "async-io-misuse",
+          "suggests": "Requests update the display after independently awaited completion without checking request order.",
+          "evidence": [
+            "await ready;\n  shown = id;",
+            "const first = load(\"alpha\", earlier.promise);",
+            "const second = load(\"beta\", later.promise);"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_catalog_selection.py",
+      "language": "python",
+      "bug_lines": [
+        8
+      ],
+      "summary": "A shared mutable selection is replaced by whichever asynchronous load finishes last, even when it was requested first..",
+      "mechanism": "A shared mutable selection is replaced by whichever asynchronous load finishes last, even when it was requested first.",
+      "observed_output": "shown orchard",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "shown harbor",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "var-let-mut",
+          "suggests": "Every completion reassigns the same module-level selection.",
+          "evidence": [
+            "global shown",
+            "shown = name"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "async-io-misuse",
+          "suggests": "Independent awaited completions update the selection without checking request order.",
+          "evidence": [
+            "await ready.wait()",
+            "first = asyncio.create_task(load(\"orchard\", earlier))"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_delivery_display.go",
+      "language": "go",
+      "bug_lines": [
+        11
+      ],
+      "summary": "The earlier request finishes last and overwrites the later display.",
+      "mechanism": "The earlier request finishes last and overwrites the later display.",
+      "observed_output": "shown orchard",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "shown harbor",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "var-let-mut",
+          "suggests": "Completions reassign one package-level binding.",
+          "evidence": [
+            "var shown string",
+            "shown = id"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "async-io-misuse",
+          "suggests": "Each goroutine assigns after its own asynchronous readiness without checking request generation.",
+          "evidence": [
+            "<-ready",
+            "shown = id"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_display_requests.rs",
+      "language": "rust",
+      "bug_lines": [
+        9,
+        13
+      ],
+      "summary": "The earlier background request overwrites the later result.",
+      "mechanism": "Both completions reassign one mutable display binding. Background requests publish on completion without checking request order.",
+      "observed_output": "shown orchard",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "shown harbor",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "var-let-mut",
+          "suggests": "Both completions reassign one mutable display binding.",
+          "evidence": [
+            "let shown = Arc::new(Mutex::new(\"\"));",
+            "*earlier_shown.lock().unwrap() = \"orchard\";"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "async-io-misuse",
+          "suggests": "Background requests publish on completion without checking request order.",
+          "evidence": [
+            "ready.recv().unwrap();",
+            "*later_shown.lock().unwrap() = \"harbor\";"
+          ]
+        }
+      ]
+    }
+  ]
+}

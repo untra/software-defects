@@ -1,0 +1,151 @@
+{
+  "family": "compound-defects",
+  "class": "nondeterminism",
+  "category": "entropic-divergence",
+  "defect": "dispatch-order-divergence",
+  "name": "Dispatch Order Divergence",
+  "essence": "The earlier standard module finishes last and replaces the express shipping handler.",
+  "cwes": [
+    "CWE-758"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 1,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_shipping_routes.ts",
+      "language": "typescript",
+      "bug_lines": [
+        15
+      ],
+      "summary": "The earlier standard module finishes last and replaces the express shipping handler.",
+      "mechanism": "Asynchronous import-style initialization mixes methods into one shared table using Object.assign; completion order determines the winning handler.",
+      "observed_output": "shipping standard",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "shipping express when the later selected module should take precedence.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "macro-mixin-misuse",
+          "suggests": "Object.assign mixes overlapping handler names into the same route table.",
+          "evidence": [
+            "Object.assign(routes, module);",
+            "install({ [ROUTE]: () => STANDARD }",
+            "install({ [ROUTE]: () => EXPRESS }"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "async-io-misuse",
+          "suggests": "Registration occurs after independently completed asynchronous initialization.",
+          "evidence": [
+            "await ready;\n  Object.assign(routes, module);"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_shipping_routes.py",
+      "language": "python",
+      "bug_lines": [
+        10
+      ],
+      "summary": "Overlapping handler dictionaries are mixed into one registry after awaited initialization, so completion order chooses the implementation..",
+      "mechanism": "Overlapping handler dictionaries are mixed into one registry after awaited initialization, so completion order chooses the implementation.",
+      "observed_output": "shipping standard",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Select express by an explicit registration priority.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "macro-mixin-misuse",
+          "suggests": "Module initialization mixes overlapping handlers into one route table.",
+          "evidence": [
+            "routes.update(module)",
+            "{ROUTE: lambda: STANDARD}",
+            "{ROUTE: lambda: EXPRESS}"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "async-io-misuse",
+          "suggests": "Each module registers its route only after its independent asynchronous initialization.",
+          "evidence": [
+            "await ready.wait()\n    routes.update(module)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_shipping_plugins.go",
+      "language": "go",
+      "bug_lines": [
+        16
+      ],
+      "summary": "A later-finishing plugin installs its handler over the preferred shipping handler.",
+      "mechanism": "A plugin-style registration loader copies overlapping route maps after asynchronous initialization; Go package init ordering is not involved.",
+      "observed_output": "shipping standard",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "shipping express",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "macro-mixin-misuse",
+          "suggests": "Plugin route maps are mixed into one table with overlapping names.",
+          "evidence": [
+            "for name, handler := range module.routes",
+            "routes[name] = handler"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "async-io-misuse",
+          "suggests": "Plugin installation writes after independently completed asynchronous initialization.",
+          "evidence": [
+            "<-ready",
+            "routes[name] = handler"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_shipping_routes.rs",
+      "language": "rust",
+      "bug_lines": [
+        5
+      ],
+      "summary": "The earlier shipping module finishes last and replaces the express handler.",
+      "mechanism": "The registration macro silently replaces an existing handler under a fixed route. Independent background initialization determines the order of registration.",
+      "observed_output": "shipping standard",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "shipping express",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "macro-mixin-misuse",
+          "suggests": "The registration macro silently replaces an existing handler under a fixed route.",
+          "evidence": [
+            "$routes.lock().unwrap().insert(\"shipping\", $handler)"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "async-io-misuse",
+          "suggests": "Independent background initialization determines the order of registration.",
+          "evidence": [
+            "ready.recv().unwrap();",
+            "install!(earlier_routes, \"standard\");",
+            "install!(later_routes, \"express\");"
+          ]
+        }
+      ]
+    }
+  ]
+}

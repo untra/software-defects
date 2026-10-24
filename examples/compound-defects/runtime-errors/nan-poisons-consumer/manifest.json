@@ -1,0 +1,157 @@
+{
+  "family": "compound-defects",
+  "class": "runtime-errors",
+  "category": "computational-exhaustion",
+  "defect": "nan-poisons-consumer",
+  "name": "Nan Poisons Consumer",
+  "essence": "A blank shipping-rate input becomes NaN and selects an absent rate label.",
+  "cwes": [
+    "CWE-754"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_shipping_rate.ts",
+      "language": "typescript",
+      "bug_lines": [
+        7,
+        8
+      ],
+      "summary": "A blank shipping-rate input becomes NaN and selects an absent rate label.",
+      "mechanism": "An unvalidated parse mutates the monetary rate to NaN; rounding preserves NaN, so indexing yields undefined and the next method call throws.",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'toUpperCase')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Reject the blank rate before updating the quote or indexing the rate table.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "The mutable shipping rate is parsed as a floating-point value and rounded into a pricing tier.",
+          "evidence": [
+            "let rate = STARTING_RATE;",
+            "rate = Number.parseFloat(input);",
+            "Math.round(rate)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "A blank input is parsed and immediately used as a table index without a finite-number check.",
+          "evidence": [
+            "const RATE_INPUT = \"\";",
+            "return RATE_LABELS[Math.round(rate)].toUpperCase();"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_shipping_rate.py",
+      "language": "python",
+      "bug_lines": [
+        9,
+        10
+      ],
+      "summary": "Unvalidated floating-point input sets the rate to NaN, and rounding that rate for a table index raises ValueError..",
+      "mechanism": "Unvalidated floating-point input sets the rate to NaN, and rounding that rate for a table index raises ValueError.",
+      "observed_output": "ValueError: cannot convert float NaN to integer",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Reject non-finite rates before looking up a shipping tier.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "The mutable shipping rate is a floating-point value rounded into a pricing tier.",
+          "evidence": [
+            "rate = STARTING_RATE",
+            "rate = float(raw)",
+            "round(rate)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "An unvalidated non-finite numeric string reaches a consumer that requires an integer index.",
+          "evidence": [
+            "RATE_INPUT = \"NaN\"",
+            "return RATE_LABELS[round(rate)].upper()"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_shipping_rate.go",
+      "language": "go",
+      "bug_lines": [
+        16,
+        17
+      ],
+      "summary": "An unchecked non-finite rate selects a missing pricing callback and panics.",
+      "mechanism": "An unchecked non-finite rate selects a missing pricing callback and panics.",
+      "observed_output": "panic: runtime error: invalid memory address or nil pointer dereference",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "Reject non-finite rates before choosing a pricing tier.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "The mutable floating-point shipping rate is rounded into a pricing tier.",
+          "evidence": [
+            "rate, _ = strconv.ParseFloat(input, 64)",
+            "math.Round(rate)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "The parsed rate is used without a finite-number check.",
+          "evidence": [
+            "const rateInput = \"NaN\"",
+            "tiers[math.Round(rate)]()"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_shipping_rate.rs",
+      "language": "rust",
+      "bug_lines": [
+        6,
+        8
+      ],
+      "summary": "NaN never matches a table key and the consumer unwraps a missing tier.",
+      "mechanism": "The monetary rate is a mutable floating-point value rounded into a pricing tier. Blank input is accepted as NaN and used to look up a tier without checking finiteness.",
+      "observed_output": "called `Option::unwrap()` on a `None` value",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "Blank rates are rejected before tier lookup.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "The monetary rate is a mutable floating-point value rounded into a pricing tier.",
+          "evidence": [
+            "rate = input.parse::<f64>().unwrap_or(f64::NAN);",
+            "let tier = rate.round();"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "Blank input is accepted as NaN and used to look up a tier without checking finiteness.",
+          "evidence": [
+            "const INITIAL_RATE: f64 = 1.0;\nconst RATE_INPUT: &str = \"\";",
+            "find(|(key, _)| *key == tier).unwrap()"
+          ]
+        }
+      ]
+    }
+  ]
+}

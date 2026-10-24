@@ -1,0 +1,160 @@
+{
+  "family": "compound-defects",
+  "class": "runtime-errors",
+  "category": "architectural-drift",
+  "defect": "deserialized-type-confusion",
+  "name": "Deserialized Type Confusion",
+  "essence": "Loading a JSON string reading replaces a numeric meter field before numeric formatting.",
+  "cwes": [
+    "CWE-704",
+    "CWE-843"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 1,
+    "rust": 1
+  },
+  "examples": [
+    {
+      "file": "typescript/01_meter_reading.ts",
+      "language": "typescript",
+      "bug_lines": [
+        9,
+        10,
+        14
+      ],
+      "summary": "Loading a JSON string reading replaces a numeric meter field before numeric formatting.",
+      "mechanism": "JSON.parse returns an unchecked runtime value and the erased any field allows it to replace the instance number; the string has no toFixed method.",
+      "observed_output": "TypeError: this.reading.toFixed is not a function",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Validate or convert the incoming reading and print reading 10.0.",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "insecure-deserialization",
+          "suggests": "The parsed reading is trusted and copied directly from JSON into the meter.",
+          "evidence": [
+            "const BODY = '{\"reading\":\"10\"}';",
+            "const record = JSON.parse(body);",
+            "this.reading = record.reading;"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "Loading the record changes the existing meter reading from its numeric initial value.",
+          "evidence": [
+            "reading: any = INITIAL_READING;",
+            "this.reading = record.reading;"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_meter_reading.py",
+      "language": "python",
+      "bug_lines": [
+        11,
+        12,
+        15
+      ],
+      "summary": "JSON supplies a string reading that overwrites the meter's numeric instance field and then fails numeric formatting..",
+      "mechanism": "JSON supplies a string reading that overwrites the meter's numeric instance field and then fails numeric formatting.",
+      "observed_output": "ValueError: Unknown format code 'f' for object of type 'str'",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "reading 10.0",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "insecure-deserialization",
+          "suggests": "The parsed JSON reading is trusted as the meter's live state.",
+          "evidence": [
+            "record = json.loads(body)",
+            "self.reading = record[\"reading\"]"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "Loading a record changes the existing object's reading from numeric to text.",
+          "evidence": [
+            "self.reading = INITIAL_READING",
+            "self.reading = record[\"reading\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_meter_reading.go",
+      "language": "go",
+      "bug_lines": [
+        15,
+        18,
+        23
+      ],
+      "summary": "JSON installs a string into an existing numeric meter and its numeric assertion panics.",
+      "mechanism": "The any field and map[string]any deserialization erase numeric type information; a later int assertion traps the changed shape.",
+      "observed_output": "panic: interface conversion: interface {} is string, not int",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "Validate and convert reading before updating the meter.",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "insecure-deserialization",
+          "suggests": "Parsed JSON values are copied directly into the meter.",
+          "evidence": [
+            "json.Unmarshal([]byte(body), &record)",
+            "m.reading = record[\"reading\"]"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "Loading mutates the existing receiver field.",
+          "evidence": [
+            "m.reading = record[\"reading\"]",
+            "meter.reading.(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_meter_reading.rs",
+      "language": "rust",
+      "bug_lines": [
+        10,
+        17
+      ],
+      "summary": "A quoted JSON reading replaces a numeric field and fails the next numeric downcast.",
+      "mechanism": "Any type erasure and downcast provide the score-1 deserialized shape escape hatch. The flat JSON loader trusts the quoted reading and retains its string type. Loading overwrites the existing meter field with the deserialized value.",
+      "observed_output": "called `Option::unwrap()` on a `None` value",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "The reading remains numeric or the quoted value is rejected.",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "insecure-deserialization",
+          "suggests": "The flat JSON loader trusts the quoted reading and retains its string type.",
+          "evidence": [
+            "let (key, value) = record.split_once(':').unwrap();",
+            "Box::new(value.trim().trim_matches('\"').to_owned())"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "Loading overwrites the existing meter field with the deserialized value.",
+          "evidence": [
+            "self.reading = if value.trim().starts_with('\"')",
+            "self.reading.downcast_ref::<f64>().unwrap()"
+          ]
+        }
+      ]
+    }
+  ]
+}

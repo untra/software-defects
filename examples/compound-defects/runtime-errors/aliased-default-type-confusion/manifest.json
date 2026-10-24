@@ -1,0 +1,160 @@
+{
+  "family": "compound-defects",
+  "class": "runtime-errors",
+  "category": "structural-invalidation",
+  "defect": "aliased-default-type-confusion",
+  "name": "Aliased-Default Type Confusion",
+  "essence": "A shared mutable default is seeded with the wrong type, and a later caller crashes on it.",
+  "cwes": [
+    "CWE-843"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 1,
+    "rust": 1
+  },
+  "examples": [
+    {
+      "file": "python/01_shared_note_bag.py",
+      "language": "python",
+      "bug_lines": [
+        1,
+        8
+      ],
+      "summary": "The default list outlives the call. A string stored in it crashes the next read of sku.",
+      "mechanism": "Python evaluates a mutable default once and reuses that object. The second call appends a str into the list the third call still indexes as a dict (CWE-843).",
+      "observed_output": "pen\nTypeError: string indices must be integers, not 'str'",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "sku lines pen, ink, and pad, each from its own list",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "aliasing-mutable-defaults",
+          "suggests": "Every omitted bag argument reuses and mutates the same default list.",
+          "evidence": [
+            "def stash(note, bag=[]):",
+            "bag.append(note)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "A string is stored among dictionaries and later indexed using the sku key.",
+          "evidence": [
+            "stash(\"ink\")",
+            "print(note[\"sku\"])"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "typescript/01_packing_bag.ts",
+      "language": "typescript",
+      "bug_lines": [
+        7,
+        8,
+        15
+      ],
+      "summary": "A shared default bag retains a string that a later caller treats as a product note.",
+      "mechanism": "The default parameter references one module-level array across calls; reading sku on its string element yields undefined and the string-method call throws.",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'toUpperCase')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Each call receives its own bag and the last call prints labels PAD.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "aliasing-mutable-defaults",
+          "suggests": "Every omitted bag argument aliases the same array and each stash call mutates it.",
+          "evidence": [
+            "const DEFAULT_BAG: Array<Note | string> = [];",
+            "bag = DEFAULT_BAG",
+            "bag.push(note);"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "A string is stored among product notes and later consumed through its nonexistent sku property.",
+          "evidence": [
+            "const MIDDLE_NOTE = \"ink\";",
+            "stash(MIDDLE_NOTE);",
+            "note.sku.toUpperCase()"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_packing_bag.go",
+      "language": "go",
+      "bug_lines": [
+        13,
+        15,
+        24
+      ],
+      "summary": "Calls using the default shared bag retain a string that fails the later note assertion.",
+      "mechanism": "The []any escape hatch permits heterogeneous contents; a nil argument selects one shared default slice and the map assertion panics.",
+      "observed_output": "panic: interface conversion: interface {} is string, not map[string]string",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "Each caller should receive an isolated bag containing only product notes.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "aliasing-mutable-defaults",
+          "suggests": "Omitted bags resolve to the same package slice and append into it.",
+          "evidence": [
+            "bag = &defaultBag",
+            "*bag = append(*bag, note)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "The []any bag contains a string but the consumer asserts map notes.",
+          "evidence": [
+            "var defaultBag = []any{}",
+            "note.(map[string]string)[\"sku\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_packing_bag.rs",
+      "language": "rust",
+      "bug_lines": [
+        12,
+        14,
+        16
+      ],
+      "summary": "A shallowly cloned bag carries a string into another caller numeric-shaped notes.",
+      "mechanism": "Rc<RefCell<_>> shared storage and Any downcasts provide the score-1 aliased dynamic default form. Cloning the packing object aliases the same mutable note bag. A string is added to a bag subsequently consumed as Note objects.",
+      "observed_output": "called `Option::unwrap()` on a `None` value",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "Each caller has a separate note bag or validates note types.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "aliasing-mutable-defaults",
+          "suggests": "Cloning the packing object aliases the same mutable note bag.",
+          "evidence": [
+            "notes: Rc<RefCell<Vec<Box<dyn Any>>>>",
+            "let next = original.clone();"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "A string is added to a bag subsequently consumed as Note objects.",
+          "evidence": [
+            "original.stash(Box::new(String::from(\"ink\")));",
+            "note.downcast_ref::<Note>().unwrap().sku"
+          ]
+        }
+      ]
+    }
+  ]
+}

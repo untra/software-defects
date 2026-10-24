@@ -1,0 +1,156 @@
+{
+  "family": "compound-defects",
+  "class": "data-corruption",
+  "category": "semantic-corruption",
+  "defect": "mojibake",
+  "name": "Mojibake",
+  "essence": "The catalog stores replacement text after incompatible writer and reader encodings.",
+  "cwes": [
+    "CWE-172"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_catalog_text.ts",
+      "language": "typescript",
+      "bug_lines": [
+        14,
+        15
+      ],
+      "summary": "The catalog stores replacement text after incompatible writer and reader encodings.",
+      "mechanism": "The producer writes latin-1 bytes while the consumer assumes the UTF-8 contract, replacing an invalid byte before persisting the decoded string.",
+      "observed_output": "name caf�",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "name café",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "A producer and consumer exchange catalog bytes through one temporary file.",
+          "evidence": [
+            "writeFileSync(path, CATALOG_NAME, WRITER_ENCODING);",
+            "readFileSync(path, READER_ENCODING)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "version-library-mismanagement",
+          "suggests": "The writer and reader use incompatible encoding contracts.",
+          "evidence": [
+            "const WRITER_ENCODING = \"latin1\";",
+            "const READER_ENCODING = \"utf8\";"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_catalog_text.py",
+      "language": "python",
+      "bug_lines": [
+        13,
+        14
+      ],
+      "summary": "The file writer uses latin-1 while the reader decodes as UTF-8 with replacement, storing corrupted text..",
+      "mechanism": "The file writer uses latin-1 while the reader decodes as UTF-8 with replacement, storing corrupted text.",
+      "observed_output": "name caf�",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "name café",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "A producer and consumer exchange bytes through a file boundary.",
+          "evidence": [
+            "path.write_bytes(CATALOG_NAME.encode(WRITER_ENCODING))",
+            "path.read_bytes()"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "version-library-mismanagement",
+          "suggests": "The writer and reader use incompatible encoding contracts.",
+          "evidence": [
+            "WRITER_ENCODING = \"latin1\"",
+            "READER_ENCODING = \"utf8\""
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_catalog_text.go",
+      "language": "go",
+      "bug_lines": [
+        23,
+        26,
+        30
+      ],
+      "summary": "Latin-1 bytes are decoded as UTF-8 and stored with a replacement character.",
+      "mechanism": "Latin-1 bytes are decoded as UTF-8 and stored with a replacement character.",
+      "observed_output": "name caf�",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "name café",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "Writer and reader exchange catalog bytes through a temporary file.",
+          "evidence": [
+            "os.WriteFile(path, latinName, fileMode)",
+            "os.ReadFile(path)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "version-library-mismanagement",
+          "suggests": "The producer supplies Latin-1 bytes but the consumer requires UTF-8.",
+          "evidence": [
+            "0xe9",
+            "strings.ToValidUTF8(string(body), \"�\")"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_catalog_text.rs",
+      "language": "rust",
+      "bug_lines": [
+        5,
+        8
+      ],
+      "summary": "A mismatched encoding contract stores a replacement character in the catalog.",
+      "mechanism": "The writer and reader exchange catalog bytes through a temporary file. The writer emits Latin-1 code points while the reader applies UTF-8 decoding.",
+      "observed_output": "name caf�",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "name café",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "The writer and reader exchange catalog bytes through a temporary file.",
+          "evidence": [
+            "fs::write(&path, latin1).unwrap();",
+            "fs::read(&path).unwrap()"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "version-library-mismanagement",
+          "suggests": "The writer emits Latin-1 code points while the reader applies UTF-8 decoding.",
+          "evidence": [
+            "CATALOG_NAME.chars().map(|letter| letter as u8)",
+            "String::from_utf8_lossy(&bytes)"
+          ]
+        }
+      ]
+    }
+  ]
+}

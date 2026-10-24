@@ -28,7 +28,7 @@ ROOT = HERE.parents[1]
 CACHE = HERE / ".cache"
 CLI_VERSION = "0.25.10"
 SCHEMA_VERSION = 1
-LANGUAGES = {"go": (".go", "0.25.0"), "rust": (".rs", "0.24.0"), "typescript": (".ts", "0.23.2")}
+LANGUAGES = {"python": (".py", "0.25.0"), "go": (".go", "0.25.0"), "rust": (".rs", "0.24.0"), "typescript": (".ts", "0.23.2")}
 MAX_SOURCE_BYTES = 2 * 1024 * 1024
 MAX_OUTPUT_BYTES = 16 * 1024 * 1024
 COMMAND_TIMEOUT = 30
@@ -429,6 +429,8 @@ def verify_fix(case):
         elif case["language"] == "rust":
             checked(["rustc", "--edition", "2021", copied, "-o", work / "program"], cwd=work, timeout=BUILD_TIMEOUT)
             command = [work / "program"]
+        elif case["language"] == "python":
+            command = [sys.executable, copied]
         else:
             command = ["node", copied]
         code, out, err = execute([sys.executable, HERE / "runtime_child.py", *command], cwd=work,

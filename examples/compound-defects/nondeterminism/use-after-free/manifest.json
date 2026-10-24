@@ -1,0 +1,155 @@
+{
+  "family": "compound-defects",
+  "class": "nondeterminism",
+  "category": "observational-staleness",
+  "defect": "use-after-free",
+  "name": "Use After Free",
+  "essence": "Playback reads an alias after the audio frame has been transferred and throws.",
+  "cwes": [
+    "CWE-825"
+  ],
+  "scores": {
+    "python": 1,
+    "typescript": 1,
+    "go": 1,
+    "rust": 1
+  },
+  "examples": [
+    {
+      "file": "typescript/01_audio_frame.ts",
+      "language": "typescript",
+      "bug_lines": [
+        6,
+        7,
+        9
+      ],
+      "summary": "Playback reads an alias after the audio frame has been transferred and throws.",
+      "mechanism": "Transferring detaches the ArrayBuffer; constructing a DataView through the remaining alias traps access to the detached ArrayBuffer.",
+      "observed_output": "playback detached true\nTypeError: Cannot perform DataView constructor on a detached ArrayBuffer",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Read the sample before transfer or use the transferred buffer.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "aliasing-mutable-defaults",
+          "suggests": "Playback and frame name the same mutable buffer.",
+          "evidence": [
+            "const playback = frame;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "pointer-mismanagement",
+          "suggests": "Playback is still used after transfer invalidates the original buffer.",
+          "evidence": [
+            "structuredClone(frame, { transfer: [frame] });",
+            "new DataView(playback)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_audio_frame.py",
+      "language": "python",
+      "bug_lines": [
+        14,
+        16,
+        17
+      ],
+      "summary": "A ctypes alias outlives its unmapped frame storage and reads a released address, terminating the subprocess..",
+      "mechanism": "A ctypes alias outlives its unmapped frame storage and reads a released address, terminating the subprocess.",
+      "observed_output": "playback requested",
+      "exit_code": 139,
+      "deterministic": true,
+      "expected_behavior": "Read sample 23 while the mapping is still owned.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "aliasing-mutable-defaults",
+          "suggests": "Playback aliases storage owned by the mapped frame.",
+          "evidence": [
+            "ctypes.c_ubyte.from_address(address)"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "pointer-mismanagement",
+          "suggests": "A ctypes alias is read after the underlying mapping is released.",
+          "evidence": [
+            "frame.close()",
+            "playback.value"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_audio_page.go",
+      "language": "go",
+      "bug_lines": [
+        15,
+        16,
+        20
+      ],
+      "summary": "Playback dereferences memory after its mapping has been released.",
+      "mechanism": "unsafe retains a pointer into a syscall.Mmap allocation after syscall.Munmap; the invalid dereference is trapped by the runtime.",
+      "observed_output": "panic: runtime error: invalid memory address or nil pointer dereference",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "Read the sample before unmapping, or invalidate all aliases.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "aliasing-mutable-defaults",
+          "suggests": "Playback aliases the same page bytes owned by the mapping.",
+          "evidence": [
+            "playback := (*byte)(unsafe.Pointer(&page[0]))"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "pointer-mismanagement",
+          "suggests": "The saved pointer is dereferenced after Munmap releases the page.",
+          "evidence": [
+            "syscall.Munmap(page)",
+            "*playback"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_audio_frame.rs",
+      "language": "rust",
+      "bug_lines": [
+        22,
+        23,
+        26
+      ],
+      "summary": "Playback reads an unmapped audio allocation and terminates.",
+      "mechanism": "unsafe raw pointers bypass allocation lifetime checks. POSIX mmap/munmap releases the page before playback reads its alias; this standalone example targets macOS and Linux.",
+      "observed_output": "playback requested",
+      "exit_code": 139,
+      "deterministic": true,
+      "expected_behavior": "The frame remains owned until playback finishes.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "aliasing-mutable-defaults",
+          "suggests": "Playback and frame alias the same raw allocation.",
+          "evidence": [
+            "let playback = frame.cast::<u8>();"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "pointer-mismanagement",
+          "suggests": "Playback retains and reads the raw pointer after munmap releases the allocation.",
+          "evidence": [
+            "munmap(frame, FRAME_BYTES)",
+            "playback.read_volatile()"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,162 @@
+{
+  "family": "compound-defects",
+  "class": "nondeterminism",
+  "category": "entropic-divergence",
+  "defect": "predictable-id-collision",
+  "name": "Predictable Id Collision",
+  "essence": "Two same-tick customers receive the same receipt id and one stored receipt replaces the other.",
+  "cwes": [
+    "CWE-340",
+    "CWE-362"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_receipt_numbers.ts",
+      "language": "typescript",
+      "bug_lines": [
+        13,
+        14,
+        16
+      ],
+      "summary": "Two same-tick customers receive the same receipt id and one stored receipt replaces the other.",
+      "mechanism": "A frozen shared millisecond clock supplies predictable identifiers; concurrent availability checks both pass before either insertion.",
+      "observed_output": "ids receipt-1700000000000 receipt-1700000000000\nreceipts 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Two distinct receipt ids and receipts 2.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "The identifier uses only a shared millisecond timestamp.",
+          "evidence": [
+            "const clock = { millis: MILLIS };",
+            "const id = PREFIX + clock.millis;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "race-conditions",
+          "suggests": "Both callers check availability before either resumes to insert.",
+          "evidence": [
+            "const available = !receipts.has(id);",
+            "await ready;",
+            "if (available) receipts.set(id, customer);"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_receipt_numbers.py",
+      "language": "python",
+      "bug_lines": [
+        9,
+        10,
+        13
+      ],
+      "summary": "Two callers derive the same predictable identifier and separately check availability before inserting, overwriting one receipt..",
+      "mechanism": "Two callers derive the same predictable identifier and separately check availability before inserting, overwriting one receipt.",
+      "observed_output": "distinct ids 1\nreceipts 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "distinct ids 2 and receipts 2",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "The identifier contains only one shared millisecond reading.",
+          "evidence": [
+            "identifier = PREFIX + str(clock[\"millis\"])"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "race-conditions",
+          "suggests": "Both callers check the same identifier before either resumes its insertion.",
+          "evidence": [
+            "available = identifier not in receipts",
+            "await ready.wait()",
+            "receipts[identifier] = customer"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_receipt_numbers.go",
+      "language": "go",
+      "bug_lines": [
+        15,
+        17,
+        21,
+        23
+      ],
+      "summary": "Two callers derive one identifier and overwrite one receipt despite individually protected map operations.",
+      "mechanism": "Two callers derive one identifier and overwrite one receipt despite individually protected map operations.",
+      "observed_output": "receipts 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "receipts 2",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "Identifiers use a frozen millisecond stamp without a per-call component.",
+          "evidence": [
+            "const millis int64 = 1700000000000",
+            "fmt.Sprintf(\"receipt-%d\", millis)"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "race-conditions",
+          "suggests": "The availability check and insertion are separate critical sections.",
+          "evidence": [
+            "_, exists := receipts[id]",
+            "if !exists",
+            "receipts[id] = customer"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_receipt_numbers.rs",
+      "language": "rust",
+      "bug_lines": [
+        13,
+        14,
+        16
+      ],
+      "summary": "Two callers overwrite one receipt key.",
+      "mechanism": "Both identifiers depend solely on the same millisecond timestamp. Callers release the map lock between checking the identifier and inserting it.",
+      "observed_output": "receipts 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "receipts 2",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "Both identifiers depend solely on the same millisecond timestamp.",
+          "evidence": [
+            "let id = format!(\"receipt-{MILLIS}\");"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "race-conditions",
+          "suggests": "Callers release the map lock between checking the identifier and inserting it.",
+          "evidence": [
+            "let available = !receipts.lock().unwrap().contains_key(&id);",
+            "if available { receipts.lock().unwrap().insert(id, customer); }"
+          ]
+        }
+      ]
+    }
+  ]
+}

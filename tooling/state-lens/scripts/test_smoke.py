@@ -25,7 +25,8 @@ class SmokeAuditTests(unittest.TestCase):
         flattened = [file for group in grouped.values() for file in group]
         self.assertCountEqual(flattened, files)
         self.assertEqual(len(flattened), len(set(flattened)))
-        self.assertEqual(len({file.parts[:2] for file in map(lambda p: p.relative_to(smoke.ROOT), files)}), 6)
+        from corpus_inventory import shards
+        self.assertEqual(len(shards()), 9)
         for folder, group in grouped.items():
             self.assertTrue(all(file.parent == folder for file in group))
 
@@ -151,3 +152,51 @@ class SmokeAuditTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+class CompoundContractTests(unittest.TestCase):
+    def example_row(self):
+        import smoke_report as audit
+        return audit.row('protocol', 'examples/compound-defects/nondeterminism/lost-update/python/01_parcel_count.py')
+
+    def test_taxonomy_and_inventory(self):
+        from corpus_inventory import files, identity, shards, validate_compounds
+        self.assertEqual(validate_compounds(), [])
+        compounds = [p for p in files() if identity(p.relative_to(smoke.ROOT))['compound_class']]
+        self.assertEqual(len(compounds), 168)
+        self.assertEqual(len({p.parent.parent for p in compounds}), 44)
+        self.assertEqual(len(files()), 850)
+        self.assertEqual(len(shards()), 9)
+
+    def test_absent_ingredients_fail_without_strict_gaps_or_baseline(self):
+        import smoke_report as audit
+        row = self.example_row()
+        audit.check_compound(row, [])
+        audit.finish(row)
+        self.assertEqual(row['missing_rule_ids'], sorted(row['expected_rule_ids']))
+        self.assertTrue(audit.failed([row], strict=False))
+        self.assertEqual({p['category'] for p in row['problems']}, {'count-mismatch'})
+        self.assertIn('/compound-defects/nondeterminism/lost-update/', row['problems'][0]['where_to_look'])
+
+    def test_broken_evidence_is_a_failure_even_with_three_identities(self):
+        import smoke_report as audit
+        row = self.example_row()
+        refs = [dict(rule_id=id, uri='file:///x.py', range=dict(start=index, end=index + 1))
+                for index, id in enumerate(row['expected_rule_ids'][:2])]
+        entries = [dict(finding=dict(rule_id=id, evidence=[ref]))
+                   for id, ref in zip(row['expected_rule_ids'], refs)]
+        entries.append(dict(finding=dict(rule_id=row['expected_rule_ids'][2], compound={
+            'class': row['compound_class'], 'category': row['compound_category'], 'ingredients': refs})))
+        audit.check_compound(row, entries)
+        self.assertFalse(row['problems'])
+        entries[0]['finding']['evidence'] = []
+        audit.check_compound(row, entries)
+        self.assertTrue(any('Broken ingredient' in p['message'] for p in row['problems']))
+
+    def test_base_schema_has_no_compound_expectations(self):
+        import smoke_report as audit
+        row = audit.row('editor', 'examples/mutated-state/var-let-mut/go/01_shadowed_err_in_if.go')
+        self.assertIsNone(row['compound_class'])
+        self.assertIsNone(row['compound_category'])
+        self.assertEqual(row['expected_rule_ids'], [])
+        self.assertEqual(row['missing_rule_ids'], [])
+        self.assertEqual(audit.SCHEMA_VERSION, 2)

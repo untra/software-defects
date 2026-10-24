@@ -14,10 +14,10 @@ import time
 from pathlib import Path
 
 import smoke_report as audit
+from corpus_inventory import EXTENSIONS, files, shard as corpus_shard
 
 ROOT = Path(__file__).resolve().parents[3]
 CORPUS_ROOTS = [ROOT / "examples", ROOT / "examples-fixed"]
-EXTENSIONS = {".go": "go", ".rs": "rust", ".ts": "typescript"}
 BASELINE = ROOT / "tooling/state-lens/smoke.json"
 DEFAULT_BINARY = ROOT / "tooling/state-lens/target/release/state-lens"
 SCHEMA_VERSION = 1
@@ -38,12 +38,7 @@ class Crash(Exception):
 
 
 def corpus_files():
-    return sorted(
-        path
-        for root in CORPUS_ROOTS
-        for path in root.rglob("*")
-        if path.suffix in EXTENSIONS and path.is_file()
-    )
+    return files()
 
 
 def relative(path):
@@ -250,6 +245,7 @@ def check_group(client, paths, rows, baseline, update, summaries):
             continue
         if snapshot["version"] != RESTORED_VERSION or snapshot["sourceHash"] != hashlib.sha256(p.read_bytes()).hexdigest():
             item["problems"].append(audit.problem("error", "settled snapshot version or source hash differs"))
+        audit.check_compound(item, snapshot["findings"])
         summary = summarize(snapshot)
         summaries[relative(p)] = summary
         item.update(findings=len(snapshot["findings"]), hinted_functions=summary["hinted_functions"])
@@ -277,6 +273,7 @@ def check_group(client, paths, rows, baseline, update, summaries):
         diagnostics = client.latest_diagnostics.get(p.as_uri(), {})
         if diagnostics.get("version") != RESTORED_VERSION or len(diagnostics.get("diagnostics", [])) != item["findings"]:
             item["problems"].append(audit.problem("count-mismatch", "diagnostics differ from settled snapshot"))
+        audit.check_diagnostics(item, diagnostics.get("diagnostics", []))
         audit.finish(item, triggers)
     for p in paths:
         client.notify("textDocument/didClose", params[p])
@@ -333,12 +330,16 @@ def run_shard(binary, shard, paths, baseline, update, report):
     return completed, summaries
 
 
-def run(binary, update, report=None, jobs=None, strict_gaps=False):
-    files = corpus_files()
+def run(binary, update, report=None, jobs=None, strict_gaps=False, selected=None):
+    files = [p for p in corpus_files() if not selected or relative(p).startswith(selected + "/")]
+    if not files:
+        raise ValueError("No corpus files selected")
+    if selected and update:
+        raise ValueError("Cannot update the baseline from a partial corpus")
     baseline = {} if update else json.loads(BASELINE.read_text())["files"]
     shards = collections.defaultdict(list)
     for path in files:
-        shards["/".join(path.relative_to(ROOT).parts[:2])].append(path)
+        shards[corpus_shard(path.relative_to(ROOT))].append(path)
     rows, summaries = [], {}
     started = time.monotonic()
     with concurrent.futures.ProcessPoolExecutor(max_workers=min(jobs or os.cpu_count() or 1, len(shards))) as pool:
@@ -357,7 +358,7 @@ def run(binary, update, report=None, jobs=None, strict_gaps=False):
             print(f"{shard}: complete ({time.monotonic() - started:.1f}s)", flush=True)
             if report:
                 audit.write(report, rows)
-    for name in sorted(set(baseline) - {relative(p) for p in files}):
+    for name in sorted({name for name in baseline if not selected or name.startswith(selected + "/")} - {relative(p) for p in files}):
         item = audit.row("protocol", name)
         item["problems"].append(audit.problem("baseline-drift", "baseline file missing from corpus"))
         rows.append(audit.finish(item))
@@ -377,6 +378,7 @@ def run(binary, update, report=None, jobs=None, strict_gaps=False):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--binary", type=Path, default=DEFAULT_BINARY)
+    parser.add_argument("--shard")
     parser.add_argument("--update", action="store_true")
     parser.add_argument("--report", type=Path)
     parser.add_argument("--jobs", type=int, default=os.cpu_count() or 1)
@@ -384,7 +386,7 @@ def main():
     args = parser.parse_args()
     if args.jobs < 1:
         parser.error("--jobs must be positive")
-    sys.exit(run(args.binary, args.update, args.report, args.jobs, args.strict_gaps))
+    sys.exit(run(args.binary, args.update, args.report, args.jobs, args.strict_gaps, args.shard))
 
 
 if __name__ == "__main__":

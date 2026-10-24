@@ -7,7 +7,7 @@ const path = require('node:path');
 const VSCODE_VERSION = '1.142.0';
 const EXTENSION = path.resolve(__dirname, '../..');
 const ROOT = path.resolve(EXTENSION, '../..');
-const SHARDS = ['examples', 'examples-fixed'].flatMap(root => ['mutated-state', 'shared-state', 'unstructured-state'].map(family => `${root}/${family}`));
+const SHARDS = JSON.parse(execFileSync('python3', [path.join(ROOT, 'tooling/state-lens/scripts/corpus_inventory.py')], { encoding: 'utf8' }));
 const BASELINE = path.join(ROOT, 'tooling/state-lens/smoke.json');
 const SERVER = process.env.STATE_LENS_SERVER || path.join(ROOT, 'tooling/state-lens/target/release/state-lens');
 const { version } = require(path.join(EXTENSION, 'package.json'));

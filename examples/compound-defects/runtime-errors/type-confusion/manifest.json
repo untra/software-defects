@@ -1,0 +1,155 @@
+{
+  "family": "compound-defects",
+  "class": "runtime-errors",
+  "category": "structural-invalidation",
+  "defect": "type-confusion",
+  "name": "Type Confusion",
+  "essence": "A form overwrites a numeric invoice field with a string before numeric formatting.",
+  "cwes": [
+    "CWE-843"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 1,
+    "rust": 1
+  },
+  "examples": [
+    {
+      "file": "typescript/01_invoice_form.ts",
+      "language": "typescript",
+      "bug_lines": [
+        9,
+        13
+      ],
+      "summary": "A form overwrites a numeric invoice field with a string before numeric formatting.",
+      "mechanism": "The erased any annotation permits a string assignment to the mutable instance field; strings have no toFixed method.",
+      "observed_output": "TypeError: this.cents.toFixed is not a function",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Parse and validate the form value, then display cents 1425.00.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "Applying the form changes the cents field on the existing invoice.",
+          "evidence": [
+            "this.cents = form.cents;"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "A field initialized as a number receives a string and is still formatted as a number.",
+          "evidence": [
+            "cents: any = STARTING_CENTS;",
+            "const FORM_CENTS = \"1425\";",
+            "this.cents.toFixed(DECIMAL_PLACES)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_invoice_form.py",
+      "language": "python",
+      "bug_lines": [
+        9,
+        12
+      ],
+      "summary": "A form overwrites an integer instance field with a string, and numeric formatting rejects its changed type..",
+      "mechanism": "A form overwrites an integer instance field with a string, and numeric formatting rejects its changed type.",
+      "observed_output": "ValueError: Unknown format code 'f' for object of type 'str'",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "cents 1425.00",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "Applying a form changes the existing object's cents field.",
+          "evidence": [
+            "self.cents = form[\"cents\"]"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "A numeric field receives a string and is still formatted as a number.",
+          "evidence": [
+            "self.cents = STARTING_CENTS",
+            "FORM_CENTS = \"1425\"",
+            "return f\"{self.cents:.2f}\""
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_invoice_form.go",
+      "language": "go",
+      "bug_lines": [
+        12,
+        16
+      ],
+      "summary": "A string form value replaces a numeric invoice field and fails its later assertion.",
+      "mechanism": "The any escape hatch erases the field type; a later int type assertion panics after receiver mutation.",
+      "observed_output": "panic: interface conversion: interface {} is string, not int",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "Reject or parse the form before storing numeric cents.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "The receiver method overwrites the existing invoice field.",
+          "evidence": [
+            "i.cents = value"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "An any field starts numeric but receives a string before an int assertion.",
+          "evidence": [
+            "cents any",
+            "invoice.cents.(int)",
+            "invoice.apply(formCents)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_invoice_form.rs",
+      "language": "rust",
+      "bug_lines": [
+        6,
+        7
+      ],
+      "summary": "A string form field fails the numeric downcast.",
+      "mechanism": "Box<dyn Any> type erasure and downcast unwrap provide the score-1 escape hatch. Applying the form changes the existing invoice field through self. An Any field initialized as an integer receives a String but is downcast as an integer.",
+      "observed_output": "called `Option::unwrap()` on a `None` value",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "The form value is converted to numeric cents.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "Applying the form changes the existing invoice field through self.",
+          "evidence": [
+            "self.cents = Box::new(cents.to_owned());"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "An Any field initialized as an integer receives a String but is downcast as an integer.",
+          "evidence": [
+            "Box<dyn Any>",
+            "Box::new(STARTING_CENTS)",
+            "self.cents.downcast_ref::<u32>().unwrap()"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,160 @@
+{
+  "family": "compound-defects",
+  "class": "data-corruption",
+  "category": "representational-corruption",
+  "defect": "schema-drift",
+  "name": "Schema Drift",
+  "essence": "The reader accepts an unversioned record and prints an absent weight field.",
+  "cwes": [
+    "CWE-345"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_shipment_journal.ts",
+      "language": "typescript",
+      "bug_lines": [
+        15,
+        27,
+        28
+      ],
+      "summary": "The reader accepts an unversioned record and prints an absent weight field.",
+      "mechanism": "Independent writers append incompatible record shapes to one journal; the consumer accepts every JSON object without requiring a version or the expected field.",
+      "observed_output": "grams 500\ngrams undefined",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Both records report weights in grams after validating and converting their schema.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "Two producers append their records to the same journal path.",
+          "evidence": [
+            "warehouse(path);",
+            "kiosk(path);",
+            "appendFileSync(path, JSON.stringify(parcel) + \"\\n\");"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "unconstrained-inputs",
+          "suggests": "The reader accepts parsed records without requiring the version or weight field.",
+          "evidence": [
+            "const parcel = { weight: KIOSK_WEIGHT_KILOGRAMS };",
+            "const parcel = JSON.parse(row);",
+            "console.log(\"grams\", parcel.weightGrams);"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_shipment_journal.py",
+      "language": "python",
+      "bug_lines": [
+        26,
+        27
+      ],
+      "summary": "Two file producers write different schemas and the reader accepts an unversioned record whose requested weight field is absent..",
+      "mechanism": "Two file producers write different schemas and the reader accepts an unversioned record whose requested weight field is absent.",
+      "observed_output": "grams 500\ngrams None",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Read validated weights of 500 and 2000 grams.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "Two producers append incompatible records to the same file.",
+          "evidence": [
+            "warehouse(path)",
+            "kiosk(path)",
+            "with path.open(\"a\") as handle:"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "unconstrained-inputs",
+          "suggests": "The reader accepts JSON records without requiring a version or the weight field.",
+          "evidence": [
+            "parcel = json.loads(line)",
+            "parcel.get(\"weightGrams\")"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_shipment_journal.go",
+      "language": "go",
+      "bug_lines": [
+        49,
+        52
+      ],
+      "summary": "Two writers use incompatible journal schemas and the reader silently accepts a missing version and field.",
+      "mechanism": "Two writers use incompatible journal schemas and the reader silently accepts a missing version and field.",
+      "observed_output": "grams 500\ngrams 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Reject the unversioned record instead of reporting grams 0.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "Two producers append records to the same file.",
+          "evidence": [
+            "warehouse(path)",
+            "kiosk(path)",
+            "os.O_CREATE|os.O_WRONLY|os.O_APPEND"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "unconstrained-inputs",
+          "suggests": "The reader accepts all parsed records without requiring a version or weightGrams.",
+          "evidence": [
+            "json.Unmarshal([]byte(row), &parcel)",
+            "parcel[\"weightGrams\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_shipment_journal.rs",
+      "language": "rust",
+      "bug_lines": [
+        18,
+        19
+      ],
+      "summary": "A versionless kiosk record is interpreted as zero grams.",
+      "mechanism": "Warehouse and kiosk append their different records to one file. The reader accepts every flat JSON object without requiring a version or weight field.",
+      "observed_output": "grams 500\ngrams 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "The reader rejects the incompatible record or converts its units explicitly.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "Warehouse and kiosk append their different records to one file.",
+          "evidence": [
+            "append(&path, WAREHOUSE);",
+            "append(&path, KIOSK);"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "unconstrained-inputs",
+          "suggests": "The reader accepts every flat JSON object without requiring a version or weight field.",
+          "evidence": [
+            "let record = read_record(line);",
+            "record.get(\"weightGrams\").unwrap_or(&\"0\")"
+          ]
+        }
+      ]
+    }
+  ]
+}

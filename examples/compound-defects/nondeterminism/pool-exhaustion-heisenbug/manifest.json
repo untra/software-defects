@@ -1,0 +1,162 @@
+{
+  "family": "compound-defects",
+  "class": "nondeterminism",
+  "category": "temporal-interleaving",
+  "defect": "pool-exhaustion-heisenbug",
+  "name": "Pool Exhaustion Heisenbug",
+  "essence": "A report holds the only slot while waiting for delivery, rejecting another report.",
+  "cwes": [
+    "CWE-362"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_report_slot.ts",
+      "language": "typescript",
+      "bug_lines": [
+        14,
+        18,
+        21
+      ],
+      "summary": "A report holds the only slot while waiting for delivery, rejecting another report.",
+      "mechanism": "A capacity-one pool keeps its resource across elapsed delivery time; a controlled tick and gate make contention reproducible.",
+      "observed_output": "report pool busy at 105\nslot held ticks 5",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Both reports complete without rejecting a caller while delivery is pending.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "resource-contention",
+          "suggests": "The second caller finds the single resource occupied.",
+          "evidence": [
+            "const CAPACITY = 1;",
+            "if (occupied === CAPACITY) {",
+            "occupied++;"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "Resource ownership spans a delivery wait while the shared clock advances.",
+          "evidence": [
+            "const started = tick;",
+            "await ready;",
+            "tick = FINISH_TICK;"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_report_slot.py",
+      "language": "python",
+      "bug_lines": [
+        11,
+        14,
+        17
+      ],
+      "summary": "A caller holds the only resource across an awaited delivery, so a later caller finds the pool exhausted..",
+      "mechanism": "A caller holds the only resource across an awaited delivery, so a later caller finds the pool exhausted.",
+      "observed_output": "report pool busy at 105\nheld ticks 5",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Both reports complete after releasing the slot before waiting.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "resource-contention",
+          "suggests": "The second caller competes for an occupied single-slot pool.",
+          "evidence": [
+            "CAPACITY = 1",
+            "if occupied == CAPACITY:"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "Resource ownership spans a delivery wait while the shared clock advances.",
+          "evidence": [
+            "started = tick",
+            "await ready.wait()",
+            "tick = FINISH_TICK"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_report_slot.go",
+      "language": "go",
+      "bug_lines": [
+        15,
+        18
+      ],
+      "summary": "The only report slot stays occupied throughout a delivery wait.",
+      "mechanism": "The only report slot stays occupied throughout a delivery wait.",
+      "observed_output": "pool busy true\nheld ticks 5",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "A waiting delivery should not reserve the report pool slot.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "resource-contention",
+          "suggests": "One occupied slot blocks the second caller.",
+          "evidence": [
+            "const capacity = 1",
+            "occupied == capacity"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "Ownership persists while the shared clock advances across a wait.",
+          "evidence": [
+            "started := tick",
+            "<-ready",
+            "tick = finishingTick"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_report_slot.rs",
+      "language": "rust",
+      "bug_lines": [
+        11,
+        14
+      ],
+      "summary": "A waiting report holds the sole slot and rejects another caller.",
+      "mechanism": "The only pool slot remains occupied when a second caller checks capacity. The holder retains ownership across a delivery wait measured by elapsed time.",
+      "observed_output": "pool busy true",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "The second report can acquire a released slot or is queued.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "resource-contention",
+          "suggests": "The only pool slot remains occupied when a second caller checks capacity.",
+          "evidence": [
+            "const CAPACITY: usize = 1;",
+            "*occupied.lock().unwrap() == CAPACITY"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "The holder retains ownership across a delivery wait measured by elapsed time.",
+          "evidence": [
+            "let started = Instant::now();",
+            "proceed.recv().unwrap();",
+            "let _duration = started.elapsed();"
+          ]
+        }
+      ]
+    }
+  ]
+}

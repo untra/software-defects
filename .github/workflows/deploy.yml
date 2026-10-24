@@ -2,17 +2,17 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-  pull_request:
-  workflow_dispatch:
+    branches:
+      - main
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow one concurrent deployment; don't cancel an in-progress run.
+# One production deployment at a time. Do not cancel a deploy that is already publishing.
 concurrency:
-  group: ${{ github.ref == 'refs/heads/main' && 'pages' || format('site-build-{0}', github.ref) }}
+  group: pages
   cancel-in-progress: false
 
 jobs:
@@ -39,18 +39,16 @@ jobs:
         run: python -m unittest test_build -v
 
       - name: Configure Pages
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./site
 
   deploy:
     needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

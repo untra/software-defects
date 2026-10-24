@@ -1,0 +1,153 @@
+{
+  "family": "compound-defects",
+  "class": "runtime-errors",
+  "category": "structural-invalidation",
+  "defect": "unexpected-type-element",
+  "name": "Unexpected Type Element",
+  "essence": "An existing receipt line changes its cents field to a string before collection formatting.",
+  "cwes": [
+    "CWE-241"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 1,
+    "rust": 1
+  },
+  "examples": [
+    {
+      "file": "typescript/01_receipt_lines.ts",
+      "language": "typescript",
+      "bug_lines": [
+        9,
+        14
+      ],
+      "summary": "An existing receipt line changes its cents field to a string before collection formatting.",
+      "mechanism": "The mutable any field loses its numeric shape and the list consumer assumes every cents value implements toFixed.",
+      "observed_output": "TypeError: line.cents.toFixed is not a function",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Validate the edit and print receipt 275.00.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "Editing a line overwrites the cents property on the same instance held in the list.",
+          "evidence": [
+            "this.cents = cents;",
+            "const lines = [line];",
+            "line.edit(FORM_CENTS);"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "duck-typing-without-contracts",
+          "suggests": "The list consumer calls toFixed on every cents value without checking its runtime shape.",
+          "evidence": [
+            "lines.map((line) => line.cents.toFixed(DECIMAL_PLACES))"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_receipt_lines.py",
+      "language": "python",
+      "bug_lines": [
+        9,
+        13
+      ],
+      "summary": "An object in the receipt list changes its cents member to a string, breaking the consumer's assumed numeric contract..",
+      "mechanism": "An object in the receipt list changes its cents member to a string, breaking the consumer's assumed numeric contract.",
+      "observed_output": "ValueError: Unknown format code 'f' for object of type 'str'",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "receipt ['275.00']",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "Editing a line changes the same instance already stored in the list.",
+          "evidence": [
+            "self.cents = cents",
+            "lines = [line]",
+            "line.edit(FORM_CENTS)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "duck-typing-without-contracts",
+          "suggests": "The consumer formats every cents member as a number without checking its current shape.",
+          "evidence": [
+            "return [f\"{line.cents:.2f}\" for line in lines]"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_receipt_lines.go",
+      "language": "go",
+      "bug_lines": [
+        12,
+        16
+      ],
+      "summary": "Editing a line replaces numeric cents with a string consumed as an int.",
+      "mechanism": "An any field bypasses the static numeric contract; an unchecked type assertion fails after receiver mutation.",
+      "observed_output": "panic: interface conversion: interface {} is string, not int",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "Require numeric cents before formatting each receipt line.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "Editing mutates the same line instance held in the list.",
+          "evidence": [
+            "l.cents = cents",
+            "lines := []*Line{line}"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "duck-typing-without-contracts",
+          "suggests": "The consumer asserts the runtime shape of every field without checking.",
+          "evidence": [
+            "line.cents.(int)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_receipt_lines.rs",
+      "language": "rust",
+      "bug_lines": [
+        6,
+        11
+      ],
+      "summary": "A mutated receipt line no longer has the shape its consumer expects.",
+      "mechanism": "Any type erasure and downcast provide the score-1 dynamic field escape hatch. Editing mutates the field of an instance already stored in the receipt list. The consumer assumes all dynamically typed line fields expose the same numeric type.",
+      "observed_output": "called `Option::unwrap()` on a `None` value",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "Every receipt line remains a numeric cents value.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "Editing mutates the field of an instance already stored in the receipt list.",
+          "evidence": [
+            "self.cents = Box::new(value.to_owned());",
+            "lines[0].edit(FORM_CENTS);"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "duck-typing-without-contracts",
+          "suggests": "The consumer assumes all dynamically typed line fields expose the same numeric type.",
+          "evidence": [
+            "line.cents.downcast_ref::<u32>().unwrap()"
+          ]
+        }
+      ]
+    }
+  ]
+}

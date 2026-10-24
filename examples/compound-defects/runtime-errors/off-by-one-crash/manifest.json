@@ -1,0 +1,158 @@
+{
+  "family": "compound-defects",
+  "class": "runtime-errors",
+  "category": "computational-exhaustion",
+  "defect": "off-by-one-crash",
+  "name": "Off By One Crash",
+  "essence": "The label counter reaches the array length and dereferences the missing next item.",
+  "cwes": [
+    "CWE-125",
+    "CWE-787"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_stock_labels.ts",
+      "language": "typescript",
+      "bug_lines": [
+        6,
+        7,
+        8
+      ],
+      "summary": "The label counter reaches the array length and dereferences the missing next item.",
+      "mechanism": "The inclusive loop condition and increment allow an out-of-bounds array read; JavaScript traps the subsequent property access rather than writing memory.",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'sku')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Print labels pen,pad.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "increment-decrement-operators",
+          "suggests": "The mutable counter advances after each item until it equals the array length.",
+          "evidence": [
+            "i++;",
+            "while (i <= items.length)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "index-out-of-bounds",
+          "suggests": "The inclusive bound lets the consumer read sku from the missing slot at items.length.",
+          "evidence": [
+            "while (i <= items.length)",
+            "labels.push(items[i].sku);"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_stock_labels.py",
+      "language": "python",
+      "bug_lines": [
+        7,
+        8,
+        9
+      ],
+      "summary": "An incremented loop counter is permitted to equal the list length, and indexing that position raises IndexError..",
+      "mechanism": "An incremented loop counter is permitted to equal the list length, and indexing that position raises IndexError.",
+      "observed_output": "IndexError: list index out of range",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "labels ['pen', 'pad']",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "increment-decrement-operators",
+          "suggests": "The advancing counter reaches the array length under an inclusive bound.",
+          "evidence": [
+            "while index <= len(items):",
+            "index += 1"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "index-out-of-bounds",
+          "suggests": "The loop reads a slot beyond the last valid index.",
+          "evidence": [
+            "items[index][\"sku\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_stock_labels.go",
+      "language": "go",
+      "bug_lines": [
+        14,
+        15,
+        16
+      ],
+      "summary": "The inclusive counter bound reaches a missing item and panics.",
+      "mechanism": "The inclusive counter bound reaches a missing item and panics.",
+      "observed_output": "panic: runtime error: index out of range [2] with length 2",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "labels [pen pad]",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "increment-decrement-operators",
+          "suggests": "The mutable index increments until it reaches the array length.",
+          "evidence": [
+            "i++",
+            "i <= len(items)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "index-out-of-bounds",
+          "suggests": "The inclusive bound permits indexing the slot at len(items).",
+          "evidence": [
+            "items[i].sku",
+            "i <= len(items)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_stock_labels.rs",
+      "language": "rust",
+      "bug_lines": [
+        5,
+        6,
+        7
+      ],
+      "summary": "The loop indexes the slot just past the end.",
+      "mechanism": "The counter advances to the length while the inclusive loop condition still accepts it. The inclusive bound indexes the nonexistent element at the array length.",
+      "observed_output": "index out of bounds: the len is 2 but the index is 2",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "labels [\"pen\", \"pad\"]",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "increment-decrement-operators",
+          "suggests": "The counter advances to the length while the inclusive loop condition still accepts it.",
+          "evidence": [
+            "while index <= items.len() {",
+            "index += 1;"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "index-out-of-bounds",
+          "suggests": "The inclusive bound indexes the nonexistent element at the array length.",
+          "evidence": [
+            "labels.push(items[index].to_owned());"
+          ]
+        }
+      ]
+    }
+  ]
+}

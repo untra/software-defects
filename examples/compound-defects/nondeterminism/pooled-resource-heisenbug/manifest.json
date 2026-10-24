@@ -1,0 +1,151 @@
+{
+  "family": "compound-defects",
+  "class": "nondeterminism",
+  "category": "observational-staleness",
+  "defect": "pooled-resource-heisenbug",
+  "name": "Pooled Resource Heisenbug",
+  "essence": "The next borrower inherits the previous tenant on a returned connection.",
+  "cwes": [
+    "CWE-459"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_tenant_connection.ts",
+      "language": "typescript",
+      "bug_lines": [
+        10,
+        14
+      ],
+      "summary": "The next borrower inherits the previous tenant on a returned connection.",
+      "mechanism": "A mutating helper writes session state onto a pooled object and release retains that state across borrowers.",
+      "observed_output": "tenant orchard",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "tenant is empty until the second borrower selects its own tenant.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "Selecting a tenant mutates the supplied connection.",
+          "evidence": [
+            "connection.tenant = tenant;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "resource-leaks",
+          "suggests": "Returning the connection leaves its tenant state retained in the pool.",
+          "evidence": [
+            "function release(connection: Connection): void {\n  pool.push(connection);",
+            "console.log(\"tenant\", second.tenant);"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_tenant_connection.py",
+      "language": "python",
+      "bug_lines": [
+        6,
+        10
+      ],
+      "summary": "A connection is returned to its pool without clearing tenant state, and the next borrower receives that retained state..",
+      "mechanism": "A connection is returned to its pool without clearing tenant state, and the next borrower receives that retained state.",
+      "observed_output": "tenant orchard",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "The next tenant starts with an empty connection context.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "Selecting a tenant mutates the supplied pooled object.",
+          "evidence": [
+            "connection[\"tenant\"] = tenant"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "resource-leaks",
+          "suggests": "Returning the resource retains its previous tenant for the next borrower.",
+          "evidence": [
+            "def release(connection):\n    pool.append(connection)",
+            "second = pool.pop()"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_tenant_connection.go",
+      "language": "go",
+      "bug_lines": [
+        16,
+        17
+      ],
+      "summary": "Returning a connection retains the previous tenant for its next borrower.",
+      "mechanism": "Returning a connection retains the previous tenant for its next borrower.",
+      "observed_output": "tenant orchard",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "The next borrower receives a connection without a tenant.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "Tenant selection mutates the caller-supplied connection.",
+          "evidence": [
+            "connection.tenant = tenant"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "resource-leaks",
+          "suggests": "Release returns the same connection without clearing retained tenant state.",
+          "evidence": [
+            "pool = append(pool, connection)",
+            "second.tenant"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_tenant_connection.rs",
+      "language": "rust",
+      "bug_lines": [
+        4,
+        5
+      ],
+      "summary": "A new borrower inherits the previous tenant.",
+      "mechanism": "Selecting a tenant mutates the supplied pooled connection. Release retains tenant state inside the pool for the next borrower.",
+      "observed_output": "tenant orchard",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "tenant is empty until the new borrower selects it.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "Selecting a tenant mutates the supplied pooled connection.",
+          "evidence": [
+            "*connection = tenant.to_owned();"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "resource-leaks",
+          "suggests": "Release retains tenant state inside the pool for the next borrower.",
+          "evidence": [
+            "pool.borrow_mut().push(connection)",
+            "let next = borrow();"
+          ]
+        }
+      ]
+    }
+  ]
+}

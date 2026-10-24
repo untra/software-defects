@@ -1,0 +1,158 @@
+{
+  "family": "compound-defects",
+  "class": "nondeterminism",
+  "category": "temporal-interleaving",
+  "defect": "lost-update",
+  "name": "Lost Update",
+  "essence": "Two clerks record two parcels but the shared counter ends at one.",
+  "cwes": [
+    "CWE-567"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 1,
+    "go": 2,
+    "rust": 1
+  },
+  "examples": [
+    {
+      "file": "typescript/01_parcel_counter.ts",
+      "language": "typescript",
+      "bug_lines": [
+        12,
+        15,
+        16
+      ],
+      "summary": "Two clerks record two parcels but the shared counter ends at one.",
+      "mechanism": "SharedArrayBuffer exposes the counter to worker threads; separate unsynchronized load, increment, and store lose one increment.",
+      "observed_output": "parcels 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "parcels 2",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "Workers update the same SharedArrayBuffer counter without mutual exclusion.",
+          "evidence": [
+            "new SharedArrayBuffer(",
+            "counts[COUNTER_SLOT] = parcels;"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "increment-decrement-operators",
+          "suggests": "Each clerk increments its own previously loaded counter value.",
+          "evidence": [
+            "let parcels = counts[COUNTER_SLOT];",
+            "parcels++;"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_parcel_count.py",
+      "language": "python",
+      "bug_lines": [
+        13,
+        15,
+        16
+      ],
+      "summary": "Two threads load the same count and separately increment and store it, overwriting one increment..",
+      "mechanism": "Two threads load the same count and separately increment and store it, overwriting one increment.",
+      "observed_output": "parcels 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "parcels 2",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "Clerks read and write a common counter without mutual exclusion.",
+          "evidence": [
+            "global parcels",
+            "parcels = current"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "increment-decrement-operators",
+          "suggests": "Each clerk increments a previously loaded counter value.",
+          "evidence": [
+            "current = parcels",
+            "current += 1"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_parcel_counter.go",
+      "language": "go",
+      "bug_lines": [
+        14,
+        17,
+        18
+      ],
+      "summary": "Two clerks increment separately loaded copies and store one instead of two.",
+      "mechanism": "Two clerks increment separately loaded copies and store one instead of two.",
+      "observed_output": "parcels 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "parcels 2",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "Two goroutines write one package counter without a mutex.",
+          "evidence": [
+            "var parcels int",
+            "parcels = value"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "increment-decrement-operators",
+          "suggests": "Increment applies to a snapshot rather than the shared counter atomically.",
+          "evidence": [
+            "value := parcels",
+            "value++"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_parcel_counter.rs",
+      "language": "rust",
+      "bug_lines": [
+        11,
+        13,
+        14
+      ],
+      "summary": "Two increments leave only one parcel recorded.",
+      "mechanism": "The score-1 form uses split Mutex locking rather than a Rust data race. Separate Mutex acquisitions protect the read and write but not the whole update. Each clerk increments a previously read local count.",
+      "observed_output": "parcels 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "parcels 2",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "Separate Mutex acquisitions protect the read and write but not the whole update.",
+          "evidence": [
+            "let mut count = *parcels.lock().unwrap();",
+            "*parcels.lock().unwrap() = count;"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "increment-decrement-operators",
+          "suggests": "Each clerk increments a previously read local count.",
+          "evidence": [
+            "count += 1;"
+          ]
+        }
+      ]
+    }
+  ]
+}

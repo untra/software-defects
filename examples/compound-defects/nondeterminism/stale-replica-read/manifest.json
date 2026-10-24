@@ -1,0 +1,159 @@
+{
+  "family": "compound-defects",
+  "class": "nondeterminism",
+  "category": "observational-staleness",
+  "defect": "stale-replica-read",
+  "name": "Stale Replica Read",
+  "essence": "The delivery page reports packing after the primary is updated to shipped.",
+  "cwes": [
+    "CWE-821"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_delivery_status.ts",
+      "language": "typescript",
+      "bug_lines": [
+        14,
+        20,
+        21
+      ],
+      "summary": "The delivery page reports packing after the primary is updated to shipped.",
+      "mechanism": "The replica is a separate mutable binding and its asynchronous update has not completed when the reader uses it.",
+      "observed_output": "status packing",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "status shipped",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "var-let-mut",
+          "suggests": "Primary and replica are independently reassigned module bindings.",
+          "evidence": [
+            "let primary = INITIAL_STATUS;",
+            "let replica = INITIAL_STATUS;",
+            "replica = primary;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "async-io-misuse",
+          "suggests": "The read occurs before awaiting the asynchronous copy.",
+          "evidence": [
+            "const pending = copy(delivery.promise);\n  console.log(\"status\", replica);",
+            "await ready;"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_delivery_status.py",
+      "language": "python",
+      "bug_lines": [
+        11,
+        17,
+        18
+      ],
+      "summary": "The primary changes immediately, but a read of the replica precedes completion of its asynchronous copy..",
+      "mechanism": "The primary changes immediately, but a read of the replica precedes completion of its asynchronous copy.",
+      "observed_output": "status packing",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "status shipped",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "var-let-mut",
+          "suggests": "Primary and replica are independently mutable module bindings.",
+          "evidence": [
+            "primary = INITIAL_STATUS",
+            "replica = primary"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "async-io-misuse",
+          "suggests": "The replica is read before the asynchronous copy finishes.",
+          "evidence": [
+            "pending = asyncio.create_task(copy(delivery))\n    print(\"status\", replica)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_delivery_status.go",
+      "language": "go",
+      "bug_lines": [
+        13,
+        17,
+        18
+      ],
+      "summary": "The caller reads the replica before its pending copy is applied.",
+      "mechanism": "The caller reads the replica before its pending copy is applied.",
+      "observed_output": "status packing",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "status shipped",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "var-let-mut",
+          "suggests": "The primary and replica are separate mutable package bindings.",
+          "evidence": [
+            "var primary = initialStatus",
+            "var replica = initialStatus",
+            "replica = primary"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "async-io-misuse",
+          "suggests": "A goroutine applies the primary after a gate, but the caller reads beforehand.",
+          "evidence": [
+            "go copyStatus(ready, done)",
+            "fmt.Println(\"status\", replica)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_delivery_status.rs",
+      "language": "rust",
+      "bug_lines": [
+        13,
+        15
+      ],
+      "summary": "The replica read sees the previous delivery status.",
+      "mechanism": "Primary and replica are distinct mutable status bindings. The reader uses the replica before joining the asynchronous copy.",
+      "observed_output": "status packing",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "status shipped",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "var-let-mut",
+          "suggests": "Primary and replica are distinct mutable status bindings.",
+          "evidence": [
+            "*primary.lock().unwrap() = UPDATED;",
+            "*copy.lock().unwrap() = *primary.lock().unwrap();"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "async-io-misuse",
+          "suggests": "The reader uses the replica before joining the asynchronous copy.",
+          "evidence": [
+            "println!(\"status {}\", replica.lock().unwrap());",
+            "pending.join().unwrap();"
+          ]
+        }
+      ]
+    }
+  ]
+}

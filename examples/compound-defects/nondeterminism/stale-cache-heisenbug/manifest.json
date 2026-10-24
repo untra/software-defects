@@ -1,0 +1,155 @@
+{
+  "family": "compound-defects",
+  "class": "nondeterminism",
+  "category": "observational-staleness",
+  "defect": "stale-cache-heisenbug",
+  "name": "Stale Cache Heisenbug",
+  "essence": "The cached shipping quote remains 10 after the rate rises.",
+  "cwes": [
+    "CWE-471"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_shipping_quote.ts",
+      "language": "typescript",
+      "bug_lines": [
+        8,
+        12,
+        18
+      ],
+      "summary": "The cached shipping quote remains 10 after the rate rises.",
+      "mechanism": "Memoization keys only the weight even though the calculation reads a mutable module rate.",
+      "observed_output": "shipping 10",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "shipping 15",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "cache-invalidation",
+          "suggests": "Changing the rate does not evict the cached quote.",
+          "evidence": [
+            "if (!quotes.has(weight)) quotes.set(weight, shipping(weight));",
+            "rate = REVISED_RATE;"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "Shipping reads mutable state not represented by its argument.",
+          "evidence": [
+            "let rate = INITIAL_RATE;",
+            "return weight * rate;"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_shipping_quote.py",
+      "language": "python",
+      "bug_lines": [
+        9,
+        14
+      ],
+      "summary": "The cached quote depends on a mutable rate that is absent from its cache key and never invalidates the entry..",
+      "mechanism": "The cached quote depends on a mutable rate that is absent from its cache key and never invalidates the entry.",
+      "observed_output": "shipping 10",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "shipping 15",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "cache-invalidation",
+          "suggests": "Rate changes leave a cached quote associated with weight alone.",
+          "evidence": [
+            "quotes[weight] = shipping(weight)",
+            "rate = REVISED_RATE"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "Shipping reads a mutable rate outside its arguments.",
+          "evidence": [
+            "rate = INITIAL_RATE",
+            "return weight * rate"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_shipping_quote.go",
+      "language": "go",
+      "bug_lines": [
+        14,
+        16
+      ],
+      "summary": "The cached shipping amount survives a rate change.",
+      "mechanism": "The cached shipping amount survives a rate change.",
+      "observed_output": "shipping 10",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "shipping 15",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "cache-invalidation",
+          "suggests": "A cached quote is returned without considering the changed rate.",
+          "evidence": [
+            "if value, ok := quotes[weight]; ok",
+            "rate = revisedRate"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "Shipping reads a mutable package variable outside its arguments.",
+          "evidence": [
+            "var rate = initialRate",
+            "return weight * rate"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_shipping_quote.rs",
+      "language": "rust",
+      "bug_lines": [
+        6,
+        8
+      ],
+      "summary": "The cached shipping quote remains 10 after the rate rises.",
+      "mechanism": "A cached weight quote survives a change to the pricing rate. The shipping function reads a mutable global rate absent from its arguments.",
+      "observed_output": "shipping 10",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "shipping 15",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "cache-invalidation",
+          "suggests": "A cached weight quote survives a change to the pricing rate.",
+          "evidence": [
+            "cache.entry(weight).or_insert_with(|| shipping(weight))",
+            "RATE.store(NEW_RATE, Ordering::Relaxed);"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "The shipping function reads a mutable global rate absent from its arguments.",
+          "evidence": [
+            "weight * RATE.load(Ordering::Relaxed)"
+          ]
+        }
+      ]
+    }
+  ]
+}

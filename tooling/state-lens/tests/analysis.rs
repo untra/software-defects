@@ -417,3 +417,82 @@ fn sidecar_expectations_are_exact_and_hash_guarded() {
         .contains("stale expectations"));
     std::fs::remove_file(temporary).unwrap();
 }
+
+#[test]
+fn python_scopes_parameters_globals_and_closures() {
+    let source = "count = 0\ndef update(items):\n    global count\n    count += 1\n    items[0] = count\n    def read():\n        return count\n    return read()\n";
+    let report = engine("python", source).analyze();
+    let document = &report.documents[0];
+    assert!(!document.parse_errors);
+    assert_eq!(document.functions[0].parameters, ["items"]);
+    assert!(document
+        .findings
+        .iter()
+        .any(|f| f.effect == Effect::GlobalMutation));
+    assert!(document
+        .findings
+        .iter()
+        .any(|f| f.effect == Effect::ArgumentMutation(0)));
+    assert!(document
+        .findings
+        .iter()
+        .any(|f| f.origin == "propagated" && f.effect == Effect::ExternalRead));
+}
+
+#[test]
+fn python_local_shadow_does_not_read_module_state() {
+    let report = engine(
+        "python",
+        "value = 0\ndef read():\n    print(value)\n    value = 1\n    return value\n",
+    )
+    .analyze();
+    assert!(!report.documents[0]
+        .findings
+        .iter()
+        .any(|f| f.effect == Effect::ExternalRead));
+}
+
+#[test]
+fn python_unicode_incremental_restore_drops_stale_findings() {
+    let uri = "file:///unrelated/location.py";
+    let original = "def increment(café):\n    café += 1\n    return café\n";
+    let mut e = Engine::new().unwrap();
+    for (version, source, expected) in [
+        (1, original, true),
+        (2, "def increment(café):\n    return café\n", false),
+        (3, original, true),
+    ] {
+        e.set(uri.into(), "python", source.into(), Some(version))
+            .unwrap();
+        let report = e.analyze();
+        let document = &report.documents[0];
+        assert_eq!(document.version, Some(version));
+        assert!(!document.parse_errors);
+        assert_eq!(
+            document
+                .findings
+                .iter()
+                .any(|f| f.defect == "increment-decrement-operators"),
+            expected
+        );
+        for finding in &document.findings {
+            assert_eq!(
+                byte_offset(source, position(source, finding.trigger.start)),
+                Some(finding.trigger.start)
+            );
+        }
+    }
+}
+
+#[test]
+fn python_declarations_and_attribute_names_are_not_global_reads() {
+    let report = engine(
+        "python",
+        "value = 0\ndef inspect(obj):\n    global value\n    return obj.value\n",
+    )
+    .analyze();
+    assert!(!report.documents[0]
+        .findings
+        .iter()
+        .any(|f| f.effect == Effect::ExternalRead));
+}

@@ -13,7 +13,7 @@ const FAILED_STATUS = /unavailable|stopped/;
 const ROOT = process.env.STATE_LENS_ROOT;
 const SHARD = process.env.STATE_LENS_SHARD;
 const REPORT = process.env.STATE_LENS_REPORT;
-const EXTENSIONS = new Set(['.go', '.rs', '.ts']);
+const EXTENSIONS = new Set(['.go', '.rs', '.ts', '.py']);
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const issue = (category, message) => ({ category, message: String(message) });
 const label = hint => typeof hint.label === 'string' ? hint.label : hint.label.map(part => part.value).join('');
@@ -35,17 +35,24 @@ function files(directory) {
   }).sort();
 }
 function makeRow(file) {
-  const [root, family, defect, language] = file.split('/');
-  return { layer: 'editor', file, family, defect, language, root, status: 'pass', problems: [], findings: null,
+  const parts = file.split('/');
+  const [root, family] = parts;
+  const [defect, language] = parts.slice(-3);
+  const compound_class = family === 'compound-defects' ? parts[2] : null;
+  const manifest = compound_class ? JSON.parse(fs.readFileSync(path.join(ROOT, path.dirname(path.dirname(file)), 'manifest.json'), 'utf8')) : null;
+  const example = manifest?.examples.find(e => e.file === parts.slice(-2).join('/'));
+  const expected_rule_ids = example ? [...example.ingredients.map(i => `${language}.${i.family}.${i.defect}`), `${language}.${family}.${compound_class}.${defect}`] : [];
+  return { layer: 'editor', file, family, defect, language, root, compound_class, compound_category: manifest?.category ?? null, expected_rule_ids, missing_rule_ids: [...expected_rule_ids], status: 'pass', problems: [], findings: null,
     hinted_functions: null, ms: 0, bug_lines_hit: [], bug_lines_missed: [] };
 }
 function finish(row) {
+  if (row.missing_rule_ids.length && !row.problems.some(p => p.category === 'count-mismatch')) row.problems.push(issue('count-mismatch', `Missing identities: ${row.missing_rule_ids.join(', ')}`));
   row.status = row.problems.length ? 'fail' : row.root === 'examples' && (row.hinted_functions === 0 || row.bug_lines_missed.length) ? 'gap' : 'pass';
   return row;
 }
 function checkpoint(rows) {
   fs.mkdirSync(path.dirname(REPORT), { recursive: true });
-  fs.writeFileSync(REPORT + '.tmp', JSON.stringify({ schema_version: 1, rows: rows.map(finish) }, null, 2));
+  fs.writeFileSync(REPORT + '.tmp', JSON.stringify({ schema_version: 2, rows: rows.map(finish) }, null, 2));
   fs.renameSync(REPORT + '.tmp', REPORT);
 }
 function bounded(promise, state, what) {
@@ -77,7 +84,7 @@ function checkRanges(snapshot, document, row) {
 }
 function coverage(row, snapshot) {
   if (row.root !== 'examples') return;
-  const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, row.root, row.family, row.defect, 'manifest.json'), 'utf8'));
+  const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, path.dirname(path.dirname(row.file)), 'manifest.json'), 'utf8'));
   const lines = manifest.examples.find(e => e.file === row.file.split('/').slice(-2).join('/')).bug_lines;
   const hit = line => snapshot.findings.some(({ triggerRange: r }) => {
     if (r.start.line === r.end.line && r.start.character === r.end.character) return false;
@@ -96,6 +103,18 @@ async function check(api, document, row, expected, state) {
   const hinted = new Set(snapshot.findings.filter(e => e.functionRange).map(e => JSON.stringify(e.functionRange))).size;
   row.findings = result.findings;
   row.hinted_functions = hinted;
+  if (row.compound_class) {
+    row.missing_rule_ids = row.expected_rule_ids.filter(id => !rules[id]);
+    if (row.missing_rule_ids.length || Object.keys(rules).length < 3) row.problems.push(issue('count-mismatch', `Missing identities: ${row.missing_rule_ids.join(', ')}; expected at least three diagnostics`));
+    for (const { finding } of snapshot.findings.filter(e => e.finding.rule_id === row.expected_rule_ids[2])) {
+      const metadata = finding.compound;
+      const ingredients = metadata?.ingredients ?? [];
+      if (metadata?.class !== row.compound_class || metadata?.category !== row.compound_category || ingredients.length !== 2 || row.expected_rule_ids.slice(0, 2).some(id => !ingredients.some(e => e.rule_id === id))) row.problems.push(issue('count-mismatch', 'Compound metadata or ingredient identities differ'));
+      for (const evidence of ingredients) {
+        if (!snapshot.findings.some(e => e.finding.rule_id === evidence.rule_id && e.finding.evidence.some(ref => JSON.stringify(ref) === JSON.stringify(evidence)))) row.problems.push(issue('count-mismatch', `Broken linked ingredient: ${evidence.rule_id}`));
+      }
+    }
+  }
   checkRanges(snapshot, document, row);
   coverage(row, snapshot);
   const hash = crypto.createHash('sha256').update(fs.readFileSync(document.uri.fsPath)).digest('hex');
@@ -105,6 +124,7 @@ async function check(api, document, row, expected, state) {
   if ((result.segments > 0) !== (hinted > 0)) row.problems.push(issue('count-mismatch', 'decoration segments differ from hinted functions'));
   const diagnostics = await until(() => lensDiagnostics(uri).length === result.findings && lensDiagnostics(uri), state, 'settled diagnostics');
   if (state.expired) return;
+  if (diagnostics.some(d => d.severity !== vscode.DiagnosticSeverity.Information)) row.problems.push(issue('count-mismatch', 'Expected Information diagnostics'));
   const expectedFindings = expected && Object.values(expected.rule_ids).reduce((a, b) => a + b, 0);
   if (expected && diagnostics.length !== expectedFindings) row.problems.push(issue('count-mismatch', `${diagnostics.length} diagnostics, baseline ${expectedFindings}`));
   const whole = new vscode.Range(0, 0, document.lineCount, 0);
@@ -159,6 +179,22 @@ exports.run = async () => {
         await Promise.all(group.map((row, index) => check(api, documents[index], row, baseline[row.file], state).catch(error => {
           if (!state.expired || error.category === 'timeout') row.problems.push(issue(error.category || 'error', error.message));
         })));
+        for (let index = 0; index < group.length; index++) {
+          const row = group[index];
+          if (!row.compound_class) continue;
+          const document = documents[index];
+          await bounded(vscode.window.showTextDocument(document, { preview: false }), state, 'activate compound');
+          const actual = await until(() => {
+            const value = api.applied(document.uri.toString());
+            return value?.version === document.version && value;
+          }, state, 'compound decorations');
+          const required = [...row.expected_rule_ids.slice(0, 2).map(id => id.split('.')[1]), row.compound_class];
+          for (const category of required) {
+            if (!actual.decorations.some(d => d.category === category || d.families.includes(category))) row.problems.push(issue('count-mismatch', `Missing painted category: ${category}`));
+          }
+          if (!actual.decorations.some(d => d.category === row.compound_class && d.outline)) row.problems.push(issue('count-mismatch', 'Missing compound outline'));
+        }
+        await bounded(vscode.window.showTextDocument(editor.document, { preview: false }), state, 'restore active editor');
         const painted = () => api.applied(editor.document.uri.toString())?.version === editor.document.version;
         await until(painted, state, 'visible decorations');
         edited = editor.document;

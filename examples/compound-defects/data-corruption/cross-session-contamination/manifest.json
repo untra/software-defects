@@ -1,0 +1,155 @@
+{
+  "family": "compound-defects",
+  "class": "data-corruption",
+  "category": "representational-corruption",
+  "defect": "cross-session-contamination",
+  "name": "Cross Session Contamination",
+  "essence": "A request without a locale inherits an unvalidated value from the prior request.",
+  "cwes": [
+    "CWE-488"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_request_locale.ts",
+      "language": "typescript",
+      "bug_lines": [
+        7,
+        8
+      ],
+      "summary": "A request without a locale inherits an unvalidated value from the prior request.",
+      "mechanism": "The module context retains per-request data, and an arbitrary supplied locale is accepted without checking allowed locale values.",
+      "observed_output": "next locale staff-preview",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "next locale en-US",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "cross-boundary-state-exposure",
+          "suggests": "Both requests reuse one module context whose locale survives the first call.",
+          "evidence": [
+            "const context = { locale: DEFAULT_LOCALE };",
+            "console.log(\"next locale\", render({}));"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "The request locale is stored without checking it against supported locales.",
+          "evidence": [
+            "if (request.locale !== undefined) context.locale = request.locale;",
+            "const first = { locale: \"staff-preview\" };"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_request_locale.py",
+      "language": "python",
+      "bug_lines": [
+        7,
+        8
+      ],
+      "summary": "A request writes an unvalidated locale into a shared context, and a subsequent request inherits it..",
+      "mechanism": "A request writes an unvalidated locale into a shared context, and a subsequent request inherits it.",
+      "observed_output": "next locale staff-preview",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "next locale en-US",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "cross-boundary-state-exposure",
+          "suggests": "Both requests use the same module context and the next request inherits its locale.",
+          "evidence": [
+            "context = {\"locale\": DEFAULT_LOCALE}",
+            "print(\"next locale\", render({}))"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "A caller's locale is copied without checking supported values.",
+          "evidence": [
+            "context[\"locale\"] = request[\"locale\"]",
+            "render({\"locale\": \"staff-preview\"})"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_request_locale.go",
+      "language": "go",
+      "bug_lines": [
+        13,
+        15
+      ],
+      "summary": "An unchecked locale persists on a shared context and leaks into the next request.",
+      "mechanism": "An unchecked locale persists on a shared context and leaks into the next request.",
+      "observed_output": "next locale staff-preview",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "next locale en-US",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "cross-boundary-state-exposure",
+          "suggests": "Separate requests reuse one context with retained locale state.",
+          "evidence": [
+            "var context = struct{ locale string }",
+            "return context.locale"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "A request locale is stored without checking supported values.",
+          "evidence": [
+            "context.locale = locale",
+            "\"staff-preview\""
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_request_locale.rs",
+      "language": "rust",
+      "bug_lines": [
+        4,
+        5
+      ],
+      "summary": "A request with no locale receives the previous request locale.",
+      "mechanism": "Requests share a static locale value which survives the first request. Any supplied locale is stored without checking supported locale values.",
+      "observed_output": "next locale staff-preview",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "The next request receives its own default locale.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "cross-boundary-state-exposure",
+          "suggests": "Requests share a static locale value which survives the first request.",
+          "evidence": [
+            "static LOCALE: Mutex<String>",
+            "render(None)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "Any supplied locale is stored without checking supported locale values.",
+          "evidence": [
+            "*LOCALE.lock().unwrap() = locale.to_owned();",
+            "render(Some(\"staff-preview\"));"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -11,6 +11,15 @@ permissions:
   contents: read
 
 jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    outputs:
+      shards: ${{ steps.corpus.outputs.shards }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: corpus
+        run: echo "shards=$(python3 tooling/state-lens/scripts/corpus_inventory.py)" >> "$GITHUB_OUTPUT"
+
   test:
     runs-on: ubuntu-latest
     steps:
@@ -62,18 +71,12 @@ jobs:
           if-no-files-found: error
 
   editor-smoke:
-    needs: test
+    needs: [test, inventory]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        shard:
-          - examples/mutated-state
-          - examples/shared-state
-          - examples/unstructured-state
-          - examples-fixed/mutated-state
-          - examples-fixed/shared-state
-          - examples-fixed/unstructured-state
+        shard: ${{ fromJSON(needs.inventory.outputs.shards) }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

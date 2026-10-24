@@ -1,0 +1,159 @@
+{
+  "family": "compound-defects",
+  "class": "data-corruption",
+  "category": "representational-corruption",
+  "defect": "web-cache-poisoning",
+  "name": "Web Cache Poisoning",
+  "essence": "A query-provided heading is cached for subsequent public requests.",
+  "cwes": [
+    "CWE-349"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_catalog_response.ts",
+      "language": "typescript",
+      "bug_lines": [
+        7,
+        9,
+        10
+      ],
+      "summary": "A query-provided heading is cached for subsequent public requests.",
+      "mechanism": "The cache key uses only the path even though an unrestricted request parameter controls the stored response body.",
+      "observed_output": "public page Members only",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "public page Public catalog",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "cache-invalidation",
+          "suggests": "Responses varying by heading are reused under a path-only key.",
+          "evidence": [
+            "const cached = pages.get(request.path);",
+            "pages.set(request.path, body);"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "unconstrained-inputs",
+          "suggests": "An unrestricted heading parameter determines the cached body.",
+          "evidence": [
+            "const body = request.query?.heading ?? DEFAULT_HEADING;",
+            "render({ path: CATALOG_PATH, query: { heading: \"Members only\" } });"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_catalog_response.py",
+      "language": "python",
+      "bug_lines": [
+        7,
+        9,
+        10
+      ],
+      "summary": "A path-only cache stores a response controlled by an unrestricted query heading and serves it to later public requests..",
+      "mechanism": "A path-only cache stores a response controlled by an unrestricted query heading and serves it to later public requests.",
+      "observed_output": "public page Members only",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "public page Public catalog",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "cache-invalidation",
+          "suggests": "Responses varying by heading are stored under a path-only cache key.",
+          "evidence": [
+            "if path in pages:",
+            "pages[path] = body"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "unconstrained-inputs",
+          "suggests": "An unrestricted query parameter determines the cached response body.",
+          "evidence": [
+            "body = query.get(\"heading\", DEFAULT_HEADING)",
+            "{\"heading\": \"Members only\"}"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_catalog_response.go",
+      "language": "go",
+      "bug_lines": [
+        14,
+        17,
+        21
+      ],
+      "summary": "An unrestricted query heading is cached under the path and reused for a later public request.",
+      "mechanism": "An unrestricted query heading is cached under the path and reused for a later public request.",
+      "observed_output": "public page Members only",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "public page Public catalog",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "cache-invalidation",
+          "suggests": "Responses affected by the query are cached using only the path.",
+          "evidence": [
+            "pages[path]",
+            "pages[path] = body"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "unconstrained-inputs",
+          "suggests": "An arbitrary heading query value controls the cached response.",
+          "evidence": [
+            "query.Get(\"heading\")",
+            "\"Members only\""
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_catalog_response.rs",
+      "language": "rust",
+      "bug_lines": [
+        5,
+        6,
+        7
+      ],
+      "summary": "A query-controlled body is reused for an ordinary catalog request.",
+      "mechanism": "The cache key contains only the path despite responses varying with query data. An unrestricted heading query parameter controls the stored response.",
+      "observed_output": "public page Members only",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "public page Public catalog",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "cache-invalidation",
+          "suggests": "The cache key contains only the path despite responses varying with query data.",
+          "evidence": [
+            "cache.get(path)",
+            "cache.insert(path.to_owned(), body.clone());"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "unconstrained-inputs",
+          "suggests": "An unrestricted heading query parameter controls the stored response.",
+          "evidence": [
+            "query.get(\"heading\")",
+            "(\"heading\", \"Members only\")"
+          ]
+        }
+      ]
+    }
+  ]
+}

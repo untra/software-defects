@@ -1,0 +1,158 @@
+{
+  "family": "compound-defects",
+  "class": "runtime-errors",
+  "category": "architectural-drift",
+  "defect": "schema-drift-on-load",
+  "name": "Schema Drift On Load",
+  "essence": "A generic loader accepts colour while the consumer expects color, leaving the consumed field absent.",
+  "cwes": [
+    "CWE-915"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 1,
+    "rust": 1
+  },
+  "examples": [
+    {
+      "file": "typescript/01_paint_record.ts",
+      "language": "typescript",
+      "bug_lines": [
+        5,
+        7,
+        14,
+        16
+      ],
+      "summary": "A generic loader accepts colour while the consumer expects color, leaving the consumed field absent.",
+      "mechanism": "A mixed-in loader dynamically copies every deserialized key without a schema, and the consumer calls a string method on the absent color field.",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'toUpperCase')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Validate the record schema or map colour to color before printing paint BLUE.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "macro-mixin-misuse",
+          "suggests": "The mixed-in loader dynamically assigns arbitrary keys onto its receiving object.",
+          "evidence": [
+            "const catalog = Object.assign(paint, recordLoader);",
+            "this[key] = record[key];"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "insecure-deserialization",
+          "suggests": "Every key in the parsed JSON is accepted without requiring the color field.",
+          "evidence": [
+            "const BODY = '{\"colour\":\"blue\"}';",
+            "const record: Record<string, unknown> = JSON.parse(body);",
+            "for (const key of Object.keys(record))"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_paint_record.py",
+      "language": "python",
+      "bug_lines": [
+        7,
+        8,
+        17
+      ],
+      "summary": "A loader mixin trusts every deserialized key, leaving colour populated while the consumer requires color..",
+      "mechanism": "A loader mixin trusts every deserialized key, leaving colour populated while the consumer requires color.",
+      "observed_output": "AttributeError: 'Paint' object has no attribute 'color'. Did you mean: 'colour'?",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "paint BLUE after validating and mapping the record schema.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "macro-mixin-misuse",
+          "suggests": "An inherited loader dynamically changes the receiving object's fields.",
+          "evidence": [
+            "class Paint(RecordLoader):",
+            "setattr(self, key, value)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "insecure-deserialization",
+          "suggests": "Every parsed key is accepted without requiring the consumer's color field.",
+          "evidence": [
+            "json.loads(body).items()",
+            "BODY = '{\"colour\":\"blue\"}'"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_paint_record.go",
+      "language": "go",
+      "bug_lines": [
+        19,
+        28
+      ],
+      "summary": "The embedded loader accepts colour, leaving the expected color field absent.",
+      "mechanism": "A map[string]any escape hatch and embedded loader allow runtime schema drift; the missing color assertion traps it.",
+      "observed_output": "panic: interface conversion: interface {} is nil, not string",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "Validate the required color field before constructing the paint record.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "macro-mixin-misuse",
+          "suggests": "The embedded loader dynamically assigns arbitrary record keys.",
+          "evidence": [
+            "type Paint struct{ Loader }",
+            "l.fields[key] = value"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "insecure-deserialization",
+          "suggests": "Every parsed JSON key is accepted without requiring color.",
+          "evidence": [
+            "json.Unmarshal([]byte(body), &record)",
+            "paint.fields[\"color\"].(string)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_paint_record.rs",
+      "language": "rust",
+      "bug_lines": [
+        7,
+        14
+      ],
+      "summary": "The loaded record keeps colour while the consumer expects color.",
+      "mechanism": "HashMap dynamic fields and a loader macro provide the score-1 shape escape hatch. The loader macro inserts dynamically supplied field names into the receiving record. Every flat JSON field is accepted without requiring the consumer color field.",
+      "observed_output": "no entry found for key",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "Reject incompatible records or map colour to color.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "macro-mixin-misuse",
+          "suggests": "The loader macro inserts dynamically supplied field names into the receiving record.",
+          "evidence": [
+            "$target.insert(key.trim().trim_matches('\"'), value.trim().trim_matches('\"'));"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "insecure-deserialization",
+          "suggests": "Every flat JSON field is accepted without requiring the consumer color field.",
+          "evidence": [
+            "let (key, value) = field.split_once(':').unwrap();",
+            "load!(paint, BODY);"
+          ]
+        }
+      ]
+    }
+  ]
+}

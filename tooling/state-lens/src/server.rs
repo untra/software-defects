@@ -23,7 +23,7 @@ const SOURCE: &str = "state-lens";
 const SITE_ORIGIN: &str = "https://badsoftware.untra.io";
 const SITE_LOCALE: &str = "en";
 const GUIDE_LINK_LABEL: &str = "Read the defect guide ↗";
-const SEVERITY_HINT: u8 = 4;
+const SEVERITY_INFORMATION: u8 = 3;
 const INLAY_MARKER: &str = "◆";
 const SUPERSEDED: &str = "analysis superseded by document changes";
 const CONTENT_MODIFIED: i64 = -32801;
@@ -87,6 +87,24 @@ fn defect_guide_url(family: &str, defect: &str) -> String {
         .extend([SITE_LOCALE, family, defect, ""]);
     url.into()
 }
+fn finding_guide_url(finding: &Finding) -> String {
+    if let Some(compound) = &finding.compound {
+        let mut url = Url::parse(SITE_ORIGIN).expect("valid site origin");
+        url.path_segments_mut()
+            .expect("site origin supports paths")
+            .extend([
+                SITE_LOCALE,
+                "compound-defects",
+                &compound.class,
+                &finding.defect,
+                "",
+            ]);
+        url.into()
+    } else {
+        defect_guide_url(&finding.family, &finding.defect)
+    }
+}
+
 fn markdown_text(value: &str) -> String {
     let mut escaped = String::new();
     for character in value.chars() {
@@ -99,10 +117,17 @@ fn markdown_text(value: &str) -> String {
 }
 fn hover_description(finding: &Finding, markdown: bool) -> String {
     let description = format!(
-        "{}: {} ({}, {}).\n\nSusceptibility is not a bug diagnosis.",
-        finding.defect, finding.explanation, finding.origin, finding.resolution
+        "{} / {}: {} ({}, {}).\n\nSusceptibility is not a bug diagnosis.",
+        finding
+            .compound
+            .as_ref()
+            .map_or(finding.family.as_str(), |c| c.category.as_str()),
+        finding.defect,
+        finding.explanation,
+        finding.origin,
+        finding.resolution
     );
-    let url = defect_guide_url(&finding.family, &finding.defect);
+    let url = finding_guide_url(finding);
     if markdown {
         format!(
             "{}\n\n[{GUIDE_LINK_LABEL}](<{url}>)",
@@ -128,16 +153,17 @@ fn diagnostics(engine: &Engine, report: &Report, uri: &str) -> Option<Value> {
                         .iter()
                         .filter_map(|e| evidence_location(engine, e, "evidence")),
                 )
+                .chain(f.compound.iter().flat_map(|c| c.ingredients.iter()).filter_map(|e| evidence_location(engine, e, "ingredient")))
                 .collect();
             json!({
                 "range":lsp_range(source,f.trigger),
-                "severity":SEVERITY_HINT,
+                "severity":SEVERITY_INFORMATION,
                 "source":SOURCE,
                 "code":f.rule_id,
-                "codeDescription":{"href":defect_guide_url(&f.family,&f.defect)},
-                "message":format!("{}: {} ({}, {}). Susceptibility, not a bug diagnosis.",f.defect,f.explanation,f.origin,f.resolution),
+                "codeDescription":{"href":finding_guide_url(f)},
+                "message":format!("{} / {}: {} ({}, {}). Susceptibility, not a bug diagnosis.", f.compound.as_ref().map_or(f.family.as_str(), |c| c.category.as_str()),f.defect,f.explanation,f.origin,f.resolution),
                 "relatedInformation":related,
-                "data":{"family":f.family,"origin":f.origin,"effect":f.effect}
+                "data":{"family":f.family,"origin":f.origin,"effect":f.effect,"compound":f.compound}
             })
         })
         .collect();
@@ -224,7 +250,7 @@ pub fn serve() -> Result<()> {
     let mut indexing = false;
     let mut indexed_paths = BTreeSet::new();
     let mut processed = 0;
-    let mut publish_diagnostics = false;
+    let mut publish_diagnostics = true;
     let mut markdown_hover = false;
     let mut dirty = false;
     let mut published: BTreeMap<String, Value> = BTreeMap::new();
@@ -294,7 +320,7 @@ pub fn serve() -> Result<()> {
                     }
                 }
                 publish_diagnostics =
-                    diagnostics_setting(&p["initializationOptions"]).unwrap_or(false);
+                    diagnostics_setting(&p["initializationOptions"]).unwrap_or(true);
                 Ok(
                     json!({"capabilities":{"positionEncoding":"utf-16","textDocumentSync":{"openClose":true,"change":2,"save":{"includeText":false}},"hoverProvider":true,"inlayHintProvider":true},"serverInfo":{"name":SOURCE,"version":env!("CARGO_PKG_VERSION")}}),
                 )

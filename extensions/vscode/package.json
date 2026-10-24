@@ -15,7 +15,8 @@
   "activationEvents": [
     "onLanguage:go",
     "onLanguage:rust",
-    "onLanguage:typescript"
+    "onLanguage:typescript",
+    "onLanguage:python"
   ],
   "main": "./dist/extension.js",
   "capabilities": {
@@ -77,8 +78,8 @@
         },
         "stateLens.diagnostics": {
           "type": "boolean",
-          "default": false,
-          "description": "Also publish susceptibility findings as Hint diagnostics (visible to Problems, agents, and other LSP consumers)."
+          "default": true,
+          "description": "Also publish susceptibility findings as Information diagnostics (visible to Problems, agents, and other LSP consumers)."
         }
       }
     }

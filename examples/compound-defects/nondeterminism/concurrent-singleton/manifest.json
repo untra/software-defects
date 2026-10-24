@@ -1,0 +1,157 @@
+{
+  "family": "compound-defects",
+  "class": "nondeterminism",
+  "category": "entropic-divergence",
+  "defect": "concurrent-singleton",
+  "name": "Concurrent Singleton",
+  "essence": "The orchard request receives the harbor user from a shared account context.",
+  "cwes": [
+    "CWE-488"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_account_context.ts",
+      "language": "typescript",
+      "bug_lines": [
+        5,
+        7
+      ],
+      "summary": "The orchard request receives the harbor user from a shared account context.",
+      "mechanism": "A module singleton stores per-request identity in this.user, which another request overwrites before the first reads it.",
+      "observed_output": "orchard received harbor",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "orchard received orchard",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "The method mutates this.user and reads it after an await.",
+          "evidence": [
+            "this.user = user;",
+            "return this.user;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "cross-boundary-state-exposure",
+          "suggests": "Two requests use the same module-level account context.",
+          "evidence": [
+            "const context = new AccountContext();",
+            "context.show(\"orchard\", firstReady.promise)",
+            "context.show(\"harbor\", Promise.resolve())"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_account_context.py",
+      "language": "python",
+      "bug_lines": [
+        8,
+        10
+      ],
+      "summary": "A singleton stores per-request identity across an await, allowing the next request to replace the first request's user..",
+      "mechanism": "A singleton stores per-request identity across an await, allowing the next request to replace the first request's user.",
+      "observed_output": "orchard received harbor",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "orchard received orchard",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "The method mutates its own user field before suspending.",
+          "evidence": [
+            "self.user = user",
+            "return self.user"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "cross-boundary-state-exposure",
+          "suggests": "Both requests share the one module-level context object.",
+          "evidence": [
+            "context = AccountContext()",
+            "context.show(\"orchard\", first_ready)",
+            "context.show(\"harbor\", second_ready)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_account_context.go",
+      "language": "go",
+      "bug_lines": [
+        12,
+        15
+      ],
+      "summary": "The shared account context returns the second user to the first request.",
+      "mechanism": "The shared account context returns the second user to the first request.",
+      "observed_output": "orchard received harbor",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "orchard received orchard",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "The receiver method overwrites its user field and reads it after waiting.",
+          "evidence": [
+            "c.user = user",
+            "result <- c.user"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "cross-boundary-state-exposure",
+          "suggests": "Both requests use one package-level context instance.",
+          "evidence": [
+            "var context Context",
+            "context.show(\"orchard\"",
+            "context.show(\"harbor\""
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_account_context.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "One request receives another request user.",
+      "mechanism": "Selecting a user mutates the receiving context through its Mutex field. Both requests use one static context that outlives each request.",
+      "observed_output": "orchard received harbor",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "orchard received orchard",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "Selecting a user mutates the receiving context through its Mutex field.",
+          "evidence": [
+            "*self.user.lock().unwrap() = user;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "cross-boundary-state-exposure",
+          "suggests": "Both requests use one static context that outlives each request.",
+          "evidence": [
+            "static CONTEXT: Context",
+            "CONTEXT.select(\"orchard\");",
+            "CONTEXT.select(\"harbor\");"
+          ]
+        }
+      ]
+    }
+  ]
+}

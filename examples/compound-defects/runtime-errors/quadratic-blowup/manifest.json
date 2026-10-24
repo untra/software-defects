@@ -1,0 +1,159 @@
+{
+  "family": "compound-defects",
+  "class": "runtime-errors",
+  "category": "computational-exhaustion",
+  "defect": "quadratic-blowup",
+  "name": "Quadratic Blowup",
+  "essence": "Every guest scans the accumulated roster, producing six comparisons for four distinct names.",
+  "cwes": [
+    "CWE-400",
+    "CWE-407"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_guest_roster.ts",
+      "language": "typescript",
+      "bug_lines": [
+        6,
+        8,
+        12
+      ],
+      "summary": "Every guest scans the accumulated roster, producing six comparisons for four distinct names.",
+      "mechanism": "The nested loops repeatedly traverse a growing array and the function imposes no input-size limit, giving quadratic work for distinct names.",
+      "observed_output": "comparisons 6",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Use bounded input or an indexed membership check so work scales linearly with the number of guests.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "for-loop-control-flow",
+          "suggests": "Each outer-loop iteration grows the collection traversed by the inner loop.",
+          "evidence": [
+            "for (const earlier of accepted)",
+            "if (!present) accepted.push(name);"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "unconstrained-inputs",
+          "suggests": "The function accepts an arbitrary list and scans every supplied name with no length limit.",
+          "evidence": [
+            "function roster(names: string[]): number {",
+            "for (const name of names)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_guest_roster.py",
+      "language": "python",
+      "bug_lines": [
+        9,
+        14
+      ],
+      "summary": "Every distinct guest triggers a scan of all previously accepted guests, giving six comparisons for four names and quadratic growth..",
+      "mechanism": "Every distinct guest triggers a scan of all previously accepted guests, giving six comparisons for four names and quadratic growth.",
+      "observed_output": "comparisons 6",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Use one membership operation per guest.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "for-loop-control-flow",
+          "suggests": "Each outer iteration grows the list scanned by the inner loop.",
+          "evidence": [
+            "for earlier in accepted:",
+            "accepted.append(name)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "unconstrained-inputs",
+          "suggests": "The function accepts arbitrary input sizes without bounding the repeated scans.",
+          "evidence": [
+            "def roster(names):",
+            "for name in names:"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_guest_roster.go",
+      "language": "go",
+      "bug_lines": [
+        12,
+        14,
+        21
+      ],
+      "summary": "Every name scans all names accumulated so far, yielding six comparisons for four names.",
+      "mechanism": "Every name scans all names accumulated so far, yielding six comparisons for four names.",
+      "observed_output": "comparisons 6",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Use bounded input or indexed membership instead of quadratic scans.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "for-loop-control-flow",
+          "suggests": "The outer loop grows the collection traversed by the inner loop.",
+          "evidence": [
+            "for _, earlier := range accepted",
+            "accepted = append(accepted, name)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "unconstrained-inputs",
+          "suggests": "The function accepts an arbitrary-length list with no admission limit.",
+          "evidence": [
+            "func roster(names []string) int",
+            "for _, name := range names"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_guest_roster.rs",
+      "language": "rust",
+      "bug_lines": [
+        5,
+        7,
+        11
+      ],
+      "summary": "Four names require six comparisons and cost grows quadratically.",
+      "mechanism": "Each outer iteration extends the list traversed by the inner loop. The function accepts an arbitrary-length input and scans every name.",
+      "observed_output": "comparisons 6",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Use bounded input or near-linear membership checks.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "for-loop-control-flow",
+          "suggests": "Each outer iteration extends the list traversed by the inner loop.",
+          "evidence": [
+            "for earlier in &accepted {",
+            "if !present { accepted.push(*name); }"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "unconstrained-inputs",
+          "suggests": "The function accepts an arbitrary-length input and scans every name.",
+          "evidence": [
+            "fn roster(names: &[&str]) -> usize {",
+            "for name in names {"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "family": "compound-defects",
+  "class": "data-corruption",
+  "category": "representational-corruption",
+  "defect": "untrusted-deserialization",
+  "name": "Untrusted Deserialization",
+  "essence": "A profile request promotes the shared account to administrator.",
+  "cwes": [
+    "CWE-502"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_account_profile.ts",
+      "language": "typescript",
+      "bug_lines": [
+        4,
+        5
+      ],
+      "summary": "A profile request promotes the shared account to administrator.",
+      "mechanism": "JSON received at the profile boundary is deserialized and copied wholesale onto the account, including its privileged admin field.",
+      "observed_output": "admin true",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "admin false; profile updates cannot set authorization fields.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "A serialized request body crosses into the account profile receiver.",
+          "evidence": [
+            "function receiveProfile(body: string): void {",
+            "receiveProfile(REQUEST_BODY);"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "insecure-deserialization",
+          "suggests": "All parsed fields, including admin, are assigned to the account.",
+          "evidence": [
+            "const profile = JSON.parse(body);",
+            "Object.assign(account, profile);",
+            "const REQUEST_BODY = '{\"name\":\"mira\",\"admin\":true}';"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_account_profile.py",
+      "language": "python",
+      "bug_lines": [
+        8,
+        9
+      ],
+      "summary": "The profile boundary trusts a deserialized admin field and copies it onto the live account..",
+      "mechanism": "The profile boundary trusts a deserialized admin field and copies it onto the live account.",
+      "observed_output": "admin True",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "admin False",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "A serialized request body crosses into the profile receiver.",
+          "evidence": [
+            "def receive_profile(body):",
+            "receive_profile(BODY)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "insecure-deserialization",
+          "suggests": "All parsed fields are copied onto the live account, including its privilege flag.",
+          "evidence": [
+            "profile = json.loads(body)",
+            "account.update(profile)",
+            "BODY = '{\"name\":\"mira\",\"admin\":true}'"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_account_profile.go",
+      "language": "go",
+      "bug_lines": [
+        18
+      ],
+      "summary": "A request body assigns its admin field directly to the account.",
+      "mechanism": "A request body assigns its admin field directly to the account.",
+      "observed_output": "admin true",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "admin false",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "A serialized request body crosses into the account receiver.",
+          "evidence": [
+            "func receive(body string)",
+            "receive(requestBody)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "insecure-deserialization",
+          "suggests": "JSON deserialization trusts the caller-supplied admin field.",
+          "evidence": [
+            "json.Unmarshal([]byte(body), &account)",
+            "\"admin\":true"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_account_profile.rs",
+      "language": "rust",
+      "bug_lines": [
+        8
+      ],
+      "summary": "An untrusted profile body grants the account admin privileges.",
+      "mechanism": "The profile receiver consumes a serialized request body crossing into account state. Deserialization directly assigns the request admin flag to the account.",
+      "observed_output": "admin true",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "admin false",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "The profile receiver consumes a serialized request body crossing into account state.",
+          "evidence": [
+            "fn receive(account: &mut Account, body: &str)",
+            "receive(&mut account, BODY);"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "insecure-deserialization",
+          "suggests": "Deserialization directly assigns the request admin flag to the account.",
+          "evidence": [
+            "\"admin\" => account.admin = value.trim().parse::<bool>().unwrap(),"
+          ]
+        }
+      ]
+    }
+  ]
+}

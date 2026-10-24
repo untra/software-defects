@@ -1,0 +1,157 @@
+{
+  "family": "compound-defects",
+  "class": "nondeterminism",
+  "category": "temporal-interleaving",
+  "defect": "toctou-race",
+  "name": "Toctou Race",
+  "essence": "Directory initialization fails with EEXIST after another initializer creates the checked path.",
+  "cwes": [
+    "CWE-367"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_workspace_directory.ts",
+      "language": "typescript",
+      "bug_lines": [
+        15,
+        17
+      ],
+      "summary": "Directory initialization fails with EEXIST after another initializer creates the checked path.",
+      "mechanism": "The existence check and directory initialization are separate operations with an await between them.",
+      "observed_output": "directory EEXIST",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "directory ready",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "race-conditions",
+          "suggests": "A second creator can claim the path between the existence check and mkdir.",
+          "evidence": [
+            "if (!existsSync(path)) {",
+            "await ready;",
+            "mkdirSync(path);"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "improper-initialization",
+          "suggests": "Initialization assumes an absent directory stays absent until it is created.",
+          "evidence": [
+            "async function initialize(",
+            "if (!existsSync(path)) {",
+            "mkdirSync(path);"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_report_directory.py",
+      "language": "python",
+      "bug_lines": [
+        8,
+        10
+      ],
+      "summary": "Directory initialization checks absence separately from creation, allowing another creator to take the same path..",
+      "mechanism": "Directory initialization checks absence separately from creation, allowing another creator to take the same path.",
+      "observed_output": "directory already occupied",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Initialize or reuse the directory successfully.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "race-conditions",
+          "suggests": "Another creator can occupy the path between its check and creation.",
+          "evidence": [
+            "if not path.exists():",
+            "await ready.wait()",
+            "path.mkdir()"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "improper-initialization",
+          "suggests": "Initialization assumes that a checked absence still holds at creation.",
+          "evidence": [
+            "async def initialize(path, ready):",
+            "path.mkdir()"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_report_directory.go",
+      "language": "go",
+      "bug_lines": [
+        12,
+        15
+      ],
+      "summary": "A second creator takes the directory after the initialization check.",
+      "mechanism": "A second creator takes the directory after the initialization check.",
+      "observed_output": "directory already occupied true",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "The caller should recognize or atomically claim the directory.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "race-conditions",
+          "suggests": "The existence check and directory creation are separate operations.",
+          "evidence": [
+            "if _, err := os.Stat(path); os.IsNotExist(err)",
+            "return os.Mkdir(path, directoryMode)"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "improper-initialization",
+          "suggests": "Initialization assumes the absent directory remains available.",
+          "evidence": [
+            "func initialize(",
+            "return os.Mkdir(path, directoryMode)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_report_directory.rs",
+      "language": "rust",
+      "bug_lines": [
+        8,
+        11
+      ],
+      "summary": "The directory creator receives AlreadyExists.",
+      "mechanism": "The existence check and creation are separate operations on a path another actor creates. Directory initialization assumes absence remains true until creation.",
+      "observed_output": "directory AlreadyExists",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Directory initialization accepts the already-created directory.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "race-conditions",
+          "suggests": "The existence check and creation are separate operations on a path another actor creates.",
+          "evidence": [
+            "if !worker_path.exists() {",
+            "fs::create_dir(worker_path)"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "improper-initialization",
+          "suggests": "Directory initialization assumes absence remains true until creation.",
+          "evidence": [
+            "return fs::create_dir(worker_path);"
+          ]
+        }
+      ]
+    }
+  ]
+}

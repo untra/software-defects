@@ -71,4 +71,5 @@ The Rust examples assume a debug build (plain `rustc`), where integer overflow p
 | [mutated-state](mutated-state/ASSESSMENT.md) | Go · Rust · TypeScript · Python, 125 examples |
 | [unstructured-state](unstructured-state/ASSESSMENT.md) | Go · Rust · TypeScript · Python, 132 examples |
 | [shared-state](shared-state/ASSESSMENT.md) | Go · Rust · TypeScript · Python, 141 examples (see its harness conventions) |
+| [compound-defects](compound-defects/ASSESSMENT.md) | four flagship programs, one language each; scores are 0–2 and are not file counts |
 | common-defects | planned |

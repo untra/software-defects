@@ -1,0 +1,149 @@
+{
+  "family": "compound-defects",
+  "class": "runtime-errors",
+  "category": "structural-invalidation",
+  "defect": "shape-drift",
+  "name": "Shape Drift",
+  "essence": "A rush ticket lacks the seat that the consumer assumes every ticket provides.",
+  "cwes": [
+    "CWE-754"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 1,
+    "rust": 1
+  },
+  "examples": [
+    {
+      "file": "typescript/01_ticket_seat.ts",
+      "language": "typescript",
+      "bug_lines": [
+        9,
+        14
+      ],
+      "summary": "A rush ticket lacks the seat that the consumer assumes every ticket provides.",
+      "mechanism": "Only reserved tickets initialize seat, while the consumer invokes a string method on the optional property without checking the ticket shape.",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'toUpperCase')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Display a standing-area label for a rush ticket.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "improper-initialization",
+          "suggests": "The seat is initialized only for reserved tickets.",
+          "evidence": [
+            "if (kind === RESERVED_KIND) ticket.seat = ASSIGNED_SEAT;"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "duck-typing-without-contracts",
+          "suggests": "The seat consumer assumes that every ticket supplies a usable seat string.",
+          "evidence": [
+            "return ticket.seat.toUpperCase();"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_ticket_seat.py",
+      "language": "python",
+      "bug_lines": [
+        7,
+        8,
+        12
+      ],
+      "summary": "A constructor sets seat only for reserved tickets, while the duck-typed consumer assumes every ticket supplies it..",
+      "mechanism": "A constructor sets seat only for reserved tickets, while the duck-typed consumer assumes every ticket supplies it.",
+      "observed_output": "AttributeError: 'Ticket' object has no attribute 'seat'",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Display a standing-area label for a rush ticket.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "improper-initialization",
+          "suggests": "Seat is initialized on only one constructor path.",
+          "evidence": [
+            "if kind == RESERVED_KIND:\n            self.seat = ASSIGNED_SEAT"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "duck-typing-without-contracts",
+          "suggests": "The consumer assumes that every ticket has a seat string.",
+          "evidence": [
+            "return ticket.seat.upper()"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_ticket_seat.go",
+      "language": "go",
+      "bug_lines": [
+        15,
+        19
+      ],
+      "summary": "A rush ticket omits seat but the consumer asserts that it exists as a string.",
+      "mechanism": "A map[string]any escape hatch allows ticket shapes to vary; the consumer type assertion traps a missing field.",
+      "observed_output": "panic: interface conversion: interface {} is nil, not string",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "Handle rush tickets without requiring a reserved seat.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "improper-initialization",
+          "suggests": "Only reserved tickets receive a seat entry.",
+          "evidence": [
+            "if kind == reservedKind",
+            "ticket[\"seat\"] = assignedSeat"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "duck-typing-without-contracts",
+          "suggests": "The consumer assumes a map entry has a string contract.",
+          "evidence": [
+            "ticket[\"seat\"].(string)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_ticket_seat.rs",
+      "language": "rust",
+      "bug_lines": [
+        8,
+        11
+      ],
+      "summary": "A rush ticket lacks the seat assumed by its consumer.",
+      "mechanism": "HashMap dynamic records are the score-1 shape escape hatch. The ticket gains its seat only on the reserved branch. The consumer indexes seat without checking which fields the dynamic record supplies.",
+      "observed_output": "no entry found for key",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "Rush tickets receive a supported standing label.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "improper-initialization",
+          "suggests": "The ticket gains its seat only on the reserved branch.",
+          "evidence": [
+            "if kind == RESERVED { ticket.insert(\"seat\", ASSIGNED_SEAT); }"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "duck-typing-without-contracts",
+          "suggests": "The consumer indexes seat without checking which fields the dynamic record supplies.",
+          "evidence": [
+            "ticket[\"seat\"].to_uppercase()"
+          ]
+        }
+      ]
+    }
+  ]
+}

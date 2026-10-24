@@ -1,0 +1,156 @@
+{
+  "family": "compound-defects",
+  "class": "data-corruption",
+  "category": "semantic-corruption",
+  "defect": "unframed-stream",
+  "name": "Unframed Stream",
+  "essence": "A variable-length shipment is stored as transport chunks instead of complete records.",
+  "cwes": [
+    "CWE-240"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_shipment_records.ts",
+      "language": "typescript",
+      "bug_lines": [
+        11,
+        13
+      ],
+      "summary": "A variable-length shipment is stored as transport chunks instead of complete records.",
+      "mechanism": "An asynchronous byte reader yields fixed four-byte chunks, and the consumer treats each read as a complete record despite accepting unrestricted record lengths.",
+      "observed_output": "records [\"pear\",\"sfig\",\"s-la\",\"rge\"]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "records [\"pears\",\"figs-large\"]",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "async-io-misuse",
+          "suggests": "The async consumer mistakes each transport read for an application record.",
+          "evidence": [
+            "for await (const chunk of readShipment(bytes)) {",
+            "records.push(chunk.toString());"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "unconstrained-inputs",
+          "suggests": "Arbitrary record lengths are concatenated without lengths or separators.",
+          "evidence": [
+            "async function receiveShipment(names: string[]): Promise<void> {",
+            "const bytes = Buffer.from(names.join(\"\"));"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_shipment_records.py",
+      "language": "python",
+      "bug_lines": [
+        13,
+        15
+      ],
+      "summary": "Variable-length names are concatenated without framing, then each fixed-size asynchronous read is stored as a record..",
+      "mechanism": "Variable-length names are concatenated without framing, then each fixed-size asynchronous read is stored as a record.",
+      "observed_output": "records ['pear', 'sfig', 's-la', 'rge']",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "records ['pears', 'figs-large']",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "async-io-misuse",
+          "suggests": "The asynchronous consumer treats each transport chunk as a complete record.",
+          "evidence": [
+            "async for chunk in read_shipment(data):",
+            "records.append(chunk.decode())"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "unconstrained-inputs",
+          "suggests": "Arbitrary record lengths are concatenated without delimiters or lengths.",
+          "evidence": [
+            "async def receive(names):",
+            "data = \"\".join(names).encode()"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_shipment_records.go",
+      "language": "go",
+      "bug_lines": [
+        15,
+        17,
+        34,
+        36
+      ],
+      "summary": "The consumer treats fixed transport chunks as records, splitting and merging variable-length names.",
+      "mechanism": "The consumer treats fixed transport chunks as records, splitting and merging variable-length names.",
+      "observed_output": "records [\"pear\" \"sfig\" \"s-la\" \"rge\"]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "records [\"pears\" \"figs-large\"]",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "async-io-misuse",
+          "suggests": "The pipe consumer treats each partial read as a complete record.",
+          "evidence": [
+            "reader.Read(chunk)",
+            "records = append(records, string(chunk[:n]))"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "unconstrained-inputs",
+          "suggests": "Arbitrary names are appended without framing or a length limit.",
+          "evidence": [
+            "bytes = append(bytes, []byte(name)...)",
+            "writer.Write(bytes)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_shipment_records.rs",
+      "language": "rust",
+      "bug_lines": [
+        8,
+        12
+      ],
+      "summary": "Transport chunks split and merge shipment records.",
+      "mechanism": "The asynchronous consumer treats each transport chunk as a complete record. Variable-size shipment names are concatenated without length prefixes or delimiters.",
+      "observed_output": "records [\"pear\", \"sfig\", \"s-la\", \"rge\"]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "records [\"pears\", \"figs-large\"]",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "async-io-misuse",
+          "suggests": "The asynchronous consumer treats each transport chunk as a complete record.",
+          "evidence": [
+            "for chunk in receive { records.push(String::from_utf8(chunk).unwrap()); }"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "unconstrained-inputs",
+          "suggests": "Variable-size shipment names are concatenated without length prefixes or delimiters.",
+          "evidence": [
+            "let bytes = SHIPMENT.join(\"\").into_bytes();",
+            "bytes.chunks(CHUNK_BYTES)"
+          ]
+        }
+      ]
+    }
+  ]
+}

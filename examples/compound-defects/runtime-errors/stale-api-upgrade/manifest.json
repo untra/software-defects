@@ -1,0 +1,153 @@
+{
+  "family": "compound-defects",
+  "class": "runtime-errors",
+  "category": "architectural-drift",
+  "defect": "stale-api-upgrade",
+  "name": "Stale Api Upgrade",
+  "essence": "A mixed-in receipt helper still calls amount after the billing API exposes totalCents instead.",
+  "cwes": [
+    "CWE-758",
+    "CWE-754"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 1,
+    "rust": 1
+  },
+  "examples": [
+    {
+      "file": "typescript/01_invoice_helper.ts",
+      "language": "typescript",
+      "bug_lines": [
+        7,
+        13
+      ],
+      "summary": "A mixed-in receipt helper still calls amount after the billing API exposes totalCents instead.",
+      "mechanism": "Object.assign installs a helper with an old method dependency onto the newer API object; the unchecked optional amount call throws.",
+      "observed_output": "TypeError: this.amount is not a function",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Update the helper to use totalCents and print receipt 450.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "macro-mixin-misuse",
+          "suggests": "Object.assign mixes a helper with a hidden amount dependency into the billing object.",
+          "evidence": [
+            "const invoice = Object.assign(billing, receiptHelper);",
+            "receipt(this: Billing): string"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "version-library-mismanagement",
+          "suggests": "The provided billing API offers totalCents while the helper still invokes amount.",
+          "evidence": [
+            "const billing: Billing = { totalCents: () => INVOICE_CENTS };",
+            "return String(this.amount());"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_invoice_helper.py",
+      "language": "python",
+      "bug_lines": [
+        9,
+        11
+      ],
+      "summary": "A mixed-in receipt helper still invokes an API method that the billing implementation renamed..",
+      "mechanism": "A mixed-in receipt helper still invokes an API method that the billing implementation renamed.",
+      "observed_output": "AttributeError: 'Invoice' object has no attribute 'amount'",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "receipt 450",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "macro-mixin-misuse",
+          "suggests": "A mixin adds a receipt method with a hidden dependency on its host's amount method.",
+          "evidence": [
+            "class Invoice(ReceiptHelper, Billing):",
+            "return self.amount()"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "version-library-mismanagement",
+          "suggests": "The billing implementation exposes total_cents while the helper still calls amount.",
+          "evidence": [
+            "def total_cents(self):",
+            "return self.amount()"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_invoice_helper.go",
+      "language": "go",
+      "bug_lines": [
+        12
+      ],
+      "summary": "An embedded helper calls an old method name absent from the upgraded billing map.",
+      "mechanism": "A map of method names is the dynamic API escape hatch; an embedded helper invokes a missing function after an API rename.",
+      "observed_output": "panic: runtime error: invalid memory address or nil pointer dereference",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "The helper should call totalCents.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "macro-mixin-misuse",
+          "suggests": "The invoice embeds a helper with a hidden dependency on amount.",
+          "evidence": [
+            "type Invoice struct{ ReceiptHelper }",
+            "h.billing[\"amount\"]()"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "version-library-mismanagement",
+          "suggests": "The provided API exports totalCents while the helper invokes amount.",
+          "evidence": [
+            "Billing{\"totalCents\"",
+            "h.billing[\"amount\"]()"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_invoice_helper.rs",
+      "language": "rust",
+      "bug_lines": [
+        5
+      ],
+      "summary": "The receipt helper calls a method absent from the upgraded method table.",
+      "mechanism": "A HashMap dynamic method table provides the score-1 API-shape escape hatch. The receipt macro hides an amount method dependency from its caller. The provided method table exposes totalCents while the helper calls the earlier name.",
+      "observed_output": "no entry found for key",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "receipt 450",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "macro-mixin-misuse",
+          "suggests": "The receipt macro hides an amount method dependency from its caller.",
+          "evidence": [
+            "$invoice[\"amount\"]()"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "version-library-mismanagement",
+          "suggests": "The provided method table exposes totalCents while the helper calls the earlier name.",
+          "evidence": [
+            "(\"totalCents\", total_cents as fn() -> u32)",
+            "receipt!(invoice)"
+          ]
+        }
+      ]
+    }
+  ]
+}

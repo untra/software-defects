@@ -97,7 +97,7 @@ class CorpusTests(unittest.TestCase):
             directory.mkdir(parents=True)
             (directory / 'manifest.json').write_text(json.dumps({
                 'family': 'family', 'defect': 'defect',
-                'examples': [{'file': 'python/example.py', 'language': 'python', 'bug_lines': [1]}],
+                'examples': [{'file': 'ruby/example.rb', 'language': 'ruby', 'bug_lines': [1]}],
             }))
             with patch.object(lab, 'ROOT', root), patch.object(lab, 'SIDECARS', root / 'cases'):
                 self.assertEqual(lab.corpus(), [])

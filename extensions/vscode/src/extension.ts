@@ -1,17 +1,16 @@
 import * as vscode from 'vscode';
 import { explanation } from './hover';
 import { LanguageClient, LSPErrorCodes, ResponseError, State } from 'vscode-languageclient/node';
-import { accepts, Entry, Evidence, segments, triggerSegments, Snapshot, Range } from './ranges';
+import { accepts, Entry, Evidence, segments, triggerSegments, Snapshot, Range, decorations as paint, PALETTE, Category } from './ranges';
 
-const LANGUAGES = ['go', 'rust', 'typescript'];
+const LANGUAGES = ['go', 'rust', 'typescript', 'python'];
 const REFRESH_DELAY_MS = 180;
-const GREEN = '120, 166, 90';
 const CONFIG_SECTION = 'stateLens';
 const SERVER_ENV = 'STATE_LENS_SERVER';
 const SERVER_BINARY = 'state-lens';
 let client: LanguageClient | undefined;
 
-export interface Applied { version: number; findings: number; segments: number; triggers: number }
+export interface Applied { version: number; findings: number; segments: number; triggers: number; decorations: { category: Category; range: Range; outline: boolean; families: string[] }[] }
 export interface AuditSnapshot extends Applied { audit: Snapshot }
 export interface StateLensApi {
   log(): string[];
@@ -81,6 +80,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
   let rerun = false;
   let disposed = false;
   let decorations: vscode.TextEditorDecorationType[] = [];
+  let stylesByCategory: { category: Category; propagated: boolean; type: vscode.TextEditorDecorationType }[] = [];
   const applied = new Map<string, Applied>();
   const api: StateLensApi = {
     log: () => [...recorded, ...(partial ? [partial] : [])],
@@ -94,7 +94,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
         if (disposed || !accepts(snapshot, uri, document.version, requestedEpoch, epoch) || version !== document.version) return undefined;
         const directOnly = config().get<boolean>('directOnly', false);
         return { version, findings: snapshot.findings.length, segments: segments(snapshot, directOnly).length,
-          triggers: triggerSegments(snapshot, directOnly).length, audit: snapshot };
+          triggers: triggerSegments(snapshot, directOnly).length, decorations: paint(snapshot, directOnly).map(({ category, range, outline, families }) => ({ category, range, outline, families })), audit: snapshot };
       } catch (error) {
         if (error instanceof ResponseError && error.code === LSPErrorCodes.ContentModified) return undefined;
         throw error;
@@ -108,14 +108,22 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
   function styles(): void {
     decorations.forEach(d => d.dispose());
     const opacity = config().get<number>('opacity', 0.10);
-    decorations = [opacity, opacity / 2, Math.min(opacity * 2, 0.5)].map(alpha => vscode.window.createTextEditorDecorationType({
-      backgroundColor: `rgba(${GREEN}, ${alpha})`,
-      border: config().get<boolean>('accessibleMarkers') ? '1px solid' : undefined,
-      borderColor: new vscode.ThemeColor('focusBorder'),
-      rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
-      isWholeLine: false,
-      overviewRulerColor: `rgba(${GREEN}, 0.6)`
-    }));
+    stylesByCategory = (Object.entries(PALETTE) as [Category, string][]).flatMap(([category, hex]) => {
+      const rgb = [1, 3, 5].map(offset => parseInt(hex.slice(offset, offset + 2), 16)).join(', ');
+      const outline = !category.endsWith('-state');
+      return [false, true].map(propagated => {
+        const alpha = propagated ? opacity / 2 : opacity;
+        return { category, propagated, type: vscode.window.createTextEditorDecorationType({
+          backgroundColor: outline ? undefined : `rgba(${rgb}, ${alpha})`,
+          border: outline ? '2px solid' : config().get<boolean>('accessibleMarkers') ? '1px solid' : undefined,
+          borderColor: `rgba(${rgb}, ${propagated ? 0.5 : 1})`,
+          rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
+          isWholeLine: false,
+          overviewRulerColor: hex
+        }) };
+      });
+    });
+    decorations = stylesByCategory.map(style => style.type);
   }
   function clear(): void {
     for (const editor of vscode.window.visibleTextEditors) decorations.forEach(d => editor.setDecorations(d, []));
@@ -145,16 +153,20 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
         if (disposed || !accepts(snapshot, uri, editor.document.version, requestedEpoch, epoch)) continue;
         const directOnly = config().get<boolean>('directOnly', false);
         const parts = segments(snapshot, directOnly);
-        for (let i = 0; i < 2; i++) {
-          editor.setDecorations(decorations[i], parts.filter(p => Number(p.propagated) === i).map(p => ({ range: range(p.range), hoverMessage: p.entries.map(explanation) })));
+        const painted = paint(snapshot, directOnly);
+        for (const style of stylesByCategory) {
+          editor.setDecorations(style.type, painted.filter(p => p.category === style.category && p.propagated === style.propagated).map(p => ({
+            range: range(p.range), hoverMessage: p.entries.map(explanation),
+            renderOptions: p.families.length > 1 ? { after: { contentText: ` [${p.families.join(' + ')}]`, color: PALETTE[p.category] } } : undefined
+          })));
         }
         const triggers = triggerSegments(snapshot, directOnly);
-        editor.setDecorations(decorations[2], triggers.map(part => ({ range: range(part.range), hoverMessage: explanation(part.entry) })));
-        applied.set(uri, { version: editor.document.version, findings: snapshot.findings.length, segments: parts.length, triggers: triggers.length });
+        applied.set(uri, { version: editor.document.version, findings: snapshot.findings.length, segments: parts.length, triggers: triggers.length,
+          decorations: painted.map(({ category, range, outline, families }) => ({ category, range, outline, families })) });
         evidence.update({ ...snapshot, findings: snapshot.findings.filter(e => !directOnly || e.finding.origin === 'direct') });
         incomplete ||= Boolean(snapshot.indexing) || snapshot.parseErrors || snapshot.unresolved.length > 0;
       }
-      if (requestedEpoch === epoch) status.text = `State Lens: green${incomplete ? ' (partial)' : ''}`;
+      if (requestedEpoch === epoch) status.text = `State Lens: active${incomplete ? ' (partial)' : ''}`;
     } catch (error) {
       if (error instanceof ResponseError && error.code === LSPErrorCodes.ContentModified) { rerun = true; return; }
       clear();
@@ -166,7 +178,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
     }
   }
   styles();
-  context.subscriptions.push({ dispose: () => { disposed = true; if (timer) clearTimeout(timer); decorations.forEach(d => d.dispose()); } });
+  context.subscriptions.push({ dispose: () => { disposed = true; epoch++; clear(); if (timer) clearTimeout(timer); decorations.forEach(d => d.dispose()); } });
   context.subscriptions.push(
     vscode.commands.registerCommand('stateLens.toggle', async () => { await config().update('enabled', !config().get<boolean>('enabled', true), vscode.ConfigurationTarget.Global); }),
     vscode.commands.registerCommand('stateLens.refresh', schedule),
@@ -186,13 +198,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
     vscode.workspace.onDidCloseTextDocument(schedule),
     vscode.window.onDidChangeVisibleTextEditors(schedule)
   );
-  const watcher = vscode.workspace.createFileSystemWatcher('**/*.{go,rs,ts}');
+  const watcher = vscode.workspace.createFileSystemWatcher('**/*.{go,rs,ts,py}');
   context.subscriptions.push(watcher, watcher.onDidCreate(schedule), watcher.onDidChange(schedule), watcher.onDidDelete(schedule));
   const command = config().get<string>('serverPath') || process.env[SERVER_ENV] || SERVER_BINARY;
   output.appendLine(`Starting ${command} serve`);
   client = new LanguageClient(CONFIG_SECTION, 'State Lens', { command, args: ['serve'] }, {
     documentSelector: LANGUAGES.map(language => ({ scheme: 'file', language })),
-    initializationOptions: { diagnostics: config().get<boolean>('diagnostics', false) },
+    initializationOptions: { diagnostics: config().get<boolean>('diagnostics', true) },
     synchronize: { fileEvents: watcher, configurationSection: CONFIG_SECTION }, outputChannel: output
   });
   context.subscriptions.push(client.onDidChangeState(event => { if (event.newState === State.Stopped) { epoch++; clear(); status.text = 'State Lens: stopped'; } }));

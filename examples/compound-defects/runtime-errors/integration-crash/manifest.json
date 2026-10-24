@@ -1,0 +1,153 @@
+{
+  "family": "compound-defects",
+  "class": "runtime-errors",
+  "category": "architectural-drift",
+  "defect": "integration-crash",
+  "name": "Integration Crash",
+  "essence": "Applying an incomplete payload overwrites the cart quantity with undefined before formatting.",
+  "cwes": [
+    "CWE-248",
+    "CWE-754"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_cart_payload.ts",
+      "language": "typescript",
+      "bug_lines": [
+        7,
+        12
+      ],
+      "summary": "Applying an incomplete payload overwrites the cart quantity with undefined before formatting.",
+      "mechanism": "The apply function mutates a module-level cart using an unchecked optional payload field, so the next numeric method call receives undefined.",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'toFixed')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Reject a payload missing qty and retain the original cart quantity of 2.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "The apply function changes the cart outside its arguments.",
+          "evidence": [
+            "const cart: { qty?: number } = { qty: INITIAL_QUANTITY };",
+            "cart.qty = payload.qty;"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "An empty payload is accepted and its missing qty is copied without validation.",
+          "evidence": [
+            "const PAYLOAD: { qty?: number } = {};",
+            "cart.qty = payload.qty;"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_cart_payload.py",
+      "language": "python",
+      "bug_lines": [
+        7,
+        12
+      ],
+      "summary": "An unvalidated payload replaces the cart quantity with None, and the next numeric formatter rejects it..",
+      "mechanism": "An unvalidated payload replaces the cart quantity with None, and the next numeric formatter rejects it.",
+      "observed_output": "TypeError: unsupported format string passed to NoneType.__format__",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Reject the incomplete payload and retain quantity 2.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "The apply function changes a cart outside its arguments.",
+          "evidence": [
+            "cart[\"qty\"] = payload.get(\"qty\")"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "Missing quantity is accepted and copied without validation.",
+          "evidence": [
+            "PAYLOAD = {}",
+            "payload.get(\"qty\")"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_cart_payload.go",
+      "language": "go",
+      "bug_lines": [
+        11,
+        16
+      ],
+      "summary": "Applying an unchecked payload replaces the cart quantity with nil and the consumer dereferences it.",
+      "mechanism": "Applying an unchecked payload replaces the cart quantity with nil and the consumer dereferences it.",
+      "observed_output": "panic: runtime error: invalid memory address or nil pointer dereference",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "Require a quantity before changing the cart.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "Apply mutates the package-level cart rather than returning a result.",
+          "evidence": [
+            "cart[\"qty\"] = payload[\"qty\"]"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "An empty payload is accepted and its missing quantity is dereferenced.",
+          "evidence": [
+            "apply(map[string]*int{})",
+            "*cart[\"qty\"]"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_cart_payload.rs",
+      "language": "rust",
+      "bug_lines": [
+        5,
+        9
+      ],
+      "summary": "A payload clears a required quantity before the consumer formats it.",
+      "mechanism": "Applying a payload changes a global cart outside the function arguments. A missing quantity is copied without validation and consumed as present.",
+      "observed_output": "called `Option::unwrap()` on a `None` value",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "Missing quantities are rejected or leave the existing cart unchanged.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "Applying a payload changes a global cart outside the function arguments.",
+          "evidence": [
+            "*CART.lock().unwrap() = payload.qty;"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "A missing quantity is copied without validation and consumed as present.",
+          "evidence": [
+            "let payload = Payload { qty: None };",
+            "CART.lock().unwrap().unwrap()"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
 pub const SCHEMA_VERSION: u32 = 1;
-pub const FAMILY: &str = "mutated-state";
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Span {
@@ -52,9 +51,18 @@ pub struct Evidence {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Compound {
+    pub class: String,
+    pub category: String,
+    pub ingredients: [Evidence; 2],
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Finding {
     pub rule_id: String,
     pub family: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub compound: Option<Compound>,
     pub defect: String,
     pub trigger: Span,
     pub function: Option<Span>,

@@ -541,6 +541,104 @@
         "initialization",
         "method"
       ]
+    },
+    {
+      "id": "python.mutated-state.aliasing-mutable-defaults",
+      "language": "python",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "grammar_version": "0.25.0",
+      "query": "python/mutated-state/aliasing-mutable-defaults/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-374",
+        "CWE-375",
+        "CWE-471"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "alias"
+      ]
+    },
+    {
+      "id": "python.mutated-state.for-loop-control-flow",
+      "language": "python",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "grammar_version": "0.25.0",
+      "query": "python/mutated-state/for-loop-control-flow/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-193",
+        "CWE-834"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "loop"
+      ]
+    },
+    {
+      "id": "python.mutated-state.increment-decrement-operators",
+      "language": "python",
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "grammar_version": "0.25.0",
+      "query": "python/mutated-state/increment-decrement-operators/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-190",
+        "CWE-191",
+        "CWE-680",
+        "CWE-758",
+        "CWE-193"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "one",
+        "update"
+      ]
+    },
+    {
+      "id": "python.mutated-state.var-let-mut",
+      "language": "python",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "grammar_version": "0.25.0",
+      "query": "python/mutated-state/var-let-mut/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-457",
+        "CWE-563"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "binding",
+        "write"
+      ]
+    },
+    {
+      "id": "python.mutated-state.impure-functions",
+      "language": "python",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "grammar_version": "0.25.0",
+      "query": "python/mutated-state/impure-functions/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-330",
+        "CWE-338",
+        "CWE-374",
+        "CWE-1108"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "reference"
+      ]
     }
   ]
 }

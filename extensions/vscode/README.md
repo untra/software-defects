@@ -1,6 +1,6 @@
 # State Lens for VS Code
 
-A green background lens for mutated-state susceptibility in Go, Rust, and TypeScript. Highlighted code is not necessarily wrong. Local mutation and observable effects remain distinct; only supported observable effects propagate through resolved calls.
+A category-colored lens for state susceptibility in Go, Rust, TypeScript, and Python. Highlighted code is not necessarily wrong. Local mutation and observable effects remain distinct; only supported observable effects propagate through resolved calls.
 
 ## Install locally
 
@@ -16,14 +16,14 @@ For iteration, open the repository in VS Code and launch **State Lens: Extension
 
 ## Use
 
-Open a `.go`, `.rs`, or `.ts` file. A light green function body indicates susceptibility; stronger green marks an operation. Propagated effects have a lighter background. Hover an operation or function body to see the reason, resolution level, and originating evidence. Use **Read the defect guide ↗** to open the finding’s English guide on badsoftware.untra.io. The Explorer's **State Lens Evidence** view navigates to operations.
+Open a `.go`, `.rs`, `.ts`, or `.py` file. Trigger ranges use green for mutated state, blue for unstructured state, and red for shared state. Compound findings use separate yellow, light-blue, or magenta outlines. Overlapping base triggers use the narrowest trigger’s fill and retain all findings in the hover; family labels identify overlaps. Propagated effects have a lighter background. Hover an operation to see the reason, resolution level, and originating evidence. Use **Read the defect guide ↗** to open the finding’s English guide on badsoftware.untra.io. The Explorer's **State Lens Evidence** view navigates to operations.
 
 - **State Lens: Toggle Susceptibility Lens** enables/disables decoration.
 - **State Lens: Refresh Analysis** requests a new snapshot.
 - `stateLens.directOnly` hides propagated effects.
 - `stateLens.opacity` adjusts background intensity.
 - `stateLens.accessibleMarkers` adds borders; text descriptions are always available.
-- `stateLens.diagnostics` (off by default) also publishes findings as Hint diagnostics for Problems, agents, and other LSP consumers.
+- `stateLens.diagnostics` (on by default; set to false to opt out) publishes findings as Information diagnostics for Problems, agents, and other LSP consumers.
 
 Functions with findings also get an inlay summary such as `◆ mutated-state×3 (2 propagated)`.
 

@@ -1,0 +1,157 @@
+{
+  "family": "compound-defects",
+  "class": "data-corruption",
+  "category": "semantic-corruption",
+  "defect": "lossy-coercion-ledger",
+  "name": "Lossy Coercion Ledger",
+  "essence": "The locked ledger drops the fractional part of an invoice.",
+  "cwes": [
+    "CWE-682"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_invoice_total.ts",
+      "language": "typescript",
+      "bug_lines": [
+        9,
+        10
+      ],
+      "summary": "The locked ledger drops the fractional part of an invoice.",
+      "mechanism": "Bitwise OR converts a floating-point number to a signed 32-bit integer before a protected update to the shared total.",
+      "observed_output": "total 19",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "total 19.75",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "The monetary float is narrowed to an integer before posting.",
+          "evidence": [
+            "const wholeAmount = amount | 0;",
+            "const INVOICE_AMOUNT = 19.75;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "The shared total is modified while the ledger lock flag is held.",
+          "evidence": [
+            "let ledgerHeld = false;",
+            "ledgerHeld = true;",
+            "total += wholeAmount;"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_invoice_total.py",
+      "language": "python",
+      "bug_lines": [
+        12,
+        13
+      ],
+      "summary": "A float is narrowed to an integer before it enters a mutex-protected total, permanently discarding its fractional amount..",
+      "mechanism": "A float is narrowed to an integer before it enters a mutex-protected total, permanently discarding its fractional amount.",
+      "observed_output": "total 19",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "total 19.75",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "The monetary float is narrowed to an integer before posting.",
+          "evidence": [
+            "INVOICE_AMOUNT = 19.75",
+            "whole_amount = int(amount)"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "The shared total is updated under a mutex.",
+          "evidence": [
+            "ledger = threading.Lock()",
+            "with ledger:",
+            "total += whole_amount"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_invoice_total.go",
+      "language": "go",
+      "bug_lines": [
+        16,
+        17
+      ],
+      "summary": "Narrowing a fractional invoice drops the cents before the protected ledger update.",
+      "mechanism": "Narrowing a fractional invoice drops the cents before the protected ledger update.",
+      "observed_output": "total 19",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "total 19.75",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "A floating-point amount is converted to int before posting.",
+          "evidence": [
+            "whole := int(amount)",
+            "const invoiceAmount = 19.75"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "The aggregate is updated while holding the ledger mutex.",
+          "evidence": [
+            "ledger.Lock()",
+            "total += whole"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_invoice_total.rs",
+      "language": "rust",
+      "bug_lines": [
+        5,
+        7
+      ],
+      "summary": "A locked ledger silently loses the fractional amount.",
+      "mechanism": "The monetary floating-point amount is narrowed to an integer. The narrowed amount is added to a shared total while the ledger Mutex is held.",
+      "observed_output": "total 19",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "total 19.75",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "The monetary floating-point amount is narrowed to an integer.",
+          "evidence": [
+            "let whole = amount as i64;",
+            "const INVOICE: f64 = 19.75;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "The narrowed amount is added to a shared total while the ledger Mutex is held.",
+          "evidence": [
+            "let mut total = TOTAL.lock().unwrap();",
+            "*total += whole;"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,158 @@
+{
+  "family": "compound-defects",
+  "class": "runtime-errors",
+  "category": "computational-exhaustion",
+  "defect": "divide-by-zero-empty",
+  "name": "Divide By Zero Empty",
+  "essence": "An empty sample list leaves the running total at zero and produces a NaN mean.",
+  "cwes": [
+    "CWE-369",
+    "CWE-754"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_sample_mean.ts",
+      "language": "typescript",
+      "bug_lines": [
+        4,
+        6,
+        8
+      ],
+      "summary": "An empty sample list leaves the running total at zero and produces a NaN mean.",
+      "mechanism": "The mutable accumulator remains zero when no samples arrive, and JavaScript number division computes NaN for zero divided by zero.",
+      "observed_output": "mean NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Report that no mean is available for an empty sample set.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "var-let-mut",
+          "suggests": "The mean uses a loop-carried mutable total that remains zero for empty input.",
+          "evidence": [
+            "let total = 0;",
+            "total += sample;"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "divide-by-zero",
+          "suggests": "The empty sample count becomes the denominator of the zero total.",
+          "evidence": [
+            "const SAMPLES: number[] = [];",
+            "return total / samples.length;"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_sample_mean.py",
+      "language": "python",
+      "bug_lines": [
+        7,
+        8
+      ],
+      "summary": "The accumulator remains zero for an empty input and division by its zero length raises ZeroDivisionError..",
+      "mechanism": "The accumulator remains zero for an empty input and division by its zero length raises ZeroDivisionError.",
+      "observed_output": "ZeroDivisionError: division by zero",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Report that no mean is available for an empty sample.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "var-let-mut",
+          "suggests": "The loop carries a mutable running total that stays zero for empty input.",
+          "evidence": [
+            "total = 0",
+            "total += sample"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "divide-by-zero",
+          "suggests": "The empty sample count becomes the denominator.",
+          "evidence": [
+            "SAMPLES = []",
+            "return total / len(samples)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_sample_mean.go",
+      "language": "go",
+      "bug_lines": [
+        8,
+        10,
+        12
+      ],
+      "summary": "The mutable total remains zero and integer division uses an empty sample count.",
+      "mechanism": "The mutable total remains zero and integer division uses an empty sample count.",
+      "observed_output": "panic: runtime error: integer divide by zero",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "Handle empty samples without division.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "var-let-mut",
+          "suggests": "The loop-carried total is mutable and starts at zero.",
+          "evidence": [
+            "total := 0",
+            "total += sample"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "divide-by-zero",
+          "suggests": "The unchecked empty sample count becomes the divisor.",
+          "evidence": [
+            "total / len(samples)",
+            "samples := []int{}"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_sample_mean.rs",
+      "language": "rust",
+      "bug_lines": [
+        4,
+        5
+      ],
+      "summary": "An empty sample batch causes integer division by zero.",
+      "mechanism": "A mutable total accumulates samples and remains zero for an empty batch. The empty batch length is used as an integer denominator.",
+      "observed_output": "attempt to divide by zero",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "An empty batch has no mean and is handled explicitly.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "var-let-mut",
+          "suggests": "A mutable total accumulates samples and remains zero for an empty batch.",
+          "evidence": [
+            "let mut total = 0;",
+            "total += sample;"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "divide-by-zero",
+          "suggests": "The empty batch length is used as an integer denominator.",
+          "evidence": [
+            "total / samples.len() as u32",
+            "const SAMPLES: [u32; 0] = [];"
+          ]
+        }
+      ]
+    }
+  ]
+}

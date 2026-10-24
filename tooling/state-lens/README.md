@@ -1,6 +1,6 @@
 # State Lens
 
-State Lens identifies mechanisms associated with mutated-state defects in Go, Rust, and TypeScript. It produces source ranges, executable-scope summaries, and evidence paths for a VS Code background lens. A highlighted mechanism can be completely intentional and correct.
+State Lens identifies mechanisms associated with mutated-state defects in Go, Rust, TypeScript, and Python. It produces source ranges, executable-scope summaries, and evidence paths for a VS Code background lens. A highlighted mechanism can be completely intentional and correct.
 
 This is the first, mutated-only release. The engine does not diagnose the bugs described by the site's examples. It preserves the distinction between mechanism coverage, susceptibility, and demonstrated incorrect behavior.
 
@@ -34,6 +34,7 @@ Unknown calls remain unresolved, and that uncertainty propagates through resolve
 |---|---|---|
 | TypeScript | Lexically bound functions and simple callable locals; relative named/namespace imports; direct exported functions | No tsconfig aliases, re-exports, default imports, CommonJS, dynamic dispatch, TSX, or full type checking |
 | Go | Local functions, same-package files, explicitly aliased imports into the nearest `go.mod` module | No replace/workspace directives, build-tag evaluation, interface/method dispatch, or inferred package-name aliases |
+| Python | Lexically bound functions, parameters, closures, global/nonlocal assignments | No import resolution, dynamic dispatch, general alias analysis, or runtime type inference |
 | Rust | Local functions and simple `use crate::module::function` / `use self::module::function` imports | No grouped/glob use resolution, macro expansion, trait/method dispatch, cfg evaluation, or compiler ownership analysis |
 
 Clock APIs, selected explicitly typed collection mutations, and Go standard-library sorting have models. Unresolved methods with familiar names remain candidates. Arbitrary numeric expressions are not labeled as money calculations. Candidate aliases and initialization mechanisms do not prove a defect or an escaping effect.
@@ -50,7 +51,7 @@ The server supports `initialize`, open/change/close/save synchronization, watche
 - `findings`, each containing the raw finding plus UTF-16 `triggerRange` and `functionRange`;
 - function/body ranges, `unresolved`, `parseErrors`, and `indexing`.
 
-`stateLens/indexing` notifies the client when background indexing completes. Changes queued during analysis invalidate the response. The client also checks its workspace epoch and current document version before accepting any decoration. Diagnostics are opt-in: with `initializationOptions.diagnostics` (or `settings.stateLens.diagnostics` / `settings.diagnostics` in `workspace/didChangeConfiguration`) set to `true`, the server publishes one Hint-severity diagnostic per finding for each open document. Each carries `code` = rule ID, a `codeDescription` link to the site page, evidence and call path as `relatedInformation`, `data` = family/origin/effect, and the analyzed document `version`. Publishing happens only when no document change is pending; superseded analyses are discarded and retried, unchanged results are not resent, and documents are cleared on close or when diagnostics are disabled. `textDocument/inlayHint` returns one per-function family summary at the body start. These remain susceptibility signals; validated bug-pattern diagnostics are a future, independently scored capability.
+`stateLens/indexing` notifies the client when background indexing completes. Changes queued during analysis invalidate the response. The client also checks its workspace epoch and current document version before accepting any decoration. Diagnostics are enabled by default and can be disabled with `initializationOptions.diagnostics` (or `settings.stateLens.diagnostics` / `settings.diagnostics` in `workspace/didChangeConfiguration`) set to `false`. When enabled, the server publishes one Information-severity diagnostic per finding for each open document. Each carries `code` = rule ID, a `codeDescription` link to the site page, evidence and call path as `relatedInformation`, `data` = family/origin/effect, and the analyzed document `version`. Publishing happens only when no document change is pending; superseded analyses are discarded and retried, unchanged results are not resent, and documents are cleared on close or when diagnostics are disabled. `textDocument/inlayHint` returns one per-function family summary at the body start. These remain susceptibility signals; validated bug-pattern diagnostics are a future, independently scored capability.
 
 ## Queries and corpus
 
@@ -91,7 +92,7 @@ npm run test:e2e --prefix extensions/vscode -- --shard examples/mutated-state --
 ```
 
 The protocol runner uses `--jobs` (default CPU count); the editor runner uses
-`STATE_LENS_E2E_JOBS` (default the smaller of six and CPU count). Six shards isolate each corpus
+`STATE_LENS_E2E_JOBS` (default the smaller of the shard count and CPU count). Inventory-derived shards isolate each corpus
 root/family, and each defect/language group has a ten-second deadline. The editor runner caches
 VS Code 1.142.0 and uses private workspaces and user data. Initial protocol hovers probe position
 zero while requests race document changes; settled hovers exercise actual triggers and Markdown links.
@@ -139,3 +140,38 @@ Before publishing, manually verify VS Code light/dark/high-contrast themes, spli
 5. The [Zed adapter](../../extensions/zed/README.md) uses hint diagnostics, inlay hints, and hover. Full arbitrary background overlays require a separately validated editor API or upstream work; replacing existing language grammars is not the integration strategy.
 
 Architecture references: [Tree-sitter query syntax](https://tree-sitter.github.io/tree-sitter/using-parsers/queries/1-syntax.html), [VS Code decoration API](https://code.visualstudio.com/api/references/vscode-api#TextEditor.setDecorations), [Zed language extensions](https://zed.dev/docs/extensions/languages), and [Zed's published extension API](https://docs.rs/zed_extension_api/latest/zed_extension_api/trait.Extension.html).
+
+## Compound rollout status
+
+Audit schema 2 discovers 850 source files, including 168 examples across 44 compound defects.
+The nine shards come from `scripts/corpus_inventory.py`; the editor runner and CI use the same
+inventory. Compound rows retain class/category and expected/missing rule identities. Base rows
+have null compound metadata and empty expectation arrays. Missing ingredients, compound identities,
+or linked evidence fail independently of `smoke.json` and `--strict-gaps`. Baseline updates remain
+blocked until these assertions pass.
+
+The optional finding `compound` object contains `class`, `category`, and two ingredient references
+(`uri`, half-open byte `range`, `rule_id`). It is carried through reports, range snapshots, diagnostics,
+and hovers. The extension exposes its decoration categories/ranges through `snapshot()` and `applied()`.
+Compound editor smoke activates each document after concurrent provider checks.
+
+This rollout is incomplete: production shared/unstructured ingredient coverage and the 44 compound
+relationship predicates are still missing. No compound detection accuracy is claimed. Python parsing,
+scopes and initial mutation queries are implemented; Query Lab parser setup includes Python 0.25.0,
+but its Python corpus packs and reviewed repair sidecars remain missing. Ingredient-removal and
+relationship-breaking analyzer/editor controls still need implementation. The baseline is unchanged.
+
+Validation during this implementation: Rust analyzer/protocol tests and extension unit tests pass;
+all compound manifests pass taxonomy/evidence validation. Compound protocol smoke processed 168 files
+in 1.89 seconds, with all 168 failing missing-finding contracts. Full protocol smoke processed 850 files
+in 3.23 seconds (427 pass, 141 ordinary gaps, 282 failures including 114 newly included Python files).
+These runs had no protocol crashes, timeouts, warning/error logs, or invalid ranges. The nondeterminism
+editor shard processed all 57 files in about 38 seconds and failed their compound contracts without
+extension errors. All nine editor shards then processed 850 files in about 84 seconds, and the combined audit contains exactly 1,700 unique layer/file rows. `make test` fails the unchanged baseline inventory assertion; Query Lab corpus tests
+also expose missing Python packs/sidecars. These are rollout failures, not passing acceptance results.
+
+To reproduce the independent compound audit:
+
+```sh
+python3 tooling/state-lens/scripts/smoke.py --shard examples/compound-defects --report build/smoke/compound-v2
+```

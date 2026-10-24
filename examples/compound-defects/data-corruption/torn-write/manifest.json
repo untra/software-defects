@@ -1,0 +1,122 @@
+{
+  "family": "compound-defects",
+  "class": "data-corruption",
+  "defect": "torn-write",
+  "name": "Torn Write / Lost-Update Corruption",
+  "essence": "Two threads write one shared buffer at an unvalidated offset with no lock; their writes overlap and run past the end, leaving permanent corruption no single thread would produce.",
+  "category": "memory-corruption",
+  "scores": {
+    "python": 1,
+    "typescript": 0,
+    "go": 1,
+    "rust": 1
+  },
+  "cwes": [
+    "CWE-787"
+  ],
+  "examples": [
+    {
+      "file": "python/01_shipment_labels.py",
+      "language": "python",
+      "bug_lines": [
+        20,
+        21
+      ],
+      "summary": "ctypes writes unchecked overlapping ranges from two threads past the label field, leaving a mixed footer that neither complete label represents..",
+      "mechanism": "ctypes writes unchecked overlapping ranges from two threads past the label field, leaving a mixed footer that neither complete label represents.",
+      "observed_output": "label ..AA footer AAB.",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Reject ranges beyond the label and preserve footer ....",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "race-conditions",
+          "suggests": "Two threads interleave overlapping writes to the shared record without a transaction lock.",
+          "evidence": [
+            "threading.Thread(target=first)",
+            "threading.Thread(target=second)",
+            "write_at(FIRST_OFFSET + 1, FIRST_LABEL[1:])"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "Offsets and lengths are used directly, allowing writes beyond the four-byte label field.",
+          "evidence": [
+            "Shipment.label.offset + offset",
+            "ctypes.memmove(destination, data, len(data))"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_shipping_stamp.go",
+      "language": "go",
+      "bug_lines": [
+        24
+      ],
+      "summary": "Two overlapping stamp operations leave a mixed stamp and overwrite a byte beyond the label.",
+      "mechanism": "unsafe pointer arithmetic permits concurrent multi-byte operations to cross the label subobject boundary; gates choose a mixed interleaving, and an adjacent mark byte is overwritten.",
+      "observed_output": "stamp BA mark AK",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Store one complete stamp within the label without changing mark OK.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "race-conditions",
+          "suggests": "Two goroutines interleave writes into one shared label without an operation-wide lock.",
+          "evidence": [
+            "go stamp(writeOffset, firstStamp",
+            "go stamp(writeOffset, secondStamp",
+            "*(*byte)(unsafe.Add(base, offset+i)) = text[i]"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "The supplied offset and length are used without checking label capacity.",
+          "evidence": [
+            "const writeOffset = 3",
+            "unsafe.Add(base, offset+i)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_shared_label.rs",
+      "language": "rust",
+      "bug_lines": [
+        17,
+        27
+      ],
+      "summary": "Interleaved oversized writes leave mixed label bytes and corrupt adjacent status.",
+      "mechanism": "unsafe raw pointers permit out-of-bounds subobject writes; channels fix the demonstration schedule without making the whole transaction atomic. Two workers update overlapping portions of one label without locking the complete write. Neither writer checks its input length or offset against the label capacity.",
+      "observed_output": "label AB12 status EF56",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Each validated label write is atomic and leaves status OPEN.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "race-conditions",
+          "suggests": "Two workers update overlapping portions of one label without locking the complete write.",
+          "evidence": [
+            "destination.add(index).write(*byte);",
+            "destination.add(SECOND_OFFSET)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "Neither writer checks its input length or offset against the label capacity.",
+          "evidence": [
+            "SECOND.len()",
+            "FIRST.iter().enumerate()"
+          ]
+        }
+      ]
+    }
+  ]
+}

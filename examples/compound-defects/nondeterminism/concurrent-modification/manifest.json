@@ -1,0 +1,160 @@
+{
+  "family": "compound-defects",
+  "class": "nondeterminism",
+  "category": "temporal-interleaving",
+  "defect": "concurrent-modification",
+  "name": "Concurrent Modification",
+  "essence": "A warehouse scan combines one old slot with two new slots and reports 51.",
+  "cwes": [
+    "CWE-362",
+    "CWE-567"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 1,
+    "go": 2,
+    "rust": 1
+  },
+  "examples": [
+    {
+      "file": "typescript/01_warehouse_slots.ts",
+      "language": "typescript",
+      "bug_lines": [
+        14,
+        17,
+        18
+      ],
+      "summary": "A warehouse scan combines one old slot with two new slots and reports 51.",
+      "mechanism": "SharedArrayBuffer permits a worker to replace slots while another worker walks them without a lock or Atomics; message gates expose a mixed traversal.",
+      "observed_output": "units 51",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "units 6 or units 60 from a consistent inventory snapshot",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "for-loop-control-flow",
+          "suggests": "The indexed loop rereads live slots as its index advances.",
+          "evidence": [
+            "for (let index = 0; index < slots.length; index++) {",
+            "total += slots[index];"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "Reader and writer workers access the same shared slots without mutual exclusion.",
+          "evidence": [
+            "new SharedArrayBuffer(",
+            "slots.set(AFTER);",
+            "new Int32Array(workerData.buffer)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_warehouse_slots.py",
+      "language": "python",
+      "bug_lines": [
+        16,
+        17,
+        25
+      ],
+      "summary": "An unlocked traversal spans a concurrent replacement and totals one old slot with two new slots..",
+      "mechanism": "An unlocked traversal spans a concurrent replacement and totals one old slot with two new slots.",
+      "observed_output": "units 51",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "units 6 or units 60 from a consistent snapshot.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "for-loop-control-flow",
+          "suggests": "The indexed loop reads changing slots on successive iterations.",
+          "evidence": [
+            "for index in range(len(slots)):",
+            "total += slots[index]"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "A second thread replaces the same slots while the traversal is in progress.",
+          "evidence": [
+            "slots[:] = AFTER",
+            "threading.Thread(target=replenish)"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_warehouse_slots.go",
+      "language": "go",
+      "bug_lines": [
+        13,
+        24
+      ],
+      "summary": "A traversal combines the first old slot with two replacement slots.",
+      "mechanism": "A traversal combines the first old slot with two replacement slots.",
+      "observed_output": "units 51",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "units 6 or units 60 from one consistent snapshot",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "for-loop-control-flow",
+          "suggests": "The indexed traversal reads a live collection on each loop iteration.",
+          "evidence": [
+            "for i := 0; i < len(slots); i++",
+            "total += slots[i]"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "A writer changes shared slots without a mutex spanning the reader traversal.",
+          "evidence": [
+            "copy(slots, replacement)",
+            "go scan("
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_warehouse_slots.rs",
+      "language": "rust",
+      "bug_lines": [
+        12,
+        13,
+        22
+      ],
+      "summary": "The total combines values from two warehouse versions.",
+      "mechanism": "The score-1 form uses split Mutex locking around individual accesses. The indexed loop reads each slot from the current collection rather than a snapshot. The reader drops its Mutex guard after each slot, allowing a writer between reads.",
+      "observed_output": "units 51",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "units 6 or units 60",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "for-loop-control-flow",
+          "suggests": "The indexed loop reads each slot from the current collection rather than a snapshot.",
+          "evidence": [
+            "for index in 0..BEFORE.len() {",
+            "total += reader_slots.lock().unwrap()[index];"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "The reader drops its Mutex guard after each slot, allowing a writer between reads.",
+          "evidence": [
+            "total += reader_slots.lock().unwrap()[index];",
+            "*slots.lock().unwrap() = AFTER;"
+          ]
+        }
+      ]
+    }
+  ]
+}

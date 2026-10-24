@@ -10,6 +10,7 @@ fn external_cli_matches_production_queries() {
         .unwrap();
     for (name, extension, grammar) in [
         ("go", "go", Language::from(tree_sitter_go::LANGUAGE)),
+        ("python", "py", Language::from(tree_sitter_python::LANGUAGE)),
         ("rust", "rs", Language::from(tree_sitter_rust::LANGUAGE)),
         (
             "typescript",

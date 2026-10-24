@@ -1,0 +1,151 @@
+{
+  "family": "compound-defects",
+  "class": "runtime-errors",
+  "category": "structural-invalidation",
+  "defect": "null-dereference",
+  "name": "Null Dereference",
+  "essence": "A missing catalog item leaves the selected price undefined and the caller dereferences it.",
+  "cwes": [
+    "CWE-476",
+    "CWE-690"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 1
+  },
+  "examples": [
+    {
+      "file": "typescript/01_catalog_price.ts",
+      "language": "typescript",
+      "bug_lines": [
+        6,
+        11,
+        12
+      ],
+      "summary": "A missing catalog item leaves the selected price undefined and the caller dereferences it.",
+      "mechanism": "The lookup falls through without a return, and the caller initializes selected from that unchecked result.",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'cents')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Report that pad has no price instead of dereferencing an absent item.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "improper-initialization",
+          "suggests": "The selected item is initialized from a lookup that may not produce a value.",
+          "evidence": [
+            "const selected = lookup(REQUESTED_SKU);"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "missing-undefined-returns",
+          "suggests": "The lookup returns only inside the matching branch and otherwise falls off its end.",
+          "evidence": [
+            "if (item.sku === sku) return item;\n  }\n}"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_catalog_price.py",
+      "language": "python",
+      "bug_lines": [
+        12,
+        13
+      ],
+      "summary": "A lookup with no fallback returns None, which the caller immediately indexes as a catalog record..",
+      "mechanism": "A lookup with no fallback returns None, which the caller immediately indexes as a catalog record.",
+      "observed_output": "TypeError: 'NoneType' object is not subscriptable",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Report that the requested product is unavailable.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "improper-initialization",
+          "suggests": "The selected item is initialized by a lookup that may produce no value.",
+          "evidence": [
+            "selected = lookup(REQUESTED_SKU)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "missing-undefined-returns",
+          "suggests": "The lookup falls off its end when no item matches.",
+          "evidence": [
+            "if item[\"sku\"] == sku:\n            return item\n\n\ndef main()"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_catalog_price.go",
+      "language": "go",
+      "bug_lines": [
+        23,
+        25
+      ],
+      "summary": "The missing lookup result initializes a nil pointer that the caller dereferences.",
+      "mechanism": "The missing lookup result initializes a nil pointer that the caller dereferences.",
+      "observed_output": "panic: runtime error: invalid memory address or nil pointer dereference",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "Handle the absent catalog item before reading cents.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "improper-initialization",
+          "suggests": "The selected pointer is initialized from a lookup that can return nil.",
+          "evidence": [
+            "selected := lookup(requestedSKU)"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "missing-undefined-returns",
+          "suggests": "Lookup returns nil when no SKU matches and the caller reads its field.",
+          "evidence": [
+            "return nil",
+            "selected.cents"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_catalog_price.rs",
+      "language": "rust",
+      "bug_lines": [
+        7,
+        8
+      ],
+      "summary": "An absent catalog item panics when consumed.",
+      "mechanism": "Option::unwrap is the score-1 trapped null-like access. The selected price is initialized from a lookup that can produce no value. A missing catalog key returns None which the caller unwraps.",
+      "observed_output": "called `Option::unwrap()` on a `None` value",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "A missing item is reported without unwrapping it.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "improper-initialization",
+          "suggests": "The selected price is initialized from a lookup that can produce no value.",
+          "evidence": [
+            "let selected = lookup(REQUESTED);"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "missing-undefined-returns",
+          "suggests": "A missing catalog key returns None which the caller unwraps.",
+          "evidence": [
+            "find(|(name, _)| *name == sku)",
+            "selected.unwrap()"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "family": "compound-defects",
+  "class": "data-corruption",
+  "category": "semantic-corruption",
+  "defect": "nan-shared-aggregate",
+  "name": "Nan Shared Aggregate",
+  "essence": "An empty quote turns the shared ledger total into NaN.",
+  "cwes": [
+    "CWE-682"
+  ],
+  "scores": {
+    "python": 2,
+    "typescript": 2,
+    "go": 2,
+    "rust": 2
+  },
+  "examples": [
+    {
+      "file": "typescript/01_quote_total.ts",
+      "language": "typescript",
+      "bug_lines": [
+        9,
+        10
+      ],
+      "summary": "An empty quote turns the shared ledger total into NaN.",
+      "mechanism": "JavaScript zero divided by zero is NaN; holding a lock flag protects access but does not validate the value added to shared state.",
+      "observed_output": "total NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "total 100, with the empty quote rejected.",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "divide-by-zero",
+          "suggests": "An empty amount is divided by an empty unit count.",
+          "evidence": [
+            "const quote = amount / units;",
+            "const EMPTY_UNITS = 0;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "The module ledger is updated while the shared lock flag is held.",
+          "evidence": [
+            "let ledgerHeld = false;",
+            "ledgerHeld = true;",
+            "total += quote;"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "python/01_quote_total.py",
+      "language": "python",
+      "bug_lines": [
+        12,
+        14,
+        20
+      ],
+      "summary": "An empty quote divides by zero and is converted to NaN; a mutex serializes posting but does not prevent that value from poisoning the total..",
+      "mechanism": "An empty quote divides by zero and is converted to NaN; a mutex serializes posting but does not prevent that value from poisoning the total.",
+      "observed_output": "total nan",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Reject the empty quote and retain total 100.0",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "divide-by-zero",
+          "suggests": "The zero-unit division is converted into a NaN quote.",
+          "evidence": [
+            "return amount / units",
+            "except ZeroDivisionError:\n        return float(\"nan\")"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "The module total is updated while a mutex is held.",
+          "evidence": [
+            "ledger = threading.Lock()",
+            "with ledger:\n        total += amount"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_quote_total.go",
+      "language": "go",
+      "bug_lines": [
+        16,
+        17
+      ],
+      "summary": "A zero-unit quote poisons the shared total while its mutex is held.",
+      "mechanism": "A zero-unit quote poisons the shared total while its mutex is held.",
+      "observed_output": "total NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Reject an empty quote and keep total 100.",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "divide-by-zero",
+          "suggests": "An empty quote divides zero amount by zero units.",
+          "evidence": [
+            "quote := amount / units",
+            "postQuote(0, 0)"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "The shared aggregate is modified under its mutex.",
+          "evidence": [
+            "ledger.Lock()",
+            "total += quote"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_quote_total.rs",
+      "language": "rust",
+      "bug_lines": [
+        6,
+        8
+      ],
+      "summary": "A lock protects a shared ledger update but cannot prevent NaN poisoning.",
+      "mechanism": "An empty quote divides zero amount by zero units. The NaN quote is added to the shared total while holding the ledger Mutex.",
+      "observed_output": "total NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "The ledger remains finite and empty quotes are rejected.",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "divide-by-zero",
+          "suggests": "An empty quote divides zero amount by zero units.",
+          "evidence": [
+            "let quote = amount / units;",
+            "const EMPTY_UNITS: f64 = 0.0;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "The NaN quote is added to the shared total while holding the ledger Mutex.",
+          "evidence": [
+            "let mut total = TOTAL.lock().unwrap();",
+            "*total += quote;"
+          ]
+        }
+      ]
+    }
+  ]
+}

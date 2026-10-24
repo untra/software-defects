@@ -52,3 +52,11 @@ test('explanatory content remains literal and the guide needs no trusted command
   assert.ok(hover.parts.filter(p => p.kind === 'markdown').every(p => !p.value.includes(message)));
   assert.equal(hover.isTrusted, undefined);
 });
+
+test('compound hover names its category and uses the class route', () => {
+  const value = entry('compound-defects', 'lost-update', 'An increment writes back a shared snapshot.');
+  value.finding.compound = { class: 'nondeterminism', category: 'temporal-interleaving', ingredients: [] };
+  const hover = explanation(value);
+  assert.ok(hover.parts.some(p => p.value.includes('temporal-interleaving')));
+  assert.ok(hover.parts.some(p => p.value.includes('/en/compound-defects/nondeterminism/lost-update/')));
+});
