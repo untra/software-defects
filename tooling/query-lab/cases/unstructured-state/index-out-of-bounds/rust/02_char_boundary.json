@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Take Unicode scalar values rather than splitting UTF-8 encoding.",
+  "original": {
+    "source_hash": "e87ae8aae5a259801a70f6a01983cb2bfe56b20b649a4bf92ade362329cbafba",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "393dc9756777f985e77302a71ee01770881afd445fdf74881dcea04a04f35122",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "caf\u00e9"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Rust string slices must begin and end on UTF-8 boundaries (CWE-129). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

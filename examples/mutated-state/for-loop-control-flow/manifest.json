@@ -1,0 +1,182 @@
+{
+  "family": "mutated-state",
+  "defect": "for-loop-control-flow",
+  "name": "for-Loop Control Flow",
+  "essence": "Manual loop control invites the index and the collection to disagree.",
+  "cwes": [
+    "CWE-193",
+    "CWE-834"
+  ],
+  "examples": [
+    {
+      "file": "go/01_remove_while_indexing.go",
+      "language": "go",
+      "bug_lines": [
+        11
+      ],
+      "summary": "Removing an element then incrementing the index skips the element that shifted into its place.",
+      "mechanism": "In-place `append(s[:i], s[i+1:]...)` shifts later elements left while `i++` still advances.",
+      "observed_output": "[expired active]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "[active]"
+    },
+    {
+      "file": "go/02_range_value_is_copy.go",
+      "language": "go",
+      "bug_lines": [
+        15
+      ],
+      "summary": "Interest is added to the range copy, never to the slice element.",
+      "mechanism": "`for _, v := range` yields a copy of each struct.",
+      "observed_output": "[{a 100} {b 200}]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "[{a 105} {b 205}]"
+    },
+    {
+      "file": "go/03_pointer_to_range_variable.go",
+      "language": "go",
+      "bug_lines": [
+        14
+      ],
+      "summary": "Map stores pointers to the per-iteration copy, so marking a task done never touches the slice.",
+      "mechanism": "`&t` addresses the loop variable (a copy since Go 1.22; a single shared variable before), not `tasks[i]`.",
+      "observed_output": "[{build false} {test false}]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "[{build true} {test false}]"
+    },
+    {
+      "file": "rust/01_index_loop_with_remove.rs",
+      "language": "rust",
+      "bug_lines": [
+        8
+      ],
+      "summary": "Manual index loop calls `remove(i)` then `i += 1`, skipping the next negative reading.",
+      "mechanism": "Removal shifts elements left; the index must not advance after a removal.",
+      "observed_output": "[-2, 5, 7]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "[5, 7]"
+    },
+    {
+      "file": "rust/02_stale_cached_length.rs",
+      "language": "rust",
+      "bug_lines": [
+        5
+      ],
+      "summary": "Loop bound is captured before the queue grows, so retried jobs are never processed.",
+      "mechanism": "`pending` is a snapshot of `len()`; pushes during iteration fall outside the range.",
+      "observed_output": "processed job-a\nprocessed job-b\nunprocessed: [\"job-a-retry\"]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "job-a-retry processed"
+    },
+    {
+      "file": "typescript/01_splice_inside_foreach.ts",
+      "language": "typescript",
+      "bug_lines": [
+        5
+      ],
+      "summary": "`splice` during `forEach` shifts indices and skips adjacent empty carts.",
+      "mechanism": "forEach iterates by live index over the mutated array.",
+      "observed_output": "[ 'empty', 'full' ]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "[ 'full' ]"
+    },
+    {
+      "file": "typescript/02_for_in_over_array.ts",
+      "language": "typescript",
+      "bug_lines": [
+        4,
+        5
+      ],
+      "summary": "`for...in` yields string keys, so `i + 1` concatenates instead of adding.",
+      "mechanism": "Array indices from for-in are strings ('0', '1', ...).",
+      "observed_output": "[ '01. 90', '11. 85', '21. 77' ]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "[ '1. 90', '2. 85', '3. 77' ]"
+    },
+    {
+      "file": "typescript/03_var_index_in_timeout.ts",
+      "language": "typescript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "`var i` is one function-scoped binding; every callback reads its final value (3).",
+      "mechanism": "Closures capture the single `var` binding; `let` would create one per iteration.",
+      "observed_output": "pinging undefined\npinging undefined\npinging undefined",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "pinging /health, /ready, /metrics"
+    },
+    {
+      "file": "typescript/04_async_callback_in_foreach.ts",
+      "language": "typescript",
+      "bug_lines": [
+        10
+      ],
+      "summary": "`forEach` ignores returned promises, so the report runs before any save completes.",
+      "mechanism": "async callbacks are fired and forgotten; forEach does not await.",
+      "observed_output": "saved before report: 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "saved before report: 3"
+    },
+    {
+      "file": "python/01_delete_while_indexing.py",
+      "language": "python",
+      "bug_lines": [
+        7
+      ],
+      "summary": "Deleting a drop row still advances the index, so the next drop is kept.",
+      "mechanism": "The index moves forward after del, while the following row has already slid into the current slot.",
+      "observed_output": "['keep', 'drop', 'keep']",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "['keep', 'keep']"
+    },
+    {
+      "file": "python/02_remove_during_iteration.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "Removing the current row during the for-loop leaves the next drop in place.",
+      "mechanism": "The iterator advances by index while remove shifts the tail left, so one drop is skipped.",
+      "observed_output": "['keep', 'drop', 'keep']",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "['keep', 'keep']"
+    },
+    {
+      "file": "python/03_for_else_after_search.py",
+      "language": "python",
+      "bug_lines": [
+        8
+      ],
+      "summary": "ben was found, then the else clause replaces the result with missing.",
+      "mechanism": "for/else runs when the loop ends without break, including after a successful match that never breaks.",
+      "observed_output": "missing",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "ben"
+    },
+    {
+      "file": "python/04_dict_size_changed.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "Deleting ben while iterating ages raises RuntimeError.",
+      "mechanism": "A dict iterator refuses to continue after a key is added or removed.",
+      "observed_output": "RuntimeError: dictionary changed size during iteration",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ages left with ada only"
+    }
+  ]
+}

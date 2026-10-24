@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject a zero divisor before computing the ratio or remainder.",
+  "original": {
+    "source_hash": "c3d7126de79e2090abbe9873e52dad921b981ddb112f470286fdaebc43d81c24",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "operator",
+            "range": [
+              87,
+              88
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "04a8de1465ea7fc6af379335398d688b50897670175d649791c807e252f43fc1",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "operator",
+            "range": [
+              148,
+              149
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "zero divisor"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `%` has the same zero-divisor panic as `/` (CWE-369). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

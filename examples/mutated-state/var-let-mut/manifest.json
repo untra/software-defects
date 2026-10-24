@@ -1,0 +1,198 @@
+{
+  "family": "mutated-state",
+  "defect": "var-let-mut",
+  "name": "var / let / mut Declarations",
+  "essence": "A binding you can reassign is a binding the next reader cannot trust.",
+  "cwes": [
+    "CWE-457",
+    "CWE-563"
+  ],
+  "examples": [
+    {
+      "file": "go/01_shadowed_err_in_if.go",
+      "language": "go",
+      "bug_lines": [
+        13
+      ],
+      "summary": "`:=` inside the if-block declares new `port`/`err` that shadow the outer ones, so the parsed value never reaches the return.",
+      "mechanism": "Short variable declaration creates fresh bindings in the inner scope; the outer `port` stays 0 and outer `err` stays nil.",
+      "observed_output": "parsed port 8080\nport=0 err=port not set",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "port=8080 err=<nil>"
+    },
+    {
+      "file": "go/02_closure_captures_reassigned.go",
+      "language": "go",
+      "bug_lines": [
+        10,
+        11
+      ],
+      "summary": "Closure captures the variable `user`, not its value; reassignment before execution changes what the first handler sees.",
+      "mechanism": "Go closures capture variables by reference; `user = \"bob\"` rewrites the binding both closures share.",
+      "observed_output": "welcome email to bob\nwelcome email to bob",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "welcome email to alice, then bob"
+    },
+    {
+      "file": "go/03_defer_overwrites_named_return.go",
+      "language": "go",
+      "bug_lines": [
+        10
+      ],
+      "summary": "Deferred cleanup unconditionally reassigns the named return `remaining`, discarding the successful result.",
+      "mechanism": "Named results are mutable variables visible to deferred closures; the defer runs after `return` sets them and overwrites the value.",
+      "observed_output": "remaining=100 err=<nil>",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "remaining=70 err=<nil>"
+    },
+    {
+      "file": "go/04_package_var_reassigned.go",
+      "language": "go",
+      "bug_lines": [
+        14
+      ],
+      "summary": "A helper reassigns the package-level `currencySymbol`, so every later `formatPrice` call renders euros.",
+      "mechanism": "Mutable package var acts as hidden shared state; one caller's temporary change leaks to all subsequent callers.",
+      "observed_output": "$19.99\ninvoice: €25.00\n€19.99",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "$19.99 / invoice: €25.00 / $19.99"
+    },
+    {
+      "file": "rust/01_shadowed_accumulator.rs",
+      "language": "rust",
+      "bug_lines": [
+        5
+      ],
+      "summary": "`let total = total + price` shadows the outer accumulator inside the loop instead of updating it.",
+      "mechanism": "Rust shadowing creates a new binding per iteration; the outer `let mut total` is never written.",
+      "observed_output": "running total: 1200\nrunning total: 450\nrunning total: 3000\nfinal total: 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "final total: 4650"
+    },
+    {
+      "file": "rust/02_accumulator_reset_in_loop.rs",
+      "language": "rust",
+      "bug_lines": [
+        5
+      ],
+      "summary": "The running counter is reset at the top of every outer iteration, so only the last order is counted.",
+      "mechanism": "A `mut` binding declared outside the loop is reassigned inside it, discarding accumulated state.",
+      "observed_output": "items shipped: 3",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "items shipped: 13"
+    },
+    {
+      "file": "typescript/01_var_hoisting.ts",
+      "language": "typescript",
+      "bug_lines": [
+        6,
+        8
+      ],
+      "summary": "`var rate` is hoisted to function scope and is `undefined` when the branch is skipped, producing NaN.",
+      "mechanism": "`var` declarations hoist without initialization; reading it outside the block yields undefined.",
+      "observed_output": "with code: 90\nwithout code: NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "without code: 100"
+    },
+    {
+      "file": "typescript/02_let_reassigned_before_await.ts",
+      "language": "typescript",
+      "bug_lines": [
+        10
+      ],
+      "summary": "Module-level `let activeTenant` is reassigned while the first async request is still pending; both requests read the new tenant.",
+      "mechanism": "The async function reads the binding after `await`, by which time another caller mutated it.",
+      "observed_output": "invoices for globex\ninvoices for globex",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "invoices for acme / invoices for globex"
+    },
+    {
+      "file": "typescript/03_const_object_mutated.ts",
+      "language": "typescript",
+      "bug_lines": [
+        5
+      ],
+      "summary": "A `const` policy object is assumed immutable, but a helper mutates its field and changes the shared default.",
+      "mechanism": "`const` prevents rebinding, not mutation of the referenced object.",
+      "observed_output": "aggressive: 10\ndefault: 10",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "aggressive: 10 / default: 3"
+    },
+    {
+      "file": "typescript/04_loop_carried_let.ts",
+      "language": "typescript",
+      "bug_lines": [
+        7,
+        10
+      ],
+      "summary": "`pageSize` is declared outside the loop and overwritten by one query, leaking into the following queries.",
+      "mechanism": "Loop-carried mutable binding retains the previous iteration's override.",
+      "observed_output": "SELECT * FROM users LIMIT 20\nSELECT * FROM orders LIMIT 50\nSELECT * FROM items LIMIT 50",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "items LIMIT 20"
+    },
+    {
+      "file": "python/01_closure_late_binding.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "Each handler closes over the loop name, so both send the last user.",
+      "mechanism": "A lambda captures the variable name, and the for-loop rebinds that same variable.",
+      "observed_output": "welcome email to ben\nwelcome email to ben",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "welcome email to ada, then ben"
+    },
+    {
+      "file": "python/02_loop_name_leaks.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "The search never finds cam, and the function returns the last loop name.",
+      "mechanism": "A for-loop target lives in the enclosing function, so it keeps the last value after the loop.",
+      "observed_output": "selected ben",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "selected cam is missing"
+    },
+    {
+      "file": "python/03_assigned_name_is_local.py",
+      "language": "python",
+      "bug_lines": [
+        6
+      ],
+      "summary": "Reading the module subtotal raises because the function also assigns that name.",
+      "mechanism": "Any assignment makes the name local for the whole function, so the earlier read is unbound.",
+      "observed_output": "UnboundLocalError: cannot access local variable 'subtotal' where it is not associated with a value",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "subtotal 44"
+    },
+    {
+      "file": "python/04_module_global_rebound.py",
+      "language": "python",
+      "bug_lines": [
+        9,
+        10
+      ],
+      "summary": "set_rate rebinds the module rate, so the next tax call uses 0.2.",
+      "mechanism": "global writes the module binding. Later calls read whatever was stored last.",
+      "observed_output": "before 5.0\nafter 20.0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "before 5.0, after 5.0"
+    }
+  ]
+}

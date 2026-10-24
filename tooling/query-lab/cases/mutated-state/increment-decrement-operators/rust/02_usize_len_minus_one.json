@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Represent empty results and zero page size without unsigned subtraction or division failure.",
+  "original": {
+    "source_hash": "ad388c85089fa6fc7c96153f85b3adc3c1c4baa2c5f00158f5fdf6a7285ff729",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/increment-decrement-operators/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "df2366cb9819adf77c3589d4a41c99f2811b362cee0b1c93cd9700fe1a759c26",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/increment-decrement-operators/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "last page: None"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Unsigned subtraction below zero (CWE-191); behavior depends on build profile. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

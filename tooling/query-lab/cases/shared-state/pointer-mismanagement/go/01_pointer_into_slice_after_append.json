@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Obtain the element pointer after any reallocating append.",
+  "original": {
+    "source_hash": "07746f7e83ac138ab7d82d9f2c17710e6cc959ba344753f85283c14c9e54bb69",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/pointer-mismanagement/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              210,
+              216
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "8eaf90b4004f37835ac27ab0f503300fd648215b3f045efcc5d4dd3464325eb5",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/pointer-mismanagement/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              187,
+              193
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "leaderboard: 10"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. append may move the backing array, leaving earlier element pointers dangling into stale memory. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

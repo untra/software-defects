@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Represent readiness explicitly, guard send, and initialize before use.",
+  "original": {
+    "source_hash": "f50cf574fc85eff8c0c15cb8d5e8ddfb5d8764dc7b21063f4151a1a618793f2e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/improper-initialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              218,
+              223
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "47b4bd3c3244c5e1f3805e6576b679bd2dd8cccbc38215a74b36898615ed7b75",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/improper-initialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              284,
+              289
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "sent hello"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Definite assignment assertion disables the uninitialized-field check (CWE-457). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

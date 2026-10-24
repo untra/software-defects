@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Set explicit nonzero client defaults rather than rely on invalid zero values.",
+  "original": {
+    "source_hash": "c3332bbb7c185f976eac908dcbdbd24e69a426a8d6a7974fce9f089082370697",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/improper-initialization/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "9c3cdbfdadd5231c1cc671b562729f0932d0075fd3c6d531f41cc511633f70df",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/improper-initialization/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "timeout: 5s retries: 3"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Zero values are valid-looking but unsafe defaults (CWE-1188). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

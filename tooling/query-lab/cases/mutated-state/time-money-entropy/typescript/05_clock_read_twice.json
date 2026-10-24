@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Derive the expiration from the same creation snapshot.",
+  "original": {
+    "source_hash": "4b5284518ed110cb19411857a31d33ba0dbf13efd3336c61c26eaef23ba4f15b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/time-money-entropy/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              100,
+              103
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              142,
+              145
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              216,
+              219
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              266,
+              269
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "f3a6fb051ab29aab02189a7cc585c6003aaaa6c71382e7224259706ad3da6589",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/time-money-entropy/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              100,
+              103
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              142,
+              145
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              216,
+              219
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "hold window ms: 1000"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Time elapses between reads; capture `now` once per transaction. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use a format compatible with the dynamic value.",
+  "original": {
+    "source_hash": "a6bc129a50cc61d4413bf0d4ba38adb8f5b710314327180b3116f415bd6d3aa1",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/type-errors/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              71,
+              77
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "1445f095623a50d1cf8f5016fc6cd135e87cc33d939425cac1d05dc06277260a",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/type-errors/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              71,
+              77
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "reading: 12"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. fmt trusts the verb against the dynamic type and prints a %!d marker (CWE-704). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

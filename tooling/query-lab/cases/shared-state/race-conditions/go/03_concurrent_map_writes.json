@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Synchronize every shared map write.",
+  "original": {
+    "source_hash": "2a53c068a3e441799dd63ecf25a9cf26c306f1cec790b7a4571da744cd2e48e2",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              250,
+              253
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "8ce2a7c8945329a22d0b05ad3b20f525619d4dade62e6b4731791a3b42a52a68",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              189,
+              193
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              214,
+              220
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              323,
+              326
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "sessions: 800000"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Go maps are not safe for concurrent writes; the runtime aborts the process. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

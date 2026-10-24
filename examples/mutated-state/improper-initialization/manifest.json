@@ -1,0 +1,215 @@
+{
+  "family": "mutated-state",
+  "defect": "improper-initialization",
+  "name": "Improper Initialization",
+  "essence": "The first state transition — undefined to defined — is the purest mutated-state bug: use a value before it exists and every later read inherits garbage.",
+  "cwes": [
+    "CWE-665",
+    "CWE-457",
+    "CWE-456",
+    "CWE-908",
+    "CWE-1188"
+  ],
+  "examples": [
+    {
+      "file": "go/01_nil_map_write.go",
+      "language": "go",
+      "bug_lines": [
+        10,
+        14
+      ],
+      "summary": "Zero-value struct has a nil map; the first write panics.",
+      "mechanism": "Maps must be made before writes; zero value is nil (CWE-456).",
+      "observed_output": "panic: assignment to entry in nil map",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "map[sku-1:1]"
+    },
+    {
+      "file": "go/02_zero_value_config.go",
+      "language": "go",
+      "bug_lines": [
+        15
+      ],
+      "summary": "Config literal omits Timeout and MaxRetries, leaving zero values meaning 'no timeout' and 'no retries'.",
+      "mechanism": "Zero values are valid-looking but unsafe defaults (CWE-1188).",
+      "observed_output": "timeout: 0s retries: 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "explicit non-zero timeout and retries"
+    },
+    {
+      "file": "go/03_nil_pointer_field.go",
+      "language": "go",
+      "bug_lines": [
+        15
+      ],
+      "summary": "Optional pointer field is left nil and dereferenced.",
+      "mechanism": "Uninitialized pointer field (CWE-908).",
+      "observed_output": "panic: runtime error: invalid memory address or nil pointer dereference",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "label with city or handled missing address"
+    },
+    {
+      "file": "go/04_typed_nil_error.go",
+      "language": "go",
+      "bug_lines": [
+        12,
+        16
+      ],
+      "summary": "A nil `*ValidationError` returned as `error` is a non-nil interface, so valid input is rejected.",
+      "mechanism": "Interface holding a typed nil pointer is not equal to nil.",
+      "observed_output": "rejected: <nil>",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "accepted"
+    },
+    {
+      "file": "go/05_make_length_then_append.go",
+      "language": "go",
+      "bug_lines": [
+        6
+      ],
+      "summary": "`make([]T, n)` then `append` leaves n zero-value entries before the real ids.",
+      "mechanism": "make with length pre-fills zero values; capacity was intended.",
+      "observed_output": "4 ids: [\"\" \"\" \"id-a\" \"id-b\"]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "2 ids: [\"id-a\" \"id-b\"]"
+    },
+    {
+      "file": "rust/01_derive_default_invalid_state.rs",
+      "language": "rust",
+      "bug_lines": [
+        17
+      ],
+      "summary": "`#[derive(Default)]` yields max_attempts = 0, so the operation is never tried.",
+      "mechanism": "Derived Default sets numeric fields to 0, an illegal state for this type (CWE-1188).",
+      "observed_output": "RetryPolicy { max_attempts: 0, backoff_ms: 0 } succeeded: false after 0 calls",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "succeeded: true after 1 calls"
+    },
+    {
+      "file": "rust/02_unwrap_or_default_masks_missing.rs",
+      "language": "rust",
+      "bug_lines": [
+        8
+      ],
+      "summary": "Missing DB_PORT silently becomes port 0 via unwrap_or_default.",
+      "mechanism": "Defaulting hides absent configuration instead of failing (CWE-665).",
+      "observed_output": "connecting to db.internal:0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "error: DB_PORT not set"
+    },
+    {
+      "file": "typescript/01_definite_assignment_assertion.ts",
+      "language": "typescript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "`socket!` tells the compiler the field is initialized, but it is undefined until connect().",
+      "mechanism": "Definite assignment assertion disables the uninitialized-field check (CWE-457).",
+      "observed_output": "error: Cannot read properties of undefined (reading 'write')",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "sent hello, or a clear not-connected error"
+    },
+    {
+      "file": "typescript/02_base_constructor_calls_override.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3,
+        9
+      ],
+      "summary": "Base constructor calls an overridden method before the subclass field initializer runs.",
+      "mechanism": "Subclass fields are initialized after super() returns.",
+      "observed_output": "rendering: undefined",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "rendering: default label"
+    },
+    {
+      "file": "typescript/03_temporal_dead_zone.ts",
+      "language": "typescript",
+      "bug_lines": [
+        5,
+        6
+      ],
+      "summary": "A top-level const is computed by calling a function that reads another const declared later.",
+      "mechanism": "`const` is in the temporal dead zone until its declaration executes.",
+      "observed_output": "ReferenceError: Cannot access 'GREETING_PREFIX' before initialization",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Welcome, guest"
+    },
+    {
+      "file": "typescript/04_or_default_swallows_falsy.ts",
+      "language": "typescript",
+      "bug_lines": [
+        7,
+        8
+      ],
+      "summary": "`||` defaults replace valid falsy values: 0 retries and an empty label.",
+      "mechanism": "Logical OR treats 0 and '' as missing; use `??`.",
+      "observed_output": "{ retries: 3, label: 'untitled' }",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "{ retries: 0, label: '' }"
+    },
+    {
+      "file": "python/01_attribute_on_one_branch.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "A guest account has no bonus attribute, so reading it raises AttributeError.",
+      "mechanism": "The attribute is assigned only on the staff branch. Other instances never receive it.",
+      "observed_output": "AttributeError: 'Account' object has no attribute 'bonus'",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "bonus 0 for a guest"
+    },
+    {
+      "file": "python/02_or_replaces_zero.py",
+      "language": "python",
+      "bug_lines": [
+        2
+      ],
+      "summary": "A requested limit of 0 is replaced with 50.",
+      "mechanism": "or returns the right operand when the left is falsy. 0 is falsy.",
+      "observed_output": "50",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "0"
+    },
+    {
+      "file": "python/03_used_before_last_field.py",
+      "language": "python",
+      "bug_lines": [
+        6
+      ],
+      "summary": "publish runs before role is assigned, so it prints the class-level None.",
+      "mechanism": "The initializer calls a method in the middle of assigning fields. role is still the class default.",
+      "observed_output": "role None",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "role staff"
+    },
+    {
+      "file": "python/04_optional_stays_none.py",
+      "language": "python",
+      "bug_lines": [
+        6
+      ],
+      "summary": "extra stays None, and adding it to the base raises TypeError.",
+      "mechanism": "The field is initialized to None and no branch replaces it before the arithmetic.",
+      "observed_output": "TypeError: unsupported operand type(s) for +: 'int' and 'NoneType'",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "10"
+    }
+  ]
+}

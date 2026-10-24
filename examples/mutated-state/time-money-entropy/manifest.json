@@ -1,0 +1,226 @@
+{
+  "family": "mutated-state",
+  "defect": "time-money-entropy",
+  "name": "Time, Money & Entropy",
+  "essence": "A function that consults wall-clock time or money in floats answers differently every call.",
+  "cwes": [
+    "CWE-330",
+    "CWE-340",
+    "CWE-1339",
+    "CWE-682"
+  ],
+  "examples": [
+    {
+      "file": "go/01_float_money_sum.go",
+      "language": "go",
+      "bug_lines": [
+        8,
+        9
+      ],
+      "summary": "Currency summed as float64 fails an exact equality check.",
+      "mechanism": "0.1, 0.2, 0.3 have no exact binary representation; error accumulates (CWE-1339).",
+      "observed_output": "ledger mismatch: 0.60000000000000009",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "ledger balanced"
+    },
+    {
+      "file": "go/02_clock_read_twice.go",
+      "language": "go",
+      "bug_lines": [
+        14
+      ],
+      "summary": "Date and hour come from two clock reads; across midnight the key mixes the old date with the new hour.",
+      "mechanism": "Each `clock()` call is a fresh hidden input; one logical instant should be read once.",
+      "observed_output": "report key: 2026-10-23-h00",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "2026-10-23-h23 or 2026-10-24-h00"
+    },
+    {
+      "file": "go/03_time_compared_with_equals.go",
+      "language": "go",
+      "bug_lines": [
+        15
+      ],
+      "summary": "`==` on time.Time compares monotonic reading and location pointer, not the instant.",
+      "mechanism": "`time.Now()` carries a monotonic clock reading that Parse drops; use `Equal`.",
+      "observed_output": "token matches: false",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "token matches: true"
+    },
+    {
+      "file": "rust/01_f64_balance.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "Repeated f64 deposits of 0.10 never equal 1.00.",
+      "mechanism": "Binary floating point accumulates representation error (CWE-1339).",
+      "observed_output": "balance 0.99999999999999989, goal not reached",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "goal reached"
+    },
+    {
+      "file": "rust/02_truncated_elapsed_seconds.rs",
+      "language": "rust",
+      "bug_lines": [
+        8,
+        9
+      ],
+      "summary": "`as_secs()` truncates sub-second durations to 0, then divides by it.",
+      "mechanism": "Wall-clock-derived value is an untrusted hidden input; truncation turns it into zero.",
+      "observed_output": "attempt to divide by zero",
+      "exit_code": 101,
+      "deterministic": false,
+      "expected_behavior": "throughput computed from fractional seconds"
+    },
+    {
+      "file": "rust/03_integer_split_loses_cents.rs",
+      "language": "rust",
+      "bug_lines": [
+        5
+      ],
+      "summary": "Integer division splits 1000 cents into three 333s, losing a cent.",
+      "mechanism": "Truncating division discards the remainder instead of distributing it (CWE-682).",
+      "observed_output": "shares [333, 333, 333] collected 999 of 1000",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "collected 1000 of 1000"
+    },
+    {
+      "file": "typescript/01_float_money_check.ts",
+      "language": "typescript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "Dollar amounts as JS numbers: 0.1 + 0.2 !== 0.3, so an exact payment is reported short.",
+      "mechanism": "IEEE-754 doubles cannot represent decimal money exactly.",
+      "observed_output": "short by -5.551115123125783e-17",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "paid in full"
+    },
+    {
+      "file": "typescript/02_setmonth_overflow.ts",
+      "language": "typescript",
+      "bug_lines": [
+        7
+      ],
+      "summary": "Adding one month to Jan 31 overflows Feb and lands on Mar 3.",
+      "mechanism": "`setUTCMonth` keeps the day-of-month and rolls excess days forward.",
+      "observed_output": "next billing: 2026-03-03",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "next billing: 2026-02-28"
+    },
+    {
+      "file": "typescript/03_shared_date_mutated.ts",
+      "language": "typescript",
+      "bug_lines": [
+        6
+      ],
+      "summary": "`trialEnd` mutates the Date passed in, so the stored trial start moves to the end date.",
+      "mechanism": "Date objects are mutable and passed by reference.",
+      "observed_output": "start 2026-10-15\nend   2026-10-15",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "start 2026-10-01 / end 2026-10-15"
+    },
+    {
+      "file": "typescript/04_random_experiment_assignment.ts",
+      "language": "typescript",
+      "bug_lines": [
+        5
+      ],
+      "summary": "Experiment variant is drawn from Math.random per view, so one user sees both variants.",
+      "mechanism": "Assignment should be a deterministic function of userId (CWE-330).",
+      "observed_output": "variants shown to user-42: 2",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "variants shown to user-42: 1"
+    },
+    {
+      "file": "typescript/05_clock_read_twice.ts",
+      "language": "typescript",
+      "bug_lines": [
+        12
+      ],
+      "summary": "Creation and expiry timestamps come from separate `Date.now()` reads, so the hold window drifts.",
+      "mechanism": "Time elapses between reads; capture `now` once per transaction.",
+      "observed_output": "hold window ms: 1005",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "hold window ms: 1000"
+    },
+    {
+      "file": "python/01_float_cents.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "Ten dimes added as binary floats do not equal one dollar.",
+      "mechanism": "0.1 has no exact float representation, so the sum lands just under 1.",
+      "observed_output": "0.9999999999999999 False",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "1.0 True"
+    },
+    {
+      "file": "python/02_clock_read_twice.py",
+      "language": "python",
+      "bug_lines": [
+        12,
+        13
+      ],
+      "summary": "The date is taken from 23:59:59 and the hour from the next midnight, so the key says hour 00.",
+      "mechanism": "Two separate clock reads can fall on different days. One snapshot would keep date and hour together.",
+      "observed_output": "report key: 2026-10-23-h00",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "report key: 2026-10-23-h23"
+    },
+    {
+      "file": "python/03_random_branch.py",
+      "language": "python",
+      "bug_lines": [
+        6,
+        7
+      ],
+      "summary": "The same seeded draw sends one visitor to control and the next to trial.",
+      "mechanism": "random.random reads and advances the module generator, so two calls in one run are not the same branch.",
+      "observed_output": "control trial",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "both visitors on the same branch"
+    },
+    {
+      "file": "python/04_round_half_even.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "Half-cent amounts round to the even integer: 0, 2, and 2.",
+      "mechanism": "round uses banker's rounding. 0.5 goes to 0 and 2.5 goes to 2.",
+      "observed_output": "0 2 2",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "1 2 3"
+    },
+    {
+      "file": "python/05_thirty_day_month.py",
+      "language": "python",
+      "bug_lines": [
+        6
+      ],
+      "summary": "Adding 30 days to January 31 lands on March 2, not February 28 or March 1.",
+      "mechanism": "timedelta counts days. It does not clamp to the last day of the next month.",
+      "observed_output": "2026-03-02",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "2026-02-28 or 2026-03-01, a one-month step"
+    }
+  ]
+}

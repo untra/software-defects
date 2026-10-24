@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Serialize before opening storage and replace via a temporary file after a complete write.",
+  "original": {
+    "source_hash": "c139858fe515b04b15ac9d5d40389130ecf95689164e2a43ca00a5f9fceef4a9",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              301,
+              305
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              341,
+              346
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "96820e4858cb42a82a7d38acf1a5307b9e0f22f26f127c7d065b7a55e69960cc",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              509,
+              513
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              559,
+              568
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "quotaBytes\\\":1024"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Non-atomic in-place write; serialize first, write to temp, rename. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

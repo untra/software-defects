@@ -28,13 +28,14 @@ LEXERS = {
 _FMT = HtmlFormatter(nowrap=True)  # emit only token spans; we own <pre><code>
 
 
-def highlight_code(code: str, slug: str) -> str:
+def highlight_code(code: str, slug: str, hl_lines=()) -> str:
     alias = LEXERS.get(slug, slug)
     try:
         lexer = get_lexer_by_name(alias, stripnl=False)
     except ClassNotFound:
         lexer = get_lexer_by_name("text", stripnl=False)
-    return _hl(code, lexer, _FMT).rstrip("\n")
+    fmt = HtmlFormatter(nowrap=True, hl_lines=list(hl_lines)) if hl_lines else _FMT
+    return _hl(code, lexer, fmt).rstrip("\n")
 
 
 # Dark theme tuned to the palette (ink-code #10151C background).

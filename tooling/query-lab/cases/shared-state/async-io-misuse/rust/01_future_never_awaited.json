@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "This in-memory operation needs no asynchronous executor; execute it synchronously.",
+  "original": {
+    "source_hash": "52b40fefaa6daacd023ae96af074f65f9152e0cbd3e393e1b2a684aa3595a164",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/async-io-misuse/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "c1e1f278b18eb6382f2f12c9a7014407dcedd7caf37ee07967834d64bf11a312",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/async-io-misuse/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "receipts sent: 1"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Rust futures are lazy; nothing runs until polled. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

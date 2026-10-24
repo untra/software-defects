@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Normalize invoice dollars to the trait contract of cents.",
+  "original": {
+    "source_hash": "ad41ab313a37059938992e020ee925a51765f9666e72933159ec1fe95de8f83b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/duck-typing-without-contracts/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              340,
+              346
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "1c388427656f904cd38433f75f75a8a69de76fb96f2f09d5438d676a5d2f03f7",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/duck-typing-without-contracts/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              395,
+              401
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "charged 250\ncharged 25000"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The trait method is an i32 with no unit, so both impls type-check (CWE-843). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

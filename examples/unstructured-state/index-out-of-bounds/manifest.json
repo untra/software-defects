@@ -1,0 +1,221 @@
+{
+  "family": "unstructured-state",
+  "defect": "index-out-of-bounds",
+  "name": "Index Out of Bounds & Missing Keys",
+  "essence": "An index or key is assumed present; the structure never promised it.",
+  "cwes": [
+    "CWE-125",
+    "CWE-787",
+    "CWE-129"
+  ],
+  "examples": [
+    {
+      "file": "go/01_last_event.go",
+      "language": "go",
+      "bug_lines": [
+        7
+      ],
+      "summary": "The last event of an empty slice is indexed and panics.",
+      "mechanism": "`len-1` on an empty slice is -1, and the index check panics (CWE-129).",
+      "observed_output": "panic: runtime error: index out of range [-1]",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "no last event"
+    },
+    {
+      "file": "go/02_missing_age.go",
+      "language": "go",
+      "bug_lines": [
+        7
+      ],
+      "summary": "A missing map key reads as age 0.",
+      "mechanism": "Map reads return the zero value when the key is absent and the comma-ok bit is ignored (CWE-125).",
+      "observed_output": "age 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a missing-key result, not 0"
+    },
+    {
+      "file": "go/03_rune_slice.go",
+      "language": "go",
+      "bug_lines": [
+        7
+      ],
+      "summary": "Slicing café by bytes cuts the é in half.",
+      "mechanism": "A string is bytes; index 4 sits inside the two-byte é (CWE-129).",
+      "observed_output": "head \"caf\\xc3\"",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "head \"caf\" or \"café\""
+    },
+    {
+      "file": "go/04_header_field.go",
+      "language": "go",
+      "bug_lines": [
+        11
+      ],
+      "summary": "A header with no colon is split and parts[1] panics.",
+      "mechanism": "SplitN on a missing separator returns one element; the value index was assumed (CWE-129).",
+      "observed_output": "panic: runtime error: index out of range [1] with length 1",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "a missing header value"
+    },
+    {
+      "file": "rust/01_last_event.rs",
+      "language": "rust",
+      "bug_lines": [
+        3
+      ],
+      "summary": "Indexing an empty event list panics.",
+      "mechanism": "`[0]` requires a first element the Vec never promised (CWE-129).",
+      "observed_output": "index out of bounds: the len is 0 but the index is 0",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "no last event"
+    },
+    {
+      "file": "rust/02_char_boundary.rs",
+      "language": "rust",
+      "bug_lines": [
+        3
+      ],
+      "summary": "Slicing café at byte 4 panics because it is not a char boundary.",
+      "mechanism": "Rust string slices must begin and end on UTF-8 boundaries (CWE-129).",
+      "observed_output": "end byte index 4 is not a char boundary; it is inside 'é' (bytes 3..5) of `café`",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "the head \"caf\" or the whole city"
+    },
+    {
+      "file": "rust/03_empty_last.rs",
+      "language": "rust",
+      "bug_lines": [
+        3
+      ],
+      "summary": "last() on an empty list is unwrapped and panics.",
+      "mechanism": "last() returns None; unwrap turns absence into a panic (CWE-476).",
+      "observed_output": "called `Option::unwrap()` on a `None` value",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "no last event"
+    },
+    {
+      "file": "typescript/01_empty_record.ts",
+      "language": "typescript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "Reading id on the first record of an empty list throws.",
+      "mechanism": "An out-of-range index is undefined; the property read then throws (CWE-476).",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'id')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "no record"
+    },
+    {
+      "file": "typescript/02_index_sum.ts",
+      "language": "typescript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "Adding 1 to a missing score prints NaN.",
+      "mechanism": "`scores[2]` is undefined, and undefined plus a number is NaN (CWE-125).",
+      "observed_output": "third NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "no third score"
+    },
+    {
+      "file": "typescript/03_missing_age.ts",
+      "language": "typescript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "A person with no age becomes NaN after + 1.",
+      "mechanism": "A missing property is undefined, and arithmetic does not throw (CWE-125).",
+      "observed_output": "next NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a missing age"
+    },
+    {
+      "file": "typescript/04_negative_index.ts",
+      "language": "typescript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "rows[-1] is undefined rather than the last row.",
+      "mechanism": "JS array index -1 does not wrap the way a negative slice does in other languages (CWE-129).",
+      "observed_output": "last undefined",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "last east"
+    },
+    {
+      "file": "typescript/05_emoji_slice.ts",
+      "language": "typescript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "Index 1 of a string splits the emoji into a surrogate code unit.",
+      "mechanism": "String indexes are UTF-16 code units, so one emoji occupies two indexes (CWE-129).",
+      "observed_output": "code 55357",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the whole emoji, one code point"
+    },
+    {
+      "file": "python/01_empty_first.py",
+      "language": "python",
+      "bug_lines": [
+        3
+      ],
+      "summary": "Reading the first row of an empty list raises IndexError.",
+      "mechanism": "A list index is checked against the length. Zero is out of range when the length is zero.",
+      "observed_output": "IndexError: list index out of range",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "an empty result, not a crash"
+    },
+    {
+      "file": "python/02_missing_key.py",
+      "language": "python",
+      "bug_lines": [
+        3
+      ],
+      "summary": "Looking up michael in a dict that only has ada raises KeyError.",
+      "mechanism": "dict indexing requires the key. A missing key is not a default.",
+      "observed_output": "KeyError: 'michael'",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "a missing-person result"
+    },
+    {
+      "file": "python/03_get_then_attribute.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "dict.get returns None for michael, and adding 1 to None raises TypeError.",
+      "mechanism": "get substitutes None when the key is absent. The next operator assumes an int.",
+      "observed_output": "TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "0 or a missing result, not arithmetic on None"
+    },
+    {
+      "file": "python/04_header_field.py",
+      "language": "python",
+      "bug_lines": [
+        3
+      ],
+      "summary": "A header with no colon has no second field, so index 1 raises IndexError.",
+      "mechanism": "split returns a one-element list when the separator is absent. The code still indexes 1.",
+      "observed_output": "IndexError: list index out of range",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "a missing header field"
+    }
+  ]
+}

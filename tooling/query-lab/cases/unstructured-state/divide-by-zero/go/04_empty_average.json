@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Represent an undefined empty average explicitly.",
+  "original": {
+    "source_hash": "7eaf2300c46adf498c2944cf9781359d00c147833f90b3a84e8dc1ac65211d5d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "operator",
+            "range": [
+              139,
+              140
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "6465cd6024d1de8c69d6b2da1b1956c02ccde43a9dfc6df938462c84e74732e4",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "operator",
+            "range": [
+              191,
+              192
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "average 0 available false"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. A nil or empty slice has length 0; integer division by that length panics (CWE-369). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Keep an index and reborrow after vector growth instead of retaining a raw pointer.",
+  "original": {
+    "source_hash": "be61b91f5d2b19fdef324546a67ab30a5cf89c011984fe60370a048133494c31",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/pointer-mismanagement/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              102,
+              106
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              193,
+              197
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "389898fcc619933e7f6b249bcbac2d06a3a2a3962066cc2586358b79b1031772",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/pointer-mismanagement/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              102,
+              106
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              178,
+              182
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "first price via saved pointer: 100 (vector says 100"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Reallocation frees the old buffer; the raw pointer escapes the borrow checker (CWE-416). Undefined behavior. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

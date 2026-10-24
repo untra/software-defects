@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reset the per-query default in each iteration.",
+  "original": {
+    "source_hash": "fabd5cb20a3643785ab43b06c392551c2637b15af4a71433d65fcb49a7660461",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/var-let-mut/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              305,
+              308
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              345,
+              349
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "62ae75af0f55aada06569c5f5e47b5f70e4a3f41974ae02dbd4b43916149645e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/var-let-mut/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              307,
+              310
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              347,
+              351
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "SELECT * FROM items LIMIT 20"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Loop-carried mutable binding retains the previous iteration's override. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

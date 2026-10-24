@@ -1,0 +1,222 @@
+{
+  "family": "unstructured-state",
+  "defect": "missing-undefined-returns",
+  "name": "Missing & Undefined Returns",
+  "essence": "A code path falls off the end, and 'nothing' silently becomes a value.",
+  "cwes": [
+    "CWE-252",
+    "CWE-394",
+    "CWE-476"
+  ],
+  "examples": [
+    {
+      "file": "go/01_find_admin.go",
+      "language": "go",
+      "bug_lines": [
+        16,
+        22
+      ],
+      "summary": "No admin is a nil pointer, and the caller reads Name.",
+      "mechanism": "The not-found path returns nil with no error; the dereference panics (CWE-476).",
+      "observed_output": "panic: runtime error: invalid memory address or nil pointer dereference",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "no admin"
+    },
+    {
+      "file": "go/02_ignored_write.go",
+      "language": "go",
+      "bug_lines": [
+        10
+      ],
+      "summary": "save fails and the caller still reports the invoice saved.",
+      "mechanism": "The error return is assigned to blank and never checked (CWE-252).",
+      "observed_output": "saved invoice.txt",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "disk full: invoice.txt"
+    },
+    {
+      "file": "go/03_discarded_ok.go",
+      "language": "go",
+      "bug_lines": [
+        7
+      ],
+      "summary": "A missing eur rate reads as 0 cents.",
+      "mechanism": "The comma-ok result is discarded, so absence and a real zero look the same (CWE-252).",
+      "observed_output": "eur 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "eur missing"
+    },
+    {
+      "file": "go/04_naked_balance.go",
+      "language": "go",
+      "bug_lines": [
+        6
+      ],
+      "summary": "An underpaid balance returns 0 and a nil error.",
+      "mechanism": "The bare return hands back the zero named results, which look like a settled balance (CWE-394).",
+      "observed_output": "left=0 err=<nil>",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "an error, because 20 does not cover 50"
+    },
+    {
+      "file": "rust/01_first_word.rs",
+      "language": "rust",
+      "bug_lines": [
+        2
+      ],
+      "summary": "The first word of an empty string is unwrapped and panics.",
+      "mechanism": "split yields None and unwrap discards the missing case (CWE-476).",
+      "observed_output": "called `Option::unwrap()` on a `None` value",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "no first word"
+    },
+    {
+      "file": "rust/02_dropped_parse.rs",
+      "language": "rust",
+      "bug_lines": [
+        3
+      ],
+      "summary": "A failed parse is dropped and the quantity is 0.",
+      "mechanism": "The Result is bound and then ignored, so the caller cannot tell failure from zero (CWE-252).",
+      "observed_output": "qty 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the token rejected"
+    },
+    {
+      "file": "typescript/01_member_discount.ts",
+      "language": "typescript",
+      "bug_lines": [
+        9
+      ],
+      "summary": "A non-member discount falls off the end and the price becomes NaN.",
+      "mechanism": "The missing return is undefined, and 1 - undefined is NaN (CWE-394).",
+      "observed_output": "price NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "price 100"
+    },
+    {
+      "file": "typescript/02_find_admin.ts",
+      "language": "typescript",
+      "bug_lines": [
+        10
+      ],
+      "summary": "findAdmin returns undefined and the caller reads name.",
+      "mechanism": "The loop can finish without returning; the property read then throws (CWE-476).",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'name')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "no admin"
+    },
+    {
+      "file": "typescript/03_map_prices.ts",
+      "language": "typescript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "The map callback computes a label and does not return it.",
+      "mechanism": "A function with no return yields undefined, so the array is [null, null] after JSON (CWE-394).",
+      "observed_output": "[null,null]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "[\"$10\",\"$20\"]"
+    },
+    {
+      "file": "typescript/04_optional_age.ts",
+      "language": "typescript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "birthday adds 1 to an age that was never set.",
+      "mechanism": "The optional property is undefined on this object, and the sum is NaN (CWE-476).",
+      "observed_output": "age NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a missing age"
+    },
+    {
+      "file": "typescript/05_async_quote.ts",
+      "language": "typescript",
+      "bug_lines": [
+        8
+      ],
+      "summary": "quote resolves to undefined for an unknown sku, and the price becomes NaN.",
+      "mechanism": "The async function has no return on that path, so the promise fulfills with undefined (CWE-394).",
+      "observed_output": "price NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a rejected sku"
+    },
+    {
+      "file": "python/01_find_admin.py",
+      "language": "python",
+      "bug_lines": [
+        9
+      ],
+      "summary": "No admin is found, the function returns None, and the name lookup raises TypeError.",
+      "mechanism": "A function with no trailing return yields None. The caller indexes that result.",
+      "observed_output": "TypeError: 'NoneType' object is not subscriptable",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "no admin, without indexing None"
+    },
+    {
+      "file": "python/02_member_discount.py",
+      "language": "python",
+      "bug_lines": [
+        8
+      ],
+      "summary": "A guest has no discount return, so 1 - None raises TypeError.",
+      "mechanism": "The non-member path falls off the end and returns None, which is then used as a number.",
+      "observed_output": "TypeError: unsupported operand type(s) for -: 'int' and 'NoneType'",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "1, no discount"
+    },
+    {
+      "file": "python/03_label_helper.py",
+      "language": "python",
+      "bug_lines": [
+        2
+      ],
+      "summary": "The helper prints each name and the list of results is [None, None].",
+      "mechanism": "print returns None. The comprehension collects those return values.",
+      "observed_output": "ada\nben\n[None, None]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "['ada', 'ben']"
+    },
+    {
+      "file": "python/04_get_as_value.py",
+      "language": "python",
+      "bug_lines": [
+        3
+      ],
+      "summary": "The missing pencil stock is None, and adding 1 raises TypeError.",
+      "mechanism": "dict.get without a default returns None. The caller adds that result as if it were a count.",
+      "observed_output": "TypeError: unsupported operand type(s) for +: 'int' and 'NoneType'",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "1, treating a missing sku as zero"
+    },
+    {
+      "file": "python/05_async_quote.py",
+      "language": "python",
+      "bug_lines": [
+        6
+      ],
+      "summary": "The guest path of the coroutine returns None.",
+      "mechanism": "An async function that does not return still resolves to None.",
+      "observed_output": "None",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a guest quote, not None"
+    }
+  ]
+}

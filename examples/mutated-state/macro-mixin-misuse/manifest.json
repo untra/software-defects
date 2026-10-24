@@ -1,0 +1,157 @@
+{
+  "family": "mutated-state",
+  "defect": "macro-mixin-misuse",
+  "name": "Macro & Mixin Misuse",
+  "essence": "Metaprogramming expands or mixes behavior the reader never sees.",
+  "cwes": [
+    "CWE-783",
+    "CWE-682"
+  ],
+  "examples": [
+    {
+      "file": "go/01_embedded_method_no_virtual_dispatch.go",
+      "language": "go",
+      "bug_lines": [
+        13
+      ],
+      "summary": "Promoted `Save` calls `BaseModel.Validate`, never the embedding `User.Validate`; invalid users save.",
+      "mechanism": "Struct embedding is composition, not inheritance; there is no virtual dispatch through the embedded receiver.",
+      "observed_output": "saved",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "rejected: email required"
+    },
+    {
+      "file": "go/02_embedded_pointer_shared_by_copy.go",
+      "language": "go",
+      "bug_lines": [
+        16
+      ],
+      "summary": "Copying a struct that embeds `*Stats` shares the counters between both handlers.",
+      "mechanism": "Embedded pointer is copied as a pointer; promoted fields alias the same Stats.",
+      "observed_output": "/ 3 | /api 3",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "/ 1 | /api 2"
+    },
+    {
+      "file": "rust/01_macro_evaluates_argument_twice.rs",
+      "language": "rust",
+      "bug_lines": [
+        5,
+        12
+      ],
+      "summary": "`clamp_max!` expands `$val` twice, so the side-effecting reading is consumed twice.",
+      "mechanism": "macro_rules! substitutes expressions textually; bind `$val` to a local once.",
+      "observed_output": "first 50 second 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "first 5 second 10"
+    },
+    {
+      "file": "rust/02_macro_hides_early_return.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "`skip_blank!` contains `return`, which exits the whole import instead of skipping one line.",
+      "mechanism": "Control flow inside a macro acts on the caller's function, invisible at the call site.",
+      "observed_output": "imported [\"alice\"]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "imported [\"alice\", \"bob\", \"carol\"]"
+    },
+    {
+      "file": "rust/03_vec_macro_clones_rc.rs",
+      "language": "rust",
+      "bug_lines": [
+        7
+      ],
+      "summary": "`vec![Rc::new(..); N]` clones one Rc N times; every lane is the same buffer.",
+      "mechanism": "The repeat form of vec! uses Clone, which for Rc shares the allocation.",
+      "observed_output": "lane 0: [42]\nlane 1: [42]\nlane 2: [42]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "lane 0: [42], lanes 1-2: []"
+    },
+    {
+      "file": "typescript/01_object_assign_mixin_collision.ts",
+      "language": "typescript",
+      "bug_lines": [
+        13
+      ],
+      "summary": "Two mixins define `validate`; the later silently overwrites the earlier, so the email check never runs.",
+      "mechanism": "Object.assign is last-write-wins on key collisions.",
+      "observed_output": "signup valid: true",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "signup valid: false"
+    },
+    {
+      "file": "typescript/02_class_mixin_order.ts",
+      "language": "typescript",
+      "bug_lines": [
+        26
+      ],
+      "summary": "Cached wraps Authorized, so the cached report is served after the token is revoked.",
+      "mechanism": "Mixin application order determines the super chain; caching outside auth bypasses it.",
+      "observed_output": "before revoke: quarterly revenue report\nafter revoke:  quarterly revenue report",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "after revoke: 403 denied"
+    },
+    {
+      "file": "typescript/03_prototype_patch_shared_state.ts",
+      "language": "typescript",
+      "bug_lines": [
+        8
+      ],
+      "summary": "A class-decorating helper stores `calls` on the prototype, so all instances share one array.",
+      "mechanism": "Mutable state on a prototype is shared by every instance.",
+      "observed_output": "billing calls: [ '/invoices', '/search?q=boots' ]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "billing calls: [ '/invoices' ]"
+    },
+    {
+      "file": "python/01_mixin_mro_order.py",
+      "language": "python",
+      "bug_lines": [
+        11
+      ],
+      "summary": "Record.save returns audit, because Audit is listed before Store.",
+      "mechanism": "Attribute lookup walks the MRO left to right. The first base that defines save wins.",
+      "observed_output": "audit",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "store"
+    },
+    {
+      "file": "python/02_mixin_skips_super.py",
+      "language": "python",
+      "bug_lines": [
+        13
+      ],
+      "summary": "Record.save records the audit step and never reaches Store.save.",
+      "mechanism": "Calling Audit.save directly skips the rest of the MRO. super().save() would continue it.",
+      "observed_output": "['audit']",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "['audit', 'store']"
+    },
+    {
+      "file": "python/03_decorator_calls_twice.py",
+      "language": "python",
+      "bug_lines": [
+        3,
+        4
+      ],
+      "summary": "One charge(10) appends 10 twice and returns 20.",
+      "mechanism": "The wrapper calls the wrapped function for a side effect and again for the return value.",
+      "observed_output": "20",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "10"
+    }
+  ]
+}

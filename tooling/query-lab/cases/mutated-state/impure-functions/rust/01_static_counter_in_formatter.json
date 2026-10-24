@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Allocate an invoice number once and make formatting pure for both preview and issue.",
+  "original": {
+    "source_hash": "b9c84f9e92666327276cf3f6bfabcc03865db86cdd8bfc1240f269a46a03a6a1",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/impure-functions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              176,
+              185
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "99501e6f253bae28f11082b39c8b0e725c4586f9f102dbbe8f293407d2c6ead2",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/impure-functions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              250,
+              259
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "preview INV-0001-acme / issued INV-0001-acme"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Static atomic counter hides mutation inside a seemingly pure formatter. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

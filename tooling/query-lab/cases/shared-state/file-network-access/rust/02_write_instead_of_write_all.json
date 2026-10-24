@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Retry partial writes until the whole message is delivered.",
+  "original": {
+    "source_hash": "e31cc5a4b01471c122b0d3d78d6471c1b4637f24e63a88d6b439fd356c0c311f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              449,
+              454
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "92ef3688157271c74f2ef2dcc36e2b805c2e8bf24c903638d3d223741f0d0cdd",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              449,
+              458
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "(13 of 13 bytes)"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Partial writes are normal for sockets; use write_all. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

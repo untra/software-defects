@@ -1,0 +1,184 @@
+{
+  "family": "mutated-state",
+  "defect": "this-mutation",
+  "name": "this Mutation",
+  "essence": "When a method mutates this, every caller is coupled to call order.",
+  "cwes": [
+    "CWE-374",
+    "CWE-375",
+    "CWE-471"
+  ],
+  "examples": [
+    {
+      "file": "go/01_value_receiver_discards_write.go",
+      "language": "go",
+      "bug_lines": [
+        11
+      ],
+      "summary": "`Record` has a value receiver, so `c.hits++` mutates a copy.",
+      "mechanism": "Value receivers get a copy of the struct; writes do not reach the caller.",
+      "observed_output": "hits: 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "hits: 3"
+    },
+    {
+      "file": "go/02_method_value_binds_copy.go",
+      "language": "go",
+      "bug_lines": [
+        15
+      ],
+      "summary": "Method value `t.Report` copies `t` at binding time, so it reports the stale target.",
+      "mechanism": "Method values with value receivers evaluate and copy the receiver when created.",
+      "observed_output": "target=68",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "target=72"
+    },
+    {
+      "file": "go/03_interface_holds_value_copy.go",
+      "language": "go",
+      "bug_lines": [
+        17
+      ],
+      "summary": "Assigning the struct to an interface stores a copy; raising the limit afterwards has no effect on the policy.",
+      "mechanism": "Interface values box a copy of non-pointer values.",
+      "observed_output": "allow 50: false",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "allow 50: true"
+    },
+    {
+      "file": "rust/01_hidden_mutation_through_cell.rs",
+      "language": "rust",
+      "bug_lines": [
+        11
+      ],
+      "summary": "`peek(&self)` advances the cursor through `Cell`, so two peeks return different tokens.",
+      "mechanism": "Interior mutability lets a `&self` method mutate state, hiding call-order coupling from the signature.",
+      "observed_output": "first Some(\"let\"), again Some(\"x\")",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "first Some(\"let\"), again Some(\"let\")"
+    },
+    {
+      "file": "typescript/01_unbound_method_callback.ts",
+      "language": "typescript",
+      "bug_lines": [
+        10
+      ],
+      "summary": "Passing `tracker.handle` detaches it from its receiver; `this` is undefined when invoked.",
+      "mechanism": "Method references don't carry `this`; class bodies are strict mode.",
+      "observed_output": "error: Cannot read properties of undefined (reading 'clicks')\nclicks: 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "clicks: 1"
+    },
+    {
+      "file": "typescript/02_call_order_dependent_methods.ts",
+      "language": "typescript",
+      "bug_lines": [
+        11,
+        15
+      ],
+      "summary": "Methods mutate `this.subtotal` in place, so totals depend on call order and retries compound tax.",
+      "mechanism": "Each call reads state written by previous calls instead of deriving from inputs.",
+      "observed_output": "tax then coupon: 100\ncoupon then tax: 99\ntax retried: 121",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "consistent total regardless of order; idempotent tax"
+    },
+    {
+      "file": "typescript/03_fluent_builder_returns_this.ts",
+      "language": "typescript",
+      "bug_lines": [
+        5
+      ],
+      "summary": "Builder mutates and returns `this`; two queries branched from one base share every filter.",
+      "mechanism": "Fluent API returns the same mutable instance rather than a new builder.",
+      "observed_output": "SELECT * FROM users WHERE active = true AND role = 'admin' AND role = 'guest'\nSELECT * FROM users WHERE active = true AND role = 'admin' AND role = 'guest'",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "admins: active AND admin / guests: active AND guest"
+    },
+    {
+      "file": "typescript/04_instance_field_shadows_override.ts",
+      "language": "typescript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "Arrow-function class field is assigned on the instance, shadowing the subclass's prototype override.",
+      "mechanism": "Instance fields are set in the base constructor and take precedence over prototype methods.",
+      "observed_output": "[hello]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "[HELLO]"
+    },
+    {
+      "file": "typescript/05_function_callback_rebinds_this.ts",
+      "language": "typescript",
+      "bug_lines": [
+        7
+      ],
+      "summary": "`function` callback passed to setTimeout gets Node's Timeout object as `this`; the session flag is written onto the timer.",
+      "mechanism": "Non-arrow functions rebind `this` to the caller-chosen receiver.",
+      "observed_output": "expired: false",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "expired: true"
+    },
+    {
+      "file": "python/01_class_attribute_through_self.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "Ben's post changes Ada's balance, because both ledgers share one lines list.",
+      "mechanism": "self.lines looks up the class list when the instance has no lines of its own, and append mutates that list.",
+      "observed_output": "14 14",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "10 4"
+    },
+    {
+      "file": "python/02_init_calls_override.py",
+      "language": "python",
+      "bug_lines": [
+        3,
+        11
+      ],
+      "summary": "Staff.seed reads bonus during Account.__init__, before that attribute exists.",
+      "mechanism": "The base initializer calls an overridable method, and the override runs before the subclass body.",
+      "observed_output": "AttributeError: 'Staff' object has no attribute 'bonus'",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "bonus 5"
+    },
+    {
+      "file": "python/03_function_stored_on_instance.py",
+      "language": "python",
+      "bug_lines": [
+        3
+      ],
+      "summary": "render calls banner with no instance, so the owner never gets through.",
+      "mechanism": "Assigning a function onto an instance does not bind self. The call passes only the arguments in parentheses.",
+      "observed_output": "TypeError: banner() missing 1 required positional argument: 'self'",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "report for ada"
+    },
+    {
+      "file": "python/04_builder_forgets_self.py",
+      "language": "python",
+      "bug_lines": [
+        6
+      ],
+      "summary": "with_sku changes the order and then returns None, so the next attribute read fails.",
+      "mechanism": "A method returns None unless it returns self. The chained call therefore has no sku.",
+      "observed_output": "AttributeError: 'NoneType' object has no attribute 'sku'",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "pen"
+    }
+  ]
+}

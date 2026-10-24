@@ -1,0 +1,218 @@
+{
+  "family": "shared-state",
+  "defect": "race-conditions",
+  "name": "Race Conditions",
+  "essence": "When two actors touch one value at once, the interleaving decides the (wrong) result.",
+  "cwes": [
+    "CWE-362",
+    "CWE-367",
+    "CWE-366"
+  ],
+  "examples": [
+    {
+      "file": "go/01_lost_update_counter.go",
+      "language": "go",
+      "bug_lines": [
+        16
+      ],
+      "summary": "`p.total++` is an unsynchronized read-modify-write executed by many goroutines; increments are lost.",
+      "mechanism": "`++` compiles to load, add, store; interleaved goroutines overwrite each other (CWE-362).",
+      "observed_output": "recorded 2112319 of 8000000 views",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "recorded 800000 of 800000 views"
+    },
+    {
+      "file": "go/02_check_then_act_balance.go",
+      "language": "go",
+      "bug_lines": [
+        32,
+        34
+      ],
+      "summary": "Balance check and debit are each locked but not atomic together; five withdrawals pass the check.",
+      "mechanism": "Check-then-act across two critical sections (TOCTOU, CWE-367).",
+      "observed_output": "final balance: -400",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "final balance: 0"
+    },
+    {
+      "file": "go/03_concurrent_map_writes.go",
+      "language": "go",
+      "bug_lines": [
+        14
+      ],
+      "summary": "A package-level map is written from several goroutines without a lock.",
+      "mechanism": "Go maps are not safe for concurrent writes; the runtime aborts the process.",
+      "observed_output": "fatal error: concurrent map writes",
+      "exit_code": 1,
+      "deterministic": false,
+      "expected_behavior": "sessions: 800000"
+    },
+    {
+      "file": "go/04_lazy_init_without_once.go",
+      "language": "go",
+      "bug_lines": [
+        17,
+        20
+      ],
+      "summary": "Lazy nil-check initialization runs in every goroutine that arrives before the first finishes.",
+      "mechanism": "Unsynchronized check-then-set on a shared global; use sync.Once.",
+      "observed_output": "registry loaded 8 times",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "registry loaded 1 times"
+    },
+    {
+      "file": "go/05_append_from_goroutines.go",
+      "language": "go",
+      "bug_lines": [
+        19
+      ],
+      "summary": "Goroutines `append` to one shared slice, losing rows when headers race.",
+      "mechanism": "append reads len/cap/pointer and writes back a new header; concurrent appends clobber each other.",
+      "observed_output": "collected 18596 of 80000 rows",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "collected 80000 of 80000 rows"
+    },
+    {
+      "file": "rust/01_lock_per_step_check_then_act.rs",
+      "language": "rust",
+      "bug_lines": [
+        10,
+        13
+      ],
+      "summary": "Stock is read under one lock and written under another; every buyer sees 1 available.",
+      "mechanism": "The guard is dropped between check and act, so the invariant is not held across both (CWE-367).",
+      "observed_output": "sold 5 units with 1 in stock",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "sold 1 units with 1 in stock"
+    },
+    {
+      "file": "rust/02_atomic_load_then_store.rs",
+      "language": "rust",
+      "bug_lines": [
+        9,
+        10
+      ],
+      "summary": "An atomic load followed by an atomic store is not an atomic increment; updates are lost.",
+      "mechanism": "Each operation is atomic alone; the read-modify-write is not. Use fetch_add.",
+      "observed_output": "recorded 2159428 of 8000000 hits",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "recorded 800000 of 800000 hits"
+    },
+    {
+      "file": "typescript/01_read_await_write.ts",
+      "language": "typescript",
+      "bug_lines": [
+        8,
+        10
+      ],
+      "summary": "Inventory is read before an `await` and written after it, so the concurrent sale is overwritten.",
+      "mechanism": "Single-threaded JS still interleaves at every await point (CWE-362).",
+      "observed_output": "widgets left: 6",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "widgets left: 3"
+    },
+    {
+      "file": "typescript/02_check_then_insert_across_await.ts",
+      "language": "typescript",
+      "bug_lines": [
+        11,
+        13
+      ],
+      "summary": "Uniqueness check and insert straddle an `await`, so two signups both pass the check.",
+      "mechanism": "Check-then-act split by an await is a TOCTOU race.",
+      "observed_output": "accounts for ana@example.com: 2",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "accounts for ana@example.com: 1"
+    },
+    {
+      "file": "typescript/03_whole_document_save.ts",
+      "language": "typescript",
+      "bug_lines": [
+        14
+      ],
+      "summary": "Each editor saves the whole document it loaded, overwriting the other editor's change.",
+      "mechanism": "Last-write-wins without a version check or field-level patch (lost update).",
+      "observed_output": "{ title: 'Draft', body: 'Hello' }",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "{ title: 'Final', body: 'Hello' }"
+    },
+    {
+      "file": "typescript/04_out_of_order_responses.ts",
+      "language": "typescript",
+      "bug_lines": [
+        11
+      ],
+      "summary": "Each keystroke's response is assigned on arrival; the slow response for 'a' lands last and overwrites 'abc'.",
+      "mechanism": "Responses complete out of order; no request token or cancellation guards the shared result.",
+      "observed_output": "search box: abc, showing: [ 'a-result-1', 'a-result-2' ]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "showing abc-result-1, abc-result-2"
+    },
+    {
+      "file": "python/01_lost_update_counter.py",
+      "language": "python",
+      "bug_lines": [
+        14,
+        16
+      ],
+      "summary": "Eight workers each add 400, and the shared total finishes short of 3200.",
+      "mechanism": "The read and the later store are separate. Another thread stores in between, and one update is lost.",
+      "observed_output": "recorded 538 of 3200",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "recorded 3200 of 3200"
+    },
+    {
+      "file": "python/02_check_then_act_balance.py",
+      "language": "python",
+      "bug_lines": [
+        14,
+        17
+      ],
+      "summary": "Five withdrawals each see a balance of 100 and each subtract 100.",
+      "mechanism": "The check and the subtract are not one critical section. Every waiter passes the check before any subtract.",
+      "observed_output": "-400",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "0"
+    },
+    {
+      "file": "python/03_read_await_write.py",
+      "language": "python",
+      "bug_lines": [
+        10,
+        13
+      ],
+      "summary": "Both sales read stock 1, both record a sale, and the stock ends at 0.",
+      "mechanism": "The await between the read and the write lets the other task read the same stock.",
+      "observed_output": "2 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "1 0"
+    },
+    {
+      "file": "python/04_lazy_init.py",
+      "language": "python",
+      "bug_lines": [
+        11,
+        15
+      ],
+      "summary": "Two callers both pass the empty check and each creates a list.",
+      "mechanism": "The None check and the assignment are separated. Both callers observe None.",
+      "observed_output": "2",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "1"
+    }
+  ]
+}

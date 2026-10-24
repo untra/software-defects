@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject a zero divisor before computing the ratio or remainder.",
+  "original": {
+    "source_hash": "9ed7b1269b0c9d364602bd6b169e16e55f5b336032f03b949a1ce76dea0a2d6d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "operator",
+            "range": [
+              98,
+              99
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "2e94115bc5d1836d4efbebec38bc034c6d2afef350ac2d719055b4c5c04b2963",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "operator",
+            "range": [
+              162,
+              163
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "zero divisor"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. IEEE-754 float64 division by 0 is +Inf, which poisons later math (CWE-682). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Share one Gregorian calendar implementation between consumers.",
+  "original": {
+    "source_hash": "38686bb8e7f99dd9162be5140669741c1bd32a56ad05865ecef706687ef39651",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/version-library-mismanagement/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              303,
+              318
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "e95e04910fa2c45fb958ad6ed7418304e0dde658834fdd26c907c8fb5d451552",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/version-library-mismanagement/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              361,
+              376
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "billing 2024 february 29\npayroll 2024 february 29"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The two copies of the helper have drifted, so 2024 is not a leap year on one path (CWE-1104). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

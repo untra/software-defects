@@ -35,17 +35,20 @@
     return true;
   }
 
+  /* JavaScript and TypeScript stand in for each other when a viewer lacks one */
+  var LANG_ALIASES = { javascript: "typescript", typescript: "javascript" };
+
   function initViewers() {
     var pref = getPref();
     document.querySelectorAll(".code-viewer").forEach(function (viewer) {
       // apply remembered language if this viewer has it
-      if (pref) activate(viewer, pref);
+      if (pref && !activate(viewer, pref) && LANG_ALIASES[pref]) activate(viewer, LANG_ALIASES[pref]);
       viewer.querySelectorAll(".lang-tab").forEach(function (tab) {
         tab.addEventListener("click", function () {
           var slug = tab.getAttribute("data-lang");
           // switch every viewer on the page so they stay in sync
           document.querySelectorAll(".code-viewer").forEach(function (v) {
-            activate(v, slug);
+            if (!activate(v, slug) && LANG_ALIASES[slug]) activate(v, LANG_ALIASES[slug]);
           });
           setPref(slug);
         });
@@ -68,7 +71,7 @@
   function initCopy() {
     document.querySelectorAll(".copy-btn").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        var panel = btn.closest(".code-panel");
+        var panel = btn.closest(".corpus-code, .code-panel");
         var code = panel ? panel.querySelector("code") : null;
         if (!code) return;
         var text = code.innerText;

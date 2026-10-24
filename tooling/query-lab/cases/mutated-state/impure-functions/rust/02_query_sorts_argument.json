@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Find the maximum without reordering the roster.",
+  "original": {
+    "source_hash": "8609580074843bfa5d050e76a85640763e4512bc164e753dd8d67e942b2afaef",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/impure-functions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              70,
+              77
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "f244ee2982a444f24b694dbab8ada637623c14b7de4202a65dd13bed45875039",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/impure-functions/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "best ben / first signup ana"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. A query that needs only `&[T]` mutates its argument as a side effect. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

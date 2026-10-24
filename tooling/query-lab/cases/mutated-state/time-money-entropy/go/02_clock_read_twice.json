@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Derive date and hour from one clock snapshot.",
+  "original": {
+    "source_hash": "ec7304e9ad23f96ea4ff144bc457ab3102c48e67633b4a4a632f1f1d58c62324",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/time-money-entropy/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              131,
+              136
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              167,
+              172
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "48a0721836aa273248235e0c0db360770103429acae9ff1c5ad621f97afce6c9",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/time-money-entropy/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              130,
+              135
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "report key: 2026-10-23-h23"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Each `clock()` call is a fresh hidden input; one logical instant should be read once. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

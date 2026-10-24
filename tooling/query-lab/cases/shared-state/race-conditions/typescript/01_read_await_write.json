@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reserve synchronously before yielding, restoring stock on failure.",
+  "original": {
+    "source_hash": "07296934badeaceae15198d3084b34a0d5f9909fa6074952d6c59ca9c7bb3f96",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/race-conditions/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "7714c4b34fd9154e2ef7c9f67922e75d72a9c1dd81226950f4e14a91b993853c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/race-conditions/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "widgets left: 3"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Single-threaded JS still interleaves at every await point (CWE-362). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

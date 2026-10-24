@@ -1,0 +1,8 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "state-lens: server", "type": "shell", "command": "make server", "problemMatcher": "$rustc" },
+    { "label": "state-lens: extension", "type": "npm", "script": "build", "path": "extensions/vscode", "problemMatcher": "$tsc" },
+    { "label": "state-lens: build", "dependsOn": ["state-lens: server", "state-lens: extension"] }
+  ]
+}

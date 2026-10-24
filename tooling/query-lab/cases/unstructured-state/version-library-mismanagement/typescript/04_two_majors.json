@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use implementations satisfying the same leap-year contract.",
+  "original": {
+    "source_hash": "db7ed2c83f0c34fa3cb31a775a41579f76a734dcc7daff1a0a861e1b08eab2c8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/version-library-mismanagement/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "1d5dbe52ef2c0a5f6138d0b4448f3b6e78b76cdf52c6b2c8001cc839c41e1b4f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/version-library-mismanagement/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "dates-v1 29\ndates-v2 29"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Both copies are linked into one process and return different lengths (CWE-1104). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

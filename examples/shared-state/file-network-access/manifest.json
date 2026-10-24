@@ -1,0 +1,215 @@
+{
+  "family": "shared-state",
+  "defect": "file-network-access",
+  "name": "File & Network Access",
+  "essence": "Disk and network calls fail partway, arrive twice, or never arrive at all.",
+  "cwes": [
+    "CWE-22",
+    "CWE-367",
+    "CWE-73"
+  ],
+  "examples": [
+    {
+      "file": "go/01_toctou_stat_then_write.go",
+      "language": "go",
+      "bug_lines": [
+        16,
+        18
+      ],
+      "summary": "Leadership is claimed by stat-then-write; all nodes see no file and all become leader.",
+      "mechanism": "Time-of-check/time-of-use on the filesystem (CWE-367). Use O_CREATE|O_EXCL.",
+      "observed_output": "nodes that believe they are leader: 3",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "nodes that believe they are leader: 1"
+    },
+    {
+      "file": "go/02_truncate_then_encode.go",
+      "language": "go",
+      "bug_lines": [
+        18,
+        23
+      ],
+      "summary": "`os.Create` truncates the live config before encoding fails, leaving an empty file.",
+      "mechanism": "Non-atomic in-place write; write to temp and rename.",
+      "observed_output": "save error: json: unsupported type: func()\nconfig on disk now: \"\"",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "config on disk still {\"Name\":\"production\"}"
+    },
+    {
+      "file": "go/03_close_error_ignored.go",
+      "language": "go",
+      "bug_lines": [
+        28
+      ],
+      "summary": "`defer w.Close()` discards the flush error, so a failed backup reports success.",
+      "mechanism": "Buffered writers report errors on Close; deferring without checking loses them.",
+      "observed_output": "backup error: <nil>",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "backup error: flush failed: quota exceeded"
+    },
+    {
+      "file": "go/04_retry_non_idempotent_post.go",
+      "language": "go",
+      "bug_lines": [
+        20
+      ],
+      "summary": "A timed-out POST is retried without an idempotency key; the server processed both.",
+      "mechanism": "Timeouts are ambiguous; retrying non-idempotent requests duplicates side effects.",
+      "observed_output": "charge error: <nil>, card charged 2 times",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "card charged 1 times"
+    },
+    {
+      "file": "rust/01_toctou_exists_then_create.rs",
+      "language": "rust",
+      "bug_lines": [
+        11,
+        13
+      ],
+      "summary": "`exists()` then `fs::write` lets every thread claim the lock file.",
+      "mechanism": "TOCTOU (CWE-367); use OpenOptions::create_new.",
+      "observed_output": "nodes that believe they are leader: 3",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "nodes that believe they are leader: 1"
+    },
+    {
+      "file": "rust/02_write_instead_of_write_all.rs",
+      "language": "rust",
+      "bug_lines": [
+        21
+      ],
+      "summary": "`write` may write fewer bytes than given; the short count is ignored.",
+      "mechanism": "Partial writes are normal for sockets; use write_all.",
+      "observed_output": "peer received \"{\\\"am\" (4 of 13 bytes)",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "peer received full 13 bytes"
+    },
+    {
+      "file": "rust/03_retry_duplicates_over_tcp.rs",
+      "language": "rust",
+      "bug_lines": [
+        18
+      ],
+      "summary": "A read timeout triggers a resend of the order; the server creates it twice.",
+      "mechanism": "Retry without idempotency over an ambiguous failure.",
+      "observed_output": "client result true, orders created 2",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "orders created 1"
+    },
+    {
+      "file": "typescript/01_exists_then_write_race.ts",
+      "language": "typescript",
+      "bug_lines": [
+        9,
+        11
+      ],
+      "summary": "`existsSync` then `writeFile` across an await lets every node claim leadership.",
+      "mechanism": "TOCTOU (CWE-367); use open with 'wx' flag.",
+      "observed_output": "nodes that believe they are leader: 3",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "nodes that believe they are leader: 1"
+    },
+    {
+      "file": "typescript/02_truncate_then_serialize.ts",
+      "language": "typescript",
+      "bug_lines": [
+        7,
+        9
+      ],
+      "summary": "Opening with 'w' truncates settings before JSON.stringify throws, wiping the file.",
+      "mechanism": "Non-atomic in-place write; serialize first, write to temp, rename.",
+      "observed_output": "save failed: Do not know how to serialize a BigInt\nsettings on disk now: \"\"",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "settings on disk unchanged"
+    },
+    {
+      "file": "typescript/03_fetch_without_timeout.ts",
+      "language": "typescript",
+      "bug_lines": [
+        7
+      ],
+      "summary": "`fetch` without an AbortSignal waits forever on a stalled upstream.",
+      "mechanism": "No timeout on network I/O; callers hang.",
+      "observed_output": "checkout still waiting on exchange rate after 300ms",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "timeout error after a bounded wait"
+    },
+    {
+      "file": "typescript/04_retry_without_idempotency_key.ts",
+      "language": "typescript",
+      "bug_lines": [
+        18
+      ],
+      "summary": "A dropped response triggers a retry that charges again.",
+      "mechanism": "Retry without idempotency key.",
+      "observed_output": "201 Created\ncharges recorded: 2",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "charges recorded: 1"
+    },
+    {
+      "file": "python/01_exists_then_write.py",
+      "language": "python",
+      "bug_lines": [
+        22,
+        26
+      ],
+      "summary": "The first writer checks that the file exists, then overwrites the second writer's ben with ada.",
+      "mechanism": "exists and the later write are separate. Another writer replaces the file in between.",
+      "observed_output": "ada",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "ben"
+    },
+    {
+      "file": "python/02_truncate_then_serialize.py",
+      "language": "python",
+      "bug_lines": [
+        13
+      ],
+      "summary": "Opening the file for write truncates ana,ben before the serialize step raises.",
+      "mechanism": "Mode w truncates at open time. The exception happens before the new body is written, and the old body is already gone.",
+      "observed_output": "''",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "ana,ben"
+    },
+    {
+      "file": "python/03_close_error_ignored.py",
+      "language": "python",
+      "bug_lines": [
+        9,
+        18
+      ],
+      "summary": "close raises and the except clause ignores it, so closed stays false.",
+      "mechanism": "The flag is set after the raise, and the caller treats the OSError as success.",
+      "observed_output": "False",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "True"
+    },
+    {
+      "file": "python/04_retry_applies_twice.py",
+      "language": "python",
+      "bug_lines": [
+        14
+      ],
+      "summary": "An unknown result retries the charge, so 40 is subtracted twice and the balance is 20.",
+      "mechanism": "The first charge already changed the balance. The except path applies it again.",
+      "observed_output": "20",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "60"
+    }
+  ]
+}

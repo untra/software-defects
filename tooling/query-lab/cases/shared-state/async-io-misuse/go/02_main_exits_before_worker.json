@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Wait for metric flushing before reporting shutdown completion.",
+  "original": {
+    "source_hash": "934fa0036f52192b4288124586e909ca2cc07679ca1ee592e7dd52ef6b2667e8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/async-io-misuse/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "0dcd1913b2af8cedd4e513fa1882c77e00e2102867635bd094672826ff901df9",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/async-io-misuse/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "metrics flushed\nshutdown complete"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. main returning terminates all goroutines without waiting. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

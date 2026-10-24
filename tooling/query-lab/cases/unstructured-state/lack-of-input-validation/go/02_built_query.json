@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Keep SQL text and bound parameters separate; the example has no database driver.",
+  "original": {
+    "source_hash": "66017c9716bcba7a2115b7b65a43b39d1c4be9f7b77ca16d38caa8b1f4e92aec",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              75,
+              82
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "6e7b0bc127f1f227b5c8f6c92318298e748514333451fdb051131d7631a16072",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "SELECT id FROM users WHERE name = ? [O'Brien]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Sprintf puts the name in the query text, so the quote ends the literal early (CWE-89). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

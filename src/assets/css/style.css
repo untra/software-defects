@@ -364,6 +364,37 @@ img,svg { max-width: 100%; display: block; }
 .code-out .tag { color: var(--on-dark-faint); display: block; margin-bottom: .4rem; }
 .code-out pre { padding: 0; font-size: .76rem; color: var(--on-dark-soft); background: none; }
 
+/* runnable corpus: one collapsible program per row inside a language panel */
+.corpus-panel { padding: .4rem 0; }
+.corpus-ex { border-bottom: 1px solid var(--ink-line); }
+.corpus-ex:last-child { border-bottom: none; }
+.corpus-ex > summary {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: .35rem .8rem;
+  padding: .7rem 1.2rem; cursor: pointer; color: var(--on-dark-soft); list-style-position: outside;
+}
+.corpus-ex > summary .fname { font-family: var(--mono); font-size: .76rem; color: var(--accent-soft); }
+.corpus-ex__summary { font-size: .86rem; flex: 1 1 20rem; }
+.corpus-ex__badge {
+  font-family: var(--mono); font-size: .66rem; letter-spacing: .04em; color: var(--on-dark-faint);
+  border: 1px solid var(--ink-line); border-radius: 6px; padding: .05rem .4rem;
+}
+.corpus-code { border-top: 1px solid var(--ink-line); }
+.corpus-code pre code .hll {
+  display: block; margin: 0 -1.2rem; padding: 0 1.2rem;
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  box-shadow: inset 3px 0 var(--accent);
+}
+.corpus-ex .code-out pre + .tag { margin-top: .6rem; }
+.corpus-fix { border-top: 1px solid var(--ink-line); }
+.corpus-fix > summary {
+  padding: .55rem 1.2rem; cursor: pointer; font-family: var(--mono); font-size: .74rem; color: var(--good);
+}
+.corpus-ex__src {
+  display: inline-block; padding: .55rem 1.2rem .8rem; font-family: var(--mono); font-size: .72rem;
+  color: var(--on-dark-faint);
+}
+.corpus-ex__src:hover { color: var(--accent-soft); }
+
 /* ============================================================ SPECIAL BLOCKS */
 /* pullquote */
 .pullquote { border: 1px solid var(--line); border-left: 4px solid var(--accent);
@@ -668,6 +699,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, .lang-tab:focus-vis
 [dir="rtl"] .code-head,
 [dir="rtl"] .code-panel,
 [dir="rtl"] .code-out,
+[dir="rtl"] .corpus-code,
 [dir="rtl"] .console,
 [dir="rtl"] pre,
 [dir="rtl"] code { direction: ltr; text-align: left; }

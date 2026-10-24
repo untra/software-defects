@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Avoid coercing the quotient to a signed 32-bit value.",
+  "original": {
+    "source_hash": "13613bf00da02a3d98df14242695b1036ef4d70f376737b13006c5d081aa7880",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/increment-decrement-operators/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "f764d1cf8f1f3d1e7d3547d57debfe6da7f4c287095f3c02fe9d6afd0099cf7f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/increment-decrement-operators/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              91,
+              96
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "archive size KB: 2929687500"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Bitwise operators convert operands to 32-bit signed integers. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

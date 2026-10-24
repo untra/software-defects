@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Drain and close each response to permit connection reuse.",
+  "original": {
+    "source_hash": "778ae0f056df84642aa6212b48ac3a69577ab627e4dd4dc023218969c3b11a13",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              189,
+              192
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "e6694b7c9686fb10afe061fa21db5cc70e543577b48119b9462a6a256285fd59",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              195,
+              198
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              256,
+              261
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              708,
+              713
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "20 health checks opened 1 connections"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Unclosed resp.Body leaks the connection (CWE-772). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

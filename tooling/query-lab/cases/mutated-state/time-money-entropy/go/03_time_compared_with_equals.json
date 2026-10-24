@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Compare instants rather than location and monotonic-clock representation.",
+  "original": {
+    "source_hash": "a3cc1f02413b679720b67077539f25f25dcdf6df7c1ca895add2bde3edde47c3",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/time-money-entropy/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              73,
+              76
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "0a5f7ffd084035be373f81bf5fe5cc4d387ca093a9e30c55e826084c73235d50",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/time-money-entropy/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              73,
+              76
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              250,
+              255
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "token matches: true"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `time.Now()` carries a monotonic clock reading that Parse drops; use `Equal`. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

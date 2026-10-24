@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Exclude the privileged field from external JSON input.",
+  "original": {
+    "source_hash": "da3769b92bbd96763a813e5824b068e463a26251f6146c39f06d31dbee81dac6",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/insecure-deserialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              229,
+              238
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "72d939fe55dd4bce2ddaa05069f3ecbc3b3883b766d496964640ac779c289794",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/insecure-deserialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              225,
+              234
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "name=ada admin=false"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The exported field is part of the decode target, so the body writes it (CWE-915). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

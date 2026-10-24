@@ -1,0 +1,546 @@
+{
+  "schema_version": 1,
+  "rules": [
+    {
+      "id": "typescript.mutated-state.var-let-mut",
+      "language": "typescript",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "grammar_version": "0.23.2",
+      "query": "typescript/mutated-state/var-let-mut/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-457",
+        "CWE-563"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "binding",
+        "write"
+      ]
+    },
+    {
+      "id": "go.mutated-state.var-let-mut",
+      "language": "go",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "grammar_version": "0.25.0",
+      "query": "go/mutated-state/var-let-mut/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-457",
+        "CWE-563"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "binding",
+        "write"
+      ]
+    },
+    {
+      "id": "rust.mutated-state.var-let-mut",
+      "language": "rust",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "grammar_version": "0.24.0",
+      "query": "rust/mutated-state/var-let-mut/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-457",
+        "CWE-563"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "binding",
+        "write"
+      ]
+    },
+    {
+      "id": "typescript.mutated-state.aliasing-mutable-defaults",
+      "language": "typescript",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "grammar_version": "0.23.2",
+      "query": "typescript/mutated-state/aliasing-mutable-defaults/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-374",
+        "CWE-375",
+        "CWE-471"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "alias",
+        "method"
+      ]
+    },
+    {
+      "id": "go.mutated-state.aliasing-mutable-defaults",
+      "language": "go",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "grammar_version": "0.25.0",
+      "query": "go/mutated-state/aliasing-mutable-defaults/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-374",
+        "CWE-375",
+        "CWE-471"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "alias"
+      ]
+    },
+    {
+      "id": "rust.mutated-state.aliasing-mutable-defaults",
+      "language": "rust",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "grammar_version": "0.24.0",
+      "query": "rust/mutated-state/aliasing-mutable-defaults/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-374",
+        "CWE-375",
+        "CWE-471"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "alias",
+        "method"
+      ]
+    },
+    {
+      "id": "typescript.mutated-state.for-loop-control-flow",
+      "language": "typescript",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "grammar_version": "0.23.2",
+      "query": "typescript/mutated-state/for-loop-control-flow/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-193",
+        "CWE-834"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "loop"
+      ]
+    },
+    {
+      "id": "go.mutated-state.for-loop-control-flow",
+      "language": "go",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "grammar_version": "0.25.0",
+      "query": "go/mutated-state/for-loop-control-flow/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-193",
+        "CWE-834"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "loop"
+      ]
+    },
+    {
+      "id": "rust.mutated-state.for-loop-control-flow",
+      "language": "rust",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "grammar_version": "0.24.0",
+      "query": "rust/mutated-state/for-loop-control-flow/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-193",
+        "CWE-834"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "loop"
+      ]
+    },
+    {
+      "id": "typescript.mutated-state.this-mutation",
+      "language": "typescript",
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "grammar_version": "0.23.2",
+      "query": "typescript/mutated-state/this-mutation/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-374",
+        "CWE-375",
+        "CWE-471"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "receiver"
+      ]
+    },
+    {
+      "id": "go.mutated-state.this-mutation",
+      "language": "go",
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "grammar_version": "0.25.0",
+      "query": "go/mutated-state/this-mutation/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-374",
+        "CWE-375",
+        "CWE-471"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "receiver_signature"
+      ]
+    },
+    {
+      "id": "rust.mutated-state.this-mutation",
+      "language": "rust",
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "grammar_version": "0.24.0",
+      "query": "rust/mutated-state/this-mutation/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-374",
+        "CWE-375",
+        "CWE-471"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "interior",
+        "method",
+        "receiver_signature"
+      ]
+    },
+    {
+      "id": "typescript.mutated-state.time-money-entropy",
+      "language": "typescript",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "grammar_version": "0.23.2",
+      "query": "typescript/mutated-state/time-money-entropy/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-330",
+        "CWE-340",
+        "CWE-1339",
+        "CWE-682"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "api",
+        "base",
+        "method"
+      ]
+    },
+    {
+      "id": "go.mutated-state.time-money-entropy",
+      "language": "go",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "grammar_version": "0.25.0",
+      "query": "go/mutated-state/time-money-entropy/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-330",
+        "CWE-340",
+        "CWE-1339",
+        "CWE-682"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "api",
+        "method"
+      ]
+    },
+    {
+      "id": "rust.mutated-state.time-money-entropy",
+      "language": "rust",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "grammar_version": "0.24.0",
+      "query": "rust/mutated-state/time-money-entropy/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-330",
+        "CWE-340",
+        "CWE-1339",
+        "CWE-682"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "api",
+        "method"
+      ]
+    },
+    {
+      "id": "typescript.mutated-state.impure-functions",
+      "language": "typescript",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "grammar_version": "0.23.2",
+      "query": "typescript/mutated-state/impure-functions/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-330",
+        "CWE-338",
+        "CWE-374",
+        "CWE-1108"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "effect_call"
+      ]
+    },
+    {
+      "id": "go.mutated-state.impure-functions",
+      "language": "go",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "grammar_version": "0.25.0",
+      "query": "go/mutated-state/impure-functions/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-330",
+        "CWE-338",
+        "CWE-374",
+        "CWE-1108"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "effect_call"
+      ]
+    },
+    {
+      "id": "rust.mutated-state.impure-functions",
+      "language": "rust",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "grammar_version": "0.24.0",
+      "query": "rust/mutated-state/impure-functions/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-330",
+        "CWE-338",
+        "CWE-374",
+        "CWE-1108"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "effect_call"
+      ]
+    },
+    {
+      "id": "typescript.mutated-state.macro-mixin-misuse",
+      "language": "typescript",
+      "family": "mutated-state",
+      "defect": "macro-mixin-misuse",
+      "grammar_version": "0.23.2",
+      "query": "typescript/mutated-state/macro-mixin-misuse/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-783",
+        "CWE-682"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "base",
+        "method",
+        "mixin"
+      ]
+    },
+    {
+      "id": "go.mutated-state.macro-mixin-misuse",
+      "language": "go",
+      "family": "mutated-state",
+      "defect": "macro-mixin-misuse",
+      "grammar_version": "0.25.0",
+      "query": "go/mutated-state/macro-mixin-misuse/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-783",
+        "CWE-682"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "embedding"
+      ]
+    },
+    {
+      "id": "rust.mutated-state.macro-mixin-misuse",
+      "language": "rust",
+      "family": "mutated-state",
+      "defect": "macro-mixin-misuse",
+      "grammar_version": "0.24.0",
+      "query": "rust/mutated-state/macro-mixin-misuse/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-783",
+        "CWE-682"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "macro"
+      ]
+    },
+    {
+      "id": "typescript.mutated-state.increment-decrement-operators",
+      "language": "typescript",
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "grammar_version": "0.23.2",
+      "query": "typescript/mutated-state/increment-decrement-operators/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-190",
+        "CWE-191",
+        "CWE-680",
+        "CWE-758",
+        "CWE-193"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "numeric",
+        "update"
+      ]
+    },
+    {
+      "id": "go.mutated-state.increment-decrement-operators",
+      "language": "go",
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "grammar_version": "0.25.0",
+      "query": "go/mutated-state/increment-decrement-operators/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-190",
+        "CWE-191",
+        "CWE-680",
+        "CWE-758",
+        "CWE-193"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "cast",
+        "numeric",
+        "numeric_cast",
+        "update"
+      ]
+    },
+    {
+      "id": "rust.mutated-state.increment-decrement-operators",
+      "language": "rust",
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "grammar_version": "0.24.0",
+      "query": "rust/mutated-state/increment-decrement-operators/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-190",
+        "CWE-191",
+        "CWE-680",
+        "CWE-758",
+        "CWE-193"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "method",
+        "numeric"
+      ]
+    },
+    {
+      "id": "typescript.mutated-state.improper-initialization",
+      "language": "typescript",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "grammar_version": "0.23.2",
+      "query": "typescript/mutated-state/improper-initialization/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-665",
+        "CWE-457",
+        "CWE-456",
+        "CWE-908",
+        "CWE-1188"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "initialization"
+      ]
+    },
+    {
+      "id": "go.mutated-state.improper-initialization",
+      "language": "go",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "grammar_version": "0.25.0",
+      "query": "go/mutated-state/improper-initialization/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-665",
+        "CWE-457",
+        "CWE-456",
+        "CWE-908",
+        "CWE-1188"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "initialization"
+      ]
+    },
+    {
+      "id": "rust.mutated-state.improper-initialization",
+      "language": "rust",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "grammar_version": "0.24.0",
+      "query": "rust/mutated-state/improper-initialization/signals.scm",
+      "evidence_level": "syntax-and-supported-binding-analysis",
+      "limitation": "Susceptibility only; does not establish the corresponding bug. Unsupported types, dispatch, alias escape and domain invariants remain unresolved.",
+      "related_cwes": [
+        "CWE-665",
+        "CWE-457",
+        "CWE-456",
+        "CWE-908",
+        "CWE-1188"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "initialization",
+        "method"
+      ]
+    }
+  ]
+}

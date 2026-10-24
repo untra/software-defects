@@ -1,0 +1,130 @@
+name: State Lens
+
+on:
+  pull_request:
+    paths: ['tooling/state-lens/**', 'queries/**', 'extensions/vscode/**', 'extensions/zed/**', 'examples/**', 'examples-fixed/**', 'Makefile', '.github/workflows/state-lens.yml']
+  push:
+    branches: [main]
+    paths: ['tooling/state-lens/**', 'queries/**', 'extensions/vscode/**', 'extensions/zed/**', 'examples/**', 'examples-fixed/**', 'Makefile', '.github/workflows/state-lens.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component clippy,rustfmt --target wasm32-wasip2
+      - name: Rust checks
+        run: |
+          cargo +1.95.0 fmt --manifest-path tooling/state-lens/Cargo.toml --check
+          cargo +1.95.0 clippy --locked --manifest-path tooling/state-lens/Cargo.toml --all-targets -- -D warnings
+          cargo +1.95.0 test --locked --manifest-path tooling/state-lens/Cargo.toml
+          cargo +1.95.0 run --locked --manifest-path tooling/state-lens/Cargo.toml -- score tooling/state-lens/fixtures/expectations.json
+      - name: Verify query metadata and corpus tooling
+        run: python3 -m unittest discover -s tooling/state-lens/scripts -p 'test_*.py'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: extensions/vscode/package-lock.json
+      - name: Extension checks
+        run: |
+          npm ci --prefix extensions/vscode
+          npm test --prefix extensions/vscode
+          npm run package --prefix extensions/vscode
+      - name: Zed extension checks
+        run: |
+          cargo +1.95.0 fmt --manifest-path extensions/zed/Cargo.toml --check
+          cargo +1.95.0 clippy --manifest-path extensions/zed/Cargo.toml --target wasm32-wasip2 -- -D warnings
+
+      - name: Build release server
+        run: cargo +1.95.0 build --release --locked --manifest-path tooling/state-lens/Cargo.toml
+      - name: Protocol smoke
+        run: python3 tooling/state-lens/scripts/smoke.py --report build/smoke/protocol
+      - name: Protocol summary
+        if: always()
+        run: cat build/smoke/protocol/smoke-report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-protocol
+          path: build/smoke/protocol/smoke-report.*
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: editor-smoke-build
+          path: |
+            tooling/state-lens/target/release/state-lens
+            extensions/vscode/*.vsix
+          if-no-files-found: error
+
+  editor-smoke:
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard:
+          - examples/mutated-state
+          - examples/shared-state
+          - examples/unstructured-state
+          - examples-fixed/mutated-state
+          - examples-fixed/shared-state
+          - examples-fixed/unstructured-state
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: extensions/vscode/package-lock.json
+      - run: npm ci --prefix extensions/vscode
+      - uses: actions/download-artifact@v4
+        with:
+          name: editor-smoke-build
+      - run: chmod +x tooling/state-lens/target/release/state-lens
+      - uses: actions/cache@v4
+        with:
+          path: extensions/vscode/.vscode-test
+          key: vscode-${{ runner.os }}-${{ runner.arch }}-1.142.0
+      - name: Editor smoke
+        working-directory: extensions/vscode
+        run: xvfb-run -a npm run test:e2e -- --shard '${{ matrix.shard }}' --report ../../build/smoke/editor
+      - name: Editor summary
+        if: always()
+        run: cat build/smoke/editor/smoke-report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-editor-${{ strategy.job-index }}
+          path: build/smoke/editor/smoke-report.*
+          if-no-files-found: error
+
+  smoke-report:
+    needs: [test, editor-smoke]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: smoke-*
+          path: build/smoke/downloads
+      - name: Merge smoke audit
+        if: always()
+        run: |
+          python3 - <<'PYTHON'
+          import subprocess
+          from pathlib import Path
+          reports = sorted(Path('build/smoke/downloads').glob('*/smoke-report.json'))
+          raise SystemExit(subprocess.call(['python3', 'tooling/state-lens/scripts/smoke_report.py', *map(str, reports), '--report', 'build/smoke', '--summary']))
+          PYTHON
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-audit
+          path: build/smoke/smoke-report.*
+          if-no-files-found: error

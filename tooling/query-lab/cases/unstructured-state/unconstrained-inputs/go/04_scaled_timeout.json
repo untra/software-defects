@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Validate before scaling seconds into nanoseconds.",
+  "original": {
+    "source_hash": "2e6a1d4389d49fe3b238fb987f6e7b10aff3029e83058835fdb82a0d80688431",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "18368fae16b11295488d165038cdfcd89e2df9106b4c410366973879da87ea45",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "timeout rejected"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. time.Duration is an int64 of nanoseconds; the multiply wraps (CWE-190). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

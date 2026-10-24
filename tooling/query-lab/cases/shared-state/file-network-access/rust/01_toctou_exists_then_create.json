@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use atomic exclusive creation to arbitrate leadership.",
+  "original": {
+    "source_hash": "4e5ee6a01b133664fd34cf25814ee3a10bd18f7ddc48a27e2900d915f456cc1d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              262,
+              268
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              330,
+              335
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "2ba6f44fe50382741eb1ebde261b9ba8c88fd6a19530eb9bcbf6fb269058a4dd",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              311,
+              316
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              332,
+              342
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              404,
+              413
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "nodes that believe they are leader: 1"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. TOCTOU (CWE-367); use OpenOptions::create_new. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Enforce the explicit label-size budget before allocation.",
+  "original": {
+    "source_hash": "dd3705481514fb4fbb33b180e44e6438dac7eb70f7d36cafca0963ec06d1480f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              55,
+              61
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "d53afead06f86280c627fac2d2738428e0ccd51a0e940ae7aa9abc3fb6a44626",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              187,
+              193
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "label rejected"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. String::repeat trusts the count (CWE-400). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

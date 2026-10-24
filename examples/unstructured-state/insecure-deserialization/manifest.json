@@ -1,0 +1,183 @@
+{
+  "family": "unstructured-state",
+  "defect": "insecure-deserialization",
+  "name": "Insecure Deserialization",
+  "essence": "Hydrating untrusted input straight into live objects runs code and sets state the caller never wrote.",
+  "cwes": [
+    "CWE-502",
+    "CWE-915",
+    "CWE-913",
+    "CWE-20"
+  ],
+  "examples": [
+    {
+      "file": "go/01_admin_field.go",
+      "language": "go",
+      "bug_lines": [
+        16
+      ],
+      "summary": "JSON from the request sets Admin to true.",
+      "mechanism": "The exported field is part of the decode target, so the body writes it (CWE-915).",
+      "observed_output": "name=ada admin=true",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "name=ada admin=false"
+    },
+    {
+      "file": "go/02_number_any.go",
+      "language": "go",
+      "bug_lines": [
+        15
+      ],
+      "summary": "A string quantity decodes as 0 because the error is ignored.",
+      "mechanism": "Unmarshal fails the type mismatch and the blank assignment keeps the zero Qty (CWE-502).",
+      "observed_output": "qty=0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the body rejected"
+    },
+    {
+      "file": "go/03_nested_flag.go",
+      "language": "go",
+      "bug_lines": [
+        20
+      ],
+      "summary": "A nested flags object sets Admin, and the unknown note is ignored.",
+      "mechanism": "Without DisallowUnknownFields, extra keys are skipped and nested exported fields are still written (CWE-915).",
+      "observed_output": "name=ada admin=true",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "unknown field rejected, admin left false"
+    },
+    {
+      "file": "rust/01_field_assign.rs",
+      "language": "rust",
+      "bug_lines": [
+        10
+      ],
+      "summary": "A hand-rolled decoder sets admin from the input text.",
+      "mechanism": "Every key in the line is applied, including a flag the caller should not write (CWE-915).",
+      "observed_output": "name=ada admin=true",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "name=ada admin=false"
+    },
+    {
+      "file": "rust/02_length_prefix.rs",
+      "language": "rust",
+      "bug_lines": [
+        2
+      ],
+      "summary": "A length prefix consumes the following flag byte as part of the name.",
+      "mechanism": "The length is taken from the buffer and not checked against the field that follows (CWE-502).",
+      "observed_output": "name=\"ab\\u{1}\" flag=9",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "name=\"ab\" flag=1"
+    },
+    {
+      "file": "typescript/01_assign_body.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "Object.assign copies role admin from the body onto the record.",
+      "mechanism": "Every enumerable field on the body overwrites the record, including role (CWE-915).",
+      "observed_output": "name=ada role=admin",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "name=ada role=member"
+    },
+    {
+      "file": "typescript/02_proto_merge.ts",
+      "language": "typescript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "Assigning the __proto__ key sets the record's prototype, so role reads as admin.",
+      "mechanism": "The key is an own property of the parsed object and [[Set]] on __proto__ changes the prototype (CWE-915).",
+      "observed_output": "role admin own false",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "role undefined, own false"
+    },
+    {
+      "file": "typescript/03_reviver_flag.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "The reviver turns the admin string true into a boolean.",
+      "mechanism": "The reviver rewrites every value equal to \"true\", including a flag (CWE-502).",
+      "observed_output": "admin true",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "admin left unset"
+    },
+    {
+      "file": "typescript/04_constructor_key.ts",
+      "language": "typescript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "Parsed data supplies constructor, so kind reads as Array.",
+      "mechanism": "An own constructor property shadows the one inherited from Object (CWE-915).",
+      "observed_output": "kind Array",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "kind Object"
+    },
+    {
+      "file": "python/01_setattr_body.py",
+      "language": "python",
+      "bug_lines": [
+        10
+      ],
+      "summary": "The body sets admin to True through setattr.",
+      "mechanism": "Every key in the body is written onto the object. admin is not reserved.",
+      "observed_output": "admin=True",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "admin=False"
+    },
+    {
+      "file": "python/02_splat_into_init.py",
+      "language": "python",
+      "bug_lines": [
+        9
+      ],
+      "summary": "User(**data) takes admin from the body and stores True.",
+      "mechanism": "Splatting a dict into the constructor binds every matching parameter, including the flag.",
+      "observed_output": "admin=True",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "admin=False"
+    },
+    {
+      "file": "python/03_nested_flag.py",
+      "language": "python",
+      "bug_lines": [
+        11
+      ],
+      "summary": "A nested flags object sets admin to True.",
+      "mechanism": "The loader copies the nested admin field onto the user with no allow-list.",
+      "observed_output": "admin=True",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "admin=False"
+    },
+    {
+      "file": "python/04_dict_update.py",
+      "language": "python",
+      "bug_lines": [
+        3
+      ],
+      "summary": "dict.update overwrites admin with True from the body.",
+      "mechanism": "update copies every key. A flag already on the record is not protected.",
+      "observed_output": "admin=True",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "admin=False"
+    }
+  ]
+}

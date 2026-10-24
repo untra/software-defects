@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return an explicit unavailable value for a zero divisor.",
+  "original": {
+    "source_hash": "099992c1ff33b3c065808bc4461f1138c38ce11ccb4873b1facc5128008fbb4e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "operator",
+            "range": [
+              60,
+              61
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "ae9929c3fc30bd1216a56ea5d1fc20cfefe1c282aa8c7c0230c7fc18179da4f3",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "operator",
+            "range": [
+              83,
+              84
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "ratio null"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. 0/0 is NaN, and NaN fails every comparison (CWE-682). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

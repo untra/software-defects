@@ -1,0 +1,194 @@
+{
+  "family": "unstructured-state",
+  "defect": "duck-typing-without-contracts",
+  "name": "Duck Typing Without Contracts",
+  "essence": "A value is used as if it has a shape no one ever guaranteed it has.",
+  "cwes": [
+    "CWE-843",
+    "CWE-20"
+  ],
+  "examples": [
+    {
+      "file": "go/01_amount_units.go",
+      "language": "go",
+      "bug_lines": [
+        19
+      ],
+      "summary": "An invoice's dollar amount is charged as if it were cents.",
+      "mechanism": "Charger only requires Amount() int, so dollars and cents both satisfy it (CWE-843).",
+      "observed_output": "charged 250\ncharged 250",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "charged 250, then charged 25000"
+    },
+    {
+      "file": "go/02_switch_default.go",
+      "language": "go",
+      "bug_lines": [
+        14
+      ],
+      "summary": "The default arm asserts a struct into map[string]any and panics.",
+      "mechanism": "The type switch names one shape and treats every other value as a map (CWE-843).",
+      "observed_output": "panic: interface conversion: interface {} is main.Row, not map[string]interface {}",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Austin, or a rejected row"
+    },
+    {
+      "file": "rust/01_amount_units.rs",
+      "language": "rust",
+      "bug_lines": [
+        21
+      ],
+      "summary": "An invoice's dollar amount is charged as if it were cents.",
+      "mechanism": "The trait method is an i32 with no unit, so both impls type-check (CWE-843).",
+      "observed_output": "charged 250\ncharged 250",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "charged 250, then charged 25000"
+    },
+    {
+      "file": "rust/02_default_must.rs",
+      "language": "rust",
+      "bug_lines": [
+        5
+      ],
+      "summary": "The trait's default must() unwraps a missing sku.",
+      "mechanism": "The default method promises a value find() never guaranteed (CWE-476).",
+      "observed_output": "called `Option::unwrap()` on a `None` value",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "a missing sku"
+    },
+    {
+      "file": "typescript/01_amount_units.ts",
+      "language": "typescript",
+      "bug_lines": [
+        13
+      ],
+      "summary": "An invoice's dollar amount is charged as if it were cents.",
+      "mechanism": "Charger is structural, so a dollars method and a cents method are the same type (CWE-843).",
+      "observed_output": "charged 250\ncharged 250",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "charged 250, then charged 25000"
+    },
+    {
+      "file": "typescript/02_arraylike_titles.ts",
+      "language": "typescript",
+      "bug_lines": [
+        9
+      ],
+      "summary": "A string is passed where a list with map is required, and the call throws.",
+      "mechanism": "The cast erases the missing method; at runtime the string has no map (CWE-843).",
+      "observed_output": "TypeError: items.map is not a function",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ADA, or the value rejected"
+    },
+    {
+      "file": "typescript/03_optional_save.ts",
+      "language": "typescript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "persist calls save on a document that has no save.",
+      "mechanism": "The method is optional in the type and still invoked (CWE-476).",
+      "observed_output": "TypeError: doc.save is not a function",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "the document rejected"
+    },
+    {
+      "file": "typescript/04_swapped_ids.ts",
+      "language": "typescript",
+      "bug_lines": [
+        7
+      ],
+      "summary": "An order id and a user id are swapped at the call.",
+      "mechanism": "Both parameters are string, so the arguments type-check in either order (CWE-843).",
+      "observed_output": "ship order u-9 to user o-4",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "ship order o-4 to user u-9"
+    },
+    {
+      "file": "typescript/05_widened_reading.ts",
+      "language": "typescript",
+      "bug_lines": [
+        7
+      ],
+      "summary": "A kelvin reading is converted with the celsius formula.",
+      "mechanism": "Reading only requires value, so the unit field is invisible to the function (CWE-843).",
+      "observed_output": "room 212\nlab 212",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "lab -279.67"
+    },
+    {
+      "file": "python/01_amount_units.py",
+      "language": "python",
+      "bug_lines": [
+        18
+      ],
+      "summary": "Cents(250) and Dollars(250) both charge 250.",
+      "mechanism": "Both classes offer amount() with no unit. The caller adds the numbers as if they were the same scale.",
+      "observed_output": "250\n250",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "250 cents and 25000 cents"
+    },
+    {
+      "file": "python/02_string_as_titles.py",
+      "language": "python",
+      "bug_lines": [
+        2
+      ],
+      "summary": "The title ADA is iterated into the characters A, D, and A.",
+      "mechanism": "A str is iterable. The comprehension never checks that each row is a title.",
+      "observed_output": "['A', 'D', 'A']",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "['ADA']"
+    },
+    {
+      "file": "python/03_missing_save.py",
+      "language": "python",
+      "bug_lines": [
+        7
+      ],
+      "summary": "Draft has no save method, so store raises AttributeError.",
+      "mechanism": "The call assumes the method exists. Nothing checked the shape before the call.",
+      "observed_output": "AttributeError: 'Draft' object has no attribute 'save'",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "the draft is stored or refused before the call"
+    },
+    {
+      "file": "python/04_swapped_ids.py",
+      "language": "python",
+      "bug_lines": [
+        8
+      ],
+      "summary": "The link is o-9->u-1 because the two string ids were passed in the other order.",
+      "mechanism": "Both ids are str. Nothing in the call distinguishes a user id from an order id.",
+      "observed_output": "o-9->u-1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "u-1->o-9"
+    },
+    {
+      "file": "python/05_widened_reading.py",
+      "language": "python",
+      "bug_lines": [
+        12
+      ],
+      "summary": "A 300 kelvin reading is converted with the Celsius formula and prints 572.0.",
+      "mechanism": "The function only requires .value. Kelvin and Celsius share that attribute and not the unit.",
+      "observed_output": "572.0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "80.33, Fahrenheit from 300 K"
+    }
+  ]
+}

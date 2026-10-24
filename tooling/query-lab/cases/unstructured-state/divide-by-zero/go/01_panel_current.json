@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject a zero divisor before computing the ratio or remainder.",
+  "original": {
+    "source_hash": "0547d2d80d093927961a0967aa3d5372d4fd222f00deef7729bd437f7bcedc45",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "operator",
+            "range": [
+              94,
+              95
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "96f81e5d84ecef650c735268bd4137605303cd7158d4d2bf6f0bd144ef3320ee",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "operator",
+            "range": [
+              158,
+              159
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "zero divisor"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Go integer `/` has no Infinity; a zero divisor is a runtime panic (CWE-369). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

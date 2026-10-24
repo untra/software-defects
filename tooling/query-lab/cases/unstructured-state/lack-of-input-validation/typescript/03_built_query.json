@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Keep SQL and parameters separate rather than interpolate values.",
+  "original": {
+    "source_hash": "f31ec70bb29b03d7a322e5c04572fe838c7cfc01d22166532b2cb6e85fa2778b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "af69d3117e0c97f1fc5e7afca65fc8eaa725551dfc26f95daef9bbb534d26c15",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "SELECT id FROM users WHERE name = ?"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The template literal puts the name in the query text (CWE-89). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

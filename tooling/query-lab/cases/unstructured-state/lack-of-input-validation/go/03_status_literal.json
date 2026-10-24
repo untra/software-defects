@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Normalize the status comparison to the case-insensitive contract.",
+  "original": {
+    "source_hash": "006883869cbe8b7318ab75dbd14347de88b7df5e73097796b1fc660b95081695",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "afefea6f5641dbf7f7722801861f3150605646db121ebbd3cc68bb1766f00511",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "denied"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Anything other than the single literal falls through to allowed (CWE-20). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Initialize once before processing all orders.",
+  "original": {
+    "source_hash": "c341bd708a3eb2487b95f0f432561ede686de455d79c3adc6f0220597d0d4e4f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/var-let-mut/signals.scm",
+        "captures": [
+          {
+            "name": "binding",
+            "range": [
+              16,
+              19
+            ]
+          },
+          {
+            "name": "binding",
+            "range": [
+              75,
+              78
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "61d0ca4b165328d8ca3ae1f680b36cbe2b9e0df0cf07a966edbe938f0ef84ad8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/var-let-mut/signals.scm",
+        "captures": [
+          {
+            "name": "binding",
+            "range": [
+              16,
+              19
+            ]
+          },
+          {
+            "name": "binding",
+            "range": [
+              75,
+              78
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "items shipped: 13"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. A `mut` binding declared outside the loop is reassigned inside it, discarding accumulated state. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

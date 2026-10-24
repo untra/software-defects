@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Slice this known four-codepoint city by runes rather than UTF-8 bytes.",
+  "original": {
+    "source_hash": "8fc822306b8177965e57cae8ecb45c066819b39925e8d720bd290c507c267c41",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "c5784a1e4ad52f545bc4be97b2e2d700c93530c1a90cb49b1d954a3807586e1f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "head \"caf\u00e9\""
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. A string is bytes; index 4 sits inside the two-byte \u00e9 (CWE-129). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

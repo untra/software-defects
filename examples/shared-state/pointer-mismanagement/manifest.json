@@ -1,0 +1,136 @@
+{
+  "family": "shared-state",
+  "defect": "pointer-mismanagement",
+  "name": "Pointer Mismanagement",
+  "essence": "A pointer outlives what it points to, and the bytes start to lie.",
+  "cwes": [
+    "CWE-476",
+    "CWE-416",
+    "CWE-415",
+    "CWE-787"
+  ],
+  "examples": [
+    {
+      "file": "go/01_pointer_into_slice_after_append.go",
+      "language": "go",
+      "bug_lines": [
+        15,
+        17
+      ],
+      "summary": "A pointer into the slice is kept across an `append` that reallocates; the update goes to the old array.",
+      "mechanism": "append may move the backing array, leaving earlier element pointers dangling into stale memory.",
+      "observed_output": "ana's score on the leaderboard: 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "ana's score on the leaderboard: 10"
+    },
+    {
+      "file": "go/02_nil_pointer_from_lookup.go",
+      "language": "go",
+      "bug_lines": [
+        12
+      ],
+      "summary": "A missing map key yields a nil `*User` that is dereferenced.",
+      "mechanism": "Map lookup of a pointer type returns nil for absent keys (CWE-476).",
+      "observed_output": "ana\npanic: runtime error: invalid memory address or nil pointer dereference",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ana / unknown user handled"
+    },
+    {
+      "file": "go/03_pointer_into_ring_slot.go",
+      "language": "go",
+      "bug_lines": [
+        21
+      ],
+      "summary": "`Push` returns a pointer to a ring slot that is overwritten by later pushes; the alert now reads a different event.",
+      "mechanism": "Pointer outlives the logical lifetime of the recycled slot (use-after-reuse).",
+      "observed_output": "paging on-call about event 3: cache warmed",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "paging on-call about event 1: disk 95% full"
+    },
+    {
+      "file": "rust/01_raw_pointer_after_realloc.rs",
+      "language": "rust",
+      "bug_lines": [
+        6,
+        11
+      ],
+      "summary": "A raw pointer into a Vec is dereferenced after pushes reallocated the buffer: use-after-free.",
+      "mechanism": "Reallocation frees the old buffer; the raw pointer escapes the borrow checker (CWE-416). Undefined behavior.",
+      "observed_output": "first price via saved pointer: 999 (vector says 100, scratch 999)",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "first price via saved pointer: 100"
+    },
+    {
+      "file": "rust/02_double_free_from_raw.rs",
+      "language": "rust",
+      "bug_lines": [
+        10,
+        17
+      ],
+      "summary": "`Box::from_raw` is called twice on the same handle, freeing the session twice.",
+      "mechanism": "Ownership reconstructed from a raw pointer twice (CWE-415, CWE-416). The allocator aborts.",
+      "observed_output": "closing session abc123\nclosing session\nkilled by signal 6",
+      "exit_code": -6,
+      "deterministic": true,
+      "expected_behavior": "second close rejected or no-op"
+    },
+    {
+      "file": "typescript/01_detached_arraybuffer.ts",
+      "language": "typescript",
+      "bug_lines": [
+        5,
+        10
+      ],
+      "summary": "The frame's buffer is transferred, detaching it; the original typed array is then read.",
+      "mechanism": "Transfer moves ownership; views over the old buffer become length 0 and throw.",
+      "observed_output": "TypeError: Cannot perform %TypedArray%.prototype.reduce on a detached ArrayBuffer",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "frame bytes: 1024 checksum: 7168"
+    },
+    {
+      "file": "typescript/02_stale_reference_after_replace.ts",
+      "language": "typescript",
+      "bug_lines": [
+        9,
+        11
+      ],
+      "summary": "A panel keeps a reference to the old cart object after the store replaces it; the added item never reaches checkout.",
+      "mechanism": "Stale reference to an object no longer owned by the store.",
+      "observed_output": "panel shows: [ 'boots', 'scarf' ] checkout sees: []",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "checkout sees: [ 'scarf' ]"
+    },
+    {
+      "file": "python/01_memoryview_across_resize.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "Extending the bytearray while a memoryview still exports it raises BufferError.",
+      "mechanism": "A memoryview is an export of the buffer. bytearray refuses to resize while an export exists.",
+      "observed_output": "BufferError: Existing exports of data: object cannot be re-sized",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "the view still reads the original bytes, or it is released before the resize"
+    },
+    {
+      "file": "python/02_weakref_cached_row.py",
+      "language": "python",
+      "bug_lines": [
+        10
+      ],
+      "summary": "Deleting the only strong reference drops the cached row, and the lookup returns None.",
+      "mechanism": "WeakValueDictionary does not keep the row alive. The cache entry disappears with the object.",
+      "observed_output": "None",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the cached row is still pen"
+    }
+  ]
+}

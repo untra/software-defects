@@ -1,0 +1,158 @@
+{
+  "family": "mutated-state",
+  "defect": "increment-decrement-operators",
+  "name": "++ / -- & Integer Overflow",
+  "essence": "Pre- versus post-increment hides off-by-one and double-counting; bump a fixed-width integer past its max and it silently wraps to the bottom.",
+  "cwes": [
+    "CWE-190",
+    "CWE-191",
+    "CWE-680",
+    "CWE-758",
+    "CWE-193"
+  ],
+  "examples": [
+    {
+      "file": "go/01_unsigned_length_underflow.go",
+      "language": "go",
+      "bug_lines": [
+        8
+      ],
+      "summary": "`uint(len)-1` on an empty slice wraps to the max uint64.",
+      "mechanism": "Unsigned arithmetic underflows silently (CWE-191).",
+      "observed_output": "last index: 18446744073709551615 within preview: false",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "handled empty case"
+    },
+    {
+      "file": "go/02_int16_quota_wraps.go",
+      "language": "go",
+      "bug_lines": [
+        9
+      ],
+      "summary": "int16 accumulator wraps negative, so an over-quota upload is accepted.",
+      "mechanism": "Fixed-width signed overflow wraps silently in Go (CWE-190).",
+      "observed_output": "accepted, total KB: -25536",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "rejected: over quota"
+    },
+    {
+      "file": "go/03_narrowing_conversion.go",
+      "language": "go",
+      "bug_lines": [
+        7
+      ],
+      "summary": "int64 file size converted to int32 truncates to a negative content length.",
+      "mechanism": "Narrowing integer conversion discards high bits without error.",
+      "observed_output": "content-length: -1294967296",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "content-length: 3000000000"
+    },
+    {
+      "file": "rust/01_as_cast_truncates.rs",
+      "language": "rust",
+      "bug_lines": [
+        3
+      ],
+      "summary": "`as u8` silently truncates 300 to 44.",
+      "mechanism": "`as` casts never panic; use `u8::try_from`.",
+      "observed_output": "items encoded in header: 44",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "error or 300"
+    },
+    {
+      "file": "rust/02_usize_len_minus_one.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "`len() - 1` on an empty Vec underflows: panics in debug, wraps to usize::MAX in release.",
+      "mechanism": "Unsigned subtraction below zero (CWE-191); behavior depends on build profile.",
+      "observed_output": "attempt to subtract with overflow",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "last page: 0 or handled empty case"
+    },
+    {
+      "file": "rust/03_wrapping_sub_hides_underflow.rs",
+      "language": "rust",
+      "bug_lines": [
+        2
+      ],
+      "summary": "`wrapping_sub` used to avoid a panic turns an overdraft into a huge balance.",
+      "mechanism": "Explicit wrapping arithmetic masks underflow instead of rejecting it; use checked_sub.",
+      "observed_output": "remaining balance: 4294967266",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "withdrawal rejected"
+    },
+    {
+      "file": "typescript/01_post_increment_in_condition.ts",
+      "language": "typescript",
+      "bug_lines": [
+        5
+      ],
+      "summary": "`seatsTaken++ <= CAPACITY` compares the old value and uses <=, confirming four guests for three seats; it also increments for waitlisted guests.",
+      "mechanism": "Post-increment returns the pre-increment value while mutating as a side effect (CWE-193).",
+      "observed_output": "ana: confirmed\nben: confirmed\ncy: confirmed\ndee: confirmed\neli: waitlisted\nseats taken: 5",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "3 confirmed, 2 waitlisted, seats taken: 3"
+    },
+    {
+      "file": "typescript/02_increment_past_safe_integer.ts",
+      "language": "typescript",
+      "bug_lines": [
+        5
+      ],
+      "summary": "Incrementing past Number.MAX_SAFE_INTEGER stops producing distinct ids.",
+      "mechanism": "Doubles lose integer precision above 2^53; `++` rounds back to the same value.",
+      "observed_output": "issued 4 ids, unique: 2",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "issued 4 ids, unique: 4"
+    },
+    {
+      "file": "typescript/03_bitwise_truncation_wraps.ts",
+      "language": "typescript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "`| 0` used to floor a value coerces it to int32 and wraps large sizes negative.",
+      "mechanism": "Bitwise operators convert operands to 32-bit signed integers.",
+      "observed_output": "archive size KB: -1365279796",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "archive size KB: 2929687500"
+    },
+    {
+      "file": "python/01_float_mantissa.py",
+      "language": "python",
+      "bug_lines": [
+        3
+      ],
+      "summary": "Adding 1.0 to the float at 2**53 leaves the value unchanged.",
+      "mechanism": "A float mantissa has 53 bits. Integers past that spacing are not all representable.",
+      "observed_output": "True",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "False, the stepped total is larger"
+    },
+    {
+      "file": "python/02_bool_added_to_total.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "Adding the flag True increases the total from 1 to 2.",
+      "mechanism": "bool is a subclass of int. True is 1, so += counts the flag as a unit.",
+      "observed_output": "2",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "1, a flag is not a quantity"
+    }
+  ]
+}

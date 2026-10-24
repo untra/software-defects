@@ -1,0 +1,236 @@
+{
+  "family": "shared-state",
+  "defect": "cache-invalidation",
+  "name": "Cache Invalidation",
+  "essence": "A write that does not invalidate is a bug waiting for the next read.",
+  "cwes": [
+    "CWE-349",
+    "CWE-524"
+  ],
+  "examples": [
+    {
+      "file": "go/01_update_without_invalidate.go",
+      "language": "go",
+      "bug_lines": [
+        20
+      ],
+      "summary": "Updating the email writes the database but leaves the cached old email.",
+      "mechanism": "Write path does not invalidate the read-through cache (CWE-524).",
+      "observed_output": "password reset sent to: old@example.com",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "password reset sent to: new@example.com"
+    },
+    {
+      "file": "go/02_negative_result_cached_forever.go",
+      "language": "go",
+      "bug_lines": [
+        16
+      ],
+      "summary": "A 'not found' lookup is cached with no expiry, so newly registered handles stay missing.",
+      "mechanism": "Negative caching without TTL or invalidation on create.",
+      "observed_output": "@ana found after signup: false",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "@ana found after signup: true"
+    },
+    {
+      "file": "go/03_thundering_herd_on_expiry.go",
+      "language": "go",
+      "bug_lines": [
+        33
+      ],
+      "summary": "Every concurrent reader misses the empty cache and loads the same key from origin.",
+      "mechanism": "No single-flight or lock around the miss path.",
+      "observed_output": "origin loads for one key: 50",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "origin loads for one key: 1"
+    },
+    {
+      "file": "go/04_cached_pointer_mutated.go",
+      "language": "go",
+      "bug_lines": [
+        15,
+        20
+      ],
+      "summary": "The cache hands out a shared `*Product`; a VIP discount mutates it for everyone.",
+      "mechanism": "Cached mutable object returned by pointer (CWE-349).",
+      "observed_output": "vip price: 11500\nregular price: 11500",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "regular price: 12000"
+    },
+    {
+      "file": "rust/01_cache_not_invalidated.rs",
+      "language": "rust",
+      "bug_lines": [
+        19
+      ],
+      "summary": "`set_price` updates the db map but not the cache, so checkout charges the stale price.",
+      "mechanism": "Write path does not invalidate the cache.",
+      "observed_output": "checkout charges 12000 cents (sale price 8000)",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "checkout charges 8000 cents"
+    },
+    {
+      "file": "rust/02_oncelock_never_refreshed.rs",
+      "language": "rust",
+      "bug_lines": [
+        7
+      ],
+      "summary": "A runtime flag is memoized in a `OnceLock`, so later changes are never observed.",
+      "mechanism": "Process-lifetime memoization of mutable configuration.",
+      "observed_output": "maintenance before: false\nmaintenance after operator enabled it: false",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "maintenance after operator enabled it: true"
+    },
+    {
+      "file": "rust/03_cache_key_missing_dependency.rs",
+      "language": "rust",
+      "bug_lines": [
+        10,
+        14
+      ],
+      "summary": "Shipping quotes are cached per user but depend on the user's address.",
+      "mechanism": "Cache key omits an input; the address change does not invalidate.",
+      "observed_output": "shipping to JP quoted at 500 cents",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "shipping to JP quoted at 2500 cents"
+    },
+    {
+      "file": "typescript/01_stale_read_after_update.ts",
+      "language": "typescript",
+      "bug_lines": [
+        13
+      ],
+      "summary": "Upgrade writes the db but leaves the cached plan, so a paying user stays on free.",
+      "mechanism": "Missing invalidation on write (CWE-524).",
+      "observed_output": "ana's plan after paying: free",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "ana's plan after paying: pro"
+    },
+    {
+      "file": "typescript/02_memo_keyed_by_identity.ts",
+      "language": "typescript",
+      "bug_lines": [
+        4,
+        13
+      ],
+      "summary": "Memo keyed by array identity misses in-place pushes; total stays stale.",
+      "mechanism": "Identity-keyed cache assumes the key object is immutable.",
+      "observed_output": "total charged: 30",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "total charged: 60"
+    },
+    {
+      "file": "typescript/03_thundering_herd.ts",
+      "language": "typescript",
+      "bug_lines": [
+        16
+      ],
+      "summary": "Fifty concurrent misses each fetch from origin because the in-flight load isn't shared.",
+      "mechanism": "Cache stores values, not pending promises; no single-flight.",
+      "observed_output": "origin fetches for one page: 50",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "origin fetches for one page: 1"
+    },
+    {
+      "file": "typescript/04_cached_rejected_promise.ts",
+      "language": "typescript",
+      "bug_lines": [
+        10
+      ],
+      "summary": "A rejected promise is cached, so the failure is returned forever after the server recovers.",
+      "mechanism": "Failures are cached with no eviction on rejection.",
+      "observed_output": "after recovery: config server unavailable",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "checkout=enabled"
+    },
+    {
+      "file": "typescript/05_invalidate_wrong_key.ts",
+      "language": "typescript",
+      "bug_lines": [
+        17
+      ],
+      "summary": "The cache is written with a normalized key but invalidated with the raw key.",
+      "mechanism": "Key derivation differs between write and invalidate paths.",
+      "observed_output": "greeting: Ana",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "greeting: Ana Lopez"
+    },
+    {
+      "file": "python/01_write_without_delete.py",
+      "language": "python",
+      "bug_lines": [
+        12
+      ],
+      "summary": "The price is updated to 9 and the next quote still returns the cached 5.",
+      "mechanism": "set_price writes the source map and does not remove the cache entry filled by the first quote.",
+      "observed_output": "5\n5",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "5 then 9"
+    },
+    {
+      "file": "python/02_negative_cached.py",
+      "language": "python",
+      "bug_lines": [
+        9
+      ],
+      "summary": "A miss stores None, and the lookup stays None after the sku is saved.",
+      "mechanism": "The negative result is cached under the sku. The later insert does not clear that entry.",
+      "observed_output": "None\nNone",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "None, then pen"
+    },
+    {
+      "file": "python/03_key_missing_tenant.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "Grace receives Ada's cached price of 5.",
+      "mechanism": "The cache key omits the tenant, so the second quote hits the first tenant's entry.",
+      "observed_output": "5\n5",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "5 then 9"
+    },
+    {
+      "file": "python/04_cached_dict_mutated.py",
+      "language": "python",
+      "bug_lines": [
+        7
+      ],
+      "summary": "The caller sets role to admin on the cached dict, and the next read sees admin.",
+      "mechanism": "The cache returns the stored dict itself. The caller's write is a write to the cache.",
+      "observed_output": "admin",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "staff"
+    },
+    {
+      "file": "python/05_wrong_key_deleted.py",
+      "language": "python",
+      "bug_lines": [
+        7
+      ],
+      "summary": "Updating pen deletes the pencil entry and leaves the stale pen price of 5.",
+      "mechanism": "Invalidation pops a different key from the one set_price changed.",
+      "observed_output": "5\n5 None",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "9 None, or 9 and the pencil price kept"
+    }
+  ]
+}

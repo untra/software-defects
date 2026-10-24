@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Convert the known numeric price before adding the fee.",
+  "original": {
+    "source_hash": "a14291dbdbb8333700bd6ef0055f63bca8ec125b89bd69b1f36484f4838014c8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/type-errors/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "4c8cd08e0c2c476204239ba51c0db290346e01ea98445cff5f6e9f3e1756e9bf",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/type-errors/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              57,
+              63
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "due 21.99"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `+` concatenates when either side is a string (CWE-704). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

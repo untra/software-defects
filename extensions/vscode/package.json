@@ -1,0 +1,111 @@
+{
+  "name": "state-lens",
+  "displayName": "State Lens",
+  "description": "Show state susceptibility and resolved effect propagation without treating ordinary mutation as a bug.",
+  "version": "0.1.0",
+  "publisher": "state-lens",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Visualization"
+  ],
+  "activationEvents": [
+    "onLanguage:go",
+    "onLanguage:rust",
+    "onLanguage:typescript"
+  ],
+  "main": "./dist/extension.js",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false
+    }
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "stateLens.toggle",
+        "title": "State Lens: Toggle Susceptibility Lens"
+      },
+      {
+        "command": "stateLens.refresh",
+        "title": "State Lens: Refresh Analysis"
+      },
+      {
+        "command": "stateLens.showEvidence",
+        "title": "State Lens: Show Evidence"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "stateLens.evidence",
+          "name": "State Lens Evidence"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "State Lens",
+      "properties": {
+        "stateLens.serverPath": {
+          "type": "string",
+          "default": "",
+          "scope": "machine",
+          "description": "Absolute path to the state-lens executable. When empty, STATE_LENS_SERVER and then PATH are used."
+        },
+        "stateLens.enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "stateLens.directOnly": {
+          "type": "boolean",
+          "default": false,
+          "description": "Hide effects propagated through calls."
+        },
+        "stateLens.opacity": {
+          "type": "number",
+          "default": 0.1,
+          "minimum": 0,
+          "maximum": 0.4
+        },
+        "stateLens.accessibleMarkers": {
+          "type": "boolean",
+          "default": false,
+          "description": "Use a visible border in addition to color; evidence labels are always available."
+        },
+        "stateLens.diagnostics": {
+          "type": "boolean",
+          "default": false,
+          "description": "Also publish susceptibility findings as Hint diagnostics (visible to Problems, agents, and other LSP consumers)."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc -p . --noEmit",
+    "bundle": "esbuild src/extension.ts --bundle --platform=node --format=cjs --target=node20 --external:vscode --sourcemap --outfile=dist/extension.js",
+    "build:test": "esbuild src/ranges.ts src/hover.ts --platform=node --format=cjs --target=node20 --outdir=dist",
+    "build": "npm run typecheck && npm run bundle && npm run build:test",
+    "test": "npm run build && node --test test/*.test.cjs",
+    "package": "npm run build && vsce package --no-dependencies",
+    "test:e2e": "node test/e2e/run.cjs"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.95.0",
+    "@vscode/test-electron": "3.1.0",
+    "@vscode/vsce": "^3.0.0",
+    "esbuild": "0.28.2",
+    "typescript": "^5.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/untra/software-defects.git",
+    "directory": "extensions/vscode"
+  }
+}

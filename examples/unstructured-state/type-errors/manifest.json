@@ -1,0 +1,182 @@
+{
+  "family": "unstructured-state",
+  "defect": "type-errors",
+  "name": "Type Errors in Dynamic Languages",
+  "essence": "A value's type is assumed, never checked, until an operator means something you didn't write.",
+  "cwes": [
+    "CWE-843",
+    "CWE-704",
+    "CWE-476"
+  ],
+  "examples": [
+    {
+      "file": "go/01_json_number_assert.go",
+      "language": "go",
+      "bug_lines": [
+        15
+      ],
+      "summary": "A JSON number is asserted to int and panics.",
+      "mechanism": "encoding/json stores numbers in any as float64; the assertion expects int (CWE-843).",
+      "observed_output": "panic: interface conversion: interface {} is float64, not int",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "qty 3 as an int"
+    },
+    {
+      "file": "go/02_format_verb.go",
+      "language": "go",
+      "bug_lines": [
+        7
+      ],
+      "summary": "A %d verb formats a string stored in any.",
+      "mechanism": "fmt trusts the verb against the dynamic type and prints a %!d marker (CWE-704).",
+      "observed_output": "reading: %!d(string=12)",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "reading: 12"
+    },
+    {
+      "file": "rust/01_downcast_width.rs",
+      "language": "rust",
+      "bug_lines": [
+        5
+      ],
+      "summary": "An i64 stored as Any is downcast to i32 and becomes 0.",
+      "mechanism": "downcast_ref succeeds only for the exact concrete type; the mismatch takes the default (CWE-843).",
+      "observed_output": "qty 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "qty 12"
+    },
+    {
+      "file": "typescript/01_plus_total.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "Adding a fee to a string price concatenates.",
+      "mechanism": "`+` concatenates when either side is a string (CWE-704).",
+      "observed_output": "due 19.992",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "due 21.99"
+    },
+    {
+      "file": "typescript/02_loose_compare.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "A string code loosely equals the number 0.",
+      "mechanism": "`==` coerces operands; `===` would keep them apart (CWE-704).",
+      "observed_output": "open true",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "open false"
+    },
+    {
+      "file": "typescript/03_falsy_quantity.ts",
+      "language": "typescript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "A quantity of 0 is treated as missing and replaced with 1.",
+      "mechanism": "`!quantity` is true for 0, so a real zero becomes the default (CWE-704).",
+      "observed_output": "qty 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "qty 0"
+    },
+    {
+      "file": "typescript/04_numeric_sort.ts",
+      "language": "typescript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "Numeric strings sort as text, so 10 lands before 2.",
+      "mechanism": "Default sort compares UTF-16 code units, not numeric value (CWE-704).",
+      "observed_output": "order 1,10,2",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "order 1,2,10"
+    },
+    {
+      "file": "typescript/05_parse_prefix.ts",
+      "language": "typescript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "parseInt accepts 10px and returns 10.",
+      "mechanism": "parseInt stops at the first non-digit instead of rejecting the whole token (CWE-704).",
+      "observed_output": "size 10",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "size rejected"
+    },
+    {
+      "file": "python/01_repeat_string.py",
+      "language": "python",
+      "bug_lines": [
+        3
+      ],
+      "summary": "The code 19 repeated by 3 becomes the string 191919.",
+      "mechanism": "str multiplied by an int repeats the text. It does not parse the text as a number.",
+      "observed_output": "191919",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "57"
+    },
+    {
+      "file": "python/02_or_replaces_zero.py",
+      "language": "python",
+      "bug_lines": [
+        2
+      ],
+      "summary": "A numeric zero is treated as missing and replaced with 50.",
+      "mechanism": "or tests truthiness, not type. 0 is a real number and it is still falsy.",
+      "observed_output": "50",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "0"
+    },
+    {
+      "file": "python/03_true_overwrites_one.py",
+      "language": "python",
+      "bug_lines": [
+        3
+      ],
+      "summary": "Storing under True replaces the label stored under the key 1.",
+      "mechanism": "bool subclasses int, and True hashes and compares equal to 1, so they are one dict key.",
+      "observed_output": "yes",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "one"
+    },
+    {
+      "file": "python/04_mixed_sort.py",
+      "language": "python",
+      "bug_lines": [
+        2
+      ],
+      "summary": "Sorting a list of ints and a numeric string raises TypeError.",
+      "mechanism": "Python 3 refuses to order str and int with <.",
+      "observed_output": "TypeError: '<' not supported between instances of 'str' and 'int'",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "the rows ordered numerically"
+    },
+    {
+      "file": "python/05_int_of_unit.py",
+      "language": "python",
+      "bug_lines": [
+        2
+      ],
+      "summary": "int refuses the quantity 10px because of the trailing unit.",
+      "mechanism": "int parses the whole string. A trailing unit is not ignored.",
+      "observed_output": "ValueError: invalid literal for int() with base 10: '10px'",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "10"
+    }
+  ]
+}

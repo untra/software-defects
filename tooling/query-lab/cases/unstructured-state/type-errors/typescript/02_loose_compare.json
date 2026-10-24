@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use strict equality so different runtime types cannot unlock the gate.",
+  "original": {
+    "source_hash": "b31bcf9829ceb9a7079df5ca2599efa41bdbf3af3e857342c2265d3d04aa9bfa",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/type-errors/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "1bfb7439464af445f4d334af615de7a52bcd6a91e3c7300bbf0aaaa51f0513f8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/type-errors/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "open false"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `==` coerces operands; `===` would keep them apart (CWE-704). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

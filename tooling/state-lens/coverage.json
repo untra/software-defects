@@ -1,0 +1,1368 @@
+{
+  "schema_version": 1,
+  "purpose": "Coverage accounting, not ground truth or detector accuracy.",
+  "cases": [
+    {
+      "file": "examples/mutated-state/aliasing-mutable-defaults/go/01_append_to_subslice.go",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "language": "go",
+      "source_hash": "d66af38add23f4ec809d81848f24a89ab7a3458243b1b802cb7cd673473c458f",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "go.mutated-state.aliasing-mutable-defaults"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/aliasing-mutable-defaults/go/02_map_argument_mutated.go",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "language": "go",
+      "source_hash": "432012ebb6a4eb3af2409fb8aac5ab2481f2ecf82d7eafd0030adac5e34e68df",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/aliasing-mutable-defaults/go/03_struct_copy_shares_map.go",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "language": "go",
+      "source_hash": "d7f94a5b039d52fd5f9d9d21d3ce14d4ce02e99caf13974c1925fa5f3d96cc00",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "go.mutated-state.aliasing-mutable-defaults"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/aliasing-mutable-defaults/go/04_getter_returns_internal_slice.go",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "language": "go",
+      "source_hash": "2d806f3299467f3e531932e3ea4df2cba320e1e073312afbd3bdf4ee5c5b75c2",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/aliasing-mutable-defaults/go/05_cache_stores_reused_buffer.go",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "language": "go",
+      "source_hash": "52940662b997dcf0965268f3f808d2b1a3c4721ec95289f6ad6eb4288a745d2c",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/aliasing-mutable-defaults/rust/01_rc_clone_is_shallow.rs",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "language": "rust",
+      "source_hash": "5e315d14118e388a6e2ef8bde1f79ad4c9c9f35f4f4eaf2a73840741aa600526",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "rust.mutated-state.aliasing-mutable-defaults"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/aliasing-mutable-defaults/typescript/01_shared_default_parameter.ts",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "language": "typescript",
+      "source_hash": "95f7ffefccd0fced151ae0802484309cdbc67501b0e73de3189c49f04bbc6a38",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/aliasing-mutable-defaults/typescript/02_array_fill_shared_object.ts",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "language": "typescript",
+      "source_hash": "8d7330832d9f731083fb40f0d2390cd702f75cd14f3b9e306d198cbb9e8860d1",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "typescript.mutated-state.aliasing-mutable-defaults"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/aliasing-mutable-defaults/typescript/03_shallow_spread_copy.ts",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "language": "typescript",
+      "source_hash": "8d5948433e900b6b067d98f86d72c05584130b1ba0fc0ff33f96944c11e4d8d9",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "typescript.mutated-state.aliasing-mutable-defaults"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/aliasing-mutable-defaults/typescript/04_method_returns_internal_array.ts",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "language": "typescript",
+      "source_hash": "915350b8cb7b3b8c1b3a093fd9df14815708714c9dec2efef42f8145ffe28902",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/aliasing-mutable-defaults/typescript/05_object_assign_mutates_defaults.ts",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "language": "typescript",
+      "source_hash": "a11b31604350d36b063c04b5b9c232bf0486700148a8ffb41681fd7c17957031",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/for-loop-control-flow/go/01_remove_while_indexing.go",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "language": "go",
+      "source_hash": "ad550f933251162f167088e4c7345a8fa7b3baee3e6956655eb5fc6e3a4e0336",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "go.mutated-state.for-loop-control-flow"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/for-loop-control-flow/go/02_range_value_is_copy.go",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "language": "go",
+      "source_hash": "f591893a9dcca09e3e75bd461f542976520c275e76b5e17d9d1aeeddba2c6e4e",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "go.mutated-state.for-loop-control-flow"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/for-loop-control-flow/go/03_pointer_to_range_variable.go",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "language": "go",
+      "source_hash": "1e5ad0ccfcd431e8954ef5cf28f45cab9811f271e1875df276707e9b31e3fb18",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "go.mutated-state.for-loop-control-flow"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/for-loop-control-flow/rust/01_index_loop_with_remove.rs",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "language": "rust",
+      "source_hash": "abded4d784f051447fa5cdf9a7b8e677040ae28bdb6f340b30a0614dde20b832",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "rust.mutated-state.for-loop-control-flow"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/for-loop-control-flow/rust/02_stale_cached_length.rs",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "language": "rust",
+      "source_hash": "60a64dbe319ae8b2e1d1e500740b7b582a3f58005cd6d5e518a8c4afcd1b0d5e",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/for-loop-control-flow/typescript/01_splice_inside_foreach.ts",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "language": "typescript",
+      "source_hash": "9880ce3fef784af58b9ffce3d6beac6bfd49386067bccc5e2e33e1f522ececb0",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/for-loop-control-flow/typescript/02_for_in_over_array.ts",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "language": "typescript",
+      "source_hash": "43555be67a09162fd334ada6affe7f7e894916ef663ff31545e6845989134c90",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/for-loop-control-flow/typescript/03_var_index_in_timeout.ts",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "language": "typescript",
+      "source_hash": "c8237c564cc37bb5a13b43666991e3d22f4cfc208aa86fced5a8ac3aa6837eec",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "typescript.mutated-state.for-loop-control-flow"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/for-loop-control-flow/typescript/04_async_callback_in_foreach.ts",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "language": "typescript",
+      "source_hash": "7f00f7d4f4b8ebf386ed4d002434b9fe4ab4a1b3876588569e1ee26fddbe7c90",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/improper-initialization/go/01_nil_map_write.go",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "language": "go",
+      "source_hash": "6345eecf0fc44b5689fa8b62c4f19248f42b790308386c0064fe671cd06e54e2",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "go.mutated-state.improper-initialization"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/improper-initialization/go/02_zero_value_config.go",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "language": "go",
+      "source_hash": "c3332bbb7c185f976eac908dcbdbd24e69a426a8d6a7974fce9f089082370697",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/improper-initialization/go/03_nil_pointer_field.go",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "language": "go",
+      "source_hash": "a4c07d6c791a2628a588aeb1a90242505cf17e0025ca52aa38409b5179caa50f",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/improper-initialization/go/04_typed_nil_error.go",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "language": "go",
+      "source_hash": "9e445ea767deb5c89fd5498dc0c5b9da585a24de401ed8250d3f2c47f9756ba9",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "go.mutated-state.improper-initialization"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/improper-initialization/go/05_make_length_then_append.go",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "language": "go",
+      "source_hash": "4c05511a88184b3bffb363a37057730b2f69004349f86a0981fa10ec35e48eac",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/improper-initialization/rust/01_derive_default_invalid_state.rs",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "language": "rust",
+      "source_hash": "d4cedc198da397f8b8b312f6a9891c9be09f16b2bb9652c5ad8021a52fcbd30b",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "rust.mutated-state.improper-initialization"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/improper-initialization/rust/02_unwrap_or_default_masks_missing.rs",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "language": "rust",
+      "source_hash": "ea4546a5ad6a504918bc411fd13811d7f0ada51df11d632324d0c966bbb2fddd",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "rust.mutated-state.improper-initialization"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/improper-initialization/typescript/01_definite_assignment_assertion.ts",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "language": "typescript",
+      "source_hash": "f50cf574fc85eff8c0c15cb8d5e8ddfb5d8764dc7b21063f4151a1a618793f2e",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "typescript.mutated-state.improper-initialization"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/improper-initialization/typescript/02_base_constructor_calls_override.ts",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "language": "typescript",
+      "source_hash": "a492a15ca1f83c8be3bf498da196ed8728ad8ae35853c622b2ccf26a42faa046",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/improper-initialization/typescript/03_temporal_dead_zone.ts",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "language": "typescript",
+      "source_hash": "05c552f62f01d6108a97bef212f68088910e5cfa7293a7d3a34f0b4deae9a54e",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/improper-initialization/typescript/04_or_default_swallows_falsy.ts",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "language": "typescript",
+      "source_hash": "289edaec995474ad543eef679ddf51f92c526d7697fabf906903cd227dd4dc6a",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "typescript.mutated-state.improper-initialization"
+      ],
+      "trigger_count": 2,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/impure-functions/go/01_reads_mutable_global.go",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "language": "go",
+      "source_hash": "4152738e42105e6acf097d832ab6ba5cf358f3c3a62b718c9d13106f4360a548",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "go.mutated-state.impure-functions"
+      ],
+      "trigger_count": 5,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/impure-functions/go/02_sort_mutates_argument.go",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "language": "go",
+      "source_hash": "f1c9d9d80a430947bea6679405a9bde6dd6ce631e35020504d36197f85aec11f",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "go.mutated-state.impure-functions"
+      ],
+      "trigger_count": 2,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/impure-functions/go/03_validator_rewrites_input.go",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "language": "go",
+      "source_hash": "9b221b8c5f08fd380751456fa100e525304ff48d28838b6a8b566454df652d2e",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/impure-functions/go/04_memo_key_ignores_param.go",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "language": "go",
+      "source_hash": "b01e6fff4c6f34d14d6f241cce8dac4f40efbbe14e0ff8e183b20c89b17fc9de",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "go.mutated-state.impure-functions"
+      ],
+      "trigger_count": 9,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/impure-functions/rust/01_static_counter_in_formatter.rs",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "language": "rust",
+      "source_hash": "b9c84f9e92666327276cf3f6bfabcc03865db86cdd8bfc1240f269a46a03a6a1",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "rust.mutated-state.impure-functions"
+      ],
+      "trigger_count": 6,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/impure-functions/rust/02_query_sorts_argument.rs",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "language": "rust",
+      "source_hash": "8609580074843bfa5d050e76a85640763e4512bc164e753dd8d67e942b2afaef",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/impure-functions/typescript/01_sort_mutates_argument.ts",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "language": "typescript",
+      "source_hash": "d0e1d911e126b9972e1e84a7f354e697001536dad918c04a190c13be42f3282e",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "typescript.mutated-state.impure-functions"
+      ],
+      "trigger_count": 2,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/impure-functions/typescript/02_reads_mutable_module_state.ts",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "language": "typescript",
+      "source_hash": "cef717dee4b69434c326024ed8fb658782d5dfe1697633090592362b2d299c02",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "typescript.mutated-state.impure-functions"
+      ],
+      "trigger_count": 5,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/impure-functions/typescript/03_memo_hidden_dependency.ts",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "language": "typescript",
+      "source_hash": "5b8b6f1acc069850f5cf3b779e6355dd6ad471e9925a9aaf1466111a7639b5e9",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "typescript.mutated-state.impure-functions"
+      ],
+      "trigger_count": 4,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/impure-functions/typescript/04_random_in_cache_key.ts",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "language": "typescript",
+      "source_hash": "594f1c781dccd735ad00e5cdd748b353dc522d006f8853554ba3b6bb01562d5a",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "typescript.mutated-state.impure-functions"
+      ],
+      "trigger_count": 3,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/impure-functions/typescript/05_normalizer_mutates_argument.ts",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "language": "typescript",
+      "source_hash": "2a14ab8e48727068bae4de2bf8e16299c261009e67140c0159152742fe49f029",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "typescript.mutated-state.impure-functions"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/increment-decrement-operators/go/01_unsigned_length_underflow.go",
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "language": "go",
+      "source_hash": "37c541dea60090aa45a8d6783c566115f500d611bf3a3503e90921ed91097ecc",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "go.mutated-state.increment-decrement-operators"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/increment-decrement-operators/go/02_int16_quota_wraps.go",
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "language": "go",
+      "source_hash": "717eec5460bb130adde36a5a40106a9d5cad17f922d8c832a20fb17f69ac4bd8",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/increment-decrement-operators/go/03_narrowing_conversion.go",
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "language": "go",
+      "source_hash": "f68d3b29d142f315cf08cae3d5cca9a4d1995a257d1a08369925e76982d62e64",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "go.mutated-state.increment-decrement-operators"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/increment-decrement-operators/rust/01_as_cast_truncates.rs",
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "language": "rust",
+      "source_hash": "ebffc79285874a412730b0c65417df1ddfdd29620df3449f9afb75b0e2c6d3c5",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "rust.mutated-state.increment-decrement-operators"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/increment-decrement-operators/rust/02_usize_len_minus_one.rs",
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "language": "rust",
+      "source_hash": "ad388c85089fa6fc7c96153f85b3adc3c1c4baa2c5f00158f5fdf6a7285ff729",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/increment-decrement-operators/rust/03_wrapping_sub_hides_underflow.rs",
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "language": "rust",
+      "source_hash": "9bf6f969c3c77e2805e6a9d8397fe6b0ca32e96311ecf873bd2913fd18f60037",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "rust.mutated-state.increment-decrement-operators"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/increment-decrement-operators/typescript/01_post_increment_in_condition.ts",
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "language": "typescript",
+      "source_hash": "0f60d08604fdf2f655e75b417e436a8c808e05ec02393bb0c67490331cc260c4",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "typescript.mutated-state.increment-decrement-operators"
+      ],
+      "trigger_count": 2,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/increment-decrement-operators/typescript/02_increment_past_safe_integer.ts",
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "language": "typescript",
+      "source_hash": "cbaa019e328d9b0305f8deae82bd4d1bc30d33d39bdd212aea02a20bf7bb8d2a",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "typescript.mutated-state.increment-decrement-operators"
+      ],
+      "trigger_count": 2,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/increment-decrement-operators/typescript/03_bitwise_truncation_wraps.ts",
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "language": "typescript",
+      "source_hash": "13613bf00da02a3d98df14242695b1036ef4d70f376737b13006c5d081aa7880",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "typescript.mutated-state.increment-decrement-operators"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/macro-mixin-misuse/go/01_embedded_method_no_virtual_dispatch.go",
+      "family": "mutated-state",
+      "defect": "macro-mixin-misuse",
+      "language": "go",
+      "source_hash": "4bc8663a6588a96c0bfdbca972997e76b0fc81e6f834559436ccf58cb94da65f",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "go.mutated-state.macro-mixin-misuse"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/macro-mixin-misuse/go/02_embedded_pointer_shared_by_copy.go",
+      "family": "mutated-state",
+      "defect": "macro-mixin-misuse",
+      "language": "go",
+      "source_hash": "d190edf4e61638cee596b8ed7d0ab0d57ef1759316fa562860cb9015b00c2f43",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "go.mutated-state.macro-mixin-misuse"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/macro-mixin-misuse/rust/01_macro_evaluates_argument_twice.rs",
+      "family": "mutated-state",
+      "defect": "macro-mixin-misuse",
+      "language": "rust",
+      "source_hash": "696f0ac262f53c787e6cb961965fc5af422d5d8d373b6870216cbdb1d9870c05",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "rust.mutated-state.macro-mixin-misuse"
+      ],
+      "trigger_count": 5,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/macro-mixin-misuse/rust/02_macro_hides_early_return.rs",
+      "family": "mutated-state",
+      "defect": "macro-mixin-misuse",
+      "language": "rust",
+      "source_hash": "01aa4657c3c3e522bea5e91e5320a28930a71499eb4999f4b98b04dd056cc5d4",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "rust.mutated-state.macro-mixin-misuse"
+      ],
+      "trigger_count": 3,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/macro-mixin-misuse/rust/03_vec_macro_clones_rc.rs",
+      "family": "mutated-state",
+      "defect": "macro-mixin-misuse",
+      "language": "rust",
+      "source_hash": "ef5947bca3153e41dc6ff45ee7265f555ba01bf829070629ef911c8df5a86b78",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "rust.mutated-state.macro-mixin-misuse"
+      ],
+      "trigger_count": 2,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/macro-mixin-misuse/typescript/01_object_assign_mixin_collision.ts",
+      "family": "mutated-state",
+      "defect": "macro-mixin-misuse",
+      "language": "typescript",
+      "source_hash": "a307488388af0ae11c235e5f0392a72a90c4cef4f3f15e0306724bda51548819",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "typescript.mutated-state.macro-mixin-misuse"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/macro-mixin-misuse/typescript/02_class_mixin_order.ts",
+      "family": "mutated-state",
+      "defect": "macro-mixin-misuse",
+      "language": "typescript",
+      "source_hash": "3906e5926a7f16f75a54467991a202a2bc931529e43d73e7f0a7e0adf2fd546f",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/macro-mixin-misuse/typescript/03_prototype_patch_shared_state.ts",
+      "family": "mutated-state",
+      "defect": "macro-mixin-misuse",
+      "language": "typescript",
+      "source_hash": "0b4d4d4ee35d3726ebfd0e5af9fb53e8d16ff872bf039a5d94680d9c90d0abba",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/this-mutation/go/01_value_receiver_discards_write.go",
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "language": "go",
+      "source_hash": "c87bf57bfaf539cd8267dff93fbb06e66dbdde8ccdefd8a8ed2e32abe73fbeec",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "go.mutated-state.this-mutation"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/this-mutation/go/02_method_value_binds_copy.go",
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "language": "go",
+      "source_hash": "4555e6af5f8f198a7017c51a4b44fd401b31ec772d7e0a86a49709064e48326c",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "go.mutated-state.this-mutation"
+      ],
+      "trigger_count": 2,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/this-mutation/go/03_interface_holds_value_copy.go",
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "language": "go",
+      "source_hash": "bac28371a7d639d68d4f443397cd0d899c8a4e322318a353637cd3bcf4aa9fc2",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "go.mutated-state.this-mutation"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/this-mutation/rust/01_hidden_mutation_through_cell.rs",
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "language": "rust",
+      "source_hash": "807bd0c8b52b786a393d398bea3005bd6a5eed05d985fcf8d06091a475c32b7e",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "rust.mutated-state.this-mutation"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/this-mutation/typescript/01_unbound_method_callback.ts",
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "language": "typescript",
+      "source_hash": "904a9e2ef9d176b8273cbbccbc1ecf9df82a134a5ce9cbb1b1aa52b42976163c",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/this-mutation/typescript/02_call_order_dependent_methods.ts",
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "language": "typescript",
+      "source_hash": "712a3fa25a6a090df9e59444d5db19461cd9a22ea1c2967011a37ad095418288",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "typescript.mutated-state.this-mutation"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/this-mutation/typescript/03_fluent_builder_returns_this.ts",
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "language": "typescript",
+      "source_hash": "46ca0b342d9c3ce308b4b1a4bf1bc2beac0d8a7d787697ff36e550417fd70b6d",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/this-mutation/typescript/04_instance_field_shadows_override.ts",
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "language": "typescript",
+      "source_hash": "24aad230855efd5ff25698f32292167f092b4f3d7c30e2858be8716356f0cf5e",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/this-mutation/typescript/05_function_callback_rebinds_this.ts",
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "language": "typescript",
+      "source_hash": "fbb60a134173e1d67d827895d70ebe07dbadb67ef0fe29488bfca3bb7d1fec07",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "typescript.mutated-state.this-mutation"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/time-money-entropy/go/01_float_money_sum.go",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "language": "go",
+      "source_hash": "65c9c9cc002fe3dc2601f546e285a397600d77c65e6fc8e20abb2ea295ffe1b4",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/time-money-entropy/go/02_clock_read_twice.go",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "language": "go",
+      "source_hash": "ec7304e9ad23f96ea4ff144bc457ab3102c48e67633b4a4a632f1f1d58c62324",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/time-money-entropy/go/03_time_compared_with_equals.go",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "language": "go",
+      "source_hash": "a3cc1f02413b679720b67077539f25f25dcdf6df7c1ca895add2bde3edde47c3",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "go.mutated-state.time-money-entropy"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/time-money-entropy/rust/01_f64_balance.rs",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "language": "rust",
+      "source_hash": "ecfcda249c1966001b5ea2c9f17eb53317b47445a2292d3f7338afd2a7b3dc8f",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/time-money-entropy/rust/02_truncated_elapsed_seconds.rs",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "language": "rust",
+      "source_hash": "d0eb98e2840c1c41812b61b33adb24de458b9a485321e4e1912398fb5aa39179",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "rust.mutated-state.time-money-entropy"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/time-money-entropy/rust/03_integer_split_loses_cents.rs",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "language": "rust",
+      "source_hash": "5579ee6d4c563f6798420a445d3eff8eb6a686b404dd9f6c3f149546d3b85178",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/time-money-entropy/typescript/01_float_money_check.ts",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "language": "typescript",
+      "source_hash": "5362cf6b276bc8ef29df1442fe427728ef1aed87af34a40e1502cc049df8384e",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/time-money-entropy/typescript/02_setmonth_overflow.ts",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "language": "typescript",
+      "source_hash": "e3b8a5b235759a62b385fc325a479b93d5aa5ffe6be872be2730ec591d0717a9",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/time-money-entropy/typescript/03_shared_date_mutated.ts",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "language": "typescript",
+      "source_hash": "febd3b23ef6326be3b83621f9b3d995def479be7ea8f07eb04f86cdb7cc76e94",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/time-money-entropy/typescript/04_random_experiment_assignment.ts",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "language": "typescript",
+      "source_hash": "3f03d13dc1dfbb33b95be7fd4236cad9cb8386674957066170bbb7bd59534c6b",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "typescript.mutated-state.time-money-entropy"
+      ],
+      "trigger_count": 2,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/time-money-entropy/typescript/05_clock_read_twice.ts",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "language": "typescript",
+      "source_hash": "4b5284518ed110cb19411857a31d33ba0dbf13efd3336c61c26eaef23ba4f15b",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "typescript.mutated-state.time-money-entropy"
+      ],
+      "trigger_count": 10,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/var-let-mut/go/01_shadowed_err_in_if.go",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "language": "go",
+      "source_hash": "9c65b2d1c73e86ff9ac058f3437ca77386ac65276a54a9c6d79dcf5bc5142919",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "go.mutated-state.var-let-mut"
+      ],
+      "trigger_count": 5,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/var-let-mut/go/02_closure_captures_reassigned.go",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "language": "go",
+      "source_hash": "a86e922eee446e9bad157411a4240fbed37d5ab8d151c0306230cfb1456c24a8",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "go.mutated-state.var-let-mut"
+      ],
+      "trigger_count": 5,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/var-let-mut/go/03_defer_overwrites_named_return.go",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "language": "go",
+      "source_hash": "7d6d14cf64923d6d5deaa5a305576fd0ea13b56c66fee617bd73a9b484513679",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "go.mutated-state.var-let-mut"
+      ],
+      "trigger_count": 5,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/var-let-mut/go/04_package_var_reassigned.go",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "language": "go",
+      "source_hash": "bcd5d28fa7139609cb5be8d2f2e5ed7afaf88827b624e81499f9e708b9e23684",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "go.mutated-state.var-let-mut"
+      ],
+      "trigger_count": 3,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/var-let-mut/rust/01_shadowed_accumulator.rs",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "language": "rust",
+      "source_hash": "9d697057fd83f5497ef9acf4bc949a0bddef23ead0c298bc133ce21da1e67fb4",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "rust.mutated-state.var-let-mut"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/var-let-mut/rust/02_accumulator_reset_in_loop.rs",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "language": "rust",
+      "source_hash": "c341bd708a3eb2487b95f0f432561ede686de455d79c3adc6f0220597d0d4e4f",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "rust.mutated-state.var-let-mut"
+      ],
+      "trigger_count": 3,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/var-let-mut/typescript/01_var_hoisting.ts",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "language": "typescript",
+      "source_hash": "0e781aaf7ab809372492f47f891f5a6082bcfbbaf46c74738a00a77412026f81",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "typescript.mutated-state.var-let-mut"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/var-let-mut/typescript/02_let_reassigned_before_await.ts",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "language": "typescript",
+      "source_hash": "7d5905ea6bd611b45ba88de0555dbb9835805984889df7ca3444bb95027b3ebd",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "typescript.mutated-state.var-let-mut"
+      ],
+      "trigger_count": 3,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/var-let-mut/typescript/03_const_object_mutated.ts",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "language": "typescript",
+      "source_hash": "b23778f9b1330858cc7978ec8bbb672dda93c9fbcbfff667c95c4e1fff2f5d63",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "typescript.mutated-state.var-let-mut"
+      ],
+      "trigger_count": 2,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/var-let-mut/typescript/04_loop_carried_let.ts",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "language": "typescript",
+      "source_hash": "fabd5cb20a3643785ab43b06c392551c2637b15af4a71433d65fcb49a7660461",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "typescript.mutated-state.var-let-mut"
+      ],
+      "trigger_count": 2,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    }
+  ]
+}

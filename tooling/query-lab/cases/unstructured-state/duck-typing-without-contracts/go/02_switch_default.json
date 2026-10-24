@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Handle recognized row shapes explicitly without an unchecked default assertion.",
+  "original": {
+    "source_hash": "98c4267c8bc0e555c0522948ee462897330adf3907a7459129ac42b669d2abf7",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/duck-typing-without-contracts/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "8b055a4411d8bd7182c288c9782f3584c219280095018cd0a35ee31b2db13705",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/duck-typing-without-contracts/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "Austin"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The type switch names one shape and treats every other value as a map (CWE-843). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

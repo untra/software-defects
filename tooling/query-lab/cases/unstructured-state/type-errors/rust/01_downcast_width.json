@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use the stored integer width and do not silently fabricate a default.",
+  "original": {
+    "source_hash": "e5405f5fc1c81adad0427cedb3a732b1dc740e8687cb2432e6d751429a198070",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/type-errors/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              133,
+              142
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "87fecdabb9fb1f1ba9c5addc539bf7df0936e07a52a4def4cf2036826dacf445",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/type-errors/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              160,
+              166
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "qty 12"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. downcast_ref succeeds only for the exact concrete type; the mismatch takes the default (CWE-843). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

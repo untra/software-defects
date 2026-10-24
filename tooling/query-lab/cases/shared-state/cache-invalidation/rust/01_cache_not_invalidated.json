@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Invalidate the cached price on mutation.",
+  "original": {
+    "source_hash": "a01fadaaa538101278a654bcafbae476dcf55465148569b4a933f9220209a533",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/cache-invalidation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              333,
+              339
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              443,
+              449
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "14300e3f9de5936bf1307b94d52a0bdfc8036d7144ab5bc042afd7202cfaa875",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/cache-invalidation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              333,
+              339
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              443,
+              449
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              482,
+              488
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "checkout charges 8000 cents"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Write path does not invalidate the cache. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

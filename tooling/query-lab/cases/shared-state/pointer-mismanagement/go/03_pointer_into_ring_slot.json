@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return a snapshot independent of ring-slot reuse.",
+  "original": {
+    "source_hash": "f001417b779b5bc9d18f02abd1d920aeae0cc7cf4b1a7adab662fd6bffd48d38",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/pointer-mismanagement/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "36875e4089cdeb8bacc90dd06dff7fdf9cd44a773b4205350f18727e67378a72",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/pointer-mismanagement/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "paging on-call about event 1: disk 95% full"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Pointer outlives the logical lifetime of the recycled slot (use-after-reuse). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

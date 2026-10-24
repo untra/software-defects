@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Persist each assignment for the process lifetime; durable experiments need an external assignment store.",
+  "original": {
+    "source_hash": "3f03d13dc1dfbb33b95be7fd4236cad9cb8386674957066170bbb7bd59534c6b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/time-money-entropy/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              116,
+              122
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "70501642b81684e797c17745a3b3861a07706d8e58ddfb2936d6a97731ed76e6",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/time-money-entropy/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              253,
+              259
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "variants shown to user-42: 1"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Assignment should be a deterministic function of userId (CWE-330). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

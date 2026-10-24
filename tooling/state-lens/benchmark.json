@@ -1,0 +1,18 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "architecture": "arm64",
+  "workspace_files": 100,
+  "fixture": "100 small TypeScript files with independent clock calls",
+  "cli_scan": {
+    "samples": 5,
+    "median_ms": 71.25,
+    "max_ms": 335.45
+  },
+  "warm_edit_to_ranges": {
+    "samples": 5,
+    "median_ms": 5.93,
+    "max_ms": 6.09
+  },
+  "editor_debounce_ms": 180,
+  "notes": "Synthetic baseline; excludes VS Code rendering and does not establish performance on large call graphs."
+}

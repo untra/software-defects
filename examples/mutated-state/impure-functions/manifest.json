@@ -1,0 +1,226 @@
+{
+  "family": "mutated-state",
+  "defect": "impure-functions",
+  "name": "Impure Functions",
+  "essence": "A function whose result depends on more than its arguments cannot be trusted or tested.",
+  "cwes": [
+    "CWE-330",
+    "CWE-338",
+    "CWE-374",
+    "CWE-1108"
+  ],
+  "examples": [
+    {
+      "file": "go/01_reads_mutable_global.go",
+      "language": "go",
+      "bug_lines": [
+        10,
+        15
+      ],
+      "summary": "`priceWithTax` depends on a package global that `loadRegion` mutates; same input, different output.",
+      "mechanism": "Hidden global dependency (CWE-1108).",
+      "observed_output": "same cart, two prices: 1080 1200",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "rate passed explicitly; same cart, same price"
+    },
+    {
+      "file": "go/02_sort_mutates_argument.go",
+      "language": "go",
+      "bug_lines": [
+        9
+      ],
+      "summary": "`median` sorts the caller's slice in place, destroying arrival order.",
+      "mechanism": "sort.Ints mutates its argument; the function should copy first.",
+      "observed_output": "median: 20 first request latency: 10",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "first request latency: 30"
+    },
+    {
+      "file": "go/03_validator_rewrites_input.go",
+      "language": "go",
+      "bug_lines": [
+        16,
+        18
+      ],
+      "summary": "A predicate silently rewrites its argument, turning an invalid zero-quantity order into a shippable one.",
+      "mechanism": "Side effect on a pointer argument inside a function that should only answer a question (CWE-374).",
+      "observed_output": "valid: true quantity to ship: 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "valid: false, quantity 0"
+    },
+    {
+      "file": "go/04_memo_key_ignores_param.go",
+      "language": "go",
+      "bug_lines": [
+        10
+      ],
+      "summary": "Memo cache is keyed only by userID, ignoring locale; the second call returns stale English.",
+      "mechanism": "Global cache plus incomplete key makes the result depend on call history.",
+      "observed_output": "Hello, user 7\nHello, user 7",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Hello, user 7 / Hola, user 7"
+    },
+    {
+      "file": "rust/01_static_counter_in_formatter.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "Formatting an invoice consumes a global sequence number, so a preview and the real invoice disagree.",
+      "mechanism": "Static atomic counter hides mutation inside a seemingly pure formatter.",
+      "observed_output": "preview INV-0001-acme / issued INV-0002-acme",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "preview and issued share the same number"
+    },
+    {
+      "file": "rust/02_query_sorts_argument.rs",
+      "language": "rust",
+      "bug_lines": [
+        2
+      ],
+      "summary": "`top_scorer` takes `&mut` and sorts the roster in place, destroying signup order.",
+      "mechanism": "A query that needs only `&[T]` mutates its argument as a side effect.",
+      "observed_output": "best ben / first signup ben",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "first signup ana"
+    },
+    {
+      "file": "typescript/01_sort_mutates_argument.ts",
+      "language": "typescript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "`Array.prototype.sort` mutates the caller's chronological readings.",
+      "mechanism": "sort is in-place; use toSorted or copy.",
+      "observed_output": "top: [ 48, 33, 21 ]\nlatest reading: 7",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "latest reading: 21"
+    },
+    {
+      "file": "typescript/02_reads_mutable_module_state.ts",
+      "language": "typescript",
+      "bug_lines": [
+        8,
+        13
+      ],
+      "summary": "`quote` reads a mutable module flag, so the cart quote and checkout charge differ for the same input.",
+      "mechanism": "Hidden global input (CWE-1108).",
+      "observed_output": "quoted 200 charged 160",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "quoted 200 charged 200 (or price fixed at quote time)"
+    },
+    {
+      "file": "typescript/03_memo_hidden_dependency.ts",
+      "language": "typescript",
+      "bug_lines": [
+        5
+      ],
+      "summary": "Memoized formatter keys only on amount, ignoring the global locale it reads.",
+      "mechanism": "Cache key omits a hidden dependency, returning stale results after state changes.",
+      "observed_output": "€1,234.50\n€1,234.50",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "€1,234.50 / 1.234,50 €"
+    },
+    {
+      "file": "typescript/04_random_in_cache_key.ts",
+      "language": "typescript",
+      "bug_lines": [
+        7
+      ],
+      "summary": "Cache key includes Math.random(), so identical requests never hit.",
+      "mechanism": "Entropy inside a function that must be deterministic.",
+      "observed_output": "cache hits: 0 of 3",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "cache hits: 2 of 3"
+    },
+    {
+      "file": "typescript/05_normalizer_mutates_argument.ts",
+      "language": "typescript",
+      "bug_lines": [
+        4,
+        5
+      ],
+      "summary": "`normalize` mutates the input object, corrupting the audit snapshot.",
+      "mechanism": "Argument objects are references; function should return a new object (CWE-374).",
+      "observed_output": "normalized: [ 'admin', 'member' ]\naudit snapshot: ana@example.com [ 'admin', 'member' ]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "audit snapshot: Ana@Example.com [ 'admin' ]"
+    },
+    {
+      "file": "python/01_sort_in_place.py",
+      "language": "python",
+      "bug_lines": [
+        2
+      ],
+      "summary": "ranked sorts the caller's roster as well as the returned list.",
+      "mechanism": "list.sort mutates its receiver and returns None. The argument and the result are the same list.",
+      "observed_output": "['ada', 'cam']\n['ada', 'cam']",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the second print stays ['cam', 'ada']"
+    },
+    {
+      "file": "python/02_reads_module_global.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "total(100) changes from 110 to 120 after the module rate changes.",
+      "mechanism": "The function reads tax_rate from the module on every call, so the result is not a function of amount alone.",
+      "observed_output": "110.0\n120.0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "110.0 both times"
+    },
+    {
+      "file": "python/03_appends_to_argument.py",
+      "language": "python",
+      "bug_lines": [
+        2
+      ],
+      "summary": "The caller's cart grows a tax line even though only the return value was requested.",
+      "mechanism": "append mutates the list object that was passed in. The caller and the callee share it.",
+      "observed_output": "2 2",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "2 1"
+    },
+    {
+      "file": "python/04_cache_hides_global.py",
+      "language": "python",
+      "bug_lines": [
+        6
+      ],
+      "summary": "The second taxed(100) stays 110 after the rate moves to 0.2.",
+      "mechanism": "functools.cache keys only on the arguments. The global rate is read once and then hidden.",
+      "observed_output": "110.0\n110.0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "110.0 then 120.0"
+    },
+    {
+      "file": "python/05_random_in_key.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "Two cache keys for the same sku differ because each key draws from random.",
+      "mechanism": "The key is not a function of sku. random.random advances the module generator.",
+      "observed_output": "pen-0.13436424411240122\npen-0.8474337369372327",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "both keys equal pen"
+    }
+  ]
+}

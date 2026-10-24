@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use checked access for an empty collection.",
+  "original": {
+    "source_hash": "bcb7728c3dfa0c1e8e4f2c404ff15eaa74e76fd10aab245a4dee7be5cc00f769",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "6eed0965da691dd3edb4e3bc793d55251230c4e8fc9088318ca785e9a432b9fd",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "None"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `[0]` requires a first element the Vec never promised (CWE-129). Establishing incorrect behavior requires semantic or domain evidence beyond these captures. Calls inside macro token trees are not parsed as call_expression nodes; macro expansion or a dedicated token-tree query is required."
+}

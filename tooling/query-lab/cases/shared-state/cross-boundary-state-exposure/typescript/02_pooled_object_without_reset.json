@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Clear per-user data before returning an object to the pool.",
+  "original": {
+    "source_hash": "02f96dbb2b831542d44279752860ddf5a55739364109eb2e6868bd4870bef918",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              223,
+              227
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "5bc7445831a132ca6199dd166f461683a2baf3811a53fdd1b4a9f7499d2e93b0",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              243,
+              247
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "bob's form: { name: 'bob' }"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Object pools must reset per-actor state on release (CWE-488). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

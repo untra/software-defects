@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Assign the outer result rather than shadow it; distinguishing the bug requires binding analysis.",
+  "original": {
+    "source_hash": "9c65b2d1c73e86ff9ac058f3437ca77386ac65276a54a9c6d79dcf5bc5142919",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/var-let-mut/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              164,
+              168
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "43b80823a71ee0b758a87a20d250efe40489e480f6e1437cc4ef24fb62d43ce7",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/var-let-mut/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              163,
+              167
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "port=8080 err=<nil>"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Short variable declaration creates fresh bindings in the inner scope; the outer `port` stays 0 and outer `err` stays nil. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

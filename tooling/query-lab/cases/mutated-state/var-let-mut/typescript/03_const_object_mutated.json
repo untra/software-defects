@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return a new policy instead of mutating caller-owned defaults.",
+  "original": {
+    "source_hash": "b23778f9b1330858cc7978ec8bbb672dda93c9fbcbfff667c95c4e1fff2f5d63",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/var-let-mut/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "f5982b3beafd6834264421251cf2a3fb1f7dc913ad0e82ff9b20891f72ece3cc",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/var-let-mut/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "aggressive: 10\ndefault: 3"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `const` prevents rebinding, not mutation of the referenced object. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

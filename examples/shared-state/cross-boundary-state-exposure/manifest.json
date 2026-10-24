@@ -1,0 +1,229 @@
+{
+  "family": "shared-state",
+  "defect": "cross-boundary-state-exposure",
+  "name": "Cross-Boundary State Exposure",
+  "essence": "Per-actor state parked in a shared singleton, global, or pool bleeds across the boundary that was meant to keep actors apart.",
+  "cwes": [
+    "CWE-488",
+    "CWE-543",
+    "CWE-567",
+    "CWE-1108"
+  ],
+  "examples": [
+    {
+      "file": "go/01_package_global_current_user.go",
+      "language": "go",
+      "bug_lines": [
+        16,
+        18
+      ],
+      "summary": "Concurrent requests share a package global for the current user; alice is served bob's data.",
+      "mechanism": "Per-request identity stored in process-wide state (CWE-488, CWE-1108).",
+      "observed_output": "alice received account data of bob\nbob received account data of bob",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "alice received account data of alice"
+    },
+    {
+      "file": "go/02_sync_pool_without_reset.go",
+      "language": "go",
+      "bug_lines": [
+        12
+      ],
+      "summary": "A pooled buffer is reused without `Reset`, so bob's receipt includes alice's card.",
+      "mechanism": "sync.Pool returns objects with previous contents intact (CWE-488).",
+      "observed_output": "receipt for alice, card ending 4242\nreceipt for bob, card ending 1881",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "receipt for bob only"
+    },
+    {
+      "file": "go/03_shared_handler_struct_field.go",
+      "language": "go",
+      "bug_lines": [
+        18,
+        20
+      ],
+      "summary": "One handler instance stores per-request tenant in a field, leaking globex rows to acme.",
+      "mechanism": "Handlers are shared across goroutines; fields act as globals (CWE-567).",
+      "observed_output": "acme got rows for tenant globex\nglobex got rows for tenant globex",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "acme got rows for tenant acme"
+    },
+    {
+      "file": "go/04_global_logger_prefix.go",
+      "language": "go",
+      "bug_lines": [
+        14
+      ],
+      "summary": "`log.SetPrefix` mutates the global logger per request, attributing req-1's charge to req-2.",
+      "mechanism": "The standard logger is process-wide state.",
+      "observed_output": "[req-2] card charged\n[req-2] card charged",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "[req-1] card charged / [req-2] card charged"
+    },
+    {
+      "file": "rust/01_thread_local_on_pooled_worker.rs",
+      "language": "rust",
+      "bug_lines": [
+        11
+      ],
+      "summary": "A thread_local cart survives across requests handled by the same pooled worker thread.",
+      "mechanism": "Thread-local storage is per thread, not per request.",
+      "observed_output": "alice sees cart [\"engagement ring\"]\nbob sees cart [\"engagement ring\", \"socks\"]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "bob sees cart [\"socks\"]"
+    },
+    {
+      "file": "rust/02_static_current_user.rs",
+      "language": "rust",
+      "bug_lines": [
+        11,
+        13
+      ],
+      "summary": "A static `Mutex<Option<String>>` singleton holds the current user across concurrent requests.",
+      "mechanism": "The mutex prevents data races, not cross-request leakage (CWE-488).",
+      "observed_output": "alice received account data of bob\nbob received account data of bob",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "alice received account data of alice"
+    },
+    {
+      "file": "typescript/01_module_current_user.ts",
+      "language": "typescript",
+      "bug_lines": [
+        7,
+        11
+      ],
+      "summary": "Module-level `currentUser` is overwritten by the second request before the first one reads it.",
+      "mechanism": "Module state in a server is shared by every concurrent request.",
+      "observed_output": "alice received account of bob\nbob received account of bob",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "alice received account of alice"
+    },
+    {
+      "file": "typescript/02_pooled_object_without_reset.ts",
+      "language": "typescript",
+      "bug_lines": [
+        8
+      ],
+      "summary": "A pooled form object is handed out without clearing fields, exposing alice's SSN to bob.",
+      "mechanism": "Object pools must reset per-actor state on release (CWE-488).",
+      "observed_output": "bob's form: { ssn: '123-45-6789', name: 'bob' }",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "bob's form: { name: 'bob' }"
+    },
+    {
+      "file": "typescript/03_static_cache_missing_tenant.ts",
+      "language": "typescript",
+      "bug_lines": [
+        10,
+        13
+      ],
+      "summary": "A static cache keyed only by setting name serves acme's webhook URL to globex.",
+      "mechanism": "Class-level static state crosses tenant boundaries when the key omits the tenant.",
+      "observed_output": "acme   -> https://acme.example/hooks\nglobex -> https://acme.example/hooks",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "globex -> https://globex.example/hooks"
+    },
+    {
+      "file": "typescript/04_default_context_object.ts",
+      "language": "typescript",
+      "bug_lines": [
+        8,
+        9
+      ],
+      "summary": "Default parameter is one shared context object; an admin request permanently elevates anonymous users.",
+      "mechanism": "Shared default object mutated per request (CWE-1188, CWE-488).",
+      "observed_output": "anonymous request permissions: [ 'admin' ]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "anonymous request permissions: []"
+    },
+    {
+      "file": "typescript/05_module_trace_id.ts",
+      "language": "typescript",
+      "bug_lines": [
+        6,
+        10
+      ],
+      "summary": "A module-level trace id is overwritten by the next request, so logs are attributed to the wrong request.",
+      "mechanism": "Request context kept in module state instead of AsyncLocalStorage or parameters.",
+      "observed_output": "[req-2] refund issued\n[req-2] profile viewed",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "[req-1] refund issued / [req-2] profile viewed"
+    },
+    {
+      "file": "python/01_module_current_user.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "The deferred greeting reads ben, the user stored after it was scheduled.",
+      "mechanism": "render reads the module global at call time, not the value from when the callable was saved.",
+      "observed_output": "hello ben",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "hello ada"
+    },
+    {
+      "file": "python/02_default_context.py",
+      "language": "python",
+      "bug_lines": [
+        1
+      ],
+      "summary": "The second request's user replaces the first request's user in the same dict.",
+      "mechanism": "The default dict is created once. Both calls return that shared context.",
+      "observed_output": "ben ben",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "ada ben"
+    },
+    {
+      "file": "python/03_class_cache_no_tenant.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "Grace is quoted Ada's price of 5 for the same sku.",
+      "mechanism": "The cache key is only the sku. The tenant who filled the entry is not part of the key.",
+      "observed_output": "5 5",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "5 9"
+    },
+    {
+      "file": "python/04_module_trace_id.py",
+      "language": "python",
+      "bug_lines": [
+        7
+      ],
+      "summary": "Both saved log lines print ben, the trace id written by the later request.",
+      "mechanism": "The lambda reads the module trace_id when it runs. handle rebinds that one name.",
+      "observed_output": "trace ben\ntrace ben",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "trace ada then trace ben"
+    },
+    {
+      "file": "python/05_lru_cache_per_request.py",
+      "language": "python",
+      "bug_lines": [
+        6
+      ],
+      "summary": "Grace's quote stays 5 because the cache was filled while the module user was ada.",
+      "mechanism": "lru_cache keys only on sku. quote closes over the module user and does not include it in the key.",
+      "observed_output": "5\n5",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "5 then 9"
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Serialize transfers before acquiring account locks, avoiding opposite lock acquisition orders.",
+  "original": {
+    "source_hash": "8bf3c9b83b2e9b701c9d70c949bf386592951ed65d9806d6557a76c62c37128b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              202,
+              206
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              224,
+              230
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              261,
+              265
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              281,
+              287
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "5d460ebad99cb03b193b584dcf762437eff9133632284a8e698298cc6470f4f5",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              259,
+              263
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              283,
+              289
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              301,
+              305
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              323,
+              329
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              360,
+              364
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              380,
+              386
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "balances: 110 90"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Inconsistent lock ordering (CWE-833). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,169 @@
+{
+  "family": "unstructured-state",
+  "defect": "version-library-mismanagement",
+  "name": "Version & Library Mismanagement",
+  "essence": "The code you tested and the code that ships resolve to different library versions.",
+  "cwes": [
+    "CWE-1395",
+    "CWE-1104",
+    "CWE-937"
+  ],
+  "examples": [
+    {
+      "file": "go/01_copied_month_length.go",
+      "language": "go",
+      "bug_lines": [
+        13
+      ],
+      "summary": "Payroll's February length stays 28 in a leap year; billing returns 29.",
+      "mechanism": "The two copies of the helper have drifted, so 2024 is not a leap year on one path (CWE-1104).",
+      "observed_output": "billing 2024 february 29\npayroll 2024 february 28",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "both helpers return 29"
+    },
+    {
+      "file": "go/02_highest_version.go",
+      "language": "go",
+      "bug_lines": [
+        41
+      ],
+      "summary": "The resolver picks 1.4.0, which dropped the leap-year February.",
+      "mechanism": "Choosing the highest version changes behavior the tested 1.2.0 did not have (CWE-1395).",
+      "observed_output": "february 2024: 28 via 1.4.0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "february 2024: 29 via 1.2.0"
+    },
+    {
+      "file": "rust/01_copied_month_length.rs",
+      "language": "rust",
+      "bug_lines": [
+        10
+      ],
+      "summary": "Payroll's February length stays 28 in a leap year; billing returns 29.",
+      "mechanism": "The copied helper no longer matches the one that was fixed (CWE-1104).",
+      "observed_output": "billing 2024 february 29\npayroll 2024 february 28",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "both helpers return 29"
+    },
+    {
+      "file": "rust/02_caret_range.rs",
+      "language": "rust",
+      "bug_lines": [
+        37
+      ],
+      "summary": "A caret range accepts 1.9.0, whose February is no longer a leap day.",
+      "mechanism": "`^1.2.0` allows any later 1.x, including a release that changed the calendar (CWE-1395).",
+      "observed_output": "february 2024: 28 via 1.9.0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "february 2024: 29 via 1.2.0"
+    },
+    {
+      "file": "rust/03_feature_unify.rs",
+      "language": "rust",
+      "bug_lines": [
+        1
+      ],
+      "summary": "Parsing 10 dollars yields 1000 because a scale flag is on.",
+      "mechanism": "Another crate's feature is unified on, so this binary scales amounts it did not ask to scale (CWE-937).",
+      "observed_output": "amount 1000",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "amount 10"
+    },
+    {
+      "file": "typescript/01_copied_month_length.ts",
+      "language": "typescript",
+      "bug_lines": [
+        9
+      ],
+      "summary": "Payroll's February length stays 28 in a leap year; billing returns 29.",
+      "mechanism": "The copied helper no longer matches the one that was fixed (CWE-1104).",
+      "observed_output": "billing 2024 february 29\npayroll 2024 february 28",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "both helpers return 29"
+    },
+    {
+      "file": "typescript/02_caret_range.ts",
+      "language": "typescript",
+      "bug_lines": [
+        14
+      ],
+      "summary": "A caret range accepts 1.9.0, whose February is no longer a leap day.",
+      "mechanism": "`^1.2.0` allows any later 1.x (CWE-1395).",
+      "observed_output": "february 2024: 28 via 1.9.0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "february 2024: 29 via 1.2.0"
+    },
+    {
+      "file": "typescript/03_unpinned_resolve.ts",
+      "language": "typescript",
+      "bug_lines": [
+        13
+      ],
+      "summary": "Resolving to the newest published release selects 1.4.7 and a 28-day February.",
+      "mechanism": "An unpinned dependency installs a later build than the one that was tested (CWE-1395).",
+      "observed_output": "february 2024: 28 via 1.4.7",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "february 2024: 29 via 1.2.1"
+    },
+    {
+      "file": "typescript/04_two_majors.ts",
+      "language": "typescript",
+      "bug_lines": [
+        10
+      ],
+      "summary": "Two majors of the date helper disagree on February 2024.",
+      "mechanism": "Both copies are linked into one process and return different lengths (CWE-1104).",
+      "observed_output": "dates-v1 29\ndates-v2 28",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "both majors return 29"
+    },
+    {
+      "file": "python/01_copied_month_length.py",
+      "language": "python",
+      "bug_lines": [
+        7
+      ],
+      "summary": "Billing February 2024 has 29 days and the copied payroll helper has 28.",
+      "mechanism": "The payroll helper is a second copy that dropped the leap-year rule.",
+      "observed_output": "billing 2024 february 29\npayroll 2024 february 28",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "both helpers report 29"
+    },
+    {
+      "file": "python/02_unpinned_resolve.py",
+      "language": "python",
+      "bug_lines": [
+        8
+      ],
+      "summary": "Resolving the last published release picks 1.4.0, whose February is always 28.",
+      "mechanism": "The catalog is ordered by publication. The last entry is a later release, not the one that was tested.",
+      "observed_output": "1.4.0 28",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "1.2.0 and 29 days"
+    },
+    {
+      "file": "python/03_two_majors.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "Invoice code uses the v1 leap year and payroll code uses v2, which always returns 28.",
+      "mechanism": "Both majors are imported into one process and answer the same date differently.",
+      "observed_output": "invoice 29\npayroll 28",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "both report 29"
+    }
+  ]
+}

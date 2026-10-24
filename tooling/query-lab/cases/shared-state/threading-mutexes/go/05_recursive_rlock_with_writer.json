@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Do not recursively acquire an RWMutex while a writer may be waiting.",
+  "original": {
+    "source_hash": "09ce4c1b0d4c26b741b3b5ae194fa8538ebb847dbf187fc1f631079754aae424",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              252,
+              257
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              272,
+              279
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              358,
+              363
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              378,
+              385
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              550,
+              554
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              569,
+              575
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "cbb33e781b070c7b4b40aca1af71e1b561a53eb3a0f68e2a0c5138c8563d8c77",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              252,
+              257
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              272,
+              279
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              358,
+              363
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              378,
+              385
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              551,
+              555
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              570,
+              576
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "total:"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. RWMutex forbids recursive read locking once a writer is waiting. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

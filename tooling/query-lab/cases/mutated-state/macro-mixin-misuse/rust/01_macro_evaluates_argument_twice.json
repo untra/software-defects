@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Evaluate each macro argument exactly once.",
+  "original": {
+    "source_hash": "696f0ac262f53c787e6cb961965fc5af422d5d8d373b6870216cbdb1d9870c05",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/macro-mixin-misuse/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "c0310672a4fbffe5c751d56be91a6c090e8993f9de82f085783340f9ab9e0bc6",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/macro-mixin-misuse/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "first 5 second 10"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. macro_rules! substitutes expressions textually; bind `$val` to a local once. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

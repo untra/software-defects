@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Validate that splitting produced a value field.",
+  "original": {
+    "source_hash": "fcc16df10e3effae5acc97e00064566cefc53837be8c36725efff8725b3a193f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              92,
+              98
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "4207f5fa54ae7fdf5449ad8acbf17fdca7c331cd6be59564581756995f14e373",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              92,
+              98
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              117,
+              120
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "invalid header"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. SplitN on a missing separator returns one element; the value index was assumed (CWE-129). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

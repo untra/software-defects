@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return an explicit unavailable value for a zero divisor.",
+  "original": {
+    "source_hash": "f6caf8f2d58d2afea0c80d67372909884906b1cc722d797a2ace5107e30f9e73",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "operator",
+            "range": [
+              66,
+              67
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "3bf198144e7825b6511921bc6788cbf546074796c6157ff594cd6ebb4fda7dfb",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "operator",
+            "range": [
+              92,
+              93
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "current null"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. JS number division by 0 does not throw (CWE-682). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

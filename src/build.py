@@ -14,6 +14,7 @@ import os
 import shutil
 
 import content
+import corpus
 import i18n
 import anim_gen
 from highlight import highlight_code, THEME_CSS
@@ -23,6 +24,8 @@ OUT = os.path.abspath(os.path.join(HERE, "..", "site"))
 ASSETS_SRC = os.path.join(HERE, "assets")
 
 DEFECTS = content.DEFECTS
+CORPUS = corpus.load_corpus()
+REPO_URL = "https://github.com/untra/software-defects/blob/main"
 BY_ID = {d["id"]: d for d in DEFECTS}
 ORDER = [d["id"] for d in DEFECTS]
 # slug -> (family_id, child dict); lets compound defects resolve their
@@ -217,6 +220,61 @@ def code_viewer(example):
         )
     return (
         f'<div class="code-viewer" data-cv="{base}">'
+        f'<div class="code-window"><span class="dots"><i></i><i></i><i></i></span>'
+        f'<div class="lang-tabs">{"".join(tabs)}</div></div>'
+        f'{"".join(panels)}</div>'
+    )
+
+
+# ---------------------------------------------------------------- corpus viewer
+def _corpus_code(lang, code, slug, fname, hl_lines=()):
+    return (
+        f'<div class="corpus-code"><div class="code-head"><span class="fname">{e(fname)}</span>'
+        f'<button class="copy-btn" data-copied="copied" type="button">copy</button></div>'
+        f'<pre><code class="hl">{highlight_code(code, slug, hl_lines)}</code></pre></div>'
+    )
+
+
+def _corpus_example(lang, slug, ex, is_open):
+    L = lambda k: e(i18n.t(lang, k))
+    fname = os.path.basename(ex["file"])
+    badge = ("" if ex["deterministic"]
+             else f'<span class="corpus-ex__badge">{L("nondeterministic")}</span>')
+    fixed = ""
+    if ex["fixed_source"]:
+        why = (f'<div class="code-explain">{e(ex["fix_rationale"])}</div>'
+               if ex["fix_rationale"] else "")
+        fixed = (f'<details class="corpus-fix"><summary>{L("fixed_version")}</summary>'
+                 f'{why}{_corpus_code(lang, ex["fixed_source"], slug, fname)}</details>')
+    return (
+        f'<details class="corpus-ex"{" open" if is_open else ""}>'
+        f'<summary><span class="fname">{e(fname)}</span>{badge}'
+        f'<span class="corpus-ex__summary">{e(ex["summary"])}</span></summary>'
+        f'{_corpus_code(lang, ex["source"], slug, fname, ex["bug_lines"])}'
+        f'<div class="code-explain">{e(ex["mechanism"])}</div>'
+        f'<div class="code-out"><span class="tag">{L("observed")}</span><pre>{e(ex["observed_output"])}</pre>'
+        f'<span class="tag">{L("expected")}</span><pre>{e(ex["expected_behavior"])}</pre></div>'
+        f'{fixed}'
+        f'<a class="corpus-ex__src" href="{REPO_URL}/{e(ex["path"])}">{L("view_source")}</a>'
+        f'</details>'
+    )
+
+
+def corpus_viewer(lang, family_id, child_slug, entry):
+    tabs, panels = [], []
+    base = f"corpus-{family_id}-{child_slug}"
+    for i, (slug, examples) in enumerate(entry["languages"]):
+        act = " is-active" if i == 0 else ""
+        pid = f"{base}-{slug}"
+        tabs.append(
+            f'<button class="lang-tab{act}" data-lang="{e(slug)}" data-target="{pid}" role="tab" '
+            f'aria-selected="{"true" if i == 0 else "false"}" type="button">'
+            f'{e(corpus.language_label(slug))} · {len(examples)}</button>'
+        )
+        items = "".join(_corpus_example(lang, slug, ex, j == 0) for j, ex in enumerate(examples))
+        panels.append(f'<div class="code-panel corpus-panel{act}" id="{pid}" data-lang="{e(slug)}">{items}</div>')
+    return (
+        f'<div class="code-viewer corpus-viewer" data-cv="{base}">'
         f'<div class="code-window"><span class="dots"><i></i><i></i><i></i></span>'
         f'<div class="lang-tabs">{"".join(tabs)}</div></div>'
         f'{"".join(panels)}</div>'
@@ -582,19 +640,29 @@ def subdefect_page(lang, family, c):
         examples_inner = "\n".join(ex_html)
     examples = block("01", "in the wild", i18n.t(lang, "examples"), examples_inner)
 
+    numbers = (f"{n:02d}" for n in range(2, 10))
+
+    # runnable corpus programs for this defect, one tab per programming language
+    corpus_block = ""
+    entry = CORPUS.get((family["id"], c["slug"]))
+    if entry:
+        corpus_block = block(next(numbers), "runnable corpus", i18n.t(lang, "corpus_examples"),
+                             corpus_viewer(lang, family["id"], c["slug"], entry),
+                             intro=i18n.t(lang, "corpus_intro"))
+
     # where this stateful defect compounds — links up to the compound smells it
     # feeds (stateful pages only; compound smells don't compound further here)
     compounds_block = ""
     if cat != "compound":
         ci = compounds_into_html(lang, c)
         if ci:
-            compounds_block = block("02", "cross-pollination",
+            compounds_block = block(next(numbers), "cross-pollination",
                                     i18n.t(lang, "compounds_into"), ci)
 
     # mapped CWEs — this defect on its own, as a catalogued weakness
     cwe_block = ""
     if c.get("cwes"):
-        cwe_block = block("03" if compounds_block else "02", "weakness catalog",
+        cwe_block = block(next(numbers), "weakness catalog",
                           i18n.t(lang, "cwes"),
                           cwes_html(c["cwes"]),
                           intro=i18n.t(lang, "cwes_intro"))
@@ -616,7 +684,7 @@ def subdefect_page(lang, family, c):
 
     body = (hero
             + f'<div class="section defect-body" style="{style}"><div class="wrap">'
-            + examples + compounds_block + cwe_block + "</div></div>"
+            + examples + corpus_block + compounds_block + cwe_block + "</div></div>"
             + f'<div class="section" style="{style};padding-top:0">{xnav}</div>')
 
     title = f"{c['name']} — {family['name']}"
@@ -828,7 +896,9 @@ def write(path, text):
         f.write(text)
 
 
-def build():
+def build(out=None):
+    global OUT
+    OUT = os.path.abspath(out) if out else OUT
     if os.path.exists(OUT):
         shutil.rmtree(OUT)
     os.makedirs(OUT)

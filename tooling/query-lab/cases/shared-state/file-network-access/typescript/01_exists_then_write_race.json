@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Create the lock file exclusively instead of checking its existence before writing.",
+  "original": {
+    "source_hash": "6c4857beec8abb4b44c0622db906e63008c5dbb29973e05de428ed46ceadff9b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              294,
+              304
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              403,
+              412
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "dd0de853483b5a760d4870cc1fdedfafb839d75f6d0c7e9721e57280475be286",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              305,
+              314
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "nodes that believe they are leader: 1"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. TOCTOU (CWE-367); use open with 'wx' flag. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

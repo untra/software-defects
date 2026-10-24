@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Check the divisor before division or modulo.",
+  "original": {
+    "source_hash": "e3e1b8712fb768dc5f8f2d1d103285ce2afe49e49397549288ea8ee918306fb1",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "operator",
+            "range": [
+              97,
+              98
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "97a616339949ba30ee79e3ec16366f8dee78c538e141cdd896d49e221c342c84",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "operator",
+            "range": [
+              174,
+              175
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "zero divisor"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Integer `/` panics on zero in debug and wraps in release (CWE-369). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

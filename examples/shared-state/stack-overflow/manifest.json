@@ -1,0 +1,172 @@
+{
+  "family": "shared-state",
+  "defect": "stack-overflow",
+  "name": "Stack Overflow Bugs",
+  "essence": "A call stack that never unwinds, or a heap that never stops growing, runs out of room.",
+  "cwes": [
+    "CWE-674",
+    "CWE-121",
+    "CWE-787"
+  ],
+  "examples": [
+    {
+      "file": "go/01_dependency_cycle_recursion.go",
+      "language": "go",
+      "bug_lines": [
+        21
+      ],
+      "summary": "Dependency resolution recurses without a visited set; a cycle recurses until the stack limit.",
+      "mechanism": "Unbounded recursion on cyclic data (CWE-674).",
+      "observed_output": "fatal error: stack overflow",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "error: dependency cycle app -> db -> driver -> app"
+    },
+    {
+      "file": "go/02_recursive_retry.go",
+      "language": "go",
+      "bug_lines": [
+        20
+      ],
+      "summary": "Retry is implemented as unbounded self-recursion; a persistent outage overflows the stack.",
+      "mechanism": "No attempt cap or base case besides success (CWE-674).",
+      "observed_output": "fatal error: stack overflow",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "error after N attempts"
+    },
+    {
+      "file": "rust/01_cyclic_graph_recursion.rs",
+      "language": "rust",
+      "bug_lines": [
+        10
+      ],
+      "summary": "Recursive count over an `Rc` graph with a cycle never terminates.",
+      "mechanism": "Shared ownership makes cycles easy; recursion lacks a visited set (CWE-674).",
+      "observed_output": "thread 'main' has overflowed its stack",
+      "exit_code": -6,
+      "deterministic": true,
+      "expected_behavior": "finite count or cycle error"
+    },
+    {
+      "file": "rust/02_recursive_drop_linked_list.rs",
+      "language": "rust",
+      "bug_lines": [
+        5
+      ],
+      "summary": "Dropping a million-node `Box` linked list recurses once per node and overflows the stack.",
+      "mechanism": "Compiler-generated Drop for nested Box is recursive; implement an iterative Drop.",
+      "observed_output": "recorded 1000000 edits\nthread 'main' has overflowed its stack",
+      "exit_code": -6,
+      "deterministic": true,
+      "expected_behavior": "history cleared"
+    },
+    {
+      "file": "rust/03_large_buffer_on_stack.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "A 16 MiB array is allocated on the stack, exceeding the 8 MiB main-thread stack.",
+      "mechanism": "Fixed-size arrays live on the stack (CWE-121); use Vec/Box.",
+      "observed_output": "thread 'main' has overflowed its stack",
+      "exit_code": -6,
+      "deterministic": true,
+      "expected_behavior": "checksum 16777216"
+    },
+    {
+      "file": "typescript/01_cyclic_object_deep_clone.ts",
+      "language": "typescript",
+      "bug_lines": [
+        6
+      ],
+      "summary": "Recursive deep clone follows a back-reference forever.",
+      "mechanism": "No seen-set for cyclic object graphs (CWE-674).",
+      "observed_output": "RangeError: Maximum call stack size exceeded",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "cloned object with the cycle preserved"
+    },
+    {
+      "file": "typescript/02_spread_huge_array.ts",
+      "language": "typescript",
+      "bug_lines": [
+        6
+      ],
+      "summary": "Spreading a million-element array into `Math.max` exceeds the argument stack.",
+      "mechanism": "Spread arguments are pushed onto the call stack.",
+      "observed_output": "RangeError: Maximum call stack size exceeded",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "peak reading: 96"
+    },
+    {
+      "file": "typescript/03_mutually_recursive_events.ts",
+      "language": "typescript",
+      "bug_lines": [
+        10,
+        15
+      ],
+      "summary": "Two event handlers re-emit each other's event synchronously, recursing forever.",
+      "mechanism": "EventEmitter dispatch is synchronous; feedback loops recurse on the stack.",
+      "observed_output": "RangeError: Maximum call stack size exceeded",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "total settles once"
+    },
+    {
+      "file": "typescript/04_retry_fanout_queue.ts",
+      "language": "typescript",
+      "bug_lines": [
+        15
+      ],
+      "summary": "Each failed job is re-enqueued twice with no attempt cap, doubling the queue every round.",
+      "mechanism": "Runaway allocation from uncapped retries (CWE-770); heap exhaustion follows.",
+      "observed_output": "jobs queued after 20 rounds: 1048576",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "job dropped after max attempts"
+    },
+    {
+      "file": "python/01_cyclic_graph.py",
+      "language": "python",
+      "bug_lines": [
+        12,
+        7
+      ],
+      "summary": "Walking a node that points at itself raises RecursionError.",
+      "mechanism": "The next link is the node itself, so the recursive walk never reaches a base case.",
+      "observed_output": "RecursionError: maximum recursion depth exceeded",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "a walk that stops on a repeated node"
+    },
+    {
+      "file": "python/02_mutual_recursion.py",
+      "language": "python",
+      "bug_lines": [
+        7,
+        11
+      ],
+      "summary": "left and right call each other with no base case and raise RecursionError.",
+      "mechanism": "Each function's only path calls the other, so the stack grows on every hop.",
+      "observed_output": "RecursionError: maximum recursion depth exceeded",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "a retry that stops"
+    },
+    {
+      "file": "python/03_recursive_retry.py",
+      "language": "python",
+      "bug_lines": [
+        7
+      ],
+      "summary": "A failed send retries by calling itself and raises RecursionError.",
+      "mechanism": "The retry is a direct recursive call with no attempt limit.",
+      "observed_output": "RecursionError: maximum recursion depth exceeded",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "one send, or a bounded number of retries"
+    }
+  ]
+}

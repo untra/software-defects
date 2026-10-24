@@ -1,0 +1,201 @@
+{
+  "family": "shared-state",
+  "defect": "resource-leaks",
+  "name": "Resource Leaks & Improper Shutdown",
+  "essence": "A handle held past its lifetime — file, socket, connection, lock — is shared state nobody released; leaks accumulate until the system starves.",
+  "cwes": [
+    "CWE-404",
+    "CWE-772",
+    "CWE-401",
+    "CWE-459",
+    "CWE-775"
+  ],
+  "examples": [
+    {
+      "file": "go/01_defer_close_in_loop.go",
+      "language": "go",
+      "bug_lines": [
+        21
+      ],
+      "summary": "`defer f.Close()` inside a loop keeps every file open until the function returns.",
+      "mechanism": "Defers run at function exit, not iteration end (CWE-775).",
+      "observed_output": "processed 29 of 64 files, error: true",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "processed 64 of 64 files, error: false"
+    },
+    {
+      "file": "go/02_close_skipped_on_error_path.go",
+      "language": "go",
+      "bug_lines": [
+        26
+      ],
+      "summary": "The short-header error path returns without closing the file; repeated calls exhaust descriptors.",
+      "mechanism": "Cleanup skipped on the error path (CWE-772).",
+      "observed_output": "attempt 30 failed with too many open files: true",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "all attempts reported short header"
+    },
+    {
+      "file": "go/03_ticker_goroutine_per_request.go",
+      "language": "go",
+      "bug_lines": [
+        15,
+        16
+      ],
+      "summary": "Each login starts a goroutine looping on `time.Tick` forever.",
+      "mechanism": "Goroutines with no exit condition and unstoppable tickers accumulate (CWE-401).",
+      "observed_output": "goroutines left running after 100 logins: 100",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "goroutines left running after 100 logins: 0"
+    },
+    {
+      "file": "go/04_response_body_not_closed.go",
+      "language": "go",
+      "bug_lines": [
+        14
+      ],
+      "summary": "Response bodies are never closed, so connections can't be reused and each check opens a new one.",
+      "mechanism": "Unclosed resp.Body leaks the connection (CWE-772).",
+      "observed_output": "20 health checks opened 20 connections",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "20 health checks opened 1 connections"
+    },
+    {
+      "file": "rust/01_rc_cycle_never_dropped.rs",
+      "language": "rust",
+      "bug_lines": [
+        9,
+        21,
+        22
+      ],
+      "summary": "Two nodes hold strong `Rc`s to each other, so neither is ever dropped.",
+      "mechanism": "Reference cycles leak under reference counting; use Weak (CWE-401).",
+      "observed_output": "session client <-> server open\nnodes freed after session ended: 0 of 2",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "nodes freed after session ended: 2 of 2"
+    },
+    {
+      "file": "rust/02_mem_forget_skips_release.rs",
+      "language": "rust",
+      "bug_lines": [
+        34
+      ],
+      "summary": "`mem::forget` skips the guard's Drop, so connections never return to the pool.",
+      "mechanism": "Forgetting an RAII guard leaks the resource it releases (CWE-772).",
+      "observed_output": "served 3 of 5 requests, connections available: 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "served 5 of 5 requests, connections available: 3"
+    },
+    {
+      "file": "typescript/01_listener_never_removed.ts",
+      "language": "typescript",
+      "bug_lines": [
+        10
+      ],
+      "summary": "Each request adds a listener to a shared emitter and never removes it.",
+      "mechanism": "Listeners retain closures forever (CWE-401).",
+      "observed_output": "reload listeners after requests finished: 100",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "reload listeners after requests finished: 0"
+    },
+    {
+      "file": "typescript/02_interval_never_cleared.ts",
+      "language": "typescript",
+      "bug_lines": [
+        11
+      ],
+      "summary": "`setInterval` started on mount is never cleared on unmount.",
+      "mechanism": "Timer keeps running and retains the component (CWE-772).",
+      "observed_output": "ticker still polling after unmount: true",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "ticker still polling after unmount: false"
+    },
+    {
+      "file": "typescript/03_file_handle_not_closed_on_error.ts",
+      "language": "typescript",
+      "bug_lines": [
+        11
+      ],
+      "summary": "JSON.parse throws before `file.close()`, leaking a descriptor per call.",
+      "mechanism": "Close not in finally (CWE-775).",
+      "observed_output": "file descriptors leaked: 20",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "file descriptors leaked: 0"
+    },
+    {
+      "file": "typescript/04_unbounded_request_cache.ts",
+      "language": "typescript",
+      "bug_lines": [
+        7
+      ],
+      "summary": "Responses are cached by unique request id with no eviction, so the map grows forever.",
+      "mechanism": "Cache key has unbounded cardinality and no TTL (CWE-401).",
+      "observed_output": "cached responses retained: 50000",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "bounded cache size"
+    },
+    {
+      "file": "python/01_file_open_on_error.py",
+      "language": "python",
+      "bug_lines": [
+        9,
+        21
+      ],
+      "summary": "write raises before close, and the open count stays 1.",
+      "mechanism": "close is only reached after a successful write. The except path leaves the wrapper open.",
+      "observed_output": "1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "0"
+    },
+    {
+      "file": "python/02_callback_never_removed.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "Two requests subscribe and the listener list stays at 2.",
+      "mechanism": "subscribe only appends. Nothing removes the callback when the request ends.",
+      "observed_output": "2",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "0"
+    },
+    {
+      "file": "python/03_timer_never_cancelled.py",
+      "language": "python",
+      "bug_lines": [
+        7
+      ],
+      "summary": "The timer is never cancelled, so its callback runs once.",
+      "mechanism": "Timer.start arms the thread. Without cancel, join waits until the callback has run.",
+      "observed_output": "ran 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "ran 0"
+    },
+    {
+      "file": "python/04_request_list_grows.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "Each request appends to the module list, and the length becomes 2.",
+      "mechanism": "The list lives for the process. handle never drops entries from finished requests.",
+      "observed_output": "2",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "0 after the requests finish, or a bounded list"
+    }
+  ]
+}

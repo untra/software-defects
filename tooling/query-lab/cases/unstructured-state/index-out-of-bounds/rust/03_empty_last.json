@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Preserve the optional result for empty input.",
+  "original": {
+    "source_hash": "de3b4313b067daee9410d74aa82bd4f55126b97a21fc35dcb3624818b742b7d9",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "18f1816eb3abd1bec6029d93d8d44333496926962426cea62323c28c616b0451",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "None"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. last() returns None; unwrap turns absence into a panic (CWE-476). Establishing incorrect behavior requires semantic or domain evidence beyond these captures. Calls inside macro token trees are not parsed as call_expression nodes; macro expansion or a dedicated token-tree query is required."
+}

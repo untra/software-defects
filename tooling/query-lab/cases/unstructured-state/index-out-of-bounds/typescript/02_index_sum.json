@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Guard the requested index before arithmetic.",
+  "original": {
+    "source_hash": "69aa709e4c25e17fe3fbe343835aedc8f45d239ee3d94c72ea4119de6d051dfd",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "537aa20d2cb3dd7cfa577d3b03ae69379c657e93cbc1b44ffef93dec4cd29170",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "third unavailable"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `scores[2]` is undefined, and undefined plus a number is NaN (CWE-125). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

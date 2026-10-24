@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Decode into a typed integer field rather than assert a JSON float as int.",
+  "original": {
+    "source_hash": "eb7fef91b84f6f0387b4a8904627c3e6c805125660d63a36c2943c0cebfbe992",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/type-errors/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              132,
+              141
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "8a6b8d87e12d473e335822982d2915adf54a58f364a91740a4fede68c0e6be5e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/type-errors/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              152,
+              161
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "qty 3"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. encoding/json stores numbers in any as float64; the assertion expects int (CWE-843). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

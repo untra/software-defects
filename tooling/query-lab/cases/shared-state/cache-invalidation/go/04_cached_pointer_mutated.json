@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return a detached product value before caller-specific discounts.",
+  "original": {
+    "source_hash": "675a56963325b0236f5908b20358624242cb8d55cb618ed649b3cba68093378c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/cache-invalidation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "84444ca26ed014863d87a0fee699d1521da05ed68ea5328dafa221e288b5991a",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/cache-invalidation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "vip price: 11500",
+      "regular price: 12000"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Cached mutable object returned by pointer (CWE-349). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

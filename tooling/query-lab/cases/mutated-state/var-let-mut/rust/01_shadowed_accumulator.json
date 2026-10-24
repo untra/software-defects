@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Update the accumulator binding rather than creating a shadow.",
+  "original": {
+    "source_hash": "9d697057fd83f5497ef9acf4bc949a0bddef23ead0c298bc133ce21da1e67fb4",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/var-let-mut/signals.scm",
+        "captures": [
+          {
+            "name": "binding",
+            "range": [
+              16,
+              19
+            ]
+          },
+          {
+            "name": "binding",
+            "range": [
+              52,
+              55
+            ]
+          },
+          {
+            "name": "binding",
+            "range": [
+              105,
+              108
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "45d990ba1be9032a019c10d8942603162889199c0b88848ef7de11ab11198b7f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/var-let-mut/signals.scm",
+        "captures": [
+          {
+            "name": "binding",
+            "range": [
+              16,
+              19
+            ]
+          },
+          {
+            "name": "binding",
+            "range": [
+              52,
+              55
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "final total: 4650"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Rust shadowing creates a new binding per iteration; the outer `let mut total` is never written. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

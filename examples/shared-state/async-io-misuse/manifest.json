@@ -1,0 +1,196 @@
+{
+  "family": "shared-state",
+  "defect": "async-io-misuse",
+  "name": "Async IO Misuse",
+  "essence": "Fire-and-forget work drops results and failures no one notices are gone.",
+  "cwes": [
+    "CWE-362",
+    "CWE-662",
+    "CWE-696"
+  ],
+  "examples": [
+    {
+      "file": "go/01_goroutine_error_dropped.go",
+      "language": "go",
+      "bug_lines": [
+        26
+      ],
+      "summary": "The error returned by `save` inside a goroutine is discarded; `saveAll` reports success.",
+      "mechanism": "Fire-and-forget goroutines have no channel for failures (use errgroup).",
+      "observed_output": "saved 2 of 3, error: <nil>",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "error: empty record"
+    },
+    {
+      "file": "go/02_main_exits_before_worker.go",
+      "language": "go",
+      "bug_lines": [
+        16
+      ],
+      "summary": "Shutdown starts the flush in a goroutine and returns; the process exits before metrics flush.",
+      "mechanism": "main returning terminates all goroutines without waiting.",
+      "observed_output": "shutdown complete",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "metrics flushed / shutdown complete"
+    },
+    {
+      "file": "go/03_goroutine_leak_unbuffered_result.go",
+      "language": "go",
+      "bug_lines": [
+        19,
+        21
+      ],
+      "summary": "Only the first replica's result is received; the other senders block forever on an unbuffered channel.",
+      "mechanism": "Goroutines blocked on send are never collected (leak per call).",
+      "observed_output": "goroutines leaked: 20",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "goroutines leaked: 0"
+    },
+    {
+      "file": "rust/01_future_never_awaited.rs",
+      "language": "rust",
+      "bug_lines": [
+        8
+      ],
+      "summary": "`async fn` is called but the future is discarded with `let _`, so the receipt is never sent.",
+      "mechanism": "Rust futures are lazy; nothing runs until polled.",
+      "observed_output": "order placed\nreceipts sent: 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "receipts sent: 1"
+    },
+    {
+      "file": "rust/02_dropped_join_handle.rs",
+      "language": "rust",
+      "bug_lines": [
+        7
+      ],
+      "summary": "The export thread's JoinHandle is dropped, so its panic is never observed and main reports success.",
+      "mechanism": "Detached threads lose results and panics.",
+      "observed_output": "nightly export finished successfully\nexport failed: no rows",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "export failure reported"
+    },
+    {
+      "file": "typescript/01_floating_promise.ts",
+      "language": "typescript",
+      "bug_lines": [
+        11
+      ],
+      "summary": "`persistBio` is not awaited; the handler reports saved and the next read sees the old bio.",
+      "mechanism": "Floating promise: ordering of the write is lost (CWE-662).",
+      "observed_output": "saved\nprofile page shows: old bio",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "profile page shows: new bio"
+    },
+    {
+      "file": "typescript/02_unhandled_rejection.ts",
+      "language": "typescript",
+      "bug_lines": [
+        7
+      ],
+      "summary": "An un-awaited webhook call rejects and crashes the process, killing the next order.",
+      "mechanism": "Unhandled promise rejections terminate Node by default.",
+      "observed_output": "order A-100 completed\nError: webhook endpoint returned 500 for order.completed:A-100",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "order completed and next order processed, webhook failure logged"
+    },
+    {
+      "file": "typescript/03_await_in_loop.ts",
+      "language": "typescript",
+      "bug_lines": [
+        12
+      ],
+      "summary": "Independent widget fetches are awaited one by one, so latency adds up.",
+      "mechanism": "Sequential await in a loop serializes concurrent-safe work.",
+      "observed_output": "homepage took longer than 4 round trips: true",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "homepage took longer than 4 round trips: false"
+    },
+    {
+      "file": "typescript/04_then_callback_missing_return.ts",
+      "language": "typescript",
+      "bug_lines": [
+        9
+      ],
+      "summary": "The `.then` callback has a block body with no return, so the chain resolves to undefined.",
+      "mechanism": "Promise chains propagate the callback's return value.",
+      "observed_output": "loaded: undefined",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "loaded: { name: 'user-7' }"
+    },
+    {
+      "file": "typescript/05_race_timeout_loser_continues.ts",
+      "language": "typescript",
+      "bug_lines": [
+        18
+      ],
+      "summary": "Promise.race times out but the charge keeps running; the retry charges the card again.",
+      "mechanism": "race does not cancel the losing promise (use AbortSignal).",
+      "observed_output": "customer charged 2 times",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "customer charged 1 times"
+    },
+    {
+      "file": "python/01_coroutine_never_awaited.py",
+      "language": "python",
+      "bug_lines": [
+        6
+      ],
+      "summary": "save() builds a coroutine and nothing awaits it, so the runtime warns.",
+      "mechanism": "Calling an async function returns a coroutine object. Discarding it never runs the body.",
+      "observed_output": "done\nRuntimeWarning: coroutine 'save' was never awaited\nRuntimeWarning: Enable tracemalloc to get the object allocation traceback",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "saved"
+    },
+    {
+      "file": "python/02_task_exception_dropped.py",
+      "language": "python",
+      "bug_lines": [
+        9
+      ],
+      "summary": "The save task raises disk full, and the caller still prints done.",
+      "mechanism": "create_task schedules the coroutine and the caller never awaits the task, so the exception is only reported as an unretrieved task.",
+      "observed_output": "done\nTask exception was never retrieved\nRuntimeError: disk full",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the disk full error reaches the caller"
+    },
+    {
+      "file": "python/03_await_in_loop.py",
+      "language": "python",
+      "bug_lines": [
+        13
+      ],
+      "summary": "The steps run a, a, b, b because each name is awaited before the next starts.",
+      "mechanism": "await inside the loop runs that coroutine to completion before the next iteration.",
+      "observed_output": "a,a,b,b",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a,b,a,b"
+    },
+    {
+      "file": "python/04_race_loser_writes.py",
+      "language": "python",
+      "bug_lines": [
+        24
+      ],
+      "summary": "After the winner writes, the loser is still awaited and replaces the page with later.",
+      "mechanism": "The loser task is not cancelled when the winner finishes. Awaiting it lets the late write land.",
+      "observed_output": "winner\nlater",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "winner, and the page still winner"
+    }
+  ]
+}

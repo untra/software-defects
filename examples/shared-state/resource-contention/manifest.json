@@ -1,0 +1,210 @@
+{
+  "family": "shared-state",
+  "defect": "resource-contention",
+  "name": "Resource Contention",
+  "essence": "Independent actors each act in self-interest and exhaust a shared, finite resource.",
+  "cwes": [
+    "CWE-400",
+    "CWE-770",
+    "CWE-833"
+  ],
+  "examples": [
+    {
+      "file": "go/01_unbounded_goroutine_fanout.go",
+      "language": "go",
+      "bug_lines": [
+        31
+      ],
+      "summary": "One goroutine per user with no limit floods a 20-connection database.",
+      "mechanism": "Unbounded fan-out exceeds a finite shared pool (CWE-770).",
+      "observed_output": "queries rejected by connection limit: true",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "queries rejected by connection limit: false"
+    },
+    {
+      "file": "go/02_semaphore_without_timeout.go",
+      "language": "go",
+      "bug_lines": [
+        17
+      ],
+      "summary": "Acquiring a slot blocks without a deadline, so a health check waits behind long reports.",
+      "mechanism": "Channel semaphore send has no context/timeout; callers starve.",
+      "observed_output": "health check within budget: false",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "health check within budget: true"
+    },
+    {
+      "file": "go/03_transport_per_request.go",
+      "language": "go",
+      "bug_lines": [
+        15
+      ],
+      "summary": "A new `http.Transport` per call prevents connection reuse; every request opens a new socket.",
+      "mechanism": "Transports own the connection pool; creating one per request defeats pooling.",
+      "observed_output": "20 requests opened 20 connections",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "20 requests opened 1 connections"
+    },
+    {
+      "file": "go/04_unbuffered_audit_channel.go",
+      "language": "go",
+      "bug_lines": [
+        12,
+        21
+      ],
+      "summary": "Request handlers send to an unbuffered channel drained by a slow consumer, so every request waits on it.",
+      "mechanism": "Unbuffered send blocks until the receiver is ready, coupling request latency to the auditor.",
+      "observed_output": "all requests within budget: false",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "all requests within budget: true"
+    },
+    {
+      "file": "rust/01_thread_per_task.rs",
+      "language": "rust",
+      "bug_lines": [
+        14
+      ],
+      "summary": "Spawning an OS thread per upload creates hundreds of threads.",
+      "mechanism": "Unbounded thread creation exhausts scheduler and memory (CWE-770).",
+      "observed_output": "peak OS threads exceeded 8: true",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "peak OS threads exceeded 8: false"
+    },
+    {
+      "file": "rust/02_unbounded_channel_backlog.rs",
+      "language": "rust",
+      "bug_lines": [
+        12,
+        22
+      ],
+      "summary": "An unbounded mpsc channel lets the producer queue thousands of events the consumer can't keep up with.",
+      "mechanism": "No backpressure: memory grows with the backlog. Use sync_channel.",
+      "observed_output": "backlog over 1000 events: true",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "backlog over 1000 events: false"
+    },
+    {
+      "file": "rust/03_guard_held_during_slow_work.rs",
+      "language": "rust",
+      "bug_lines": [
+        9
+      ],
+      "summary": "The mutex guard is held across a slow fetch, serializing all workers.",
+      "mechanism": "Lock scope covers I/O; contention turns parallel work sequential (CWE-833).",
+      "observed_output": "4 parallel refreshes ran one at a time: true",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "4 parallel refreshes ran one at a time: false"
+    },
+    {
+      "file": "typescript/01_promise_all_unbounded.ts",
+      "language": "typescript",
+      "bug_lines": [
+        20
+      ],
+      "summary": "All 100 requests are started at once against an API limited to 5 in flight.",
+      "mechanism": "Promise.all/allSettled over map starts everything immediately (CWE-770).",
+      "observed_output": "rate limited: 95 of 100",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "rate limited: 0 of 100"
+    },
+    {
+      "file": "typescript/02_cpu_loop_blocks_event_loop.ts",
+      "language": "typescript",
+      "bug_lines": [
+        9
+      ],
+      "summary": "A synchronous hashing loop blocks the event loop, delaying every timer and request.",
+      "mechanism": "The single event-loop thread is a shared resource monopolized by CPU work.",
+      "observed_output": "heartbeat on time: false",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "heartbeat on time: true"
+    },
+    {
+      "file": "typescript/03_unbounded_in_memory_queue.ts",
+      "language": "typescript",
+      "bug_lines": [
+        8
+      ],
+      "summary": "Events are enqueued faster than drained with no bound, so memory grows without limit.",
+      "mechanism": "No backpressure or cap on a shared in-memory queue (CWE-400).",
+      "observed_output": "queued events in memory: 9900",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "bounded queue or producer slowed"
+    },
+    {
+      "file": "typescript/04_pool_slot_not_released_on_error.ts",
+      "language": "typescript",
+      "bug_lines": [
+        25
+      ],
+      "summary": "A failing query throws before `release()`, draining the pool so healthy queries wait forever.",
+      "mechanism": "Release not in finally; each error permanently removes a connection (CWE-772).",
+      "observed_output": "healthy query still waiting for a connection after 200ms",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "rows for select 1"
+    },
+    {
+      "file": "python/01_thread_per_item.py",
+      "language": "python",
+      "bug_lines": [
+        21
+      ],
+      "summary": "Eight items start eight threads, and the peak in the critical section is 8.",
+      "mechanism": "Each item creates a thread immediately. Nothing keeps the overlap at the cap of 2.",
+      "observed_output": "8",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "2"
+    },
+    {
+      "file": "python/02_unbounded_queue.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "The queue accepts 8 jobs and reports a max size of 0, which means unbounded.",
+      "mechanism": "Queue() with no maxsize never refuses a put. The caller can keep enqueueing.",
+      "observed_output": "0 8",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a positive max size, and no more jobs than that size"
+    },
+    {
+      "file": "python/03_lock_held_during_sleep.py",
+      "language": "python",
+      "bug_lines": [
+        12
+      ],
+      "summary": "The holder keeps the lock while it waits, so the second acquire prints blocked.",
+      "mechanism": "The lock is acquired before the wait and released after it. The other thread cannot enter.",
+      "observed_output": "blocked False",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "entered True"
+    },
+    {
+      "file": "python/04_gather_without_limit.py",
+      "language": "python",
+      "bug_lines": [
+        11
+      ],
+      "summary": "gather starts all 8 jobs and reports that all 8 finished.",
+      "mechanism": "The comprehension builds one coroutine per item and gather schedules every one of them.",
+      "observed_output": "8",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "2, a capped batch"
+    }
+  ]
+}

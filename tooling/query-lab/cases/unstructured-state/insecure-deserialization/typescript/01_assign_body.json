@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Allowlist writable fields and preserve the server-owned role.",
+  "original": {
+    "source_hash": "e85f3ae38d283f3695d2ed24bb12d37f46c4b69a1a72e221804f366462204cad",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/insecure-deserialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              100,
+              106
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "e7d5e1e98e5d51f5b5d0cae371389e15f463fe24e3f4dd9e9418175b02c90ffb",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/insecure-deserialization/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "name=ada role=member"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Every enumerable field on the body overwrites the record, including role (CWE-915). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

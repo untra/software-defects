@@ -1,0 +1,5 @@
+def main():
+    print(sorted([1, "2", 3]))
+
+
+main()

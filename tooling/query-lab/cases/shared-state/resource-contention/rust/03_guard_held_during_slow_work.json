@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Perform slow work outside the critical section and lock only to publish.",
+  "original": {
+    "source_hash": "7c1f0149b71465b1302cf785e9bdc2cf4e72593ff961b9c3292ad589130690e6",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/resource-contention/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              246,
+              250
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              560,
+              565
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "b65eb9486de568f9ece3ab68552512476c593ffdff2b274bb2ad14e5af5cccd9",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/resource-contention/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              280,
+              284
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              560,
+              565
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "parallel refreshes ran one at a time: false"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Lock scope covers I/O; contention turns parallel work sequential (CWE-833). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,224 @@
+{
+  "family": "mutated-state",
+  "defect": "aliasing-mutable-defaults",
+  "name": "Aliasing & Mutable Defaults",
+  "essence": "When two references share one mutable value, a write through either is a surprise to the other.",
+  "cwes": [
+    "CWE-374",
+    "CWE-375",
+    "CWE-471"
+  ],
+  "examples": [
+    {
+      "file": "go/01_append_to_subslice.go",
+      "language": "go",
+      "bug_lines": [
+        10
+      ],
+      "summary": "Appending to a sub-slice writes into the parent's backing array, overwriting `upload` in `jobs`.",
+      "mechanism": "`jobs[:2]` has spare capacity, so `append` reuses the shared array instead of allocating.",
+      "observed_output": "batch: [resize encode urgent-retry]\njobs:  [resize encode urgent-retry notify]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "jobs unchanged: [resize encode upload notify]"
+    },
+    {
+      "file": "go/02_map_argument_mutated.go",
+      "language": "go",
+      "bug_lines": [
+        8,
+        9
+      ],
+      "summary": "`withDefaults` mutates and returns the caller's map; deleting from the 'public' copy strips auth from the original.",
+      "mechanism": "Maps are reference types; the function returns the same map, not a copy.",
+      "observed_output": "signed: map[User-Agent:defects/1.0]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "signed retains Authorization"
+    },
+    {
+      "file": "go/03_struct_copy_shares_map.go",
+      "language": "go",
+      "bug_lines": [
+        12
+      ],
+      "summary": "Copying a struct copies the map header, not the map; editing admin settings changes base.",
+      "mechanism": "Struct assignment is shallow; map fields alias the same underlying table.",
+      "observed_output": "base darkMode: true",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "base darkMode: false"
+    },
+    {
+      "file": "go/04_getter_returns_internal_slice.go",
+      "language": "go",
+      "bug_lines": [
+        10
+      ],
+      "summary": "Accessor returns the internal slice, letting callers rewrite the roster.",
+      "mechanism": "Returned slice shares the backing array with the struct field (CWE-375).",
+      "observed_output": "[mallory ben]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "[ana ben]"
+    },
+    {
+      "file": "go/05_cache_stores_reused_buffer.go",
+      "language": "go",
+      "bug_lines": [
+        16
+      ],
+      "summary": "Cache entries store slices of one reused buffer, so later writes corrupt earlier entries.",
+      "mechanism": "`buf[:0]` keeps the same backing array; `cache[\"alpha\"]` still points to it.",
+      "observed_output": "BETAA BETA",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "ALPHA BETA"
+    },
+    {
+      "file": "rust/01_rc_clone_is_shallow.rs",
+      "language": "rust",
+      "bug_lines": [
+        15
+      ],
+      "summary": "`#[derive(Clone)]` clones the `Rc`, so the remix shares and mutates the original playlist's tracks.",
+      "mechanism": "`Rc::clone` bumps a refcount; `RefCell` permits mutation through the shared handle.",
+      "observed_output": "road trip: [\"song a\", \"remix b\"]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "road trip: [\"song a\"]"
+    },
+    {
+      "file": "typescript/01_shared_default_parameter.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3,
+        8
+      ],
+      "summary": "Default parameter references a module-level object; one caller's header write leaks into every later request.",
+      "mechanism": "Default value expression returns the same object each call; callers mutate it.",
+      "observed_output": "{ Accept: 'application/json', Authorization: 'Bearer token' }",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "{ Accept: 'application/json' }"
+    },
+    {
+      "file": "typescript/02_array_fill_shared_object.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "`fill({...})` places the same object in every slot; assigning one seat assigns all.",
+      "mechanism": "`Array.prototype.fill` copies the reference, not the value.",
+      "observed_output": "[ 'ana', 'ana', 'ana' ]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "[ 'ana', 'open', 'open' ]"
+    },
+    {
+      "file": "typescript/03_shallow_spread_copy.ts",
+      "language": "typescript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "Object spread is shallow; changing the test config's db host rewrites prod's.",
+      "mechanism": "Nested `db` object is shared between both configs.",
+      "observed_output": "prod -> localhost",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "prod -> db.internal"
+    },
+    {
+      "file": "typescript/04_method_returns_internal_array.ts",
+      "language": "typescript",
+      "bug_lines": [
+        9
+      ],
+      "summary": "`list()` returns the private array; truncating the preview truncates the inventory.",
+      "mechanism": "`private readonly` guards the binding, not the array's contents.",
+      "observed_output": "preview: [ 'sku-1' ]\ninventory: [ 'sku-1' ]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "inventory: [ 'sku-1', 'sku-2', 'sku-3' ]"
+    },
+    {
+      "file": "typescript/05_object_assign_mutates_defaults.ts",
+      "language": "typescript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "`Object.assign(DEFAULT_SETTINGS, ...)` mutates the defaults and returns them, so every user shares one settings object.",
+      "mechanism": "First argument of Object.assign is the mutation target.",
+      "observed_output": "alice { theme: 'dark', fontSize: 18 }\nbob { theme: 'dark', fontSize: 18 }",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "alice {dark, 14} / bob {light, 18}"
+    },
+    {
+      "file": "python/01_mutable_default_list.py",
+      "language": "python",
+      "bug_lines": [
+        1
+      ],
+      "summary": "The second call sees the tag appended by the first call.",
+      "mechanism": "A default list is created once, when the function is defined, and every call shares it.",
+      "observed_output": "['ada']\n['ada', 'ben']",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "['ben'] on the second call"
+    },
+    {
+      "file": "python/02_repeated_inner_list.py",
+      "language": "python",
+      "bug_lines": [
+        2
+      ],
+      "summary": "Appending to the first row also appends to the other two rows.",
+      "mechanism": "Multiplying a list repeats the same inner list object, it does not copy it.",
+      "observed_output": "[['ada'], ['ada'], ['ada']]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "only the first row contains ada"
+    },
+    {
+      "file": "python/03_class_body_list.py",
+      "language": "python",
+      "bug_lines": [
+        2
+      ],
+      "summary": "A pen added on the morning cart shows up on the afternoon cart.",
+      "mechanism": "A list in the class body is one object shared by every instance that does not assign its own.",
+      "observed_output": "['pen']",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the afternoon cart is empty"
+    },
+    {
+      "file": "python/04_shallow_copy.py",
+      "language": "python",
+      "bug_lines": [
+        3,
+        4
+      ],
+      "summary": "Appending admin on the copy also changes the original tags.",
+      "mechanism": "dict.copy is shallow, so the nested tags list is still shared.",
+      "observed_output": "['staff', 'admin']",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "original tags stay ['staff']"
+    },
+    {
+      "file": "python/05_return_internal_list.py",
+      "language": "python",
+      "bug_lines": [
+        6
+      ],
+      "summary": "The caller appends ben, and the roster keeps that change.",
+      "mechanism": "Returning the internal list hands out the same object the roster stores.",
+      "observed_output": "['ada', 'ben']",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "roster names stay ['ada']"
+    }
+  ]
+}

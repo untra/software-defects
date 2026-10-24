@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use a single atomic read-modify-write operation.",
+  "original": {
+    "source_hash": "697dc5e358cb34ee91020c33e4278f35493b43018b08ec5b5ef4316db76edce8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              210,
+              214
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              243,
+              248
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "576a8bc8b53991dc40f69dac02042cac341d40a3079cad65804a1b417cf8749e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              196,
+              205
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "recorded 8000000 of 8000000 hits"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Each operation is atomic alone; the read-modify-write is not. Use fetch_add. Establishing incorrect behavior requires semantic or domain evidence beyond these captures. Calls inside macro token trees are not parsed as call_expression nodes; macro expansion or a dedicated token-tree query is required."
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use checked multiplication and reject overflow.",
+  "original": {
+    "source_hash": "c7136f0b0a5887fa8493660d2b30c60f96baab0f499c94fb3909a9ba7ce39b94",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "9f1b82ec3faa1b76168df13f63cc4006a7e35cab59aaef1d3237a30e354e451e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              142,
+              153
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "line rejected"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Debug overflow checks panic; the inputs were never bounded (CWE-190). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

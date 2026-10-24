@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject an unrepresentable header count with a checked conversion.",
+  "original": {
+    "source_hash": "ebffc79285874a412730b0c65417df1ddfdd29620df3449f9afb75b0e2c6d3c5",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/increment-decrement-operators/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "b9c5876d0c0dc47e9c1249de9fab368cd071e8af2d966735fb06042363a57142",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/increment-decrement-operators/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "item count exceeds header capacity"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `as` casts never panic; use `u8::try_from`. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

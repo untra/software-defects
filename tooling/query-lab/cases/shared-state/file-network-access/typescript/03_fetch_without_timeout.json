@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Abort a stalled request within its deadline and clean up the local server.",
+  "original": {
+    "source_hash": "9aba96e9cdde22b6980ff4ca6d52e345964298a68f97950160da167623d181d8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              202,
+              207
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "9d0704a537d0d37e8b99f7587290c8ba5ff0deb6b4b603003c43e5c469148787",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              233,
+              238
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "exchange rate timed out"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. No timeout on network I/O; callers hang. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

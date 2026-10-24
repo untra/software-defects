@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Copy defaults for every returned request.",
+  "original": {
+    "source_hash": "95f7ffefccd0fced151ae0802484309cdbc67501b0e73de3189c49f04bbc6a38",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "febc47d4b49d197bc4a0c797f749820107ef63e6669bde54e56d5dc174bbc3e6",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "Accept:"
+    ],
+    "exit_code": 0,
+    "stdout_excludes": [
+      "Authorization"
+    ]
+  },
+  "analysis_limit": "These are syntax candidates only. Default value expression returns the same object each call; callers mutate it. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

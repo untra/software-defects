@@ -1,0 +1,208 @@
+{
+  "family": "unstructured-state",
+  "defect": "unconstrained-inputs",
+  "name": "Unconstrained Inputs",
+  "essence": "Nothing limits how big, how long, or how extreme an input can be — so something downstream pays for it.",
+  "cwes": [
+    "CWE-1333",
+    "CWE-400",
+    "CWE-190"
+  ],
+  "examples": [
+    {
+      "file": "go/01_line_total.go",
+      "language": "go",
+      "bug_lines": [
+        8
+      ],
+      "summary": "A large unit price times four wraps the int64 total.",
+      "mechanism": "Signed multiplication wraps instead of rejecting a magnitude the domain cannot represent (CWE-190).",
+      "observed_output": "total -6446744073709551616",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the line rejected, or a total of 12000000000000000000"
+    },
+    {
+      "file": "go/02_negative_buffer.go",
+      "language": "go",
+      "bug_lines": [
+        7
+      ],
+      "summary": "make is called with a negative length and panics.",
+      "mechanism": "A length from the caller is not checked before allocation (CWE-400).",
+      "observed_output": "panic: runtime error: makeslice: len out of range",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "the request rejected"
+    },
+    {
+      "file": "go/03_repeat_label.go",
+      "language": "go",
+      "bug_lines": [
+        10
+      ],
+      "summary": "A label is repeated 8 times with no maximum.",
+      "mechanism": "strings.Repeat trusts the count, so one request sets the size (CWE-400).",
+      "observed_output": "label xxxxxxxx",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the label rejected or clamped"
+    },
+    {
+      "file": "go/04_scaled_timeout.go",
+      "language": "go",
+      "bug_lines": [
+        10
+      ],
+      "summary": "Scaling an untrusted second count into a Duration overflows to a negative timeout.",
+      "mechanism": "time.Duration is an int64 of nanoseconds; the multiply wraps (CWE-190).",
+      "observed_output": "timeout -2346317h47m53.709551616s",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the timeout rejected"
+    },
+    {
+      "file": "rust/01_line_total.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "A price times a quantity overflows u32 and panics in a debug build.",
+      "mechanism": "Debug overflow checks panic; the inputs were never bounded (CWE-190).",
+      "observed_output": "attempt to multiply with overflow",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "the line rejected"
+    },
+    {
+      "file": "rust/02_repeat_label.rs",
+      "language": "rust",
+      "bug_lines": [
+        3
+      ],
+      "summary": "A label is repeated 8 times with no maximum.",
+      "mechanism": "String::repeat trusts the count (CWE-400).",
+      "observed_output": "label xxxxxxxx",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the label rejected or clamped"
+    },
+    {
+      "file": "rust/03_scaled_timeout.rs",
+      "language": "rust",
+      "bug_lines": [
+        3
+      ],
+      "summary": "A second count is cast to u32 and truncated.",
+      "mechanism": "`as u32` drops the high bits instead of failing the conversion (CWE-190).",
+      "observed_output": "timeout seconds: 705032704",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the timeout rejected"
+    },
+    {
+      "file": "typescript/01_page_limit.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "A page limit of -1 drops the last row.",
+      "mechanism": "slice treats a negative end as an offset from the length (CWE-1284).",
+      "observed_output": "ana,ben,cam",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the limit rejected, or all four rows"
+    },
+    {
+      "file": "typescript/02_repeat_label.ts",
+      "language": "typescript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "A label is repeated 8 times with no maximum.",
+      "mechanism": "String repeat trusts the count (CWE-400).",
+      "observed_output": "label xxxxxxxx",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the label rejected or clamped"
+    },
+    {
+      "file": "typescript/03_line_total.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "A price near the top of the float range times ten prints Infinity.",
+      "mechanism": "Number multiplication overflows to Infinity instead of rejecting the magnitude (CWE-190).",
+      "observed_output": "total Infinity",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the line rejected"
+    },
+    {
+      "file": "typescript/04_nested_groups.ts",
+      "language": "typescript",
+      "bug_lines": [
+        6
+      ],
+      "summary": "A group tree four levels deep is counted with no depth cap.",
+      "mechanism": "The recursion follows every nested list the input contains (CWE-400).",
+      "observed_output": "groups 4",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the tree rejected past the depth cap"
+    },
+    {
+      "file": "python/01_slice_limit.py",
+      "language": "python",
+      "bug_lines": [
+        2
+      ],
+      "summary": "A limit of -1 drops dee and returns the first three names.",
+      "mechanism": "A slice end of -1 counts from the end. It is not rejected as a page size.",
+      "observed_output": "['ada', 'ben', 'cam']",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "all four names, or a rejected limit"
+    },
+    {
+      "file": "python/02_repeat_label.py",
+      "language": "python",
+      "bug_lines": [
+        2
+      ],
+      "summary": "A requested length of 40 is repeated in full.",
+      "mechanism": "The repeat uses the caller-supplied count. Nothing caps it at a label length.",
+      "observed_output": "40",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a label no longer than 8 characters"
+    },
+    {
+      "file": "python/03_float_overflow.py",
+      "language": "python",
+      "bug_lines": [
+        2
+      ],
+      "summary": "The product overflows the float range and becomes inf.",
+      "mechanism": "Floats overflow to inf instead of failing the multiplication.",
+      "observed_output": "inf",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a finite total or a rejected magnitude"
+    },
+    {
+      "file": "python/04_nested_groups.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "A requested depth of 5 is nested in full.",
+      "mechanism": "Each step wraps another list. The depth argument is not capped.",
+      "observed_output": "5",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a depth no greater than 2"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Represent an absent first word explicitly.",
+  "original": {
+    "source_hash": "bffe4fa829770f98c983b5d4815071342846d6c01ccd434ced8e560ce82f9a62",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              71,
+              77
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "9504fe47f719a0ed5cc4e5ed284d619fae0d1600fa15a53e664d32e165ce7853",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "None"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. split yields None and unwrap discards the missing case (CWE-476). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

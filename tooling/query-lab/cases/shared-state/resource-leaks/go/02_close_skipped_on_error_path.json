@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Register cleanup immediately after opening the file.",
+  "original": {
+    "source_hash": "76b36320654743e0424b6d1082e5d471945f2bb7ab408ad3437b5cfbfd0f7ba3",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              280,
+              284
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              451,
+              456
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "8d87ebb6acd5de6b2174eeaab0a30f00c2050adfe7286d71cc45debae8e63c76",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              280,
+              284
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              338,
+              343
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "all attempts reported short header"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Cleanup skipped on the error path (CWE-772). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Join the worker and propagate both task failure and panic before declaring success.",
+  "original": {
+    "source_hash": "c20c548630cb078910959bcbf23c02b513cf5690dffbdf655a2bbff118f7abb7",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              152,
+              157
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "6a374215d21afbd43fe912e40712ed602da238c4546557d78ae86252fe3e3195",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              174,
+              179
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              368,
+              372
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "export failed: no rows"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Detached threads lose results and panics. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

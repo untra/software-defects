@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Pass identity through the asynchronous call chain.",
+  "original": {
+    "source_hash": "ab0fd9280f9cdb7eedb14beb18c7815132596e65ecb568151c942f4b051a136a",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "02fa7cce49ed0492974da8b5d3f0a4ade097387170565fcfa511182d9ec36880",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "alice received account of alice",
+      "bob received account of bob"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Module state in a server is shared by every concurrent request. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

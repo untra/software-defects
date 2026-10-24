@@ -1,0 +1,220 @@
+{
+  "family": "unstructured-state",
+  "defect": "divide-by-zero",
+  "name": "Divide by Zero",
+  "essence": "Nothing stops the divisor from being zero until the program meets it.",
+  "cwes": [
+    "CWE-369",
+    "CWE-682"
+  ],
+  "examples": [
+    {
+      "file": "go/01_panel_current.go",
+      "language": "go",
+      "bug_lines": [
+        8
+      ],
+      "summary": "Integer division by a zero resistance panics.",
+      "mechanism": "Go integer `/` has no Infinity; a zero divisor is a runtime panic (CWE-369).",
+      "observed_output": "panic: runtime error: integer divide by zero",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "current 0, or a rejected resistance"
+    },
+    {
+      "file": "go/02_float_ratio.go",
+      "language": "go",
+      "bug_lines": [
+        8
+      ],
+      "summary": "Float division by zero yields +Inf and the program keeps going.",
+      "mechanism": "IEEE-754 float64 division by 0 is +Inf, which poisons later math (CWE-682).",
+      "observed_output": "current +Inf",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a rejected resistance, not +Inf"
+    },
+    {
+      "file": "go/03_bucket_mod.go",
+      "language": "go",
+      "bug_lines": [
+        8
+      ],
+      "summary": "Integer remainder with a zero bucket count panics.",
+      "mechanism": "`%` has the same zero-divisor panic as `/` (CWE-369).",
+      "observed_output": "panic: runtime error: integer divide by zero",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "remainder 0 when there are no buckets, or a rejected count"
+    },
+    {
+      "file": "go/04_empty_average.go",
+      "language": "go",
+      "bug_lines": [
+        10
+      ],
+      "summary": "The average of an empty score list divides by len 0.",
+      "mechanism": "A nil or empty slice has length 0; integer division by that length panics (CWE-369).",
+      "observed_output": "panic: runtime error: integer divide by zero",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "a defined empty result, not a panic"
+    },
+    {
+      "file": "rust/01_split_bill.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "Splitting a bill across zero diners panics in a debug build.",
+      "mechanism": "Integer `/` panics on zero in debug and wraps in release (CWE-369).",
+      "observed_output": "attempt to divide by zero",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "the split rejected because diners is 0"
+    },
+    {
+      "file": "rust/02_float_ratio.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "A zero resistance produces inf and printing continues.",
+      "mechanism": "f64 division follows IEEE-754 and does not panic (CWE-682).",
+      "observed_output": "current inf",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Err for a zero resistance"
+    },
+    {
+      "file": "rust/03_bucket_mod.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "Remainder over zero buckets panics in a debug build.",
+      "mechanism": "Integer `%` panics on zero in debug (CWE-369).",
+      "observed_output": "attempt to calculate the remainder with a divisor of zero",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "the bucket count rejected"
+    },
+    {
+      "file": "typescript/01_panel_current.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "Dividing by a zero resistance prints Infinity.",
+      "mechanism": "JS number division by 0 does not throw (CWE-682).",
+      "observed_output": "current Infinity",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a rejected resistance"
+    },
+    {
+      "file": "typescript/02_zero_over_zero.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "Zero divided by zero prints NaN.",
+      "mechanism": "0/0 is NaN, and NaN fails every comparison (CWE-682).",
+      "observed_output": "ratio NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a rejected empty count"
+    },
+    {
+      "file": "typescript/03_bucket_mod.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "Remainder with zero buckets prints NaN.",
+      "mechanism": "`% 0` is NaN for numbers (CWE-682).",
+      "observed_output": "remainder NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a rejected bucket count"
+    },
+    {
+      "file": "typescript/04_empty_mean.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "The mean of an empty list divides by length 0 and prints NaN.",
+      "mechanism": "An empty array is a valid input; the division is not (CWE-369).",
+      "observed_output": "average NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a defined empty result"
+    },
+    {
+      "file": "typescript/05_bigint_split.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "A bigint divisor of 0n throws RangeError.",
+      "mechanism": "bigint division throws instead of producing Infinity (CWE-369).",
+      "observed_output": "RangeError: Division by zero",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "a rejected diner count"
+    },
+    {
+      "file": "python/01_true_division.py",
+      "language": "python",
+      "bug_lines": [
+        2
+      ],
+      "summary": "Dividing a share by a zero whole raises ZeroDivisionError.",
+      "mechanism": "True division by zero raises. Python does not return Infinity for this operator.",
+      "observed_output": "ZeroDivisionError: division by zero",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "a defined ratio"
+    },
+    {
+      "file": "python/02_floor_division.py",
+      "language": "python",
+      "bug_lines": [
+        2
+      ],
+      "summary": "Floor-dividing the page count by zero raises ZeroDivisionError.",
+      "mechanism": "Floor division by zero raises ZeroDivisionError.",
+      "observed_output": "ZeroDivisionError: division by zero",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "a page count"
+    },
+    {
+      "file": "python/03_remainder.py",
+      "language": "python",
+      "bug_lines": [
+        2
+      ],
+      "summary": "The remainder of a box size of zero raises ZeroDivisionError.",
+      "mechanism": "The % operator raises ZeroDivisionError when the divisor is zero.",
+      "observed_output": "ZeroDivisionError: division by zero",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "a leftover count"
+    },
+    {
+      "file": "python/04_empty_mean.py",
+      "language": "python",
+      "bug_lines": [
+        2
+      ],
+      "summary": "The mean of an empty sample list divides by zero.",
+      "mechanism": "len of an empty list is 0, and that value is used as the divisor.",
+      "observed_output": "ZeroDivisionError: division by zero",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "no mean for an empty sample"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use the tested pinned release rather than selecting the highest advertised version.",
+  "original": {
+    "source_hash": "40847fd54336e3e7b3ea91f6f47a9c39ec366be04f9337c9c6f03404a89b24d5",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/version-library-mismanagement/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              595,
+              600
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "b46f8f7751f2478adb5ca60737894bcb78a01466c29ef9362e2994c4f62b2380",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/version-library-mismanagement/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "february 2024: 29 via 1.2.0"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Choosing the highest version changes behavior the tested 1.2.0 did not have (CWE-1395). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

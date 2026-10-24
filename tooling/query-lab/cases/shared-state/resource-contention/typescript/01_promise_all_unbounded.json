@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Process bounded batches that respect the API concurrency limit.",
+  "original": {
+    "source_hash": "5214868120db65dca993df464acba807e428f6f4964ec296ac12b84bbe543b09",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/resource-contention/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              498,
+              508
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "a4b08d90753b705d767a26bf9432b4e0b6b1e9f69d18a78ef335d9d65518be9e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/resource-contention/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              600,
+              604
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              622,
+              632
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "rate limited: 0 of 100"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Promise.all/allSettled over map starts everything immediately (CWE-770). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Resolve only the tested exact release.",
+  "original": {
+    "source_hash": "f4c04d930c07d37db89053c2b0960d0d332f5c2b2fed58af4a24012b9921db7c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/version-library-mismanagement/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              706,
+              719
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "ca8efe49d3fff5c03b7ec0bc495111633f26e1d81a9d0706247f43eccede890e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/version-library-mismanagement/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              727,
+              741
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "february 2024: 29 via 1.2.0"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `^1.2.0` allows any later 1.x, including a release that changed the calendar (CWE-1395). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

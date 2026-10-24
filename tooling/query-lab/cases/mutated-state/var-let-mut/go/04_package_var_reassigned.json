@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Pass currency explicitly so invoice formatting cannot mutate later calls.",
+  "original": {
+    "source_hash": "bcd5d28fa7139609cb5be8d2f2e5ed7afaf88827b624e81499f9e708b9e23684",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/var-let-mut/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "05d0b131b0df16a5ade4ec8664c516565bf0d6833ab4504c240230c99c9361ce",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/var-let-mut/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "$19.99\ninvoice: \u20ac25.00\n$19.99"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Mutable package var acts as hidden shared state; one caller's temporary change leaks to all subsequent callers. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

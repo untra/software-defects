@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use iterative identity-based visitation and break the example ownership cycle after traversal.",
+  "original": {
+    "source_hash": "0c85ed7e8a050c2228d16b9c608b9973a1e07898fe60be1ecc2b417348854668",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/stack-overflow/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "449d8f90d9da8313d746d0df925d8a7b426887cee1746faec8dc1b423b60706d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/stack-overflow/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "2 folders under root"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Shared ownership makes cycles easy; recursion lacks a visited set (CWE-674). Establishing incorrect behavior requires semantic or domain evidence beyond these captures. Calls inside macro token trees are not parsed as call_expression nodes; macro expansion or a dedicated token-tree query is required."
+}

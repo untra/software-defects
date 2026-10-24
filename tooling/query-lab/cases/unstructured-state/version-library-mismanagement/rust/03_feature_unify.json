@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Make units an explicit call contract rather than an implicitly unified feature.",
+  "original": {
+    "source_hash": "21b7a32a84f962e98e8b71298d9ba386d734bf114e8e90ddecf073b5b043b6f6",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/version-library-mismanagement/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "1268e406ef6e63a9032e9c97e1a4bc47990a3a0a889d2c1b1e5a0100b3bbc6f2",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/version-library-mismanagement/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "amount 10"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Another crate's feature is unified on, so this binary scales amounts it did not ask to scale (CWE-937). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

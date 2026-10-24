@@ -1,0 +1,234 @@
+{
+  "family": "unstructured-state",
+  "defect": "lack-of-input-validation",
+  "name": "Lack of Input Validation",
+  "essence": "Read values are assumed correct, written values assumed safe, executed values assumed benign — until proven otherwise.",
+  "cwes": [
+    "CWE-20",
+    "CWE-89",
+    "CWE-1284"
+  ],
+  "examples": [
+    {
+      "file": "go/01_ignored_count.go",
+      "language": "go",
+      "bug_lines": [
+        10
+      ],
+      "summary": "Atoi fails on 12abc and the ignored error ships 0.",
+      "mechanism": "The parse error is discarded, so the zero value is treated as a count (CWE-20).",
+      "observed_output": "shipped 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the token rejected"
+    },
+    {
+      "file": "go/02_built_query.go",
+      "language": "go",
+      "bug_lines": [
+        7
+      ],
+      "summary": "A name containing a quote is interpolated into a SQL string.",
+      "mechanism": "Sprintf puts the name in the query text, so the quote ends the literal early (CWE-89).",
+      "observed_output": "SELECT id FROM users WHERE name = 'O'Brien'",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the name bound as data, quote included"
+    },
+    {
+      "file": "go/03_status_literal.go",
+      "language": "go",
+      "bug_lines": [
+        7
+      ],
+      "summary": "BLOCKED is allowed because the check is case-sensitive and exact.",
+      "mechanism": "Anything other than the single literal falls through to allowed (CWE-20).",
+      "observed_output": "allowed",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "denied"
+    },
+    {
+      "file": "go/04_negative_qty.go",
+      "language": "go",
+      "bug_lines": [
+        8
+      ],
+      "summary": "A negative quantity is multiplied into a negative charge.",
+      "mechanism": "The number is a valid int and is never checked for sign or range (CWE-1284).",
+      "observed_output": "charge -30",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the quantity rejected"
+    },
+    {
+      "file": "rust/01_default_count.rs",
+      "language": "rust",
+      "bug_lines": [
+        3
+      ],
+      "summary": "A bad count parses as 0 via unwrap_or.",
+      "mechanism": "unwrap_or turns a parse error into a quantity (CWE-20).",
+      "observed_output": "shipped 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the token rejected"
+    },
+    {
+      "file": "rust/02_built_query.rs",
+      "language": "rust",
+      "bug_lines": [
+        3
+      ],
+      "summary": "A name containing a quote is interpolated into a SQL string.",
+      "mechanism": "The format string puts the name in the query text (CWE-89).",
+      "observed_output": "SELECT id FROM users WHERE name = 'O'Brien'",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the name bound as data"
+    },
+    {
+      "file": "rust/03_negative_qty.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "A negative quantity becomes a negative charge.",
+      "mechanism": "The int is in range for the type and unchecked for the domain (CWE-1284).",
+      "observed_output": "charge -30",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the quantity rejected"
+    },
+    {
+      "file": "typescript/01_cast_user.ts",
+      "language": "typescript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "An empty JSON object is cast to User and email is read.",
+      "mechanism": "`as User` erases at runtime, so a missing email throws on toLowerCase (CWE-20).",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'toLowerCase')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "the body rejected before use"
+    },
+    {
+      "file": "typescript/02_formula_eval.ts",
+      "language": "typescript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "eval of a formula returns 100 because of the comma operator.",
+      "mechanism": "eval runs the text as code; the comma operator yields the last expression (CWE-20).",
+      "observed_output": "total 100",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "total 4, or the formula rejected"
+    },
+    {
+      "file": "typescript/03_built_query.ts",
+      "language": "typescript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "A name containing a quote is interpolated into a SQL string.",
+      "mechanism": "The template literal puts the name in the query text (CWE-89).",
+      "observed_output": "SELECT id FROM users WHERE name = 'O'Brien'",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the name bound as data"
+    },
+    {
+      "file": "typescript/04_truthy_email.ts",
+      "language": "typescript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "A whitespace email is accepted because it is truthy.",
+      "mechanism": "`if (!email)` rejects only empty strings, not blank or malformed ones (CWE-20).",
+      "observed_output": "accepted  ",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "missing"
+    },
+    {
+      "file": "typescript/05_prefix_host.ts",
+      "language": "typescript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "A longer host passes a startsWith check against the allowed origin.",
+      "mechanism": "The prefix matches a different host that merely begins with the allowed text (CWE-20).",
+      "observed_output": "allowed true",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "allowed false"
+    },
+    {
+      "file": "python/01_int_becomes_zero.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "The quantity ten fails to parse and is stored as 0.",
+      "mechanism": "The except clause replaces a ValueError with a real quantity, so the caller cannot tell the parse failed.",
+      "observed_output": "0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the parse stays failed"
+    },
+    {
+      "file": "python/02_built_query.py",
+      "language": "python",
+      "bug_lines": [
+        2
+      ],
+      "summary": "The name O'Brien closes the quote in the query string early.",
+      "mechanism": "The name is interpolated into a quoted SQL fragment with no escaping.",
+      "observed_output": "select id from people where name = 'O'Brien'",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a query whose name literal stays one token"
+    },
+    {
+      "file": "python/03_negative_qty.py",
+      "language": "python",
+      "bug_lines": [
+        2
+      ],
+      "summary": "A quantity of -3 produces a charge of -30.",
+      "mechanism": "The product uses the quantity as given. Nothing rejects a negative count.",
+      "observed_output": "-30",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a rejected quantity"
+    },
+    {
+      "file": "python/04_formula_eval.py",
+      "language": "python",
+      "bug_lines": [
+        3
+      ],
+      "summary": "The formula base + adjust sees the local adjust and returns 105.",
+      "mechanism": "eval runs the string in the function's local scope, so names the caller did not pass are visible.",
+      "observed_output": "105",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "100, the base alone"
+    },
+    {
+      "file": "python/05_prefix_host.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "shop.example.other.test passes a startswith check for shop.example.",
+      "mechanism": "startswith accepts any longer string that begins with the allowed host. The next label is not a boundary.",
+      "observed_output": "True",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "False"
+    }
+  ]
+}

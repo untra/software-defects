@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Parse the supported addition syntax without executing arbitrary JavaScript.",
+  "original": {
+    "source_hash": "8a717f2b4b1a35413a4e6518e75426376d8eed2cf7e8cd6d9666755f6fecc253",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              44,
+              48
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "43abbb2fb3c8ce676e313675f3af301ab75ec507cb4ec7304f2fd73605727375",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "formula rejected"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. eval runs the text as code; the comma operator yields the last expression (CWE-20). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

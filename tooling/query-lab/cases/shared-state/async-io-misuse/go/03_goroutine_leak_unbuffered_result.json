@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reserve one result slot per worker so losing senders can finish.",
+  "original": {
+    "source_hash": "3cc1568219d177ff6d6078b85f866a3f77df1dd0da696919ea1b9734bf92377d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              288,
+              292
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "d5b77ef1a71e4a10353b7400237361134967b63b0c05823c0aeaf26218f62871",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              288,
+              292
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "goroutines leaked: 0"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Goroutines blocked on send are never collected (leak per call). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

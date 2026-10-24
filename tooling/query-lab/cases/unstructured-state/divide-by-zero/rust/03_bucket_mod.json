@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Check the divisor before division or modulo.",
+  "original": {
+    "source_hash": "c69d70036eb39d51b0f02fe0246c1184045416bb0c8eb0859fb7661ed6effbaf",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "operator",
+            "range": [
+              99,
+              100
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "f9709902cd21aae47fa3a9edceaeb83390690bbc8a242ea81df4a74b8af3e1ce",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "operator",
+            "range": [
+              177,
+              178
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "zero divisor"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Integer `%` panics on zero in debug (CWE-369). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

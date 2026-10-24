@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Acquire a bounded slot before spawning each database worker.",
+  "original": {
+    "source_hash": "3bbfa81640fb958c6226614665df22bdf9a07037d73b340595799de17e8ae224",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/resource-contention/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              590,
+              594
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "d197685a60c27e586325189cdd1615001c09d6c3d063bec3f3e7f2d5232f1d9e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/resource-contention/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              449,
+              453
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              688,
+              692
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "queries rejected by connection limit: false"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Unbounded fan-out exceeds a finite shared pool (CWE-770). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

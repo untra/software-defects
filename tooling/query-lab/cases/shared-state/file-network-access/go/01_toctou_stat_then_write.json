@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Claim leadership with exclusive atomic creation rather than a check-then-write sequence.",
+  "original": {
+    "source_hash": "b66972ad40732751e1b3a103a150ceee94c3427e0369b7c36670cb68d059c562",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              226,
+              230
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              302,
+              311
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "434a94debad146445a9d7a7274152189a182dd4b8eca9736da5f8c366f927d48",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              223,
+              231
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              377,
+              382
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "nodes that believe they are leader: 1"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Time-of-check/time-of-use on the filesystem (CWE-367). Use O_CREATE|O_EXCL. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

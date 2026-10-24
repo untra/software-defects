@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Distribute the remainder so collected cents equal the bill.",
+  "original": {
+    "source_hash": "5579ee6d4c563f6798420a445d3eff8eb6a686b404dd9f6c3f149546d3b85178",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/time-money-entropy/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "bae52fa093a939f23f64100347a2ba35f922f86f4aba0156725e449d5e0b238a",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/time-money-entropy/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "shares [334, 333, 333] collected 1000 of 1000"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Truncating division discards the remainder instead of distributing it (CWE-682). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

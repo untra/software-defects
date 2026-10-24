@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "An empty collection has no arithmetic mean.",
+  "original": {
+    "source_hash": "59a0ed55b9c6f8b329b8e03ba36bde5f32a2cc46157a88c3797a036598236735",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "operator",
+            "range": [
+              123,
+              124
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "b0ab75ee172c92db3f2f1bb8570631c670b03f28d3996bcfd70a7788d2d1626c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "operator",
+            "range": [
+              170,
+              171
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "average null"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. An empty array is a valid input; the division is not (CWE-369). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Skip only the blank iteration instead of returning from the importer.",
+  "original": {
+    "source_hash": "01aa4657c3c3e522bea5e91e5320a28930a71499eb4999f4b98b04dd056cc5d4",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/macro-mixin-misuse/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "c6e004e9c6bd3cdcb6cb0cd566312ff034fd9187d43d9608bf4a8c63a7abe489",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/macro-mixin-misuse/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "imported [\"alice\", \"bob\", \"carol\"]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Control flow inside a macro acts on the caller's function, invisible at the call site. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

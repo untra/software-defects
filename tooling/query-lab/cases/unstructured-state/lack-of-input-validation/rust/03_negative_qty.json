@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject a negative quantity before charging.",
+  "original": {
+    "source_hash": "42376dea9882f8275712e35cbca2528c25b021ac072f3348c4dbba96de397fba",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "3060a38a7c9f46fad2506b11d83c2dfbe73199d28984f9a8c42d29f3ca24e122",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "quantity rejected"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The int is in range for the type and unchecked for the domain (CWE-1284). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

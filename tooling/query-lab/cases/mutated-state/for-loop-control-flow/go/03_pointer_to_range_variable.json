@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Index original elements so the lookup points into the task slice.",
+  "original": {
+    "source_hash": "1e5ad0ccfcd431e8954ef5cf28f45cab9811f271e1875df276707e9b31e3fb18",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/for-loop-control-flow/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "638c0d45ea0fd0059d3d696e828b6e1ab187218237da40650f76a1bc2c160c01",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/for-loop-control-flow/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "[{build true} {test false}]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `&t` addresses the loop variable (a copy since Go 1.22; a single shared variable before), not `tasks[i]`. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

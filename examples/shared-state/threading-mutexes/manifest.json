@@ -1,0 +1,203 @@
+{
+  "family": "shared-state",
+  "defect": "threading-mutexes",
+  "name": "Threading & Mutexes",
+  "essence": "The lock that protects you from a race is the lock that deadlocks you.",
+  "cwes": [
+    "CWE-667",
+    "CWE-833",
+    "CWE-820"
+  ],
+  "examples": [
+    {
+      "file": "go/01_lock_order_deadlock.go",
+      "language": "go",
+      "bug_lines": [
+        17,
+        20
+      ],
+      "summary": "Two transfers lock the same accounts in opposite order and deadlock.",
+      "mechanism": "Inconsistent lock ordering (CWE-833).",
+      "observed_output": "fatal error: all goroutines are asleep - deadlock!",
+      "exit_code": 1,
+      "deterministic": false,
+      "expected_behavior": "balances: 110 90"
+    },
+    {
+      "file": "go/02_reentrant_lock.go",
+      "language": "go",
+      "bug_lines": [
+        24
+      ],
+      "summary": "`Withdraw` holds the mutex and calls `Balance`, which locks it again.",
+      "mechanism": "sync.Mutex is not reentrant; self-deadlock (CWE-667).",
+      "observed_output": "fatal error: all goroutines are asleep - deadlock!",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "withdrawn: true"
+    },
+    {
+      "file": "go/03_unlock_skipped_on_early_return.go",
+      "language": "go",
+      "bug_lines": [
+        21
+      ],
+      "summary": "The sold-out early return leaves the mutex locked; the next caller deadlocks.",
+      "mechanism": "Unlock not deferred; error path skips release (CWE-667).",
+      "observed_output": "guest 1: <nil>\nguest 2: <nil>\nguest 3: sold out\nfatal error: all goroutines are asleep - deadlock!",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "guests 3 and 4: sold out"
+    },
+    {
+      "file": "go/04_mutex_copied_by_value.go",
+      "language": "go",
+      "bug_lines": [
+        16
+      ],
+      "summary": "Value receiver copies the struct including its mutex, so each call locks a private copy while the shared map races.",
+      "mechanism": "Copied sync.Mutex protects nothing (go vet copylocks).",
+      "observed_output": "fatal error: concurrent map writes",
+      "exit_code": 1,
+      "deterministic": false,
+      "expected_behavior": "registered users: 80000"
+    },
+    {
+      "file": "go/05_recursive_rlock_with_writer.go",
+      "language": "go",
+      "bug_lines": [
+        29
+      ],
+      "summary": "A reader holding RLock calls a method that RLocks again; a pending writer blocks the nested RLock.",
+      "mechanism": "RWMutex forbids recursive read locking once a writer is waiting.",
+      "observed_output": "fatal error: all goroutines are asleep - deadlock!",
+      "exit_code": 1,
+      "deterministic": false,
+      "expected_behavior": "total: 150"
+    },
+    {
+      "file": "rust/01_lock_order_deadlock.rs",
+      "language": "rust",
+      "bug_lines": [
+        9,
+        11
+      ],
+      "summary": "Two threads lock the same mutexes in opposite order and block forever.",
+      "mechanism": "Inconsistent lock ordering (CWE-833).",
+      "observed_output": "transfers still blocked after 500ms",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "balances 110 90"
+    },
+    {
+      "file": "rust/02_relock_same_mutex.rs",
+      "language": "rust",
+      "bug_lines": [
+        18
+      ],
+      "summary": "`take` holds the stock guard and calls `available`, which locks the same mutex.",
+      "mechanism": "std Mutex is not reentrant; relocking on the same thread deadlocks.",
+      "observed_output": "take() still blocked after 500ms",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "taken: true"
+    },
+    {
+      "file": "rust/03_match_scrutinee_holds_guard.rs",
+      "language": "rust",
+      "bug_lines": [
+        8,
+        9
+      ],
+      "summary": "The guard from `queue.lock()` in the match scrutinee lives for the whole match, so the arm's second lock deadlocks.",
+      "mechanism": "Temporaries in a match scrutinee are dropped at the end of the match.",
+      "observed_output": "retry_next still blocked after 500ms",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "queue: [\"send-email-retry\"]"
+    },
+    {
+      "file": "typescript/01_async_lock_not_released_on_throw.ts",
+      "language": "typescript",
+      "bug_lines": [
+        18
+      ],
+      "summary": "The validation throw happens after acquire and before release, so the lock is held forever.",
+      "mechanism": "Release not in finally (CWE-667).",
+      "observed_output": "rejected: negative amount\nnext entry still waiting for the ledger lock after 200ms",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "entry posted"
+    },
+    {
+      "file": "typescript/02_opposite_order_async_locks.ts",
+      "language": "typescript",
+      "bug_lines": [
+        20,
+        22,
+        28,
+        30
+      ],
+      "summary": "Sale and refund acquire two async locks in opposite order across an await and deadlock.",
+      "mechanism": "Lock-order inversion works the same with promises as with threads.",
+      "observed_output": "sale and refund still blocked after 200ms",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "both completed"
+    },
+    {
+      "file": "python/01_opposite_lock_order.py",
+      "language": "python",
+      "bug_lines": [
+        22,
+        23
+      ],
+      "summary": "Each thread holds the lock the other needs, and both print blocked.",
+      "mechanism": "One thread acquires a then b. The other acquires b then a. Neither can take its second lock.",
+      "observed_output": "a blocked\nb blocked",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a entered and b entered"
+    },
+    {
+      "file": "python/02_nested_lock.py",
+      "language": "python",
+      "bug_lines": [
+        6,
+        7
+      ],
+      "summary": "The same thread acquires the lock twice and the second acquire prints blocked.",
+      "mechanism": "threading.Lock is not reentrant. The owner blocks on a second acquire.",
+      "observed_output": "blocked False",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "entered True"
+    },
+    {
+      "file": "python/03_release_skipped.py",
+      "language": "python",
+      "bug_lines": [
+        9
+      ],
+      "summary": "The error path never reaches release, so a later acquire prints blocked.",
+      "mechanism": "release sits after the raise. The except clause swallows the error and leaves the lock held.",
+      "observed_output": "blocked False",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "entered True"
+    },
+    {
+      "file": "python/04_needed_reentrant.py",
+      "language": "python",
+      "bug_lines": [
+        16
+      ],
+      "summary": "outer holds the lock and calls inner, which needs the same lock, so inner prints blocked.",
+      "mechanism": "Lock does not count re-entry. The nested method cannot acquire the lock the caller still holds.",
+      "observed_output": "blocked False",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "entered True"
+    }
+  ]
+}

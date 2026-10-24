@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Snapshot the tax rate for the cart and pass it explicitly to both calculations.",
+  "original": {
+    "source_hash": "4152738e42105e6acf097d832ab6ba5cf358f3c3a62b718c9d13106f4360a548",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/impure-functions/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "b3c4260498e4462af0183e36b7dd1a209a7f7838b2db48868696ab427662a090",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/impure-functions/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "same cart, two prices: 1080 1080"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Hidden global dependency (CWE-1108). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

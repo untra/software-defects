@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Keep subsecond resolution and explicitly handle a zero-duration measurement.",
+  "original": {
+    "source_hash": "d0eb98e2840c1c41812b61b33adb24de458b9a485321e4e1912398fb5aa39179",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/time-money-entropy/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              98,
+              101
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              186,
+              193
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              196,
+              203
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "71de883a261c8cd063df0dc0f94096cc4db18f48ba32c2844c6d698b86df5049",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/time-money-entropy/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              98,
+              101
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              186,
+              193
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              196,
+              207
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "checksum 8386560 throughput"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Wall-clock-derived value is an untrusted hidden input; truncation turns it into zero. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

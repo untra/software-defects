@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Initialize the map before its first write.",
+  "original": {
+    "source_hash": "6345eecf0fc44b5689fa8b62c4f19248f42b790308386c0064fe671cd06e54e2",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/improper-initialization/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "664bb78b91db078eaa49c686feccce7fb6dca1e28089f9dcea4f9149d6418a0d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/improper-initialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              151,
+              155
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "map[sku-1:1]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Maps must be made before writes; zero value is nil (CWE-456). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

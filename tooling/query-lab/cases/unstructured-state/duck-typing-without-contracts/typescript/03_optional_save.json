@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject documents lacking the required operation.",
+  "original": {
+    "source_hash": "779e45031f6bd154f0f978b8afa94b0cc0794f1761795554d17fe7dc886d861d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/duck-typing-without-contracts/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              87,
+              91
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "11bce27daf6a3a61f778d4e3d33073ef0e58dc57b9244b3392addfb9c6c23f9d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/duck-typing-without-contracts/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              98,
+              102
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "document cannot be saved"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The method is optional in the type and still invoked (CWE-476). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

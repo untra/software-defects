@@ -1,0 +1,845 @@
+{
+  "schema_version": 1,
+  "rules": [
+    {
+      "id": "go.mutated-state.aliasing-mutable-defaults",
+      "language": "go",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "query": "tooling/query-lab/queries/go/mutated-state/aliasing-mutable-defaults/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.mutated-state.aliasing-mutable-defaults",
+      "language": "rust",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "query": "tooling/query-lab/queries/rust/mutated-state/aliasing-mutable-defaults/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.mutated-state.aliasing-mutable-defaults",
+      "language": "typescript",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "query": "tooling/query-lab/queries/typescript/mutated-state/aliasing-mutable-defaults/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.mutated-state.for-loop-control-flow",
+      "language": "go",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "query": "tooling/query-lab/queries/go/mutated-state/for-loop-control-flow/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.mutated-state.for-loop-control-flow",
+      "language": "rust",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "query": "tooling/query-lab/queries/rust/mutated-state/for-loop-control-flow/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.mutated-state.for-loop-control-flow",
+      "language": "typescript",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "query": "tooling/query-lab/queries/typescript/mutated-state/for-loop-control-flow/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.mutated-state.improper-initialization",
+      "language": "go",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "query": "tooling/query-lab/queries/go/mutated-state/improper-initialization/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.mutated-state.improper-initialization",
+      "language": "rust",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "query": "tooling/query-lab/queries/rust/mutated-state/improper-initialization/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.mutated-state.improper-initialization",
+      "language": "typescript",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "query": "tooling/query-lab/queries/typescript/mutated-state/improper-initialization/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.mutated-state.impure-functions",
+      "language": "go",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "query": "tooling/query-lab/queries/go/mutated-state/impure-functions/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.mutated-state.impure-functions",
+      "language": "rust",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "query": "tooling/query-lab/queries/rust/mutated-state/impure-functions/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.mutated-state.impure-functions",
+      "language": "typescript",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "query": "tooling/query-lab/queries/typescript/mutated-state/impure-functions/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.mutated-state.increment-decrement-operators",
+      "language": "go",
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "query": "tooling/query-lab/queries/go/mutated-state/increment-decrement-operators/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.mutated-state.increment-decrement-operators",
+      "language": "rust",
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "query": "tooling/query-lab/queries/rust/mutated-state/increment-decrement-operators/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.mutated-state.increment-decrement-operators",
+      "language": "typescript",
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "query": "tooling/query-lab/queries/typescript/mutated-state/increment-decrement-operators/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.mutated-state.macro-mixin-misuse",
+      "language": "go",
+      "family": "mutated-state",
+      "defect": "macro-mixin-misuse",
+      "query": "tooling/query-lab/queries/go/mutated-state/macro-mixin-misuse/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.mutated-state.macro-mixin-misuse",
+      "language": "rust",
+      "family": "mutated-state",
+      "defect": "macro-mixin-misuse",
+      "query": "tooling/query-lab/queries/rust/mutated-state/macro-mixin-misuse/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.mutated-state.macro-mixin-misuse",
+      "language": "typescript",
+      "family": "mutated-state",
+      "defect": "macro-mixin-misuse",
+      "query": "tooling/query-lab/queries/typescript/mutated-state/macro-mixin-misuse/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.mutated-state.this-mutation",
+      "language": "go",
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "query": "tooling/query-lab/queries/go/mutated-state/this-mutation/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.mutated-state.this-mutation",
+      "language": "rust",
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "query": "tooling/query-lab/queries/rust/mutated-state/this-mutation/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.mutated-state.this-mutation",
+      "language": "typescript",
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "query": "tooling/query-lab/queries/typescript/mutated-state/this-mutation/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.mutated-state.time-money-entropy",
+      "language": "go",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "query": "tooling/query-lab/queries/go/mutated-state/time-money-entropy/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.mutated-state.time-money-entropy",
+      "language": "rust",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "query": "tooling/query-lab/queries/rust/mutated-state/time-money-entropy/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.mutated-state.time-money-entropy",
+      "language": "typescript",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "query": "tooling/query-lab/queries/typescript/mutated-state/time-money-entropy/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.mutated-state.var-let-mut",
+      "language": "go",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "query": "tooling/query-lab/queries/go/mutated-state/var-let-mut/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.mutated-state.var-let-mut",
+      "language": "rust",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "query": "tooling/query-lab/queries/rust/mutated-state/var-let-mut/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.mutated-state.var-let-mut",
+      "language": "typescript",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "query": "tooling/query-lab/queries/typescript/mutated-state/var-let-mut/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.shared-state.async-io-misuse",
+      "language": "go",
+      "family": "shared-state",
+      "defect": "async-io-misuse",
+      "query": "tooling/query-lab/queries/go/shared-state/async-io-misuse/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.shared-state.async-io-misuse",
+      "language": "rust",
+      "family": "shared-state",
+      "defect": "async-io-misuse",
+      "query": "tooling/query-lab/queries/rust/shared-state/async-io-misuse/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.shared-state.async-io-misuse",
+      "language": "typescript",
+      "family": "shared-state",
+      "defect": "async-io-misuse",
+      "query": "tooling/query-lab/queries/typescript/shared-state/async-io-misuse/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.shared-state.cache-invalidation",
+      "language": "go",
+      "family": "shared-state",
+      "defect": "cache-invalidation",
+      "query": "tooling/query-lab/queries/go/shared-state/cache-invalidation/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.shared-state.cache-invalidation",
+      "language": "rust",
+      "family": "shared-state",
+      "defect": "cache-invalidation",
+      "query": "tooling/query-lab/queries/rust/shared-state/cache-invalidation/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.shared-state.cache-invalidation",
+      "language": "typescript",
+      "family": "shared-state",
+      "defect": "cache-invalidation",
+      "query": "tooling/query-lab/queries/typescript/shared-state/cache-invalidation/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.shared-state.cross-boundary-state-exposure",
+      "language": "go",
+      "family": "shared-state",
+      "defect": "cross-boundary-state-exposure",
+      "query": "tooling/query-lab/queries/go/shared-state/cross-boundary-state-exposure/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.shared-state.cross-boundary-state-exposure",
+      "language": "rust",
+      "family": "shared-state",
+      "defect": "cross-boundary-state-exposure",
+      "query": "tooling/query-lab/queries/rust/shared-state/cross-boundary-state-exposure/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.shared-state.cross-boundary-state-exposure",
+      "language": "typescript",
+      "family": "shared-state",
+      "defect": "cross-boundary-state-exposure",
+      "query": "tooling/query-lab/queries/typescript/shared-state/cross-boundary-state-exposure/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.shared-state.file-network-access",
+      "language": "go",
+      "family": "shared-state",
+      "defect": "file-network-access",
+      "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.shared-state.file-network-access",
+      "language": "rust",
+      "family": "shared-state",
+      "defect": "file-network-access",
+      "query": "tooling/query-lab/queries/rust/shared-state/file-network-access/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.shared-state.file-network-access",
+      "language": "typescript",
+      "family": "shared-state",
+      "defect": "file-network-access",
+      "query": "tooling/query-lab/queries/typescript/shared-state/file-network-access/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.shared-state.pointer-mismanagement",
+      "language": "go",
+      "family": "shared-state",
+      "defect": "pointer-mismanagement",
+      "query": "tooling/query-lab/queries/go/shared-state/pointer-mismanagement/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.shared-state.pointer-mismanagement",
+      "language": "rust",
+      "family": "shared-state",
+      "defect": "pointer-mismanagement",
+      "query": "tooling/query-lab/queries/rust/shared-state/pointer-mismanagement/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.shared-state.pointer-mismanagement",
+      "language": "typescript",
+      "family": "shared-state",
+      "defect": "pointer-mismanagement",
+      "query": "tooling/query-lab/queries/typescript/shared-state/pointer-mismanagement/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.shared-state.race-conditions",
+      "language": "go",
+      "family": "shared-state",
+      "defect": "race-conditions",
+      "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.shared-state.race-conditions",
+      "language": "rust",
+      "family": "shared-state",
+      "defect": "race-conditions",
+      "query": "tooling/query-lab/queries/rust/shared-state/race-conditions/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.shared-state.race-conditions",
+      "language": "typescript",
+      "family": "shared-state",
+      "defect": "race-conditions",
+      "query": "tooling/query-lab/queries/typescript/shared-state/race-conditions/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.shared-state.resource-contention",
+      "language": "go",
+      "family": "shared-state",
+      "defect": "resource-contention",
+      "query": "tooling/query-lab/queries/go/shared-state/resource-contention/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.shared-state.resource-contention",
+      "language": "rust",
+      "family": "shared-state",
+      "defect": "resource-contention",
+      "query": "tooling/query-lab/queries/rust/shared-state/resource-contention/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.shared-state.resource-contention",
+      "language": "typescript",
+      "family": "shared-state",
+      "defect": "resource-contention",
+      "query": "tooling/query-lab/queries/typescript/shared-state/resource-contention/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.shared-state.resource-leaks",
+      "language": "go",
+      "family": "shared-state",
+      "defect": "resource-leaks",
+      "query": "tooling/query-lab/queries/go/shared-state/resource-leaks/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.shared-state.resource-leaks",
+      "language": "rust",
+      "family": "shared-state",
+      "defect": "resource-leaks",
+      "query": "tooling/query-lab/queries/rust/shared-state/resource-leaks/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.shared-state.resource-leaks",
+      "language": "typescript",
+      "family": "shared-state",
+      "defect": "resource-leaks",
+      "query": "tooling/query-lab/queries/typescript/shared-state/resource-leaks/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.shared-state.stack-overflow",
+      "language": "go",
+      "family": "shared-state",
+      "defect": "stack-overflow",
+      "query": "tooling/query-lab/queries/go/shared-state/stack-overflow/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.shared-state.stack-overflow",
+      "language": "rust",
+      "family": "shared-state",
+      "defect": "stack-overflow",
+      "query": "tooling/query-lab/queries/rust/shared-state/stack-overflow/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.shared-state.stack-overflow",
+      "language": "typescript",
+      "family": "shared-state",
+      "defect": "stack-overflow",
+      "query": "tooling/query-lab/queries/typescript/shared-state/stack-overflow/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.shared-state.threading-mutexes",
+      "language": "go",
+      "family": "shared-state",
+      "defect": "threading-mutexes",
+      "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.shared-state.threading-mutexes",
+      "language": "rust",
+      "family": "shared-state",
+      "defect": "threading-mutexes",
+      "query": "tooling/query-lab/queries/rust/shared-state/threading-mutexes/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.shared-state.threading-mutexes",
+      "language": "typescript",
+      "family": "shared-state",
+      "defect": "threading-mutexes",
+      "query": "tooling/query-lab/queries/typescript/shared-state/threading-mutexes/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.unstructured-state.divide-by-zero",
+      "language": "go",
+      "family": "unstructured-state",
+      "defect": "divide-by-zero",
+      "query": "tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.unstructured-state.divide-by-zero",
+      "language": "rust",
+      "family": "unstructured-state",
+      "defect": "divide-by-zero",
+      "query": "tooling/query-lab/queries/rust/unstructured-state/divide-by-zero/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.unstructured-state.divide-by-zero",
+      "language": "typescript",
+      "family": "unstructured-state",
+      "defect": "divide-by-zero",
+      "query": "tooling/query-lab/queries/typescript/unstructured-state/divide-by-zero/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.unstructured-state.duck-typing-without-contracts",
+      "language": "go",
+      "family": "unstructured-state",
+      "defect": "duck-typing-without-contracts",
+      "query": "tooling/query-lab/queries/go/unstructured-state/duck-typing-without-contracts/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.unstructured-state.duck-typing-without-contracts",
+      "language": "rust",
+      "family": "unstructured-state",
+      "defect": "duck-typing-without-contracts",
+      "query": "tooling/query-lab/queries/rust/unstructured-state/duck-typing-without-contracts/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.unstructured-state.duck-typing-without-contracts",
+      "language": "typescript",
+      "family": "unstructured-state",
+      "defect": "duck-typing-without-contracts",
+      "query": "tooling/query-lab/queries/typescript/unstructured-state/duck-typing-without-contracts/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.unstructured-state.index-out-of-bounds",
+      "language": "go",
+      "family": "unstructured-state",
+      "defect": "index-out-of-bounds",
+      "query": "tooling/query-lab/queries/go/unstructured-state/index-out-of-bounds/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.unstructured-state.index-out-of-bounds",
+      "language": "rust",
+      "family": "unstructured-state",
+      "defect": "index-out-of-bounds",
+      "query": "tooling/query-lab/queries/rust/unstructured-state/index-out-of-bounds/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.unstructured-state.index-out-of-bounds",
+      "language": "typescript",
+      "family": "unstructured-state",
+      "defect": "index-out-of-bounds",
+      "query": "tooling/query-lab/queries/typescript/unstructured-state/index-out-of-bounds/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.unstructured-state.insecure-deserialization",
+      "language": "go",
+      "family": "unstructured-state",
+      "defect": "insecure-deserialization",
+      "query": "tooling/query-lab/queries/go/unstructured-state/insecure-deserialization/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.unstructured-state.insecure-deserialization",
+      "language": "rust",
+      "family": "unstructured-state",
+      "defect": "insecure-deserialization",
+      "query": "tooling/query-lab/queries/rust/unstructured-state/insecure-deserialization/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.unstructured-state.insecure-deserialization",
+      "language": "typescript",
+      "family": "unstructured-state",
+      "defect": "insecure-deserialization",
+      "query": "tooling/query-lab/queries/typescript/unstructured-state/insecure-deserialization/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.unstructured-state.lack-of-input-validation",
+      "language": "go",
+      "family": "unstructured-state",
+      "defect": "lack-of-input-validation",
+      "query": "tooling/query-lab/queries/go/unstructured-state/lack-of-input-validation/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.unstructured-state.lack-of-input-validation",
+      "language": "rust",
+      "family": "unstructured-state",
+      "defect": "lack-of-input-validation",
+      "query": "tooling/query-lab/queries/rust/unstructured-state/lack-of-input-validation/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.unstructured-state.lack-of-input-validation",
+      "language": "typescript",
+      "family": "unstructured-state",
+      "defect": "lack-of-input-validation",
+      "query": "tooling/query-lab/queries/typescript/unstructured-state/lack-of-input-validation/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.unstructured-state.missing-undefined-returns",
+      "language": "go",
+      "family": "unstructured-state",
+      "defect": "missing-undefined-returns",
+      "query": "tooling/query-lab/queries/go/unstructured-state/missing-undefined-returns/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.unstructured-state.missing-undefined-returns",
+      "language": "rust",
+      "family": "unstructured-state",
+      "defect": "missing-undefined-returns",
+      "query": "tooling/query-lab/queries/rust/unstructured-state/missing-undefined-returns/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.unstructured-state.missing-undefined-returns",
+      "language": "typescript",
+      "family": "unstructured-state",
+      "defect": "missing-undefined-returns",
+      "query": "tooling/query-lab/queries/typescript/unstructured-state/missing-undefined-returns/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.unstructured-state.type-errors",
+      "language": "go",
+      "family": "unstructured-state",
+      "defect": "type-errors",
+      "query": "tooling/query-lab/queries/go/unstructured-state/type-errors/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.unstructured-state.type-errors",
+      "language": "rust",
+      "family": "unstructured-state",
+      "defect": "type-errors",
+      "query": "tooling/query-lab/queries/rust/unstructured-state/type-errors/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.unstructured-state.type-errors",
+      "language": "typescript",
+      "family": "unstructured-state",
+      "defect": "type-errors",
+      "query": "tooling/query-lab/queries/typescript/unstructured-state/type-errors/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.unstructured-state.unconstrained-inputs",
+      "language": "go",
+      "family": "unstructured-state",
+      "defect": "unconstrained-inputs",
+      "query": "tooling/query-lab/queries/go/unstructured-state/unconstrained-inputs/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.unstructured-state.unconstrained-inputs",
+      "language": "rust",
+      "family": "unstructured-state",
+      "defect": "unconstrained-inputs",
+      "query": "tooling/query-lab/queries/rust/unstructured-state/unconstrained-inputs/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.unstructured-state.unconstrained-inputs",
+      "language": "typescript",
+      "family": "unstructured-state",
+      "defect": "unconstrained-inputs",
+      "query": "tooling/query-lab/queries/typescript/unstructured-state/unconstrained-inputs/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "go.unstructured-state.version-library-mismanagement",
+      "language": "go",
+      "family": "unstructured-state",
+      "defect": "version-library-mismanagement",
+      "query": "tooling/query-lab/queries/go/unstructured-state/version-library-mismanagement/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "rust.unstructured-state.version-library-mismanagement",
+      "language": "rust",
+      "family": "unstructured-state",
+      "defect": "version-library-mismanagement",
+      "query": "tooling/query-lab/queries/rust/unstructured-state/version-library-mismanagement/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    },
+    {
+      "id": "typescript.unstructured-state.version-library-mismanagement",
+      "language": "typescript",
+      "family": "unstructured-state",
+      "defect": "version-library-mismanagement",
+      "query": "tooling/query-lab/queries/typescript/unstructured-state/version-library-mismanagement/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Name and syntax matches do not resolve types, bindings, data flow, runtime ordering, or domain invariants. Captures may remain in correct code."
+    }
+  ]
+}

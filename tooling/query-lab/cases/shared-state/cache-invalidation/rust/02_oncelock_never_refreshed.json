@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Read changing operator configuration rather than memoize it permanently.",
+  "original": {
+    "source_hash": "cbcf21eee77b03fe236acdddbb15828968a713e9749147a369e859c94da3b694",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/cache-invalidation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              200,
+              211
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "0cd89233ff9999b765819229963c104408385f11b01de329dc607b634bbdc8b7",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/cache-invalidation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "maintenance after operator enabled it: true"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Process-lifetime memoization of mutable configuration. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Check cancellation before committing the simulated charge. Real remote payments additionally need server-side idempotency.",
+  "original": {
+    "source_hash": "16cae934c30347fbc2cc67f490f5f22f45931cb3884d5d7b3b8ee55b55be3bcf",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              502,
+              506
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "56711d90453122e3e03249c9e4e9ff7827ad6b697019f18fabf397fca2214232",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/async-io-misuse/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "customer charged 1 times"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. race does not cancel the losing promise (use AbortSignal). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

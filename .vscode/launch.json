@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "inputs": [
+    { "id": "testRepo", "type": "promptString", "description": "Folder to open in the Extension Development Host", "default": "${workspaceFolder}/examples" }
+  ],
+  "configurations": [
+    {
+      "name": "State Lens: Extension Development Host",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode", "${input:testRepo}"],
+      "env": { "STATE_LENS_SERVER": "${workspaceFolder}/tooling/state-lens/target/release/state-lens" },
+      "outFiles": ["${workspaceFolder}/extensions/vscode/dist/**/*.js"],
+      "preLaunchTask": "state-lens: build"
+    }
+  ]
+}
