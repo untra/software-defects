@@ -224,6 +224,76 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "5 then 9"
+    },
+    {
+      "file": "javascript/01_module_current_user.js",
+      "language": "javascript",
+      "bug_lines": [
+        5,
+        8
+      ],
+      "summary": "Module-level `currentUser` is overwritten by the second request before the first one reads it.",
+      "mechanism": "Module state in a server is shared by every concurrent request.",
+      "observed_output": "alice received account of bob\nbob received account of bob",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "alice received account of alice"
+    },
+    {
+      "file": "javascript/02_pooled_object_without_reset.js",
+      "language": "javascript",
+      "bug_lines": [
+        6
+      ],
+      "summary": "A pooled form object is handed out without clearing fields, exposing alice's SSN to bob.",
+      "mechanism": "Object pools must reset per-actor state on release (CWE-488).",
+      "observed_output": "bob's form: { ssn: '123-45-6789', name: 'bob' }",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "bob's form: { name: 'bob' }"
+    },
+    {
+      "file": "javascript/03_static_cache_missing_tenant.js",
+      "language": "javascript",
+      "bug_lines": [
+        8,
+        12
+      ],
+      "summary": "A static cache keyed only by setting name serves acme's webhook URL to globex.",
+      "mechanism": "Class-level static state crosses tenant boundaries when the key omits the tenant.",
+      "observed_output": "acme   -> https://acme.example/hooks\nglobex -> https://acme.example/hooks",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "globex -> https://globex.example/hooks"
+    },
+    {
+      "file": "javascript/04_default_context_object.js",
+      "language": "javascript",
+      "bug_lines": [
+        3,
+        4,
+        5
+      ],
+      "summary": "Default parameter is one shared context object; an admin request permanently elevates anonymous users.",
+      "mechanism": "Shared default object mutated per request (CWE-1188, CWE-488).",
+      "observed_output": "anonymous request permissions: [ 'admin' ]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "anonymous request permissions: []"
+    },
+    {
+      "file": "javascript/05_module_trace_id.js",
+      "language": "javascript",
+      "bug_lines": [
+        4,
+        7
+      ],
+      "summary": "A module-level trace id is overwritten by the next request, so logs are attributed to the wrong request.",
+      "mechanism": "Request context kept in module state instead of AsyncLocalStorage or parameters.",
+      "observed_output": "[req-2] refund issued\n[req-2] profile viewed",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "[req-1] refund issued / [req-2] profile viewed"
     }
   ]
 }

@@ -9,10 +9,31 @@
         "query": "tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              90,
+              110
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              90,
+              97
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               98,
               99
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              100,
+              110
             ]
           }
         ]
@@ -26,10 +47,31 @@
         "query": "tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              154,
+              174
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              154,
+              161
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               162,
               163
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              164,
+              174
             ]
           }
         ]
@@ -43,5 +85,5 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. IEEE-754 float64 division by 0 is +Inf, which poisons later math (CWE-682). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Syntax captures remain in guarded fixes. Production analysis separately checks scoped denominator values and guards; dynamic aliases and dispatch remain unresolved."
 }

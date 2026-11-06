@@ -9,10 +9,31 @@
         "query": "tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              86,
+              106
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              86,
+              93
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               94,
               95
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              96,
+              106
             ]
           }
         ]
@@ -26,10 +47,31 @@
         "query": "tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              150,
+              170
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              150,
+              157
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               158,
               159
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              160,
+              170
             ]
           }
         ]
@@ -43,5 +85,5 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Go integer `/` has no Infinity; a zero divisor is a runtime panic (CWE-369). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Syntax captures remain in guarded fixes. Production analysis separately checks scoped denominator values and guards; dynamic aliases and dispatch remain unresolved."
 }

@@ -152,6 +152,41 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_account_context.js",
+      "language": "javascript",
+      "bug_lines": [
+        4,
+        6
+      ],
+      "summary": "The orchard request receives the harbor user from a shared account context.",
+      "mechanism": "A module singleton stores per-request identity in this.user, which another request overwrites before the first reads it.",
+      "observed_output": "orchard received harbor",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "orchard received orchard",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "The method mutates this.user and reads it after an await.",
+          "evidence": [
+            "this.user = user;",
+            "return this.user;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "cross-boundary-state-exposure",
+          "suggests": "Two requests use the same module-level account context.",
+          "evidence": [
+            "const context = new AccountContext();",
+            "const first = context.show(\"orchard\", firstReady.promise);",
+            "await context.show(\"harbor\", Promise.resolve());"
+          ]
+        }
+      ]
     }
   ]
 }

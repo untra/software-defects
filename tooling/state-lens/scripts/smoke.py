@@ -28,7 +28,7 @@ INDEXING_TIMEOUT_S = 30
 LOG_ERROR = 1
 LOG_WARNING = 2
 OPEN_VERSION = 1
-RESTORED_VERSION = 3
+RESTORED_VERSION = 4
 PUBLISH = "textDocument/publishDiagnostics"
 EDITED_VERSION = 2
 
@@ -233,6 +233,12 @@ def check_group(client, paths, rows, baseline, update, summaries):
     for p, identifier in requests:
         result(client, identifier, rows[p], allow_stale=True)
     for p in paths:
+        if relative(p).startswith("examples/unstructured-state/divide-by-zero/"):
+            fixed = ROOT / relative(p).replace("examples/", "examples-fixed/", 1)
+            client.notify("textDocument/didChange", {"textDocument": {"uri": p.as_uri(), "version": 3}, "contentChanges": [{"text": fixed.read_text()}]})
+            changed = result(client, client.begin("stateLens/ranges", params[p]), rows[p])
+            if changed is None or any(e["finding"]["defect"] == "divide-by-zero" for e in changed["findings"]):
+                rows[p]["problems"].append(audit.problem("count-mismatch", "Division warning remained after guard edit"))
         client.notify("textDocument/didChange", {"textDocument": {"uri": p.as_uri(), "version": RESTORED_VERSION}, "contentChanges": [{"text": texts[p]}]})
     for p in paths:
         client.wait_for(lambda m: m.get("method") == PUBLISH and m["params"]["uri"] == p.as_uri() and m["params"].get("version") == RESTORED_VERSION)
@@ -274,6 +280,7 @@ def check_group(client, paths, rows, baseline, update, summaries):
         if diagnostics.get("version") != RESTORED_VERSION or len(diagnostics.get("diagnostics", [])) != item["findings"]:
             item["problems"].append(audit.problem("count-mismatch", "diagnostics differ from settled snapshot"))
         audit.check_diagnostics(item, diagnostics.get("diagnostics", []))
+        audit.check_division(item, snapshot["findings"], diagnostics.get("diagnostics", []))
         audit.finish(item, triggers)
     for p in paths:
         client.notify("textDocument/didClose", params[p])
@@ -334,8 +341,6 @@ def run(binary, update, report=None, jobs=None, strict_gaps=False, selected=None
     files = [p for p in corpus_files() if not selected or relative(p).startswith(selected + "/")]
     if not files:
         raise ValueError("No corpus files selected")
-    if selected and update:
-        raise ValueError("Cannot update the baseline from a partial corpus")
     baseline = {} if update else json.loads(BASELINE.read_text())["files"]
     shards = collections.defaultdict(list)
     for path in files:
@@ -366,7 +371,7 @@ def run(binary, update, report=None, jobs=None, strict_gaps=False, selected=None
         audit.write(report, rows)
     failures = audit.failed(rows, strict_gaps)
     if update and not failures and len(summaries) == len(files):
-        audit.atomic_json(BASELINE, {"schema_version": SCHEMA_VERSION, "purpose": "Regression baseline of editor hints, not ground truth.", "files": dict(sorted(summaries.items()))})
+        audit.atomic_json(BASELINE, {"schema_version": SCHEMA_VERSION, "purpose": "Regression baseline of editor hints, not ground truth.", "files": ({**json.loads(BASELINE.read_text())["files"], **dict(sorted(summaries.items()))} if selected else dict(sorted(summaries.items())))})
     counts = collections.Counter(r["status"] for r in rows)
     print(f"{dict(counts)} in {time.monotonic() - started:.2f}s")
     for item in rows:

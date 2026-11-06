@@ -148,6 +148,39 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_database_settings.js",
+      "language": "javascript",
+      "bug_lines": [
+        4,
+        7
+      ],
+      "summary": "The settings writer uses DB_URL while the reader expects DATABASE_URL and calls slice on undefined.",
+      "mechanism": "The impure configuration function writes process-wide environment state under a key that the consumer no longer reads; the absent value is used as a string.",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'slice')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Use one agreed setting name and print database postgres.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "The configuration function changes the process environment instead of returning settings.",
+          "evidence": [
+            "process.env.DB_URL = DATABASE_ADDRESS;"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "version-library-mismanagement",
+          "suggests": "The writer and reader use incompatible environment-key conventions.",
+          "evidence": [
+            "process.env.DB_URL = DATABASE_ADDRESS;",
+            "return process.env.DATABASE_URL.slice(0, PREFIX_LENGTH);"
+          ]
+        }
+      ]
     }
   ]
 }

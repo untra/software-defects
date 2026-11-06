@@ -153,6 +153,43 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_paint_record.js",
+      "language": "javascript",
+      "bug_lines": [
+        4,
+        6,
+        12,
+        14
+      ],
+      "summary": "A generic loader accepts colour while the consumer expects color, leaving the consumed field absent.",
+      "mechanism": "A mixed-in loader dynamically copies every deserialized key without a schema, and the consumer calls a string method on the absent color field.",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'toUpperCase')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Validate the record schema or map colour to color before printing paint BLUE.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "macro-mixin-misuse",
+          "suggests": "The mixed-in loader dynamically assigns arbitrary keys onto its receiving object.",
+          "evidence": [
+            "const catalog = Object.assign(paint, recordLoader);",
+            "this[key] = record[key];"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "insecure-deserialization",
+          "suggests": "Every key in the parsed JSON is accepted without requiring the color field.",
+          "evidence": [
+            "const BODY = '{\"colour\":\"blue\"}';",
+            "const record = JSON.parse(body);",
+            "for (const key of Object.keys(record)) {"
+          ]
+        }
+      ]
     }
   ]
 }

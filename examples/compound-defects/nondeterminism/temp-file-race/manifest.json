@@ -154,6 +154,41 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_invoice_export.js",
+      "language": "javascript",
+      "bug_lines": [
+        14,
+        16,
+        21
+      ],
+      "summary": "An export overwrites another document planted at its predictable filename after the existence check.",
+      "mechanism": "A timestamp-derived filename is checked separately from a nonexclusive write, allowing another file to occupy the path.",
+      "observed_output": "existing document orchard invoice",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "existing document harbor invoice",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "File creation relies on a prior existence check rather than exclusive creation.",
+          "evidence": [
+            "if (!existsSync(path)) {",
+            "writeFileSync(path, DOCUMENT);"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "The file name is formed from a fixed prefix and predictable timestamp.",
+          "evidence": [
+            "const STAMP = 1700000000000;",
+            "const path = join(directory, PREFIX + STAMP);"
+          ]
+        }
+      ]
     }
   ]
 }

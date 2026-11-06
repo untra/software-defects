@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use a per-iteration binding for delayed callbacks.",
+  "original": {
+    "source_hash": "ec1ef9a2c6aef23080f941a790ffba9b6c7cecba2e6824fee146df78cecbb317",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/for-loop-control-flow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              128,
+              138
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "3667804b564b16ae410659b92c37117a14171c17d0672d7644960f9a3846879d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/for-loop-control-flow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              128,
+              138
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "pinging /health\npinging /ready\npinging /metrics"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Closures capture the single `var` binding; `let` would create one per iteration. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

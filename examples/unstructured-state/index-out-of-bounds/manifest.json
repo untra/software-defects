@@ -216,6 +216,71 @@
       "exit_code": 1,
       "deterministic": true,
       "expected_behavior": "a missing header field"
+    },
+    {
+      "file": "javascript/01_empty_record.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "Reading id on the first record of an empty list throws.",
+      "mechanism": "An out-of-range index is undefined; the property read then throws (CWE-476).",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'id')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "no record"
+    },
+    {
+      "file": "javascript/02_index_sum.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "Adding 1 to a missing score prints NaN.",
+      "mechanism": "`scores[2]` is undefined, and undefined plus a number is NaN (CWE-125).",
+      "observed_output": "third NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "no third score"
+    },
+    {
+      "file": "javascript/03_missing_age.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "A person with no age becomes NaN after + 1.",
+      "mechanism": "A missing property is undefined, and arithmetic does not throw (CWE-125).",
+      "observed_output": "next NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a missing age"
+    },
+    {
+      "file": "javascript/04_negative_index.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "rows[-1] is undefined rather than the last row.",
+      "mechanism": "JS array index -1 does not wrap the way a negative slice does in other languages (CWE-129).",
+      "observed_output": "last undefined",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "last east"
+    },
+    {
+      "file": "javascript/05_emoji_slice.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "Index 1 of a string splits the emoji into a surrogate code unit.",
+      "mechanism": "String indexes are UTF-16 code units, so one emoji occupies two indexes (CWE-129).",
+      "observed_output": "code 55357",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the whole emoji, one code point"
     }
   ]
 }

@@ -229,6 +229,71 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "False"
+    },
+    {
+      "file": "javascript/01_cast_user.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "An empty JSON object is cast to User and email is read.",
+      "mechanism": "`as User` erases at runtime, so a missing email throws on toLowerCase (CWE-20).",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'toLowerCase')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "the body rejected before use"
+    },
+    {
+      "file": "javascript/02_formula_eval.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "eval of a formula returns 100 because of the comma operator.",
+      "mechanism": "eval runs the text as code; the comma operator yields the last expression (CWE-20).",
+      "observed_output": "total 100",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "total 4, or the formula rejected"
+    },
+    {
+      "file": "javascript/03_built_query.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "A name containing a quote is interpolated into a SQL string.",
+      "mechanism": "The template literal puts the name in the query text (CWE-89).",
+      "observed_output": "SELECT id FROM users WHERE name = 'O'Brien'",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the name bound as data"
+    },
+    {
+      "file": "javascript/04_truthy_email.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "A whitespace email is accepted because it is truthy.",
+      "mechanism": "`if (!email)` rejects only empty strings, not blank or malformed ones (CWE-20).",
+      "observed_output": "accepted  ",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "missing"
+    },
+    {
+      "file": "javascript/05_prefix_host.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "A longer host passes a startsWith check against the allowed origin.",
+      "mechanism": "The prefix matches a different host that merely begins with the allowed text (CWE-20).",
+      "observed_output": "allowed true",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "allowed false"
     }
   ]
 }

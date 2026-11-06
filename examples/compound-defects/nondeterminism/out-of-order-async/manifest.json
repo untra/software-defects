@@ -149,6 +149,40 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_last_write_wins.js",
+      "language": "javascript",
+      "bug_lines": [
+        11
+      ],
+      "summary": "beta is released first, then alpha overwrites the binding.",
+      "mechanism": "shown is a single let. Each completion assigns it with no generation check, so finish order, not request order, picks the value (CWE-362, CWE-696).",
+      "observed_output": "shown alpha",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "shown beta, the request that was meant to land last",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "var-let-mut",
+          "suggests": "Each completion reassigns the same module-level shown binding.",
+          "evidence": [
+            "let shown = \"\";",
+            "shown = id;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "async-io-misuse",
+          "suggests": "Requests update the display after independently awaited completion without checking request order.",
+          "evidence": [
+            "await ready;\n    shown = id;",
+            "const first = load(\"alpha\", earlier.promise);",
+            "const second = load(\"beta\", later.promise);"
+          ]
+        }
+      ]
     }
   ]
 }

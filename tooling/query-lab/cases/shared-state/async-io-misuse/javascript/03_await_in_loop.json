@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Run the bounded set of independent service calls concurrently. Timing-based execution remains environment-sensitive.",
+  "original": {
+    "source_hash": "8aa93b69216546f7e7c56c4952294b768dd3f67924ba10c276e67fa25bd29ea5",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/async-io-misuse/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "4c9d83a12aed78861283734597608e56328a5197866da6ef131d0d96f484aea1",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              318,
+              321
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "round trips: false"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Sequential await in a loop serializes concurrent-safe work. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

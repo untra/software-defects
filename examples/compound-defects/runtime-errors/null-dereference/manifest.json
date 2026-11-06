@@ -146,6 +146,40 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_catalog_price.js",
+      "language": "javascript",
+      "bug_lines": [
+        5,
+        6,
+        10,
+        11
+      ],
+      "summary": "A missing catalog item leaves the selected price undefined and the caller dereferences it.",
+      "mechanism": "The lookup falls through without a return, and the caller initializes selected from that unchecked result.",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'cents')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Report that pad has no price instead of dereferencing an absent item.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "improper-initialization",
+          "suggests": "The selected item is initialized from a lookup that may not produce a value.",
+          "evidence": [
+            "const selected = lookup(REQUESTED_SKU);"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "missing-undefined-returns",
+          "suggests": "The lookup returns only inside the matching branch and otherwise falls off its end.",
+          "evidence": [
+            "if (item.sku === sku)\n            return item;\n    }\n}"
+          ]
+        }
+      ]
     }
   ]
 }

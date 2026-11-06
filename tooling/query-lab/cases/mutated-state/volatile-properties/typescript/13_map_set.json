@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Preserve the original contents and observable cursor/capacity state by constructing independent working storage. Preserve operation results and return values.",
+  "analysis_limit": "Names and syntax do not resolve receiver types, package aliases or ownership. Clones here contain scalar values. Entry access is a candidate, not a write; reserve changes capacity, seek changes position. Nonzero Go builders must be reconstructed, never copied by value.",
+  "runtime": {
+    "status": "supported",
+    "stdout": "ok\n",
+    "exit_code": 0
+  },
+  "original": {
+    "source_hash": "2276999df3c23323e1a55e79b834cad34bc45d3df050b103efef00084f1c6e64",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/volatile-properties/signals.scm",
+        "captures": [
+          {
+            "name": "receiver",
+            "range": [
+              80,
+              84
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              85,
+              88
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "d09bd097ca281be87708e69eec954396d5d3dee0354fa863db8d0036cc1a5a14",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/volatile-properties/signals.scm",
+        "captures": [
+          {
+            "name": "receiver",
+            "range": [
+              89,
+              93
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              94,
+              97
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Key by price contents rather than mutable array identity.",
+  "original": {
+    "source_hash": "263cb82de38daf72af111b0f5dfb21c93b58d271376ef2d122e45b454ceb997a",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/cache-invalidation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              85,
+              88
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              219,
+              222
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "03e3cfcf3b25aa90f751b079f9095d6774076fd9345d3c0fc0c817d060130563",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/cache-invalidation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              121,
+              124
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              252,
+              255
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "total charged: 60"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Identity-keyed cache assumes the key object is immutable. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

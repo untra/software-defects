@@ -252,6 +252,76 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "[50]\n[50]"
+    },
+    {
+      "file": "javascript/01_var_hoisting.js",
+      "language": "javascript",
+      "bug_lines": [
+        5,
+        7
+      ],
+      "summary": "`var rate` is hoisted to function scope and is `undefined` when the branch is skipped, producing NaN.",
+      "mechanism": "`var` declarations hoist without initialization; reading it outside the block yields undefined.",
+      "observed_output": "with code: 90\nwithout code: NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "without code: 100"
+    },
+    {
+      "file": "javascript/02_let_reassigned_before_await.js",
+      "language": "javascript",
+      "bug_lines": [
+        8
+      ],
+      "summary": "Module-level `let activeTenant` is reassigned while the first async request is still pending; both requests read the new tenant.",
+      "mechanism": "The async function reads the binding after `await`, by which time another caller mutated it.",
+      "observed_output": "invoices for globex\ninvoices for globex",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "invoices for acme / invoices for globex"
+    },
+    {
+      "file": "javascript/03_const_object_mutated.js",
+      "language": "javascript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "A `const` policy object is assumed immutable, but a helper mutates its field and changes the shared default.",
+      "mechanism": "`const` prevents rebinding, not mutation of the referenced object.",
+      "observed_output": "aggressive: 10\ndefault: 10",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "aggressive: 10 / default: 3"
+    },
+    {
+      "file": "javascript/04_loop_carried_let.js",
+      "language": "javascript",
+      "bug_lines": [
+        4,
+        7,
+        8
+      ],
+      "summary": "`pageSize` is declared outside the loop and overwritten by one query, leaking into the following queries.",
+      "mechanism": "Loop-carried mutable binding retains the previous iteration's override.",
+      "observed_output": "SELECT * FROM users LIMIT 20\nSELECT * FROM orders LIMIT 50\nSELECT * FROM items LIMIT 50",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "items LIMIT 20"
+    },
+    {
+      "file": "javascript/05_async_id_capture.js",
+      "language": "javascript",
+      "bug_lines": [
+        6,
+        8,
+        10
+      ],
+      "summary": "Post-await logging reads a shared overwritten identifier.",
+      "mechanism": "Callbacks assign currentId synchronously before yielding; resumed callbacks read the final value.",
+      "observed_output": "Processed for ID: 2\nProcessed for ID: 2\n1,2",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Processed for ID: 1\nProcessed for ID: 2\n1,2"
     }
   ]
 }

@@ -154,6 +154,41 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_catalog_response.js",
+      "language": "javascript",
+      "bug_lines": [
+        4,
+        7,
+        8
+      ],
+      "summary": "A query-provided heading is cached for subsequent public requests.",
+      "mechanism": "The cache key uses only the path even though an unrestricted request parameter controls the stored response body.",
+      "observed_output": "public page Members only",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "public page Public catalog",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "cache-invalidation",
+          "suggests": "Responses varying by heading are reused under a path-only key.",
+          "evidence": [
+            "const cached = pages.get(request.path);",
+            "pages.set(request.path, body);"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "unconstrained-inputs",
+          "suggests": "An unrestricted heading parameter determines the cached body.",
+          "evidence": [
+            "const body = request.query?.heading ?? DEFAULT_HEADING;",
+            "render({ path: CATALOG_PATH, query: { heading: \"Members only\" } });"
+          ]
+        }
+      ]
     }
   ]
 }

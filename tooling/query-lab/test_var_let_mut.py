@@ -93,7 +93,8 @@ check();
 
     def test_pair_metadata(self):
         manifest = json.loads((lab.ROOT / 'examples' / DEFECT / 'manifest.json').read_text())
-        self.assertEqual(len(manifest['examples']), 18)
+        authored = {str(path.relative_to(lab.ROOT / 'examples' / DEFECT)) for language, (extension, _) in lab.LANGUAGES.items() for path in (lab.ROOT / 'examples' / DEFECT / language).glob('*' + extension)}
+        self.assertEqual({entry['file'] for entry in manifest['examples']}, authored)
         for entry in manifest['examples']:
             relative = DEFECT / entry['file']
             side = json.loads((lab.SIDECARS / relative.with_suffix('.json')).read_text())

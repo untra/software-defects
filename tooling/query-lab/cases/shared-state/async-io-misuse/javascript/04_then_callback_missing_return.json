@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return the transformed user from the promise callback.",
+  "original": {
+    "source_hash": "b339f5ab5bcf714d19ecb45056838b7c4ba9298d7ea750778aefcdfaffc15e1c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              130,
+              134
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              207,
+              211
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "009fb049dca76efa52448b1b9a6cbd9bb6221a0bcb0fc165952695ec748a25f5",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              130,
+              134
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              228,
+              232
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "loaded: { name: 'user-7' }"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Promise chains propagate the callback's return value. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

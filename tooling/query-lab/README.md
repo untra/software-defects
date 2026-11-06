@@ -2,7 +2,7 @@
 
 Query Lab is an external-first development CLI for Tree-sitter queries. It runs the official Tree-sitter CLI against the same grammar packages as State Lens, reads `.scm` edits immediately, and reports exact captures as JSON. It does not execute source during parsing or query testing.
 
-The supported Go/Rust/TypeScript development corpus has 284 original/fixed pairs, 84 experimental language/category packs, and source-hashed sidecar expectations. These packs expose **syntax candidates**, not validated bug diagnostics. Correct fixes often retain captures. Coverage reports distinguish tested cases from cases containing candidates; neither is detector accuracy. Examples subsequently added in other languages appear separately in `unsupported_cases`; supported-language tests neither execute them nor claim to cover them.
+The supported development corpus has 388 original/fixed pairs and 88 experimental language/category packs, including Python volatile-properties, and source-hashed sidecar expectations. These packs expose **syntax candidates**, not validated bug diagnostics. Correct fixes often retain captures. Coverage reports distinguish tested cases from cases containing candidates; neither is detector accuracy. Examples subsequently added in other languages appear separately in `unsupported_cases`; supported-language tests neither execute them nor claim to cover them.
 
 ## Setup
 
@@ -13,7 +13,7 @@ python3 tooling/query-lab/query_lab.py setup
 python3 tooling/query-lab/query_lab.py doctor
 ```
 
-Only `setup` downloads dependencies. It installs `tree-sitter-cli` 0.25.10 locally and verifies grammar crate downloads against `tooling/state-lens/Cargo.lock`: Go 0.25.0, Rust 0.24.0, TypeScript 0.23.2. It builds the supplied parser C sources without regenerating grammars. Configuration and native libraries live in the ignored `.cache/`, keyed by platform and package pins; global Tree-sitter configuration is not used. Setup is serialized with a file lock. Changing a grammar pin requires updating both projects together.
+Only `setup` downloads dependencies. It installs `tree-sitter-cli` 0.25.10 locally and verifies grammar crate downloads against `tooling/state-lens/Cargo.lock`: Go 0.25.0, Rust 0.24.0, TypeScript 0.23.2, and Python 0.25.0. It builds the supplied parser C sources without regenerating grammars. Configuration and native libraries live in the ignored `.cache/`, keyed by platform and package pins; global Tree-sitter configuration is not used. Setup is serialized with a file lock. Changing a grammar pin requires updating both projects together.
 
 ## Agent workflow
 
@@ -49,7 +49,7 @@ The initial expectations were anchored in reviewed source tokens, then checked a
 
 The experimental API-name queries intentionally do not infer receiver types or resolve shadowed functions. A method named `lock`, for example, is only a candidate. The arithmetic query captures division/remainder operators even when guarded correctly. No source filename, manifest explanation, `bug_lines`, or susceptibility score is supplied to a query. Existing `bug_lines` keep their bug-location meaning.
 
-All experimental packs live under this tool, **outside production `queries/`**, because State Lens embeds every `.scm` in that directory. Promotion requires supported semantic handlers, production metadata, independent analyzer expectations, and State Lens validation. This change does not add shared-state or unstructured-state diagnostics to the production analyzer.
+All experimental packs live under this tool, **outside production `queries/`**, because State Lens embeds every `.scm` in that directory. Promotion requires supported semantic handlers, production metadata, independent analyzer expectations, and State Lens validation. Division/remainder queries are also embedded in production, where denominator and guard analysis determine diagnostic severity. Other experimental packs remain separate.
 
 ## Behavioral checks and tests
 
@@ -69,3 +69,5 @@ Tests cover adapter failure modes, Unicode/CRLF byte ranges, duplicate/multiline
 ## Optional external editing assistance
 
 [ts_query_ls](https://github.com/ribru17/ts_query_ls#standalone-tool) supplies standalone `check`, `lint`, `format`, and editor completion. It is optional and is not installed by setup; the pinned official CLI remains authoritative for compilation and execution. [Official query CLI documentation](https://tree-sitter.github.io/tree-sitter/cli/query.html) describes direct usage, but newer documentation may include flags absent in the pinned version. Prefer the installed CLI's `--help` when invoking it directly.
+
+Python parsing and execution are available, but corpus query coverage is limited to volatile-properties; other Python categories remain explicitly unsupported pending reviewed packs and expectations. See [operation coverage](../../examples/mutated-state/volatile-properties/REVIEW.md).

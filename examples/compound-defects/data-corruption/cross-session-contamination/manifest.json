@@ -150,6 +150,41 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_request_locale.js",
+      "language": "javascript",
+      "bug_lines": [
+        4,
+        5,
+        6
+      ],
+      "summary": "A request without a locale inherits an unvalidated value from the prior request.",
+      "mechanism": "The module context retains per-request data, and an arbitrary supplied locale is accepted without checking allowed locale values.",
+      "observed_output": "next locale staff-preview",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "next locale en-US",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "cross-boundary-state-exposure",
+          "suggests": "Both requests reuse one module context whose locale survives the first call.",
+          "evidence": [
+            "const context = { locale: DEFAULT_LOCALE };",
+            "console.log(\"next locale\", render({}));"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "The request locale is stored without checking it against supported locales.",
+          "evidence": [
+            "if (request.locale !== undefined)\n        context.locale = request.locale;",
+            "const first = { locale: \"staff-preview\" };"
+          ]
+        }
+      ]
     }
   ]
 }

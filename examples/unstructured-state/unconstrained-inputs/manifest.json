@@ -203,6 +203,58 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "a depth no greater than 2"
+    },
+    {
+      "file": "javascript/01_page_limit.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "A page limit of -1 drops the last row.",
+      "mechanism": "slice treats a negative end as an offset from the length (CWE-1284).",
+      "observed_output": "ana,ben,cam",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the limit rejected, or all four rows"
+    },
+    {
+      "file": "javascript/02_repeat_label.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "A label is repeated 8 times with no maximum.",
+      "mechanism": "String repeat trusts the count (CWE-400).",
+      "observed_output": "label xxxxxxxx",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the label rejected or clamped"
+    },
+    {
+      "file": "javascript/03_line_total.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "A price near the top of the float range times ten prints Infinity.",
+      "mechanism": "Number multiplication overflows to Infinity instead of rejecting the magnitude (CWE-190).",
+      "observed_output": "total Infinity",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the line rejected"
+    },
+    {
+      "file": "javascript/04_nested_groups.js",
+      "language": "javascript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "A group tree four levels deep is counted with no depth cap.",
+      "mechanism": "The recursion follows every nested list the input contains (CWE-400).",
+      "observed_output": "groups 4",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "the tree rejected past the depth cap"
     }
   ]
 }

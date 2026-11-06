@@ -164,6 +164,58 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "both report 29"
+    },
+    {
+      "file": "javascript/01_copied_month_length.js",
+      "language": "javascript",
+      "bug_lines": [
+        8
+      ],
+      "summary": "Payroll's February length stays 28 in a leap year; billing returns 29.",
+      "mechanism": "The copied helper no longer matches the one that was fixed (CWE-1104).",
+      "observed_output": "billing 2024 february 29\npayroll 2024 february 28",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "both helpers return 29"
+    },
+    {
+      "file": "javascript/02_caret_range.js",
+      "language": "javascript",
+      "bug_lines": [
+        10
+      ],
+      "summary": "A caret range accepts 1.9.0, whose February is no longer a leap day.",
+      "mechanism": "`^1.2.0` allows any later 1.x (CWE-1395).",
+      "observed_output": "february 2024: 28 via 1.9.0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "february 2024: 29 via 1.2.0"
+    },
+    {
+      "file": "javascript/03_unpinned_resolve.js",
+      "language": "javascript",
+      "bug_lines": [
+        9
+      ],
+      "summary": "Resolving to the newest published release selects 1.4.7 and a 28-day February.",
+      "mechanism": "An unpinned dependency installs a later build than the one that was tested (CWE-1395).",
+      "observed_output": "february 2024: 28 via 1.4.7",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "february 2024: 29 via 1.2.1"
+    },
+    {
+      "file": "javascript/04_two_majors.js",
+      "language": "javascript",
+      "bug_lines": [
+        9
+      ],
+      "summary": "Two majors of the date helper disagree on February 2024.",
+      "mechanism": "Both copies are linked into one process and return different lengths (CWE-1104).",
+      "observed_output": "dates-v1 29\ndates-v2 28",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "both majors return 29"
     }
   ]
 }

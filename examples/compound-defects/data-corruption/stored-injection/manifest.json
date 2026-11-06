@@ -149,6 +149,39 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_customer_lookup.js",
+      "language": "javascript",
+      "bug_lines": [
+        11
+      ],
+      "summary": "A persisted customer name breaks the quoting of a later query.",
+      "mechanism": "Text from a storage boundary is trusted and concatenated directly into SQL syntax without parameterization or validation.",
+      "observed_output": "SELECT id FROM customers WHERE name = 'O'Neil'",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "The name is passed as a bound parameter rather than inserted into query syntax.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "The customer name is persisted and later read from the file boundary.",
+          "evidence": [
+            "writeFileSync(path, CUSTOMER_NAME);",
+            "const name = readFileSync(path, \"utf8\");"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "A name containing a quote is concatenated into the query unchanged.",
+          "evidence": [
+            "const CUSTOMER_NAME = \"O'Neil\";",
+            "const query = \"SELECT id FROM customers WHERE name = '\" + name + \"'\";"
+          ]
+        }
+      ]
     }
   ]
 }

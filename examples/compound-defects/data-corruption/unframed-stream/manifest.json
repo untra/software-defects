@@ -151,6 +151,40 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_shipment_records.js",
+      "language": "javascript",
+      "bug_lines": [
+        9,
+        11
+      ],
+      "summary": "A variable-length shipment is stored as transport chunks instead of complete records.",
+      "mechanism": "An asynchronous byte reader yields fixed four-byte chunks, and the consumer treats each read as a complete record despite accepting unrestricted record lengths.",
+      "observed_output": "records [\"pear\",\"sfig\",\"s-la\",\"rge\"]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "records [\"pears\",\"figs-large\"]",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "async-io-misuse",
+          "suggests": "The async consumer mistakes each transport read for an application record.",
+          "evidence": [
+            "for await (const chunk of readShipment(bytes)) {",
+            "records.push(chunk.toString());"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "unconstrained-inputs",
+          "suggests": "Arbitrary record lengths are concatenated without lengths or separators.",
+          "evidence": [
+            "async function receiveShipment(names) {",
+            "const bytes = Buffer.from(names.join(\"\"));"
+          ]
+        }
+      ]
     }
   ]
 }

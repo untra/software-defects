@@ -150,6 +150,42 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_shipping_quote.js",
+      "language": "javascript",
+      "bug_lines": [
+        7,
+        10,
+        11,
+        16
+      ],
+      "summary": "The cached shipping quote remains 10 after the rate rises.",
+      "mechanism": "Memoization keys only the weight even though the calculation reads a mutable module rate.",
+      "observed_output": "shipping 10",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "shipping 15",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "cache-invalidation",
+          "suggests": "Changing the rate does not evict the cached quote.",
+          "evidence": [
+            "if (!quotes.has(weight))\n        quotes.set(weight, shipping(weight));",
+            "rate = REVISED_RATE;"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "Shipping reads mutable state not represented by its argument.",
+          "evidence": [
+            "let rate = INITIAL_RATE;",
+            "return weight * rate;"
+          ]
+        }
+      ]
     }
   ]
 }

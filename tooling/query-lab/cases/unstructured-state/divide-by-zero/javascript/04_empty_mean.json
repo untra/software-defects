@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "An empty collection has no arithmetic mean.",
+  "original": {
+    "source_hash": "dd13aeecc24383b6a50c9d671bb3aaffad4e468f710bb6b068deeb4f19c4c8cc",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "division",
+            "range": [
+              103,
+              124
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              103,
+              108
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              111,
+              124
+            ]
+          },
+          {
+            "name": "operator",
+            "range": [
+              109,
+              110
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "5e08ebac4b393024831b38602c7c5b4d12d57beced0e086a0f916d60755a995c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "division",
+            "range": [
+              153,
+              174
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              153,
+              158
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              161,
+              174
+            ]
+          },
+          {
+            "name": "operator",
+            "range": [
+              159,
+              160
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "average null"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Syntax captures remain in guarded fixes. Production analysis separately checks scoped denominator values and guards; dynamic aliases and dispatch remain unresolved."
+}

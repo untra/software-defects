@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[3]
 EXAMPLES = ROOT / "examples"
 CURRENT_FAMILY = "mutated-state"
 DEFAULT_BINARY = ROOT / "tooling/state-lens/target/debug/state-lens"
-EXTENSIONS = {"go": ".go", "rust": ".rs", "typescript": ".ts"}
+EXTENSIONS = {"go": ".go", "rust": ".rs", "javascript": ".js", "typescript": ".ts"}
 
 
 def cases():

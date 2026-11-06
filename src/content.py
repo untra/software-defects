@@ -708,6 +708,60 @@ class A:
                 },
             ],
         },
+        {'slug': 'volatile-properties',
+         'cwes': [],
+         'name': 'Volatile Properties',
+         'tagline': 'collection calls that change the source',
+         'essence': "In-place collection operations can violate a caller's expectation that the source "
+                    'stays unchanged.',
+         'description': 'Array, vector and list operations such as push, pop, sort, reverse and copy can '
+                        'change existing storage. This class covers unexpected collection mutation, '
+                        'distinct from mutable bindings and arithmetic overflow. Tree-sitter names '
+                        'identify candidates, not proven defects: receiver types, aliases and ownership '
+                        'require review. Copy before transforming when the source must remain unchanged; '
+                        'shallow copies do not isolate nested objects. Maps, sets, deques, string builders, '
+                        'stream cursor positions and vector capacity are covered by the runnable pairs below.',
+         'examples': [{'title': 'Preserve the source collection',
+                       'intent': 'Compute a transformed collection while preserving the original. The '
+                                 'runnable pairs below cover every listed operation and retain relevant '
+                                 'return values.',
+                       'languages': [{'name': 'TypeScript',
+                                      'slug': 'typescript',
+                                      'code': 'const source = [3, 1, 2];\n'
+                                              'const sorted = source.toSorted((a, b) => a - b);',
+                                      'explanation': 'toSorted returns a new array. For '
+                                                     'push/pop/shift/unshift/splice/fill/copyWithin, '
+                                                     'copying before the operation preserves its return '
+                                                     'semantics. reverse also has toReversed.',
+                                      'output': 'source: [3, 1, 2]; sorted: [1, 2, 3]'},
+                                     {'name': 'Python',
+                                      'slug': 'python',
+                                      'code': 'source = [3, 1, 2]\nordered = sorted(source)',
+                                      'explanation': 'sorted returns a list. Copy before '
+                                                     'append/extend/insert/remove/pop/clear or slice '
+                                                     'assignment; slicing can replace reverse. Preserve '
+                                                     'exceptions and removal results.',
+                                      'output': 'source: [3, 1, 2]; ordered: [1, 2, 3]'},
+                                     {'name': 'Rust',
+                                      'slug': 'rust',
+                                      'code': 'let source = vec![3, 1, 2];\n'
+                                              'let mut ordered = source.clone();\n'
+                                              'ordered.sort();',
+                                      'explanation': 'Clone scalar elements before '
+                                                     'push/pop/insert/remove/swap_remove/retain/sort/sort_by/reverse/truncate/clear/dedup. '
+                                                     'Exclusive borrowing prevents concurrent aliases, not '
+                                                     'unintended changes to caller data.',
+                                      'output': 'source: [3, 1, 2]; ordered: [1, 2, 3]'},
+                                     {'name': 'Go',
+                                      'slug': 'go',
+                                      'code': 'source := []int{3, 1, 2}\n'
+                                              'work := slices.Clone(source)\n'
+                                              'copy(work, []int{9})',
+                                      'explanation': 'Import slices. Clone storage before indexed writes, '
+                                                     'copy or append. append can overwrite shared backing '
+                                                     'storage when capacity permits; allocation changes '
+                                                     'that behavior.',
+                                      'output': 'source: [3 1 2]; work: [9 1 2]'}]}]},
         {
             "slug": "increment-decrement-operators",
             "cwes": [

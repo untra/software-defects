@@ -4,11 +4,14 @@ SERVER_RELEASE := $(SERVER_DIR)/target/release/state-lens
 INSTALL_ROOT ?= $(HOME)/.local
 VSCODE_DIR := extensions/vscode
 VSCODE_VERSION := $(shell node -p "require('./$(VSCODE_DIR)/package.json').version")
-VSIX := $(VSCODE_DIR)/state-lens-$(VSCODE_VERSION).vsix
+VSCODE_LANGUAGES := $(shell node -p "Object.keys(require('./extensions/vscode/languages.json')).join(' ')")
+VSCODE_LANGUAGE ?= typescript
+VSCODE_TARGET ?= $(shell node -p "process.platform + '-' + process.arch")
+VSIX := build/vsix/state-lens-$(VSCODE_LANGUAGE)-$(VSCODE_VERSION)-$(VSCODE_TARGET).vsix
 ZED_MANIFEST := extensions/zed/Cargo.toml
 ZED_TARGET := wasm32-wasip2
 
-.PHONY: all server install-server vscode install-vscode zed test install
+.PHONY: all server install-server vscode vscode-all install-vscode zed test install
 
 all: server vscode zed
 
@@ -21,7 +24,11 @@ install-server:
 
 vscode:
 	npm ci --prefix $(VSCODE_DIR)
-	npm run package --prefix $(VSCODE_DIR)
+	npm run package --prefix $(VSCODE_DIR) -- $(VSCODE_LANGUAGE) $(VSCODE_TARGET)
+
+vscode-all:
+	npm ci --prefix $(VSCODE_DIR)
+	@for language in $(VSCODE_LANGUAGES); do npm run package --prefix $(VSCODE_DIR) -- $$language $(VSCODE_TARGET) || exit 1; done
 
 install-vscode: vscode
 	code --install-extension $(VSIX) --force
@@ -46,11 +53,11 @@ SMOKE_REPORT := build/smoke
 
 .PHONY: smoke smoke-audit smoke-update
 
-smoke: server vscode
+smoke: server vscode-all
 	@status=0; \
 	python3 $(SERVER_DIR)/scripts/smoke.py --report $(SMOKE_REPORT)/protocol || status=1; \
-	npm run test:e2e --prefix $(VSCODE_DIR) -- --report $(CURDIR)/$(SMOKE_REPORT)/editor || status=1; \
-	python3 $(SERVER_DIR)/scripts/smoke_report.py $(SMOKE_REPORT)/protocol/smoke-report.json $(SMOKE_REPORT)/editor/smoke-report.json --report $(SMOKE_REPORT) || status=1; \
+	for language in $(VSCODE_LANGUAGES); do npm run test:e2e --prefix $(VSCODE_DIR) -- --language $$language --report $(CURDIR)/$(SMOKE_REPORT)/editor/$$language || status=1; done; \
+	python3 $(SERVER_DIR)/scripts/smoke_report.py $(SMOKE_REPORT)/protocol/smoke-report.json $(SMOKE_REPORT)/editor/*/smoke-report.json --report $(SMOKE_REPORT) || status=1; \
 	exit $$status
 
 smoke-audit: smoke

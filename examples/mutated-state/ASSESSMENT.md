@@ -13,7 +13,8 @@ Score **1–5**: how likely the defect is to show up in everyday code in that la
 | [macro-mixin-misuse](macro-mixin-misuse/) | 2 | 3 | 3 | 3 |
 | [increment-decrement-operators](increment-decrement-operators/) | 3 | 3 | 3 | 2 |
 | [improper-initialization](improper-initialization/) | 5 | 2 | 4 | 4 |
-| **Total** | **32** | **19** | **38** | **36** |
+| [volatile-properties](volatile-properties/) | 4 | 2 | 5 | 5 |
+| **Total** | **36** | **21** | **43** | **41** |
 
 ## Rationale
 
@@ -73,3 +74,13 @@ The corpus now has 5 Go, 3 Rust, 5 TypeScript, and 5 Python examples, each with 
 - Rust 2: values must be initialized, but `#[derive(Default)]` and `unwrap_or_default` produce illegal states.
 - TS 4: the `!` assertion, subclass fields initialized after the base constructor runs, TDZ, and `||` defaults.
 - Python 4: an attribute set on only one branch, `value or default` replacing `0`, a method used before the last field is set, and an optional left as `None`.
+
+**volatile-properties**
+- Go 4: shared slice backing arrays, destination writes through copy, and capacity-dependent append.
+- Rust 2: explicit exclusive mutation still permits accidental changes to a collection that should have been preserved.
+- TypeScript 5: array methods mutate through const bindings and shared references.
+- Python 5: list methods and slice assignment mutate shared objects.
+
+See [operation coverage and repair limits](volatile-properties/REVIEW.md). Scores express susceptibility, not operation counts. This is the collection-mutation category; increment-decrement-operators remains for arithmetic overflow, narrowing and value semantics. Neither mutable declarations nor mutating API calls alone prove a defect.
+
+Volatile-properties now includes maps, sets, deques, builders, StringIO cursor changes and Rust capacity changes. The scores remain unchanged: more operation fixtures expand coverage, not susceptibility. Bare entry access, joining and slice-view creation are distinguished from content writes. See the expanded operation matrix in the repair review.

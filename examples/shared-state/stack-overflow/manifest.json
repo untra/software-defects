@@ -167,6 +167,60 @@
       "exit_code": 1,
       "deterministic": true,
       "expected_behavior": "one send, or a bounded number of retries"
+    },
+    {
+      "file": "javascript/01_cyclic_object_deep_clone.js",
+      "language": "javascript",
+      "bug_lines": [
+        5,
+        6
+      ],
+      "summary": "Recursive deep clone follows a back-reference forever.",
+      "mechanism": "No seen-set for cyclic object graphs (CWE-674).",
+      "observed_output": "RangeError: Maximum call stack size exceeded",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "cloned object with the cycle preserved"
+    },
+    {
+      "file": "javascript/02_spread_huge_array.js",
+      "language": "javascript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "Spreading a million-element array into `Math.max` exceeds the argument stack.",
+      "mechanism": "Spread arguments are pushed onto the call stack.",
+      "observed_output": "RangeError: Maximum call stack size exceeded",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "peak reading: 96"
+    },
+    {
+      "file": "javascript/03_mutually_recursive_events.js",
+      "language": "javascript",
+      "bug_lines": [
+        7,
+        11
+      ],
+      "summary": "Two event handlers re-emit each other's event synchronously, recursing forever.",
+      "mechanism": "EventEmitter dispatch is synchronous; feedback loops recurse on the stack.",
+      "observed_output": "RangeError: Maximum call stack size exceeded",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "total settles once"
+    },
+    {
+      "file": "javascript/04_retry_fanout_queue.js",
+      "language": "javascript",
+      "bug_lines": [
+        12
+      ],
+      "summary": "Each failed job is re-enqueued twice with no attempt cap, doubling the queue every round.",
+      "mechanism": "Runaway allocation from uncapped retries (CWE-770); heap exhaustion follows.",
+      "observed_output": "jobs queued after 20 rounds: 1048576",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "job dropped after max attempts"
     }
   ]
 }

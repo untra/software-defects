@@ -9,10 +9,31 @@
         "query": "tooling/query-lab/queries/typescript/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              52,
+              69
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              52,
+              59
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               60,
               61
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              62,
+              69
             ]
           }
         ]
@@ -26,10 +47,31 @@
         "query": "tooling/query-lab/queries/typescript/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              75,
+              92
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              75,
+              82
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               83,
               84
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              85,
+              92
             ]
           }
         ]
@@ -43,5 +85,5 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. 0/0 is NaN, and NaN fails every comparison (CWE-682). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Syntax captures remain in guarded fixes. Production analysis separately checks scoped denominator values and guards; dynamic aliases and dispatch remain unresolved."
 }

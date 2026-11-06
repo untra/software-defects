@@ -6,7 +6,7 @@ const { performance } = require('node:perf_hooks');
 const { Client } = require('./client.cjs');
 
 const ROOT = path.resolve(__dirname, '../../../..');
-const LANGUAGES = { '.go': 'go', '.rs': 'rust', '.ts': 'typescript', '.py': 'python' };
+const LANGUAGES = { '.go': 'go', '.rs': 'rust', '.ts': 'typescript', '.js': 'javascript', '.mjs': 'javascript', '.cjs': 'javascript', '.py': 'python' };
 const DEADLINE_MS = 5000;
 const STARTUP_MS = 30000;
 const CONTENT_MODIFIED = -32801;
@@ -14,7 +14,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 function files(directory) {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
     const file = path.join(directory, entry.name);
-    return entry.isDirectory() ? files(file) : LANGUAGES[path.extname(file)] ? [file] : [];
+    return entry.isDirectory() ? files(file) : LANGUAGES[path.extname(file)] && path.basename(path.dirname(file)) === LANGUAGES[path.extname(file)] ? [file] : [];
   }).sort();
 }
 function executable(command) {
@@ -69,7 +69,7 @@ async function main() {
       const started = performance.now();
       const uri = pathToFileURL(file).href;
       const source = fs.readFileSync(file, 'utf8');
-      const logStart = client.logs.length;
+      const logStart = client.logCount;
       try {
         client.notify('textDocument/didOpen', { textDocument: { uri, languageId: row.language, version: 1, text: source } });
         let snapshot;
@@ -81,14 +81,14 @@ async function main() {
         }
         if (snapshot.uri !== uri || snapshot.version !== 1 || snapshot.sourceHash !== createHash('sha256').update(source).digest('hex')) throw new Error('stale or mismatched snapshot');
         if (!Array.isArray(snapshot.findings) || !Array.isArray(snapshot.functions)) throw new Error('invalid snapshot');
-        const errors = client.logs.slice(logStart).filter(log => log.params?.type <= 2);
+        const errors = client.logsSince(logStart).filter(log => log.params?.type <= 2);
         if (errors.length) throw new Error(JSON.stringify(errors));
         Object.assign(row, { status: 'pass', findings: snapshot.findings.length, indexing: snapshot.indexing, parse_errors: snapshot.parseErrors, unresolved: snapshot.unresolved.length });
       } catch (error) {
         Object.assign(row, { status: 'fail', error: error.message });
       } finally {
         row.ms = Math.round(performance.now() - started);
-        row.logs = client.logs.slice(logStart);
+        row.logs = client.logsSince(logStart);
         checkpoint();
       }
       if (client.failure || row.status === 'fail' && /timeout|deadline/.test(row.error)) break;
@@ -97,7 +97,12 @@ async function main() {
     if (!client.failure) {
       await client.request('shutdown', null, DEADLINE_MS);
       client.notify('exit', null);
-      await Promise.race([client.closed, sleep(DEADLINE_MS).then(() => { throw new Error('server did not exit after shutdown'); })]);
+      let timer;
+      try {
+        await Promise.race([client.closed, new Promise((_, reject) => {
+          timer = setTimeout(() => reject(new Error('server did not exit after shutdown')), DEADLINE_MS);
+        })]);
+      } finally { clearTimeout(timer); }
       if (client.process.exitCode !== 0) throw new Error(`server shutdown exit: ${client.process.exitCode}`);
     }
   } catch (error) { output.error = error.message; }

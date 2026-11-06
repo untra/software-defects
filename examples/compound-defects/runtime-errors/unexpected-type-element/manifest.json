@@ -148,6 +148,40 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_receipt_lines.js",
+      "language": "javascript",
+      "bug_lines": [
+        7,
+        11
+      ],
+      "summary": "An existing receipt line changes its cents field to a string before collection formatting.",
+      "mechanism": "The mutable any field loses its numeric shape and the list consumer assumes every cents value implements toFixed.",
+      "observed_output": "TypeError: line.cents.toFixed is not a function",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Validate the edit and print receipt 275.00.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "Editing a line overwrites the cents property on the same instance held in the list.",
+          "evidence": [
+            "this.cents = cents;",
+            "const lines = [line];",
+            "line.edit(FORM_CENTS);"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "duck-typing-without-contracts",
+          "suggests": "The list consumer calls toFixed on every cents value without checking its runtime shape.",
+          "evidence": [
+            "return lines.map((line) => line.cents.toFixed(DECIMAL_PLACES));"
+          ]
+        }
+      ]
     }
   ]
 }

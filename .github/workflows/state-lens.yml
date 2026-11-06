@@ -43,7 +43,6 @@ jobs:
         run: |
           npm ci --prefix extensions/vscode
           npm test --prefix extensions/vscode
-          npm run package --prefix extensions/vscode
       - name: Zed extension checks
         run: |
           cargo +1.95.0 fmt --manifest-path extensions/zed/Cargo.toml --check
@@ -62,21 +61,15 @@ jobs:
           name: smoke-protocol
           path: build/smoke/protocol/smoke-report.*
           if-no-files-found: error
-      - uses: actions/upload-artifact@v4
-        with:
-          name: editor-smoke-build
-          path: |
-            tooling/state-lens/target/release/state-lens
-            extensions/vscode/*.vsix
-          if-no-files-found: error
 
   editor-smoke:
-    needs: [test, inventory]
+    needs: [test, inventory, packages]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         shard: ${{ fromJSON(needs.inventory.outputs.shards) }}
+        language: [typescript, javascript, go, rust, python]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -87,15 +80,15 @@ jobs:
       - run: npm ci --prefix extensions/vscode
       - uses: actions/download-artifact@v4
         with:
-          name: editor-smoke-build
-      - run: chmod +x tooling/state-lens/target/release/state-lens
+          name: vsix-${{ matrix.language }}-linux-x64
+          path: build/vsix
       - uses: actions/cache@v4
         with:
           path: extensions/vscode/.vscode-test
           key: vscode-${{ runner.os }}-${{ runner.arch }}-1.142.0
       - name: Editor smoke
         working-directory: extensions/vscode
-        run: xvfb-run -a npm run test:e2e -- --shard '${{ matrix.shard }}' --report ../../build/smoke/editor
+        run: xvfb-run -a npm run test:e2e -- --language '${{ matrix.language }}' --shard '${{ matrix.shard }}' --report ../../build/smoke/editor
       - name: Editor summary
         if: always()
         run: cat build/smoke/editor/smoke-report.md >> "$GITHUB_STEP_SUMMARY"
@@ -131,3 +124,57 @@ jobs:
           name: smoke-audit
           path: build/smoke/smoke-report.*
           if-no-files-found: error
+
+  packages:
+    runs-on: ${{ matrix.platform.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [typescript, javascript, go, rust, python]
+        platform:
+          - { target: linux-x64, rust: x86_64-unknown-linux-gnu, runner: ubuntu-24.04 }
+          - { target: linux-arm64, rust: aarch64-unknown-linux-gnu, runner: ubuntu-24.04-arm }
+          - { target: darwin-x64, rust: x86_64-apple-darwin, runner: macos-15-intel }
+          - { target: darwin-arm64, rust: aarch64-apple-darwin, runner: macos-15 }
+          - { target: win32-x64, rust: x86_64-pc-windows-msvc, runner: windows-2025 }
+          - { target: win32-arm64, rust: aarch64-pc-windows-msvc, runner: windows-11-arm }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: extensions/vscode/package-lock.json
+      - run: rustup toolchain install 1.95.0 --profile minimal
+      - run: rustup default 1.95.0
+      - run: rustup target add ${{ matrix.platform.rust }}
+      - run: npm ci --prefix extensions/vscode
+      - run: npm run package --prefix extensions/vscode -- ${{ matrix.language }} ${{ matrix.platform.target }}
+      - run: python tooling/state-lens/scripts/verify_vsix.py ${{ matrix.language }} ${{ matrix.platform.target }}
+      - name: Packaged editor isolation (Linux)
+        if: runner.os == 'Linux'
+        run: xvfb-run -a npm run test:isolation --prefix extensions/vscode -- ${{ matrix.language }}
+      - name: Packaged editor isolation (macOS and Windows)
+        if: runner.os != 'Linux'
+        run: npm run test:isolation --prefix extensions/vscode -- ${{ matrix.language }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vsix-${{ matrix.language }}-${{ matrix.platform.target }}
+          path: build/vsix/*.vsix
+          if-no-files-found: error
+
+  coexistence:
+    needs: packages
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --prefix extensions/vscode
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: vsix-*-linux-x64
+          merge-multiple: true
+          path: build/vsix
+      - run: xvfb-run -a npm run test:isolation --prefix extensions/vscode

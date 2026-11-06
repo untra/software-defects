@@ -221,6 +221,73 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "both keys equal pen"
+    },
+    {
+      "file": "javascript/01_sort_mutates_argument.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "`Array.prototype.sort` mutates the caller's chronological readings.",
+      "mechanism": "sort is in-place; use toSorted or copy.",
+      "observed_output": "top: [ 48, 33, 21 ]\nlatest reading: 7",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "latest reading: 21"
+    },
+    {
+      "file": "javascript/02_reads_mutable_module_state.js",
+      "language": "javascript",
+      "bug_lines": [
+        6,
+        10
+      ],
+      "summary": "`quote` reads a mutable module flag, so the cart quote and checkout charge differ for the same input.",
+      "mechanism": "Hidden global input (CWE-1108).",
+      "observed_output": "quoted 200 charged 160",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "quoted 200 charged 200 (or price fixed at quote time)"
+    },
+    {
+      "file": "javascript/03_memo_hidden_dependency.js",
+      "language": "javascript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "Memoized formatter keys only on amount, ignoring the global locale it reads.",
+      "mechanism": "Cache key omits a hidden dependency, returning stale results after state changes.",
+      "observed_output": "€1,234.50\n€1,234.50",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "€1,234.50 / 1.234,50 €"
+    },
+    {
+      "file": "javascript/04_random_in_cache_key.js",
+      "language": "javascript",
+      "bug_lines": [
+        5
+      ],
+      "summary": "Cache key includes Math.random(), so identical requests never hit.",
+      "mechanism": "Entropy inside a function that must be deterministic.",
+      "observed_output": "cache hits: 0 of 3",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "cache hits: 2 of 3"
+    },
+    {
+      "file": "javascript/05_normalizer_mutates_argument.js",
+      "language": "javascript",
+      "bug_lines": [
+        2,
+        3
+      ],
+      "summary": "`normalize` mutates the input object, corrupting the audit snapshot.",
+      "mechanism": "Argument objects are references; function should return a new object (CWE-374).",
+      "observed_output": "normalized: [ 'admin', 'member' ]\naudit snapshot: ana@example.com [ 'admin', 'member' ]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "audit snapshot: Ana@Example.com [ 'admin' ]"
     }
   ]
 }

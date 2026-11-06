@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Copy the scalar collection before transforming it; preserve the source, operation result and return value.",
+  "analysis_limit": "Syntax candidates only: names do not resolve receiver types or shadowed functions. Safe copies retain captures. Ownership, aliasing, callback effects and intended behavior require review.",
+  "runtime": {
+    "status": "supported",
+    "stdout": "ok\n",
+    "exit_code": 0
+  },
+  "original": {
+    "source_hash": "9fde1c0b6acaafe678b4eb6183d38fb3c99d8931160051f23f0263cba7974554",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/mutated-state/volatile-properties/signals.scm",
+        "captures": [
+          {
+            "name": "receiver",
+            "range": [
+              36,
+              40
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              41,
+              48
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "e157e0da342d50b2dfba9376e86a369c921b87a8e3678be48df6132d2c653f73",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/mutated-state/volatile-properties/signals.scm",
+        "captures": [
+          {
+            "name": "receiver",
+            "range": [
+              43,
+              47
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              48,
+              55
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

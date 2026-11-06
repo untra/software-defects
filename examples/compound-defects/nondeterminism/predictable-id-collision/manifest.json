@@ -157,6 +157,43 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_receipt_numbers.js",
+      "language": "javascript",
+      "bug_lines": [
+        11,
+        12,
+        14,
+        15
+      ],
+      "summary": "Two same-tick customers receive the same receipt id and one stored receipt replaces the other.",
+      "mechanism": "A frozen shared millisecond clock supplies predictable identifiers; concurrent availability checks both pass before either insertion.",
+      "observed_output": "ids receipt-1700000000000 receipt-1700000000000\nreceipts 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Two distinct receipt ids and receipts 2.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "The identifier uses only a shared millisecond timestamp.",
+          "evidence": [
+            "const clock = { millis: MILLIS };",
+            "const id = PREFIX + clock.millis;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "race-conditions",
+          "suggests": "Both callers check availability before either resumes to insert.",
+          "evidence": [
+            "const available = !receipts.has(id);",
+            "await ready;",
+            "if (available)\n        receipts.set(id, customer);"
+          ]
+        }
+      ]
     }
   ]
 }

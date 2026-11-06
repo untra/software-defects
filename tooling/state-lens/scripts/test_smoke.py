@@ -30,6 +30,13 @@ class SmokeAuditTests(unittest.TestCase):
         for folder, group in grouped.items():
             self.assertTrue(all(file.parent == folder for file in group))
 
+    def test_language_merge_does_not_require_other_extensions(self):
+        import smoke_report as audit
+        rows = audit.merge([], ['editor'], language='javascript')
+        expected = [path for path in smoke.corpus_files() if path.parent.name == 'javascript']
+        self.assertEqual(len(rows), len(expected))
+        self.assertEqual({row['language'] for row in rows}, {'javascript'})
+
     def test_row_schema_and_status(self):
         import smoke_report as audit
         row = audit.row('protocol', 'examples/mutated-state/var-let-mut/go/01_shadowed_err_in_if.go')
@@ -162,9 +169,13 @@ class CompoundContractTests(unittest.TestCase):
         from corpus_inventory import files, identity, shards, validate_compounds
         self.assertEqual(validate_compounds(), [])
         compounds = [p for p in files() if identity(p.relative_to(smoke.ROOT))['compound_class']]
-        self.assertEqual(len(compounds), 168)
+        self.assertTrue(compounds)
+        self.assertEqual({identity(p.relative_to(smoke.ROOT))["language"] for p in compounds}, set(smoke.EXTENSIONS.values()))
         self.assertEqual(len({p.parent.parent for p in compounds}), 44)
-        self.assertEqual(len(files()), 850)
+        for source in files():
+            if source.parent.name == "typescript":
+                counterpart = str(source).replace("/typescript/", "/javascript/").removesuffix(".ts") + ".js"
+                self.assertTrue(smoke.Path(counterpart).is_file(), counterpart)
         self.assertEqual(len(shards()), 9)
 
     def test_absent_ingredients_fail_without_strict_gaps_or_baseline(self):
@@ -200,3 +211,16 @@ class CompoundContractTests(unittest.TestCase):
         self.assertEqual(row['expected_rule_ids'], [])
         self.assertEqual(row['missing_rule_ids'], [])
         self.assertEqual(audit.SCHEMA_VERSION, 2)
+
+class DivisionOracleTests(unittest.TestCase):
+    def test_missing_findings_fail_independently_of_baseline(self):
+        import smoke_report as audit
+        item = audit.row('protocol', 'examples/unstructured-state/divide-by-zero/typescript/01_panel_current.ts')
+        audit.check_division(item, [], [])
+        self.assertTrue(item['problems'])
+
+    def test_fixed_counterpart_rejects_a_remaining_diagnostic(self):
+        import smoke_report as audit
+        item = audit.row('protocol', 'examples-fixed/unstructured-state/divide-by-zero/typescript/01_panel_current.ts')
+        audit.check_division(item, [], [{'code': 'typescript.unstructured-state.divide-by-zero', 'range': {}, 'severity': 2}])
+        self.assertTrue(item['problems'])

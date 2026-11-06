@@ -3,7 +3,9 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 
-const EXTENSION_ID = 'state-lens.state-lens';
+const LANGUAGE = process.env.STATE_LENS_LANGUAGE;
+const CONFIG_SECTION = `stateLens.${LANGUAGE}`;
+const EXTENSION_ID = `state-lens.state-lens-${LANGUAGE}`;
 const SOURCE = 'state-lens';
 const INLAY_MARKER = '◆';
 const PRESENTATION_EXAMPLE = 'examples/shared-state/async-io-misuse/go/03_goroutine_leak_unbuffered_result.go';
@@ -14,8 +16,10 @@ const FAILED_STATUS = /unavailable|stopped/;
 const ROOT = process.env.STATE_LENS_ROOT;
 const SHARD = process.env.STATE_LENS_SHARD;
 const REPORT = process.env.STATE_LENS_REPORT;
+const DIVISION = JSON.parse(fs.readFileSync(path.join(ROOT, 'tooling/state-lens/fixtures/division-smoke.json'), 'utf8'));
+const MUTATIONS = JSON.parse(fs.readFileSync(path.join(ROOT, 'tooling/state-lens/fixtures/division-mutations.json'), 'utf8'));
 const HEALTH = process.env.STATE_LENS_HEALTH_ONLY === '1';
-const EXTENSIONS = new Set(['.go', '.rs', '.ts', '.py']);
+const EXTENSIONS = new Set(['.go', '.rs', '.ts', '.py', '.js', '.mjs', '.cjs']);
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const issue = (category, message) => ({ category, message: String(message) });
 const label = hint => typeof hint.label === 'string' ? hint.label : hint.label.map(part => part.value).join('');
@@ -49,7 +53,7 @@ function makeRow(file) {
 }
 function finish(row) {
   if (row.missing_rule_ids.length && !row.problems.some(p => p.category === 'count-mismatch')) row.problems.push(issue('count-mismatch', `Missing identities: ${row.missing_rule_ids.join(', ')}`));
-  row.status = row.problems.length ? 'fail' : !HEALTH && row.root === 'examples' && (row.hinted_functions === 0 || row.bug_lines_missed.length) ? 'gap' : 'pass';
+  row.status = row.problems.length ? 'fail' : !HEALTH && row.root === 'examples' && (row.findings === 0 || row.bug_lines_missed.length) ? 'gap' : 'pass';
   return row;
 }
 function checkpoint(rows) {
@@ -126,10 +130,16 @@ async function check(api, document, row, expected, state) {
   if ((result.segments > 0) !== (hinted > 0)) row.problems.push(issue('count-mismatch', 'decoration segments differ from hinted functions'));
   const diagnostics = await until(() => lensDiagnostics(uri).length === result.findings && lensDiagnostics(uri), state, 'settled diagnostics');
   if (state.expired) return;
-  if (diagnostics.some(d => d.severity !== vscode.DiagnosticSeverity.Information)) row.problems.push(issue('count-mismatch', 'Expected Information diagnostics'));
+  for (const diagnostic of diagnostics) {
+    const code = typeof diagnostic.code === 'object' ? diagnostic.code.value : diagnostic.code;
+    const entry = snapshot.findings.find(e => e.finding.rule_id === code && diagnostic.range.isEqual(new vscode.Range(e.triggerRange.start.line, e.triggerRange.start.character, e.triggerRange.end.line, e.triggerRange.end.character)));
+    const warning = ['known-zero', 'possible-zero'].includes(entry?.finding.division_risk?.confidence);
+    if (diagnostic.severity !== (warning ? vscode.DiagnosticSeverity.Warning : vscode.DiagnosticSeverity.Information)) row.problems.push(issue('count-mismatch', 'Unexpected diagnostic severity'));
+  }
   const expectedFindings = expected && Object.values(expected.rule_ids).reduce((a, b) => a + b, 0);
   if (!HEALTH && expected && diagnostics.length !== expectedFindings) row.problems.push(issue('count-mismatch', `${diagnostics.length} diagnostics, baseline ${expectedFindings}`));
   await until(() => api.applied(uri.toString())?.version === document.version, state, 'presentation snapshot');
+  if (!HEALTH && DIVISION[row.file]) await checkDivision(api, document, DIVISION[row.file], state);
   const whole = new vscode.Range(0, 0, document.lineCount, 0);
   const hints = (await bounded(vscode.commands.executeCommand('vscode.executeInlayHintProvider', uri, whole), state, 'inlay hints') || []).filter(h => label(h).startsWith(INLAY_MARKER));
   if (state.expired) return;
@@ -143,19 +153,19 @@ async function check(api, document, row, expected, state) {
     const guide = target.code?.target?.toString();
     const text = hoverText(hovers || []);
     if (/Susceptibility is not|Related taxonomy|\[bytes|• local_mutation •/.test(text)) row.problems.push(issue('error', 'hover contains removed metadata'));
-    if (!text.includes('command:stateLens.showEvidence')) row.problems.push(issue('error', 'hover lacks Evidence action'));
+    if (!text.includes(`command:${CONFIG_SECTION}.showEvidence`)) row.problems.push(issue('error', 'hover lacks Evidence action'));
     if (!guide || !text.includes(guide)) row.problems.push(issue('error', `hover lacks guide URL ${guide}`));
     if (!HEALTH && row.file === PRESENTATION_EXAMPLE) {
-      const link = text.match(/command:stateLens.showEvidence\?([^)]*)/);
+      const link = text.match(new RegExp(`command:stateLens\\.${LANGUAGE}\\.showEvidence\\?([^)]*)`));
       if (link) {
         const args = JSON.parse(decodeURIComponent(link[1]));
-        await bounded(vscode.commands.executeCommand('stateLens.showEvidence', ...args), state, 'reveal Evidence');
+        await bounded(vscode.commands.executeCommand(`${CONFIG_SECTION}.showEvidence`, ...args), state, 'reveal Evidence');
         const editor = vscode.window.activeTextEditor;
         if (editor?.document !== document || !editor.selection.start.isEqual(target.range.start)) row.problems.push(issue('error', 'Evidence did not select its source'));
         const before = editor?.selection;
-        await bounded(vscode.commands.executeCommand('stateLens.showEvidence', args[0], args[1] - 1, args[2]), state, 'reject stale Evidence');
+        await bounded(vscode.commands.executeCommand(`${CONFIG_SECTION}.showEvidence`, args[0], args[1] - 1, args[2]), state, 'reject stale Evidence');
         if (!before?.isEqual(vscode.window.activeTextEditor?.selection)) row.problems.push(issue('error', 'stale Evidence changed the selection'));
-        const configuration = vscode.workspace.getConfiguration('stateLens');
+        const configuration = vscode.workspace.getConfiguration(CONFIG_SECTION);
         const originalDirectOnly = configuration.inspect('directOnly').workspaceValue;
         const previous = api.applied(uri.toString());
         try {
@@ -179,12 +189,29 @@ async function check(api, document, row, expected, state) {
   }
 }
 
+
+async function checkDivision(api, document, expected, state) {
+  const same = require('node:util').isDeepStrictEqual;
+  await until(async () => {
+    const snapshot = await api.snapshot(document.uri.toString());
+    const applied = api.applied(document.uri.toString());
+    if (snapshot?.audit.version !== document.version || applied?.version !== document.version) return false;
+    const entries = snapshot.audit.findings.filter(e => e.finding.rule_id === expected.rule_id);
+    const diagnostics = lensDiagnostics(document.uri).filter(d => (typeof d.code === 'object' ? d.code.value : d.code) === expected.rule_id);
+    const ranges = expected.findings.map(f => f.range);
+    const paints = applied.decorations.filter(d => d.category === 'division-risk' || d.category === 'unstructured-state');
+    return same(entries.map(e => e.triggerRange), ranges) && diagnostics.length === ranges.length
+      && diagnostics.every(d => d.severity === vscode.DiagnosticSeverity.Warning)
+      && same(paints.map(d => ({ range: d.range, category: d.category, outline: d.outline })), expected.findings.map(f => ({ range: f.range, category: f.category, outline: false })));
+  }, state, 'division findings, warnings, and fills');
+}
+
 exports.run = async () => {
   const baseline = JSON.parse(fs.readFileSync(process.env.STATE_LENS_BASELINE, 'utf8')).files;
   const corpus = files(path.join(ROOT, SHARD)).filter(file => (!process.env.STATE_LENS_FILE || file === process.env.STATE_LENS_FILE) && (!process.env.STATE_LENS_LANGUAGE || file.split('/').at(-2) === process.env.STATE_LENS_LANGUAGE));
   if (!corpus.length) throw new Error(`No matching files in ${SHARD}`);
   const rows = corpus.map(makeRow);
-  const removed = Object.keys(baseline).filter(file => !HEALTH && file.startsWith(SHARD + '/') && !corpus.includes(file)).map(file => {
+  const removed = Object.keys(baseline).filter(file => !HEALTH && !process.env.STATE_LENS_FILE && !process.env.STATE_LENS_LANGUAGE && file.startsWith(SHARD + '/') && !corpus.includes(file)).map(file => {
     const row = makeRow(file);
     row.problems.push(issue('baseline-drift', 'baseline file missing from corpus'));
     return finish(row);
@@ -202,7 +229,6 @@ exports.run = async () => {
   try {
     const startup = { deadline: Date.now() + STARTUP_MS, expired: false };
     api = await bounded(vscode.extensions.getExtension(EXTENSION_ID).activate(), startup, 'extension activation');
-    await until(() => api.serverRunning(), startup, 'server startup');
     for (const group of groups.values()) {
       const started = Date.now();
       const state = { deadline: started + DEADLINE_MS, expired: false };
@@ -216,6 +242,7 @@ exports.run = async () => {
           documents.push(document);
         }
         let editor = await bounded(vscode.window.showTextDocument(documents[0], { preview: false }), state, 'select visible editor');
+        await until(() => api.serverRunning(), state, 'visible editor server startup');
         for (let index = 0; index < group.length; index++) {
           const row = group[index];
           await bounded(vscode.window.showTextDocument(documents[index], { preview: false }), state, 'activate document');
@@ -223,7 +250,8 @@ exports.run = async () => {
           catch (error) { if (!state.expired || error.category === 'timeout') row.problems.push(issue(error.category || 'error', error.message)); }
         }
         if (HEALTH) {
-          await bounded(vscode.commands.executeCommand('workbench.action.closeAllEditors'), state, 'close document');
+          const cleanup = { deadline: Date.now() + DEADLINE_MS, expired: false };
+          await bounded(vscode.commands.executeCommand('workbench.action.closeAllEditors'), cleanup, 'close document');
           continue;
         }
         for (let index = 0; index < group.length; index++) {
@@ -246,6 +274,24 @@ exports.run = async () => {
           }
           if (!actual.decorations.some(d => d.category === row.compound_class && d.outline)) row.problems.push(issue('count-mismatch', 'Missing compound outline'));
         }
+        for (let index = 0; index < group.length; index++) {
+          const row = group[index];
+          if (!DIVISION[row.file] || row.root !== 'examples') continue;
+          const target = await bounded(vscode.window.showTextDocument(documents[index], { preview: false }), state, 'select division example');
+          edited = target.document;
+          original = edited.getText();
+          const fixedFile = row.file.replace('examples/', 'examples-fixed/');
+          await target.edit(edit => edit.replace(new vscode.Range(0, 0, edited.lineCount, 0), fs.readFileSync(path.join(ROOT, fixedFile), 'utf8')));
+          await checkDivision(api, edited, DIVISION[fixedFile], state);
+          await target.edit(edit => edit.replace(new vscode.Range(0, 0, edited.lineCount, 0), original));
+          await checkDivision(api, edited, DIVISION[row.file], state);
+          const mutation = MUTATIONS[row.language];
+          await target.edit(edit => edit.replace(new vscode.Range(0, 0, edited.lineCount, 0), mutation.source));
+          await checkDivision(api, edited, mutation, state);
+          await target.edit(edit => edit.replace(new vscode.Range(0, 0, edited.lineCount, 0), original));
+          await checkDivision(api, edited, DIVISION[row.file], state);
+          edited = undefined;
+        }
         editor = await bounded(vscode.window.showTextDocument(documents[0], { preview: false }), state, 'restore active editor');
         const painted = () => api.applied(editor.document.uri.toString())?.version === editor.document.version;
         await until(painted, state, 'visible decorations');
@@ -267,11 +313,11 @@ exports.run = async () => {
       } finally {
         state.expired = true;
         const logs = api.log();
-        const errors = logProblems(logs.slice(logCursor));
-        logCursor = logs.length;
+        const errors = logProblems(api.log(logCursor));
+        logCursor = api.logCount ? api.logCount() : logs.length;
         for (const row of group) {
           row.problems.push(...errors);
-          if (!api.serverRunning()) row.problems.push(issue('crash', 'language server stopped'));
+          if (api.ui().lifecycle === 'failed') row.problems.push(issue('crash', 'language server failed'));
           if (FAILED_STATUS.test(api.status())) row.problems.push(issue('error', api.status()));
           row.ms = Date.now() - started;
           processed.add(row.file);
@@ -283,7 +329,7 @@ exports.run = async () => {
           catch { aborted = true; }
         }
       }
-      if (aborted || !api.serverRunning()) break;
+      if (aborted || api.ui().lifecycle === 'failed') break;
     }
   } catch (error) {
     for (const row of rows.filter(row => !processed.has(row.file))) row.problems.push(issue(error.category || 'crash', error.message));
@@ -293,7 +339,7 @@ exports.run = async () => {
     }
     if (api) {
       fs.writeFileSync(path.join(path.dirname(REPORT), 'state-lens.log'), api.log().join('\n'));
-      const tail = logProblems(api.log().slice(logCursor));
+      const tail = logProblems(api.log(logCursor));
       for (const row of rows) row.problems.push(...tail);
     }
     checkpoint([...rows, ...removed]);

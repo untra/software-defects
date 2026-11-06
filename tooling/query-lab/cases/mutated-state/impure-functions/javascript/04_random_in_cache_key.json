@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use a stable canonical parameter order and remove random key state.",
+  "original": {
+    "source_hash": "d3c8b4b48fbd3d34eed86f4ecaf7ea44184066ea6a21995858dc3f9981bbecc2",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/impure-functions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              150,
+              156
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "b81fa2a087efc3126ca7ea1b19227c0f988da6f0a8f1efdb9f611bad8618d51f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/impure-functions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              180,
+              184
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "cache hits: 2 of 3"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Entropy inside a function that must be deterministic. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -9,10 +9,31 @@
         "query": "tooling/query-lab/queries/typescript/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              117,
+              138
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              117,
+              122
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               123,
               124
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              125,
+              138
             ]
           }
         ]
@@ -26,10 +47,31 @@
         "query": "tooling/query-lab/queries/typescript/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              164,
+              185
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              164,
+              169
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               170,
               171
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              172,
+              185
             ]
           }
         ]
@@ -43,5 +85,5 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. An empty array is a valid input; the division is not (CWE-369). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Syntax captures remain in guarded fixes. Production analysis separately checks scoped denominator values and guards; dynamic aliases and dispatch remain unresolved."
 }

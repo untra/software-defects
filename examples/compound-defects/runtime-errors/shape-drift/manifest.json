@@ -144,6 +144,39 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_ticket_seat.js",
+      "language": "javascript",
+      "bug_lines": [
+        6,
+        7,
+        11
+      ],
+      "summary": "A rush ticket lacks the seat that the consumer assumes every ticket provides.",
+      "mechanism": "Only reserved tickets initialize seat, while the consumer invokes a string method on the optional property without checking the ticket shape.",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'toUpperCase')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Display a standing-area label for a rush ticket.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "improper-initialization",
+          "suggests": "The seat is initialized only for reserved tickets.",
+          "evidence": [
+            "if (kind === RESERVED_KIND)\n        ticket.seat = ASSIGNED_SEAT;"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "duck-typing-without-contracts",
+          "suggests": "The seat consumer assumes that every ticket supplies a usable seat string.",
+          "evidence": [
+            "return ticket.seat.toUpperCase();"
+          ]
+        }
+      ]
     }
   ]
 }

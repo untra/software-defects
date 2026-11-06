@@ -196,6 +196,58 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "0 after the requests finish, or a bounded list"
+    },
+    {
+      "file": "javascript/01_listener_never_removed.js",
+      "language": "javascript",
+      "bug_lines": [
+        7
+      ],
+      "summary": "Each request adds a listener to a shared emitter and never removes it.",
+      "mechanism": "Listeners retain closures forever (CWE-401).",
+      "observed_output": "reload listeners after requests finished: 100",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "reload listeners after requests finished: 0"
+    },
+    {
+      "file": "javascript/02_interval_never_cleared.js",
+      "language": "javascript",
+      "bug_lines": [
+        9
+      ],
+      "summary": "`setInterval` started on mount is never cleared on unmount.",
+      "mechanism": "Timer keeps running and retains the component (CWE-772).",
+      "observed_output": "ticker still polling after unmount: true",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "ticker still polling after unmount: false"
+    },
+    {
+      "file": "javascript/03_file_handle_not_closed_on_error.js",
+      "language": "javascript",
+      "bug_lines": [
+        9
+      ],
+      "summary": "JSON.parse throws before `file.close()`, leaking a descriptor per call.",
+      "mechanism": "Close not in finally (CWE-775).",
+      "observed_output": "file descriptors leaked: 20",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "file descriptors leaked: 0"
+    },
+    {
+      "file": "javascript/04_unbounded_request_cache.js",
+      "language": "javascript",
+      "bug_lines": [
+        5
+      ],
+      "summary": "Responses are cached by unique request id with no eviction, so the map grows forever.",
+      "mechanism": "Cache key has unbounded cardinality and no TTL (CWE-401).",
+      "observed_output": "cached responses retained: 50000",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "bounded cache size"
     }
   ]
 }

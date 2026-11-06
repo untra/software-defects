@@ -1,0 +1,370 @@
+{
+  "examples/unstructured-state/divide-by-zero/go/03_bucket_mod.go": {
+    "rule_id": "go.unstructured-state.divide-by-zero",
+    "findings": [
+      {
+        "range": {
+          "start": {
+            "line": 7,
+            "character": 21
+          },
+          "end": {
+            "line": 7,
+            "character": 28
+          }
+        },
+        "severity": 2,
+        "category": "unstructured-state"
+      }
+    ]
+  },
+  "examples-fixed/unstructured-state/divide-by-zero/go/03_bucket_mod.go": {
+    "rule_id": "go.unstructured-state.divide-by-zero",
+    "findings": []
+  },
+  "examples/unstructured-state/divide-by-zero/go/02_float_ratio.go": {
+    "rule_id": "go.unstructured-state.divide-by-zero",
+    "findings": [
+      {
+        "range": {
+          "start": {
+            "line": 7,
+            "character": 22
+          },
+          "end": {
+            "line": 7,
+            "character": 32
+          }
+        },
+        "severity": 2,
+        "category": "unstructured-state"
+      }
+    ]
+  },
+  "examples-fixed/unstructured-state/divide-by-zero/go/02_float_ratio.go": {
+    "rule_id": "go.unstructured-state.divide-by-zero",
+    "findings": []
+  },
+  "examples/unstructured-state/divide-by-zero/go/04_empty_average.go": {
+    "rule_id": "go.unstructured-state.divide-by-zero",
+    "findings": [
+      {
+        "range": {
+          "start": {
+            "line": 9,
+            "character": 16
+          },
+          "end": {
+            "line": 9,
+            "character": 27
+          }
+        },
+        "severity": 2,
+        "category": "unstructured-state"
+      }
+    ]
+  },
+  "examples-fixed/unstructured-state/divide-by-zero/go/04_empty_average.go": {
+    "rule_id": "go.unstructured-state.divide-by-zero",
+    "findings": []
+  },
+  "examples/unstructured-state/divide-by-zero/go/01_panel_current.go": {
+    "rule_id": "go.unstructured-state.divide-by-zero",
+    "findings": [
+      {
+        "range": {
+          "start": {
+            "line": 7,
+            "character": 22
+          },
+          "end": {
+            "line": 7,
+            "character": 32
+          }
+        },
+        "severity": 2,
+        "category": "unstructured-state"
+      }
+    ]
+  },
+  "examples-fixed/unstructured-state/divide-by-zero/go/01_panel_current.go": {
+    "rule_id": "go.unstructured-state.divide-by-zero",
+    "findings": []
+  },
+  "examples/unstructured-state/divide-by-zero/python/02_floor_division.py": {
+    "rule_id": "python.unstructured-state.divide-by-zero",
+    "findings": [
+      {
+        "range": {
+          "start": {
+            "line": 1,
+            "character": 20
+          },
+          "end": {
+            "line": 1,
+            "character": 28
+          }
+        },
+        "severity": 2,
+        "category": "unstructured-state"
+      }
+    ]
+  },
+  "examples-fixed/unstructured-state/divide-by-zero/python/02_floor_division.py": {
+    "rule_id": "python.unstructured-state.divide-by-zero",
+    "findings": []
+  },
+  "examples/unstructured-state/divide-by-zero/python/03_remainder.py": {
+    "rule_id": "python.unstructured-state.divide-by-zero",
+    "findings": [
+      {
+        "range": {
+          "start": {
+            "line": 1,
+            "character": 19
+          },
+          "end": {
+            "line": 1,
+            "character": 26
+          }
+        },
+        "severity": 2,
+        "category": "unstructured-state"
+      }
+    ]
+  },
+  "examples-fixed/unstructured-state/divide-by-zero/python/03_remainder.py": {
+    "rule_id": "python.unstructured-state.divide-by-zero",
+    "findings": []
+  },
+  "examples/unstructured-state/divide-by-zero/python/04_empty_mean.py": {
+    "rule_id": "python.unstructured-state.divide-by-zero",
+    "findings": [
+      {
+        "range": {
+          "start": {
+            "line": 1,
+            "character": 26
+          },
+          "end": {
+            "line": 1,
+            "character": 38
+          }
+        },
+        "severity": 2,
+        "category": "unstructured-state"
+      }
+    ]
+  },
+  "examples-fixed/unstructured-state/divide-by-zero/python/04_empty_mean.py": {
+    "rule_id": "python.unstructured-state.divide-by-zero",
+    "findings": []
+  },
+  "examples/unstructured-state/divide-by-zero/python/01_true_division.py": {
+    "rule_id": "python.unstructured-state.divide-by-zero",
+    "findings": [
+      {
+        "range": {
+          "start": {
+            "line": 1,
+            "character": 18
+          },
+          "end": {
+            "line": 1,
+            "character": 23
+          }
+        },
+        "severity": 2,
+        "category": "unstructured-state"
+      }
+    ]
+  },
+  "examples-fixed/unstructured-state/divide-by-zero/python/01_true_division.py": {
+    "rule_id": "python.unstructured-state.divide-by-zero",
+    "findings": []
+  },
+  "examples/unstructured-state/divide-by-zero/typescript/03_bucket_mod.ts": {
+    "rule_id": "typescript.unstructured-state.divide-by-zero",
+    "findings": [
+      {
+        "range": {
+          "start": {
+            "line": 2,
+            "character": 25
+          },
+          "end": {
+            "line": 2,
+            "character": 32
+          }
+        },
+        "severity": 2,
+        "category": "unstructured-state"
+      }
+    ]
+  },
+  "examples-fixed/unstructured-state/divide-by-zero/typescript/03_bucket_mod.ts": {
+    "rule_id": "typescript.unstructured-state.divide-by-zero",
+    "findings": []
+  },
+  "examples/unstructured-state/divide-by-zero/typescript/05_bigint_split.ts": {
+    "rule_id": "typescript.unstructured-state.divide-by-zero",
+    "findings": [
+      {
+        "range": {
+          "start": {
+            "line": 2,
+            "character": 24
+          },
+          "end": {
+            "line": 2,
+            "character": 30
+          }
+        },
+        "severity": 2,
+        "category": "unstructured-state"
+      }
+    ]
+  },
+  "examples-fixed/unstructured-state/divide-by-zero/typescript/05_bigint_split.ts": {
+    "rule_id": "typescript.unstructured-state.divide-by-zero",
+    "findings": []
+  },
+  "examples/unstructured-state/divide-by-zero/typescript/01_panel_current.ts": {
+    "rule_id": "typescript.unstructured-state.divide-by-zero",
+    "findings": [
+      {
+        "range": {
+          "start": {
+            "line": 2,
+            "character": 26
+          },
+          "end": {
+            "line": 2,
+            "character": 36
+          }
+        },
+        "severity": 2,
+        "category": "unstructured-state"
+      }
+    ]
+  },
+  "examples-fixed/unstructured-state/divide-by-zero/typescript/01_panel_current.ts": {
+    "rule_id": "typescript.unstructured-state.divide-by-zero",
+    "findings": []
+  },
+  "examples/unstructured-state/divide-by-zero/typescript/02_zero_over_zero.ts": {
+    "rule_id": "typescript.unstructured-state.divide-by-zero",
+    "findings": [
+      {
+        "range": {
+          "start": {
+            "line": 2,
+            "character": 24
+          },
+          "end": {
+            "line": 2,
+            "character": 31
+          }
+        },
+        "severity": 2,
+        "category": "unstructured-state"
+      }
+    ]
+  },
+  "examples-fixed/unstructured-state/divide-by-zero/typescript/02_zero_over_zero.ts": {
+    "rule_id": "typescript.unstructured-state.divide-by-zero",
+    "findings": []
+  },
+  "examples/unstructured-state/divide-by-zero/typescript/04_empty_mean.ts": {
+    "rule_id": "typescript.unstructured-state.divide-by-zero",
+    "findings": [
+      {
+        "range": {
+          "start": {
+            "line": 2,
+            "character": 17
+          },
+          "end": {
+            "line": 2,
+            "character": 30
+          }
+        },
+        "severity": 2,
+        "category": "unstructured-state"
+      }
+    ]
+  },
+  "examples-fixed/unstructured-state/divide-by-zero/typescript/04_empty_mean.ts": {
+    "rule_id": "typescript.unstructured-state.divide-by-zero",
+    "findings": []
+  },
+  "examples/unstructured-state/divide-by-zero/rust/03_bucket_mod.rs": {
+    "rule_id": "rust.unstructured-state.divide-by-zero",
+    "findings": [
+      {
+        "range": {
+          "start": {
+            "line": 3,
+            "character": 27
+          },
+          "end": {
+            "line": 3,
+            "character": 34
+          }
+        },
+        "severity": 2,
+        "category": "unstructured-state"
+      }
+    ]
+  },
+  "examples-fixed/unstructured-state/divide-by-zero/rust/03_bucket_mod.rs": {
+    "rule_id": "rust.unstructured-state.divide-by-zero",
+    "findings": []
+  },
+  "examples/unstructured-state/divide-by-zero/rust/02_float_ratio.rs": {
+    "rule_id": "rust.unstructured-state.divide-by-zero",
+    "findings": [
+      {
+        "range": {
+          "start": {
+            "line": 3,
+            "character": 28
+          },
+          "end": {
+            "line": 3,
+            "character": 38
+          }
+        },
+        "severity": 2,
+        "category": "unstructured-state"
+      }
+    ]
+  },
+  "examples-fixed/unstructured-state/divide-by-zero/rust/02_float_ratio.rs": {
+    "rule_id": "rust.unstructured-state.divide-by-zero",
+    "findings": []
+  },
+  "examples/unstructured-state/divide-by-zero/rust/01_split_bill.rs": {
+    "rule_id": "rust.unstructured-state.divide-by-zero",
+    "findings": [
+      {
+        "range": {
+          "start": {
+            "line": 3,
+            "character": 23
+          },
+          "end": {
+            "line": 3,
+            "character": 29
+          }
+        },
+        "severity": 2,
+        "category": "unstructured-state"
+      }
+    ]
+  },
+  "examples-fixed/unstructured-state/divide-by-zero/rust/01_split_bill.rs": {
+    "rule_id": "rust.unstructured-state.divide-by-zero",
+    "findings": []
+  }
+}

@@ -2,7 +2,7 @@
 
 State Lens identifies mechanisms associated with mutated-state defects in Go, Rust, TypeScript, and Python. It produces source ranges, executable-scope summaries, and evidence paths for a VS Code background lens. A highlighted mechanism can be completely intentional and correct.
 
-This is the first, mutated-only release. The engine does not diagnose the bugs described by the site's examples. It preserves the distinction between mechanism coverage, susceptibility, and demonstrated incorrect behavior.
+The engine also analyzes division/remainder denominators in all four supported languages. Known-zero and supported possibly-zero denominators produce Warning diagnostics; unsupported expressions remain Information candidates. Guarded fixed examples suppress these division findings. It preserves the distinction between mechanism coverage, susceptibility, and demonstrated incorrect behavior.
 
 ## Build and use
 
@@ -51,7 +51,7 @@ The server supports `initialize`, open/change/close/save synchronization, watche
 - `findings`, each containing the raw finding plus UTF-16 `triggerRange` and `functionRange`;
 - function/body ranges, `unresolved`, `parseErrors`, and `indexing`.
 
-`stateLens/indexing` notifies the client when background indexing completes. Changes queued during analysis invalidate the response. The client also checks its workspace epoch and current document version before accepting any decoration. Diagnostics are enabled by default and can be disabled with `initializationOptions.diagnostics` (or `settings.stateLens.diagnostics` / `settings.diagnostics` in `workspace/didChangeConfiguration`) set to `false`. When enabled, the server publishes one Information-severity diagnostic per finding for each open document. Each carries `code` = rule ID, a `codeDescription` link to the site page, evidence and call path as `relatedInformation`, `data` = family/origin/effect, and the analyzed document `version`. Publishing happens only when no document change is pending; superseded analyses are discarded and retried, unchanged results are not resent, and documents are cleared on close or when diagnostics are disabled. `textDocument/inlayHint` returns one per-function family summary at the body start. These remain susceptibility signals; validated bug-pattern diagnostics are a future, independently scored capability.
+`stateLens/indexing` notifies the client when background indexing completes. Changes queued during analysis invalidate the response. The client also checks its workspace epoch and current document version before accepting any decoration. Diagnostics are enabled by default and can be disabled with `initializationOptions.diagnostics` (or `settings.stateLens.diagnostics` / `settings.diagnostics` in `workspace/didChangeConfiguration`) set to `false`. When enabled, the server publishes one diagnostic per finding for each open document: Warning for evidence-backed division risks and Information for structural candidates. Each carries `code` = rule ID, a `codeDescription` link to the site page, evidence and call path as `relatedInformation`, `data` = family/origin/effect, and the analyzed document `version`. Publishing happens only when no document change is pending; superseded analyses are discarded and retried, unchanged results are not resent, and documents are cleared on close or when diagnostics are disabled. `textDocument/inlayHint` returns one per-function family summary at the body start. These remain susceptibility signals; validated bug-pattern diagnostics are a future, independently scored capability.
 
 ## Queries and corpus
 
@@ -175,3 +175,5 @@ To reproduce the independent compound audit:
 ```sh
 python3 tooling/state-lens/scripts/smoke.py --shard examples/compound-defects --report build/smoke/compound-v2
 ```
+
+Division findings include optional `division_risk` metadata (confidence, outcome, mutated). Yellow denominator decorations require mutation evidence; blue identifies unstructured risk alone. See [division review](../../examples/unstructured-state/divide-by-zero/REVIEW.md) for supported models and limitations.

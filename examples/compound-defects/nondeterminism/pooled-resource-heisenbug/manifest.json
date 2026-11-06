@@ -146,6 +146,39 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_tenant_connection.js",
+      "language": "javascript",
+      "bug_lines": [
+        7,
+        10
+      ],
+      "summary": "The next borrower inherits the previous tenant on a returned connection.",
+      "mechanism": "A mutating helper writes session state onto a pooled object and release retains that state across borrowers.",
+      "observed_output": "tenant orchard",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "tenant is empty until the second borrower selects its own tenant.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "Selecting a tenant mutates the supplied connection.",
+          "evidence": [
+            "connection.tenant = tenant;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "resource-leaks",
+          "suggests": "Returning the connection leaves its tenant state retained in the pool.",
+          "evidence": [
+            "function release(connection) {\n    pool.push(connection);",
+            "console.log(\"tenant\", second.tenant);"
+          ]
+        }
+      ]
     }
   ]
 }

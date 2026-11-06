@@ -9,10 +9,31 @@
         "query": "tooling/query-lab/queries/rust/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              91,
+              105
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              91,
+              96
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               97,
               98
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              99,
+              105
             ]
           }
         ]
@@ -26,10 +47,31 @@
         "query": "tooling/query-lab/queries/rust/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              168,
+              182
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              168,
+              173
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               174,
               175
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              176,
+              182
             ]
           }
         ]
@@ -43,5 +85,5 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Integer `/` panics on zero in debug and wraps in release (CWE-369). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Syntax captures remain in guarded fixes. Production analysis separately checks scoped denominator values and guards; dynamic aliases and dispatch remain unresolved."
 }

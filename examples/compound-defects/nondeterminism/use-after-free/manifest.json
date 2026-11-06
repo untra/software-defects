@@ -150,6 +150,40 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_audio_frame.js",
+      "language": "javascript",
+      "bug_lines": [
+        5,
+        6,
+        8
+      ],
+      "summary": "Playback reads an alias after the audio frame has been transferred and throws.",
+      "mechanism": "Transferring detaches the ArrayBuffer; constructing a DataView through the remaining alias traps access to the detached ArrayBuffer.",
+      "observed_output": "playback detached true\nTypeError: Cannot perform DataView constructor on a detached ArrayBuffer",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Read the sample before transfer or use the transferred buffer.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "aliasing-mutable-defaults",
+          "suggests": "Playback and frame name the same mutable buffer.",
+          "evidence": [
+            "const playback = frame;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "pointer-mismanagement",
+          "suggests": "Playback is still used after transfer invalidates the original buffer.",
+          "evidence": [
+            "structuredClone(frame, { transfer: [frame] });",
+            "console.log(\"sample\", new DataView(playback).getUint8(FIRST_SAMPLE));"
+          ]
+        }
+      ]
     }
   ]
 }

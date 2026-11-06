@@ -1811,7 +1811,8 @@
       "source_hash": "0547d2d80d093927961a0967aa3d5372d4fd222f00deef7729bd437f7bcedc45",
       "parse_errors": false,
       "rule_ids": {
-        "go.mutated-state.var-let-mut": 3
+        "go.mutated-state.var-let-mut": 3,
+        "go.unstructured-state.divide-by-zero": 1
       },
       "hinted_functions": 1
     },
@@ -1819,7 +1820,8 @@
       "source_hash": "9ed7b1269b0c9d364602bd6b169e16e55f5b336032f03b949a1ce76dea0a2d6d",
       "parse_errors": false,
       "rule_ids": {
-        "go.mutated-state.var-let-mut": 3
+        "go.mutated-state.var-let-mut": 3,
+        "go.unstructured-state.divide-by-zero": 1
       },
       "hinted_functions": 1
     },
@@ -1827,7 +1829,8 @@
       "source_hash": "c3d7126de79e2090abbe9873e52dad921b981ddb112f470286fdaebc43d81c24",
       "parse_errors": false,
       "rule_ids": {
-        "go.mutated-state.var-let-mut": 3
+        "go.mutated-state.var-let-mut": 3,
+        "go.unstructured-state.divide-by-zero": 1
       },
       "hinted_functions": 1
     },
@@ -1836,7 +1839,8 @@
       "parse_errors": false,
       "rule_ids": {
         "go.mutated-state.for-loop-control-flow": 1,
-        "go.mutated-state.var-let-mut": 2
+        "go.mutated-state.var-let-mut": 2,
+        "go.unstructured-state.divide-by-zero": 1
       },
       "hinted_functions": 1
     },
@@ -1844,7 +1848,8 @@
       "source_hash": "e3e1b8712fb768dc5f8f2d1d103285ce2afe49e49397549288ea8ee918306fb1",
       "parse_errors": false,
       "rule_ids": {
-        "rust.mutated-state.macro-mixin-misuse": 1
+        "rust.mutated-state.macro-mixin-misuse": 1,
+        "rust.unstructured-state.divide-by-zero": 1
       },
       "hinted_functions": 1
     },
@@ -1852,7 +1857,8 @@
       "source_hash": "d0e6885bcbde700e9766166b5c02db98765f7519d740d7ce22d306c1f083a58c",
       "parse_errors": false,
       "rule_ids": {
-        "rust.mutated-state.macro-mixin-misuse": 1
+        "rust.mutated-state.macro-mixin-misuse": 1,
+        "rust.unstructured-state.divide-by-zero": 1
       },
       "hinted_functions": 1
     },
@@ -1860,38 +1866,49 @@
       "source_hash": "c69d70036eb39d51b0f02fe0246c1184045416bb0c8eb0859fb7661ed6effbaf",
       "parse_errors": false,
       "rule_ids": {
-        "rust.mutated-state.macro-mixin-misuse": 1
+        "rust.mutated-state.macro-mixin-misuse": 1,
+        "rust.unstructured-state.divide-by-zero": 1
       },
       "hinted_functions": 1
     },
     "examples/unstructured-state/divide-by-zero/typescript/01_panel_current.ts": {
       "source_hash": "f6caf8f2d58d2afea0c80d67372909884906b1cc722d797a2ace5107e30f9e73",
       "parse_errors": false,
-      "rule_ids": {},
+      "rule_ids": {
+        "typescript.unstructured-state.divide-by-zero": 1
+      },
       "hinted_functions": 0
     },
     "examples/unstructured-state/divide-by-zero/typescript/02_zero_over_zero.ts": {
       "source_hash": "099992c1ff33b3c065808bc4461f1138c38ce11ccb4873b1facc5128008fbb4e",
       "parse_errors": false,
-      "rule_ids": {},
+      "rule_ids": {
+        "typescript.unstructured-state.divide-by-zero": 1
+      },
       "hinted_functions": 0
     },
     "examples/unstructured-state/divide-by-zero/typescript/03_bucket_mod.ts": {
       "source_hash": "dba312d83fac17e210617c217e151503deee7ef6103c4d9bc84897308df0a56b",
       "parse_errors": false,
-      "rule_ids": {},
+      "rule_ids": {
+        "typescript.unstructured-state.divide-by-zero": 1
+      },
       "hinted_functions": 0
     },
     "examples/unstructured-state/divide-by-zero/typescript/04_empty_mean.ts": {
       "source_hash": "59a0ed55b9c6f8b329b8e03ba36bde5f32a2cc46157a88c3797a036598236735",
       "parse_errors": false,
-      "rule_ids": {},
-      "hinted_functions": 0
+      "rule_ids": {
+        "typescript.unstructured-state.divide-by-zero": 1
+      },
+      "hinted_functions": 1
     },
     "examples/unstructured-state/divide-by-zero/typescript/05_bigint_split.ts": {
       "source_hash": "8fbd87161fa0981e049b51d3b8f33dbdf9dc846fc6b22ec97c2d1fc972e3cdd2",
       "parse_errors": false,
-      "rule_ids": {},
+      "rule_ids": {
+        "typescript.unstructured-state.divide-by-zero": 1
+      },
       "hinted_functions": 0
     },
     "examples/unstructured-state/duck-typing-without-contracts/go/01_amount_units.go": {
@@ -5009,6 +5026,62 @@
       "parse_errors": false,
       "rule_ids": {},
       "hinted_functions": 0
+    },
+    "examples-fixed/unstructured-state/divide-by-zero/python/01_true_division.py": {
+      "source_hash": "0364fc0bb735dc24bdde991de65e03bf29ff4d5a5ad5663e6ea33ed6dfffdde4",
+      "parse_errors": false,
+      "rule_ids": {},
+      "hinted_functions": 0
+    },
+    "examples-fixed/unstructured-state/divide-by-zero/python/02_floor_division.py": {
+      "source_hash": "069e8d781cb077c86ce83cf66cff8e19cf98524de57c332b7eda3764fabe6831",
+      "parse_errors": false,
+      "rule_ids": {},
+      "hinted_functions": 0
+    },
+    "examples-fixed/unstructured-state/divide-by-zero/python/03_remainder.py": {
+      "source_hash": "fe1c068408d5d82612e30de58af1517e8020da31a8cfd9f7db5e70512287fb89",
+      "parse_errors": false,
+      "rule_ids": {},
+      "hinted_functions": 0
+    },
+    "examples-fixed/unstructured-state/divide-by-zero/python/04_empty_mean.py": {
+      "source_hash": "b28c4aa437313bf5304ffa9fe5aa0e8049808ed290c56bc88b3a585b1b8a2e92",
+      "parse_errors": false,
+      "rule_ids": {},
+      "hinted_functions": 0
+    },
+    "examples/unstructured-state/divide-by-zero/python/01_true_division.py": {
+      "source_hash": "fedf0a84940aea29f9b8002a13e7db5882e17cdcc6676a888a7e68e3452bac28",
+      "parse_errors": false,
+      "rule_ids": {
+        "python.unstructured-state.divide-by-zero": 1
+      },
+      "hinted_functions": 1
+    },
+    "examples/unstructured-state/divide-by-zero/python/02_floor_division.py": {
+      "source_hash": "bc4dd3179bb33232e8558c887fc99d9a54178410db52648063b3d04d56517bbf",
+      "parse_errors": false,
+      "rule_ids": {
+        "python.unstructured-state.divide-by-zero": 1
+      },
+      "hinted_functions": 1
+    },
+    "examples/unstructured-state/divide-by-zero/python/03_remainder.py": {
+      "source_hash": "7e123de73c3762ba394d79267fc77c89b61210ed0423758724e56a5035eafc05",
+      "parse_errors": false,
+      "rule_ids": {
+        "python.unstructured-state.divide-by-zero": 1
+      },
+      "hinted_functions": 1
+    },
+    "examples/unstructured-state/divide-by-zero/python/04_empty_mean.py": {
+      "source_hash": "78cabce34557a6fe8a189729505019f1f1a92e57d451efe10f2f890165c8d982",
+      "parse_errors": false,
+      "rule_ids": {
+        "python.unstructured-state.divide-by-zero": 1
+      },
+      "hinted_functions": 1
     }
   }
 }

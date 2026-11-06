@@ -154,6 +154,42 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_delivery_status.js",
+      "language": "javascript",
+      "bug_lines": [
+        12,
+        17,
+        18
+      ],
+      "summary": "The delivery page reports packing after the primary is updated to shipped.",
+      "mechanism": "The replica is a separate mutable binding and its asynchronous update has not completed when the reader uses it.",
+      "observed_output": "status packing",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "status shipped",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "var-let-mut",
+          "suggests": "Primary and replica are independently reassigned module bindings.",
+          "evidence": [
+            "let primary = INITIAL_STATUS;",
+            "let replica = INITIAL_STATUS;",
+            "replica = primary;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "async-io-misuse",
+          "suggests": "The read occurs before awaiting the asynchronous copy.",
+          "evidence": [
+            "const pending = copy(delivery.promise);\n    console.log(\"status\", replica);",
+            "await ready;"
+          ]
+        }
+      ]
     }
   ]
 }

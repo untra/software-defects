@@ -155,6 +155,43 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_packing_bag.js",
+      "language": "javascript",
+      "bug_lines": [
+        5,
+        6,
+        12
+      ],
+      "summary": "A shared default bag retains a string that a later caller treats as a product note.",
+      "mechanism": "The default parameter references one module-level array across calls; reading sku on its string element yields undefined and the string-method call throws.",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'toUpperCase')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Each call receives its own bag and the last call prints labels PAD.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "aliasing-mutable-defaults",
+          "suggests": "Every omitted bag argument aliases the same array and each stash call mutates it.",
+          "evidence": [
+            "const DEFAULT_BAG = [];",
+            "function stash(note, bag = DEFAULT_BAG) {",
+            "bag.push(note);"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "A string is stored among product notes and later consumed through its nonexistent sku property.",
+          "evidence": [
+            "const MIDDLE_NOTE = \"ink\";",
+            "stash(MIDDLE_NOTE);",
+            "const labels = stash(LAST_NOTE).map((note) => note.sku.toUpperCase());"
+          ]
+        }
+      ]
     }
   ]
 }

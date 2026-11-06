@@ -9,10 +9,31 @@
         "query": "tooling/query-lab/queries/typescript/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              53,
+              70
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              53,
+              61
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               62,
               63
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              64,
+              70
             ]
           }
         ]
@@ -26,10 +47,31 @@
         "query": "tooling/query-lab/queries/typescript/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              76,
+              93
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              76,
+              84
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               85,
               86
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              87,
+              93
             ]
           }
         ]
@@ -43,5 +85,5 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. bigint division throws instead of producing Infinity (CWE-369). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Syntax captures remain in guarded fixes. Production analysis separately checks scoped denominator values and guards; dynamic aliases and dispatch remain unresolved."
 }

@@ -217,6 +217,71 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "a guest quote, not None"
+    },
+    {
+      "file": "javascript/01_member_discount.js",
+      "language": "javascript",
+      "bug_lines": [
+        8
+      ],
+      "summary": "A non-member discount falls off the end and the price becomes NaN.",
+      "mechanism": "The missing return is undefined, and 1 - undefined is NaN (CWE-394).",
+      "observed_output": "price NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "price 100"
+    },
+    {
+      "file": "javascript/02_find_admin.js",
+      "language": "javascript",
+      "bug_lines": [
+        9
+      ],
+      "summary": "findAdmin returns undefined and the caller reads name.",
+      "mechanism": "The loop can finish without returning; the property read then throws (CWE-476).",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'name')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "no admin"
+    },
+    {
+      "file": "javascript/03_map_prices.js",
+      "language": "javascript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "The map callback computes a label and does not return it.",
+      "mechanism": "A function with no return yields undefined, so the array is [null, null] after JSON (CWE-394).",
+      "observed_output": "[null,null]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "[\"$10\",\"$20\"]"
+    },
+    {
+      "file": "javascript/04_optional_age.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "birthday adds 1 to an age that was never set.",
+      "mechanism": "The optional property is undefined on this object, and the sum is NaN (CWE-476).",
+      "observed_output": "age NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a missing age"
+    },
+    {
+      "file": "javascript/05_async_quote.js",
+      "language": "javascript",
+      "bug_lines": [
+        7
+      ],
+      "summary": "quote resolves to undefined for an unknown sku, and the price becomes NaN.",
+      "mechanism": "The async function has no return on that path, so the promise fulfills with undefined (CWE-394).",
+      "observed_output": "price NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a rejected sku"
     }
   ]
 }

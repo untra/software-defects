@@ -150,6 +150,40 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_invoice_form.js",
+      "language": "javascript",
+      "bug_lines": [
+        7,
+        10
+      ],
+      "summary": "A form overwrites a numeric invoice field with a string before numeric formatting.",
+      "mechanism": "The erased any annotation permits a string assignment to the mutable instance field; strings have no toFixed method.",
+      "observed_output": "TypeError: this.cents.toFixed is not a function",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Parse and validate the form value, then display cents 1425.00.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "Applying the form changes the cents field on the existing invoice.",
+          "evidence": [
+            "this.cents = form.cents;"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "A field initialized as a number receives a string and is still formatted as a number.",
+          "evidence": [
+            "cents = STARTING_CENTS;",
+            "const FORM_CENTS = \"1425\";",
+            "return this.cents.toFixed(DECIMAL_PLACES);"
+          ]
+        }
+      ]
     }
   ]
 }

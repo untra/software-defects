@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Allowlist public properties so prototype keys cannot alter the target object.",
+  "original": {
+    "source_hash": "32cee2473e4e2da97e4f6ff2f3e6901653e70ce6c8f82ad5717726c1eb493e5c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/insecure-deserialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              22,
+              27
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              130,
+              134
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "ee7769c7a7a2cec6257fa24135f73d56b8edea1bd270b8e1f342db6e93d895ac",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/insecure-deserialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              22,
+              27
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              130,
+              134
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "role undefined own false"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The key is an own property of the parsed object and [[Set]] on __proto__ changes the prototype (CWE-915). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

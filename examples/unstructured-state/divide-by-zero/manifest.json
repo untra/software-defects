@@ -66,8 +66,8 @@
       "bug_lines": [
         4
       ],
-      "summary": "Splitting a bill across zero diners panics in a debug build.",
-      "mechanism": "Integer `/` panics on zero in debug and wraps in release (CWE-369).",
+      "summary": "Splitting a bill across zero diners panics.",
+      "mechanism": "Integer `/` panics on zero in both debug and release (CWE-369).",
       "observed_output": "attempt to divide by zero",
       "exit_code": 101,
       "deterministic": true,
@@ -92,8 +92,8 @@
       "bug_lines": [
         4
       ],
-      "summary": "Remainder over zero buckets panics in a debug build.",
-      "mechanism": "Integer `%` panics on zero in debug (CWE-369).",
+      "summary": "Remainder over zero buckets panics.",
+      "mechanism": "Integer `%` panics on zero in both debug and release (CWE-369).",
       "observed_output": "attempt to calculate the remainder with a divisor of zero",
       "exit_code": 101,
       "deterministic": true,
@@ -119,7 +119,7 @@
         3
       ],
       "summary": "Zero divided by zero prints NaN.",
-      "mechanism": "0/0 is NaN, and NaN fails every comparison (CWE-682).",
+      "mechanism": "0/0 is NaN, and NaN is unequal to itself (CWE-682).",
       "observed_output": "ratio NaN",
       "exit_code": 0,
       "deterministic": true,
@@ -215,6 +215,71 @@
       "exit_code": 1,
       "deterministic": true,
       "expected_behavior": "no mean for an empty sample"
+    },
+    {
+      "file": "javascript/01_panel_current.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "Dividing by a zero resistance prints Infinity.",
+      "mechanism": "JS number division by 0 does not throw (CWE-682).",
+      "observed_output": "current Infinity",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a rejected resistance"
+    },
+    {
+      "file": "javascript/02_zero_over_zero.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "Zero divided by zero prints NaN.",
+      "mechanism": "0/0 is NaN, and NaN is unequal to itself (CWE-682).",
+      "observed_output": "ratio NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a rejected empty count"
+    },
+    {
+      "file": "javascript/03_bucket_mod.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "Remainder with zero buckets prints NaN.",
+      "mechanism": "`% 0` is NaN for numbers (CWE-682).",
+      "observed_output": "remainder NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a rejected bucket count"
+    },
+    {
+      "file": "javascript/04_empty_mean.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "The mean of an empty list divides by length 0 and prints NaN.",
+      "mechanism": "An empty array is a valid input; the division is not (CWE-369).",
+      "observed_output": "average NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "a defined empty result"
+    },
+    {
+      "file": "javascript/05_bigint_split.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "A bigint divisor of 0n throws RangeError.",
+      "mechanism": "bigint division throws instead of producing Infinity (CWE-369).",
+      "observed_output": "RangeError: Division by zero",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "a rejected diner count"
     }
   ]
 }

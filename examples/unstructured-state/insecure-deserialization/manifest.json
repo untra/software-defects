@@ -178,6 +178,58 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "admin=False"
+    },
+    {
+      "file": "javascript/01_assign_body.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "Object.assign copies role admin from the body onto the record.",
+      "mechanism": "Every enumerable field on the body overwrites the record, including role (CWE-915).",
+      "observed_output": "name=ada role=admin",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "name=ada role=member"
+    },
+    {
+      "file": "javascript/02_proto_merge.js",
+      "language": "javascript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "Assigning the __proto__ key sets the record's prototype, so role reads as admin.",
+      "mechanism": "The key is an own property of the parsed object and [[Set]] on __proto__ changes the prototype (CWE-915).",
+      "observed_output": "role admin own false",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "role undefined, own false"
+    },
+    {
+      "file": "javascript/03_reviver_flag.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "The reviver turns the admin string true into a boolean.",
+      "mechanism": "The reviver rewrites every value equal to \"true\", including a flag (CWE-502).",
+      "observed_output": "admin true",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "admin left unset"
+    },
+    {
+      "file": "javascript/04_constructor_key.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "Parsed data supplies constructor, so kind reads as Array.",
+      "mechanism": "An own constructor property shadows the one inherited from Object (CWE-915).",
+      "observed_output": "kind Array",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "kind Object"
     }
   ]
 }

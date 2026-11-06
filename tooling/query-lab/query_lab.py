@@ -28,7 +28,7 @@ ROOT = HERE.parents[1]
 CACHE = HERE / ".cache"
 CLI_VERSION = "0.25.10"
 SCHEMA_VERSION = 1
-LANGUAGES = {"python": (".py", "0.25.0"), "go": (".go", "0.25.0"), "rust": (".rs", "0.24.0"), "typescript": (".ts", "0.23.2")}
+LANGUAGES = {"python": (".py", "0.25.0"), "go": (".go", "0.25.0"), "rust": (".rs", "0.24.0"), "javascript": (".js", "0.25.0"), "typescript": (".ts", "0.23.2")}
 MAX_SOURCE_BYTES = 2 * 1024 * 1024
 MAX_OUTPUT_BYTES = 16 * 1024 * 1024
 COMMAND_TIMEOUT = 30
@@ -323,10 +323,13 @@ def check_query(query, lang):
 
 def corpus(*, include_unsupported=False):
     result = []
+    rules = json.loads((HERE / "queries/rules.json").read_text())["rules"]
+    supported_packs = {(rule["language"], rule["family"], rule["defect"]) for rule in rules}
     for path in sorted((ROOT / "examples").glob("*/*/manifest.json")):
         manifest = json.loads(path.read_text())
         for example in manifest["examples"]:
-            supported = example["language"] in LANGUAGES
+            supported = example["language"] in LANGUAGES and (
+                example["language"], manifest["family"], manifest["defect"]) in supported_packs
             if not supported and not include_unsupported:
                 continue
             relative = (path.parent / example["file"]).relative_to(ROOT / "examples")
@@ -335,7 +338,7 @@ def corpus(*, include_unsupported=False):
             case = {"id": case_id, "family": manifest["family"], "defect": manifest["defect"],
                     "language": example["language"], "original": str(Path("examples") / relative),
                     "fixed": str(Path("examples-fixed") / relative), "sidecar": str(sidecar.relative_to(ROOT)),
-                    "status": "missing" if supported else "unsupported-language", "bug_lines": example["bug_lines"]}
+                    "query_supported": supported, "status": "missing" if supported else "unsupported-language", "bug_lines": example["bug_lines"]}
             if sidecar.is_file():
                 case["expectations"] = json.loads(sidecar.read_text())
                 case["status"] = case["expectations"]["status"]
@@ -559,13 +562,13 @@ def main():
         result, code = dispatch(args)
         envelope = {"schema_version": SCHEMA_VERSION, "command": args.command, "complete": True, **result}
         if args.command in {"list", "coverage", "test", "compare", "verify-fixes"}:
-            unsupported = [case for case in corpus(include_unsupported=True) if case["language"] not in LANGUAGES]
+            unsupported = [case for case in corpus(include_unsupported=True) if not case["query_supported"]]
             for key in ("language", "family", "defect"):
                 if getattr(args, key, None):
                     unsupported = [case for case in unsupported if case[key] == getattr(args, key)]
             if getattr(args, "case", None):
                 unsupported = [case for case in unsupported if case["id"] == args.case]
-            envelope["unsupported_cases"] = [{"id": c["id"], "language": c["language"], "reason": "grammar not supported"} for c in unsupported]
+            envelope["unsupported_cases"] = [{"id": c["id"], "language": c["language"], "reason": "no reviewed query pack for this language/category"} for c in unsupported]
             envelope["supported_languages"] = list(LANGUAGES)
     except (LabError, OSError, ValueError, KeyError, subprocess.TimeoutExpired) as error:
         envelope, code = {"schema_version": SCHEMA_VERSION, "command": args.command, "complete": False,

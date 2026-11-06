@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Normalize both implementations to cents and retain their concrete property types.",
+  "original": {
+    "source_hash": "e8b054c81c21e8f90c2549b9360faa7e98beaee5b093b53fc023d1b1f6984e7f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/duck-typing-without-contracts/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              217,
+              223
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "9b1b8e332de4509cfb0f8e53917374d5c7066ec4044ea9d58b9987613eab4632",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/duck-typing-without-contracts/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              372,
+              378
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "charged 250\ncharged 25000"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Charger is structural, so a dollars method and a cents method are the same type (CWE-843). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

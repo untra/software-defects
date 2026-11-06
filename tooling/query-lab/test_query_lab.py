@@ -66,7 +66,10 @@ class AdapterTests(unittest.TestCase):
 class CorpusTests(unittest.TestCase):
     def test_every_supported_manifest_entry_has_an_independent_fixed_pair(self):
         cases = lab.corpus()
-        self.assertEqual(len(cases), 284)
+        rules = json.loads((lab.HERE / 'queries/rules.json').read_text())['rules']
+        supported = {(rule['family'], rule['defect'], rule['language']) for rule in rules}
+        authored = {p.relative_to(lab.SIDECARS).with_suffix('').as_posix() for p in lab.SIDECARS.glob('*/*/*/*.json') if p.relative_to(lab.SIDECARS).parts[:3] in supported}
+        self.assertEqual({case['id'] for case in cases}, authored)
         self.assertEqual(len({c['id'] for c in cases}), len(cases))
         for case in cases:
             with self.subTest(case=case['id']):
@@ -113,7 +116,7 @@ class CorpusTests(unittest.TestCase):
     def test_matrix_is_complete_and_experimental(self):
         rules = json.loads((lab.HERE / 'queries/rules.json').read_text())['rules']
         cells = {(c['language'], c['family'], c['defect']) for c in lab.corpus()}
-        self.assertEqual(len(rules), 84)
+        self.assertEqual({str((lab.ROOT / rule['query']).resolve()) for rule in rules}, {str(path.resolve()) for path in (lab.HERE / 'queries').glob('*/*/*/*.scm')})
         self.assertEqual(cells, {(r['language'], r['family'], r['defect']) for r in rules})
         for rule in rules:
             self.assertTrue(rule['query'].startswith('tooling/query-lab/queries/'))
@@ -148,6 +151,8 @@ class NativeTests(unittest.TestCase):
                 with self.subTest(rule=rule['id']):
                     lang = rule['language']
                     query = lab.ROOT / rule['query']
+                    if rule['defect'] == 'volatile-properties':
+                        continue  # Dedicated controls also assert receiver captures.
                     if rule['defect'] == 'divide-by-zero':
                         expression, capture, name = 'value / divisor', '/', 'operator'
                     elif lang == 'rust' and rule['defect'] == 'var-let-mut':
@@ -171,7 +176,13 @@ class NativeTests(unittest.TestCase):
                     report = lab.run_query(query, source)
                     position = positive.index(expression) + expression.index(capture)
                     start = len(positive[:position].encode())
-                    self.assertEqual(lab.expanded(lab.capture_counts(report['matches'])), [{'name': name, 'range': [start, start + len(capture)]}])
+                    expected = [{'name': name, 'range': [start, start + len(capture)]}]
+                    if rule['defect'] == 'divide-by-zero':
+                        expression_start = len(positive[:positive.index(expression)].encode())
+                        expected += [{'name': 'division', 'range': [expression_start, expression_start + len(expression)]},
+                                     {'name': 'numerator', 'range': [expression_start, expression_start + len('value')]},
+                                     {'name': 'denominator', 'range': [expression_start + len('value / '), expression_start + len(expression)]}]
+                    self.assertCountEqual(lab.expanded(lab.capture_counts(report['matches'])), expected)
                     source.write_text(negative)
                     self.assertEqual(lab.run_query(query, source)['matches'], [])
 

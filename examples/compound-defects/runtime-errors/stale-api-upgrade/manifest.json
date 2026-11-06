@@ -148,6 +148,40 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_invoice_helper.js",
+      "language": "javascript",
+      "bug_lines": [
+        4,
+        9
+      ],
+      "summary": "A mixed-in receipt helper still calls amount after the billing API exposes totalCents instead.",
+      "mechanism": "Object.assign installs a helper with an old method dependency onto the newer API object; the unchecked optional amount call throws.",
+      "observed_output": "TypeError: this.amount is not a function",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Update the helper to use totalCents and print receipt 450.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "macro-mixin-misuse",
+          "suggests": "Object.assign mixes a helper with a hidden amount dependency into the billing object.",
+          "evidence": [
+            "const invoice = Object.assign(billing, receiptHelper);",
+            "receipt() {"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "version-library-mismanagement",
+          "suggests": "The provided billing API offers totalCents while the helper still invokes amount.",
+          "evidence": [
+            "const billing = { totalCents: () => INVOICE_CENTS };",
+            "return String(this.amount());"
+          ]
+        }
+      ]
     }
   ]
 }

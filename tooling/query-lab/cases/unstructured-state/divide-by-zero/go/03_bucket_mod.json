@@ -9,10 +9,31 @@
         "query": "tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              82,
+              96
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              82,
+              86
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               87,
               88
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              89,
+              96
             ]
           }
         ]
@@ -26,10 +47,31 @@
         "query": "tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              143,
+              157
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              143,
+              147
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               148,
               149
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              150,
+              157
             ]
           }
         ]
@@ -43,5 +85,5 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. `%` has the same zero-divisor panic as `/` (CWE-369). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Syntax captures remain in guarded fixes. Production analysis separately checks scoped denominator values and guards; dynamic aliases and dispatch remain unresolved."
 }

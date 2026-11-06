@@ -221,6 +221,71 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "2026-02-28 or 2026-03-01, a one-month step"
+    },
+    {
+      "file": "javascript/01_float_money_check.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "Dollar amounts as JS numbers: 0.1 + 0.2 !== 0.3, so an exact payment is reported short.",
+      "mechanism": "IEEE-754 doubles cannot represent decimal money exactly.",
+      "observed_output": "short by -5.551115123125783e-17",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "paid in full"
+    },
+    {
+      "file": "javascript/02_setmonth_overflow.js",
+      "language": "javascript",
+      "bug_lines": [
+        6
+      ],
+      "summary": "Adding one month to Jan 31 overflows Feb and lands on Mar 3.",
+      "mechanism": "`setUTCMonth` keeps the day-of-month and rolls excess days forward.",
+      "observed_output": "next billing: 2026-03-03",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "next billing: 2026-02-28"
+    },
+    {
+      "file": "javascript/03_shared_date_mutated.js",
+      "language": "javascript",
+      "bug_lines": [
+        5
+      ],
+      "summary": "`trialEnd` mutates the Date passed in, so the stored trial start moves to the end date.",
+      "mechanism": "Date objects are mutable and passed by reference.",
+      "observed_output": "start 2026-10-15\nend   2026-10-15",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "start 2026-10-01 / end 2026-10-15"
+    },
+    {
+      "file": "javascript/04_random_experiment_assignment.js",
+      "language": "javascript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "Experiment variant is drawn from Math.random per view, so one user sees both variants.",
+      "mechanism": "Assignment should be a deterministic function of userId (CWE-330).",
+      "observed_output": "variants shown to user-42: 2",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "variants shown to user-42: 1"
+    },
+    {
+      "file": "javascript/05_clock_read_twice.js",
+      "language": "javascript",
+      "bug_lines": [
+        11
+      ],
+      "summary": "Creation and expiry timestamps come from separate `Date.now()` reads, so the hold window drifts.",
+      "mechanism": "Time elapses between reads; capture `now` once per transaction.",
+      "observed_output": "hold window ms: 1005",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "hold window ms: 1000"
     }
   ]
 }

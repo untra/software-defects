@@ -9,10 +9,31 @@
         "query": "tooling/query-lab/queries/typescript/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              54,
+              68
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              54,
+              58
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               59,
               60
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              61,
+              68
             ]
           }
         ]
@@ -26,10 +47,31 @@
         "query": "tooling/query-lab/queries/typescript/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              77,
+              91
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              77,
+              81
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               82,
               83
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              84,
+              91
             ]
           }
         ]
@@ -43,5 +85,5 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. `% 0` is NaN for numbers (CWE-682). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Syntax captures remain in guarded fixes. Production analysis separately checks scoped denominator values and guards; dynamic aliases and dispatch remain unresolved."
 }

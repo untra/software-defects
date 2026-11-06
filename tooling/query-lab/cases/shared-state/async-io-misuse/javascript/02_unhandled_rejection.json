@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Observe the webhook rejection without terminating subsequent order processing.",
+  "original": {
+    "source_hash": "4ea7c01629cd12a426503cd811640492b97b37860b90014f318499105c644faa",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/async-io-misuse/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "f2acef9f7d543354e860f251c1b10b882a85f7feea5b6fb15f3345856f3981de",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              204,
+              209
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "webhook failed:",
+      "next order processed"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Unhandled promise rejections terminate Node by default. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

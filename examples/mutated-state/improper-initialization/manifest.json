@@ -210,6 +210,61 @@
       "exit_code": 1,
       "deterministic": true,
       "expected_behavior": "10"
+    },
+    {
+      "file": "javascript/01_definite_assignment_assertion.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "`socket!` tells the compiler the field is initialized, but it is undefined until connect().",
+      "mechanism": "Definite assignment assertion disables the uninitialized-field check (CWE-457).",
+      "observed_output": "error: Cannot read properties of undefined (reading 'write')",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "sent hello, or a clear not-connected error"
+    },
+    {
+      "file": "javascript/02_base_constructor_calls_override.js",
+      "language": "javascript",
+      "bug_lines": [
+        3,
+        8
+      ],
+      "summary": "Base constructor calls an overridden method before the subclass field initializer runs.",
+      "mechanism": "Subclass fields are initialized after super() returns.",
+      "observed_output": "rendering: undefined",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "rendering: default label"
+    },
+    {
+      "file": "javascript/03_temporal_dead_zone.js",
+      "language": "javascript",
+      "bug_lines": [
+        4,
+        5
+      ],
+      "summary": "A top-level const is computed by calling a function that reads another const declared later.",
+      "mechanism": "`const` is in the temporal dead zone until its declaration executes.",
+      "observed_output": "ReferenceError: Cannot access 'GREETING_PREFIX' before initialization",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Welcome, guest"
+    },
+    {
+      "file": "javascript/04_or_default_swallows_falsy.js",
+      "language": "javascript",
+      "bug_lines": [
+        4,
+        5
+      ],
+      "summary": "`||` defaults replace valid falsy values: 0 retries and an empty label.",
+      "mechanism": "Logical OR treats 0 and '' as missing; use `??`.",
+      "observed_output": "{ retries: 3, label: 'untitled' }",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "{ retries: 0, label: '' }"
     }
   ]
 }

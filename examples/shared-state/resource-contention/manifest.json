@@ -205,6 +205,60 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "2, a capped batch"
+    },
+    {
+      "file": "javascript/01_promise_all_unbounded.js",
+      "language": "javascript",
+      "bug_lines": [
+        19
+      ],
+      "summary": "All 100 requests are started at once against an API limited to 5 in flight.",
+      "mechanism": "Promise.all/allSettled over map starts everything immediately (CWE-770).",
+      "observed_output": "rate limited: 95 of 100",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "rate limited: 0 of 100"
+    },
+    {
+      "file": "javascript/02_cpu_loop_blocks_event_loop.js",
+      "language": "javascript",
+      "bug_lines": [
+        7,
+        8
+      ],
+      "summary": "A synchronous hashing loop blocks the event loop, delaying every timer and request.",
+      "mechanism": "The single event-loop thread is a shared resource monopolized by CPU work.",
+      "observed_output": "heartbeat on time: false",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "heartbeat on time: true"
+    },
+    {
+      "file": "javascript/03_unbounded_in_memory_queue.js",
+      "language": "javascript",
+      "bug_lines": [
+        6
+      ],
+      "summary": "Events are enqueued faster than drained with no bound, so memory grows without limit.",
+      "mechanism": "No backpressure or cap on a shared in-memory queue (CWE-400).",
+      "observed_output": "queued events in memory: 9900",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "bounded queue or producer slowed"
+    },
+    {
+      "file": "javascript/04_pool_slot_not_released_on_error.js",
+      "language": "javascript",
+      "bug_lines": [
+        24,
+        25
+      ],
+      "summary": "A failing query throws before `release()`, draining the pool so healthy queries wait forever.",
+      "mechanism": "Release not in finally; each error permanently removes a connection (CWE-772).",
+      "observed_output": "healthy query still waiting for a connection after 200ms",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "rows for select 1"
     }
   ]
 }

@@ -5,3 +5,4 @@ tsconfig.json
 **/*.map
 package-lock.json
 *.vsix
+scripts/**

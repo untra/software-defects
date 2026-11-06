@@ -83,7 +83,7 @@
         "stateLens.diagnostics": {
           "type": "boolean",
           "default": true,
-          "description": "Also publish susceptibility findings as Information diagnostics (visible to Problems, agents, and other LSP consumers)."
+          "description": "Publish evidence-backed division warnings and informational susceptibility findings."
         }
       }
     }
@@ -91,12 +91,14 @@
   "scripts": {
     "typecheck": "tsc -p . --noEmit",
     "bundle": "esbuild src/extension.ts --bundle --platform=node --format=cjs --target=node20 --external:vscode --sourcemap --outfile=dist/extension.js",
-    "build:test": "esbuild src/ranges.ts src/hover.ts --platform=node --format=cjs --target=node20 --outdir=dist",
+    "build:test": "esbuild src/ranges.ts src/hover.ts src/package.ts src/lifecycle.ts --platform=node --format=cjs --target=node20 --outdir=dist",
     "build": "npm run typecheck && npm run bundle && npm run build:test",
     "test": "npm run build && node --test test/*.test.cjs",
-    "package": "npm run build && vsce package --no-dependencies",
+    "package": "npm run typecheck && node scripts/package.cjs",
     "test:e2e": "node test/e2e/run.cjs",
-    "test:health": "node test/health/run.cjs"
+    "test:health": "node test/health/run.cjs",
+    "build:server": "node scripts/build-server.cjs",
+    "test:isolation": "node test/isolation/run.cjs"
   },
   "dependencies": {
     "vscode-languageclient": "^9.0.1"

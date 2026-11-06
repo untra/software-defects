@@ -153,6 +153,47 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "1, a flag is not a quantity"
+    },
+    {
+      "file": "javascript/01_post_increment_in_condition.js",
+      "language": "javascript",
+      "bug_lines": [
+        4,
+        5
+      ],
+      "summary": "`seatsTaken++ <= CAPACITY` compares the old value and uses <=, confirming four guests for three seats; it also increments for waitlisted guests.",
+      "mechanism": "Post-increment returns the pre-increment value while mutating as a side effect (CWE-193).",
+      "observed_output": "ana: confirmed\nben: confirmed\ncy: confirmed\ndee: confirmed\neli: waitlisted\nseats taken: 5",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "3 confirmed, 2 waitlisted, seats taken: 3"
+    },
+    {
+      "file": "javascript/02_increment_past_safe_integer.js",
+      "language": "javascript",
+      "bug_lines": [
+        4,
+        5
+      ],
+      "summary": "Incrementing past Number.MAX_SAFE_INTEGER stops producing distinct ids.",
+      "mechanism": "Doubles lose integer precision above 2^53; `++` rounds back to the same value.",
+      "observed_output": "issued 4 ids, unique: 2",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "issued 4 ids, unique: 4"
+    },
+    {
+      "file": "javascript/03_bitwise_truncation_wraps.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "`| 0` used to floor a value coerces it to int32 and wraps large sizes negative.",
+      "mechanism": "Bitwise operators convert operands to 32-bit signed integers.",
+      "observed_output": "archive size KB: -1365279796",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "archive size KB: 2929687500"
     }
   ]
 }

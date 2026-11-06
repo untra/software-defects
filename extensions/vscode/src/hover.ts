@@ -1,9 +1,10 @@
+import { commandId } from './package';
 import * as vscode from 'vscode';
 import { PALETTE, Category, Entry } from './ranges';
 
 const SITE_ORIGIN = 'https://badsoftware.untra.io';
 const SITE_LOCALE = 'en';
-export const EVIDENCE_COMMAND = 'stateLens.showEvidence';
+export const EVIDENCE_COMMAND = commandId('showEvidence');
 const SHORT_EXPLANATIONS: Record<string, string> = {
   'Mutable binding; local mutation does not imply observable impurity.': 'Mutable binding.'
 };

@@ -157,6 +157,43 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_report_slot.js",
+      "language": "javascript",
+      "bug_lines": [
+        12,
+        16,
+        19
+      ],
+      "summary": "A report holds the only slot while waiting for delivery, rejecting another report.",
+      "mechanism": "A capacity-one pool keeps its resource across elapsed delivery time; a controlled tick and gate make contention reproducible.",
+      "observed_output": "report pool busy at 105\nslot held ticks 5",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Both reports complete without rejecting a caller while delivery is pending.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "resource-contention",
+          "suggests": "The second caller finds the single resource occupied.",
+          "evidence": [
+            "const CAPACITY = 1;",
+            "if (occupied === CAPACITY) {",
+            "occupied++;"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "Resource ownership spans a delivery wait while the shared clock advances.",
+          "evidence": [
+            "const started = tick;",
+            "await ready;",
+            "tick = FINISH_TICK;"
+          ]
+        }
+      ]
     }
   ]
 }

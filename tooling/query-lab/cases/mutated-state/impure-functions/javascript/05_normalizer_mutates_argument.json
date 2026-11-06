@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Construct a normalized value without changing the audit snapshot.",
+  "original": {
+    "source_hash": "a59352ab6b54a8460f8a8684f246dd1bf349ee847638e85d92a0eef761b49868",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/impure-functions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              85,
+              89
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "e1810f7dab58805297318be3ffcf7995e28b5181df6043f9795e6ac0fdf01472",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/impure-functions/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "audit snapshot: Ana@Example.com [ 'admin' ]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Argument objects are references; function should return a new object (CWE-374). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

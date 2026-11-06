@@ -152,6 +152,45 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "10"
+    },
+    {
+      "file": "javascript/01_object_assign_mixin_collision.js",
+      "language": "javascript",
+      "bug_lines": [
+        11
+      ],
+      "summary": "Two mixins define `validate`; the later silently overwrites the earlier, so the email check never runs.",
+      "mechanism": "Object.assign is last-write-wins on key collisions.",
+      "observed_output": "signup valid: true",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "signup valid: false"
+    },
+    {
+      "file": "javascript/02_class_mixin_order.js",
+      "language": "javascript",
+      "bug_lines": [
+        19
+      ],
+      "summary": "Cached wraps Authorized, so the cached report is served after the token is revoked.",
+      "mechanism": "Mixin application order determines the super chain; caching outside auth bypasses it.",
+      "observed_output": "before revoke: quarterly revenue report\nafter revoke:  quarterly revenue report",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "after revoke: 403 denied"
+    },
+    {
+      "file": "javascript/03_prototype_patch_shared_state.js",
+      "language": "javascript",
+      "bug_lines": [
+        7
+      ],
+      "summary": "A class-decorating helper stores `calls` on the prototype, so all instances share one array.",
+      "mechanism": "Mutable state on a prototype is shared by every instance.",
+      "observed_output": "billing calls: [ '/invoices', '/search?q=boots' ]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "billing calls: [ '/invoices' ]"
     }
   ]
 }

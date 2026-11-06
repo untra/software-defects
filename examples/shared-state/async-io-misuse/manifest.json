@@ -191,6 +191,71 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "winner, and the page still winner"
+    },
+    {
+      "file": "javascript/01_floating_promise.js",
+      "language": "javascript",
+      "bug_lines": [
+        8
+      ],
+      "summary": "`persistBio` is not awaited; the handler reports saved and the next read sees the old bio.",
+      "mechanism": "Floating promise: ordering of the write is lost (CWE-662).",
+      "observed_output": "saved\nprofile page shows: old bio",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "profile page shows: new bio"
+    },
+    {
+      "file": "javascript/02_unhandled_rejection.js",
+      "language": "javascript",
+      "bug_lines": [
+        6
+      ],
+      "summary": "An un-awaited webhook call rejects and crashes the process, killing the next order.",
+      "mechanism": "Unhandled promise rejections terminate Node by default.",
+      "observed_output": "order A-100 completed\nError: webhook endpoint returned 500 for order.completed:A-100",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "order completed and next order processed, webhook failure logged"
+    },
+    {
+      "file": "javascript/03_await_in_loop.js",
+      "language": "javascript",
+      "bug_lines": [
+        10
+      ],
+      "summary": "Independent widget fetches are awaited one by one, so latency adds up.",
+      "mechanism": "Sequential await in a loop serializes concurrent-safe work.",
+      "observed_output": "homepage took longer than 4 round trips: true",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "homepage took longer than 4 round trips: false"
+    },
+    {
+      "file": "javascript/04_then_callback_missing_return.js",
+      "language": "javascript",
+      "bug_lines": [
+        6
+      ],
+      "summary": "The `.then` callback has a block body with no return, so the chain resolves to undefined.",
+      "mechanism": "Promise chains propagate the callback's return value.",
+      "observed_output": "loaded: undefined",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "loaded: { name: 'user-7' }"
+    },
+    {
+      "file": "javascript/05_race_timeout_loser_continues.js",
+      "language": "javascript",
+      "bug_lines": [
+        14
+      ],
+      "summary": "Promise.race times out but the charge keeps running; the retry charges the card again.",
+      "mechanism": "race does not cancel the losing promise (use AbortSignal).",
+      "observed_output": "customer charged 2 times",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "customer charged 1 times"
     }
   ]
 }

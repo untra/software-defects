@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Preserve the original contents and observable cursor/capacity state by constructing independent working storage. Preserve operation results and return values.",
+  "analysis_limit": "Names and syntax do not resolve receiver types, package aliases or ownership. Clones here contain scalar values. Entry access is a candidate, not a write; reserve changes capacity, seek changes position. Nonzero Go builders must be reconstructed, never copied by value.",
+  "runtime": {
+    "status": "supported",
+    "stdout": "ok\n",
+    "exit_code": 0
+  },
+  "original": {
+    "source_hash": "92a27ca20b6ac54385e1aa258e4ca7dcdbf372b1f42a2d7cf45c7645e338d8cc",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/volatile-properties/signals.scm",
+        "captures": [
+          {
+            "name": "receiver",
+            "range": [
+              148,
+              152
+            ]
+          },
+          {
+            "name": "access",
+            "range": [
+              153,
+              158
+            ]
+          },
+          {
+            "name": "receiver",
+            "range": [
+              180,
+              185
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              186,
+              195
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "1b825be00d42be1f52b43cf1d8f0e22d1e2babcb30d2fa856410532058b9641c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/volatile-properties/signals.scm",
+        "captures": [
+          {
+            "name": "receiver",
+            "range": [
+              151,
+              155
+            ]
+          },
+          {
+            "name": "access",
+            "range": [
+              156,
+              161
+            ]
+          },
+          {
+            "name": "receiver",
+            "range": [
+              183,
+              188
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              189,
+              198
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

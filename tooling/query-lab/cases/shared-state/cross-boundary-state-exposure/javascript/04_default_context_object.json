@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Copy the context and nested permission list before authentication changes.",
+  "original": {
+    "source_hash": "8574d67f8da68bd3e72b370ef838ac2cdb50fe7739e5291b5141cb5edde85c0a",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              215,
+              219
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "38903f88edfebaada25be2aeeae0f5993c99f8c2bdf4f28756ba754a99e2afd4",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              272,
+              276
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "anonymous request permissions: []"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Shared default object mutated per request (CWE-1188, CWE-488). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

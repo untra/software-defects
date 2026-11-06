@@ -4,6 +4,13 @@ use std::path::Path;
 fn main() -> Result<()> {
     let args: Vec<_> = std::env::args().collect();
     match args.get(1).map(String::as_str) {
+        Some("capabilities") => {
+            println!(
+                "{}",
+                serde_json::json!({"languages": state_lens::analysis::SUPPORTED_LANGUAGES})
+            );
+            Ok(())
+        }
         Some("serve") => server::serve(),
         Some("check-queries") => {
             Engine::new()?;

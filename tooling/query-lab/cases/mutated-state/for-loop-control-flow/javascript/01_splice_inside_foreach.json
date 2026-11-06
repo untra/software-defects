@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Remove backwards to avoid skipping shifted values.",
+  "original": {
+    "source_hash": "a96bd39ddf40137fdad66d9ec9657a740894d28fbff4ba7e955c66611f65fb1f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/for-loop-control-flow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              74,
+              81
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              135,
+              141
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "6186aa73e1c8c90d0485cf8739d10cd93b11878e63bbd55892be0d211b95411f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/for-loop-control-flow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              156,
+              162
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "full"
+    ],
+    "exit_code": 0,
+    "stdout": "[ 'full' ]\n"
+  },
+  "analysis_limit": "These are syntax candidates only. forEach iterates by live index over the mutated array. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

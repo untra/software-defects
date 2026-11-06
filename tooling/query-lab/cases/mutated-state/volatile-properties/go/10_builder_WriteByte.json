@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Preserve the original contents and observable cursor/capacity state by constructing independent working storage. Preserve operation results and return values.",
+  "analysis_limit": "Names and syntax do not resolve receiver types, package aliases or ownership. Clones here contain scalar values. Entry access is a candidate, not a write; reserve changes capacity, seek changes position. Nonzero Go builders must be reconstructed, never copied by value.",
+  "runtime": {
+    "status": "supported",
+    "stdout": "ok\n",
+    "exit_code": 0
+  },
+  "original": {
+    "source_hash": "10c3d5efd6bb8f75f6b21ad635b398ad4e149c53ea28d757ee3069e028614411",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/volatile-properties/signals.scm",
+        "captures": [
+          {
+            "name": "receiver",
+            "range": [
+              88,
+              94
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              95,
+              106
+            ]
+          },
+          {
+            "name": "receiver",
+            "range": [
+              139,
+              143
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              144,
+              153
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "0cef0cafea31dd7d98770fd3528fa3af08f62061f398909fa1f40d97b26c1b2c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/volatile-properties/signals.scm",
+        "captures": [
+          {
+            "name": "receiver",
+            "range": [
+              88,
+              94
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              95,
+              106
+            ]
+          },
+          {
+            "name": "receiver",
+            "range": [
+              143,
+              147
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              148,
+              159
+            ]
+          },
+          {
+            "name": "receiver",
+            "range": [
+              185,
+              189
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              190,
+              199
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

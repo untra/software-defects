@@ -317,3 +317,31 @@ fn client_trace_notification_does_not_log_an_error() {
     }));
     server.stop();
 }
+
+#[test]
+fn division_warning_links_and_clears_after_guard() {
+    let mut server = Server::start();
+    let uri = "file:///division.ts";
+    server.notify("textDocument/didOpen", json!({"textDocument":{"uri":uri,"languageId":"typescript","version":1,"text":"const d = 0; const x = 1 / d;"}}));
+    let published = server.published(uri);
+    let diagnostic = published["diagnostics"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|d| d["code"].as_str().unwrap().ends_with("divide-by-zero"))
+        .unwrap();
+    assert_eq!(diagnostic["severity"], 2);
+    assert!(diagnostic["codeDescription"]["href"]
+        .as_str()
+        .unwrap()
+        .ends_with("/unstructured-state/divide-by-zero/"));
+    server.notify("textDocument/didChange", json!({"textDocument":{"uri":uri,"version":2},"contentChanges":[{"text":"const d = 0; const x = d === 0 ? null : 1 / d;"}]}));
+    let published = server.published(uri);
+    assert_eq!(published["version"], 2);
+    assert!(published["diagnostics"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .all(|d| !d["code"].as_str().unwrap().ends_with("divide-by-zero")));
+    server.stop();
+}

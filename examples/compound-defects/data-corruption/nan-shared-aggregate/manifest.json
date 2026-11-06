@@ -152,6 +152,41 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_quote_total.js",
+      "language": "javascript",
+      "bug_lines": [
+        9,
+        10
+      ],
+      "summary": "An empty quote turns the shared ledger total into NaN.",
+      "mechanism": "JavaScript zero divided by zero is NaN; holding a lock flag protects access but does not validate the value added to shared state.",
+      "observed_output": "total NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "total 100, with the empty quote rejected.",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "divide-by-zero",
+          "suggests": "An empty amount is divided by an empty unit count.",
+          "evidence": [
+            "const quote = amount / units;",
+            "const EMPTY_UNITS = 0;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "The module ledger is updated while the shared lock flag is held.",
+          "evidence": [
+            "let ledgerHeld = false;",
+            "ledgerHeld = true;",
+            "total += quote;"
+          ]
+        }
+      ]
     }
   ]
 }

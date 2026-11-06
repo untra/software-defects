@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Await persistence and then let the caller observe completion.",
+  "original": {
+    "source_hash": "1d67ba9a6d24e8345ab6e12afc3d0f3d828eb06b8d63cbf02869d37bae916aaa",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              258,
+              268
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "11f9d686d41888b3442184d8eee5adf8c827232b966c559e5c68e440050a4680",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              270,
+              280
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              343,
+              347
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "profile page shows: new bio"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Floating promise: ordering of the write is lost (CWE-662). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

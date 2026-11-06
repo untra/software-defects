@@ -1,27 +1,34 @@
+import { ServerLifecycle, ServerState } from './lifecycle';
+import { LANGUAGE, EXTENSIONS, CONFIG_SECTION, commandId } from './package';
 import * as vscode from 'vscode';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
+import { createHash } from 'node:crypto';
 import { EVIDENCE_COMMAND, explanation } from './hover';
-import { LanguageClient, LSPErrorCodes, ResponseError, State } from 'vscode-languageclient/node';
-import { accepts, compare, contains, equal, functionMarkers, isImpure, Entry, Evidence, segments, triggerSegments, Snapshot, Range, decorations as paint, PALETTE, Category } from './ranges';
+import { LanguageClient, LSPErrorCodes, ResponseError, State, CloseAction, ErrorAction } from 'vscode-languageclient/node';
+import { accepts, compare, contains, equal, functionMarkers, isImpure, Entry, Evidence, segments, triggerSegments, Snapshot, Range, decorations as paint, PALETTE, Category, CATEGORY_STYLE, divisionCompatible } from './ranges';
 
-const LANGUAGES = ['go', 'rust', 'typescript', 'python'];
+const LANGUAGES = [LANGUAGE];
 const REFRESH_DELAY_MS = 180;
 const ANALYSIS_TIMEOUT_MS = 10000;
 const LOG_LIMIT = 200;
-const CONFIG_SECTION = 'stateLens';
-const SERVER_ENV = 'STATE_LENS_SERVER';
-const SERVER_BINARY = 'state-lens';
+const CLEAN_SERVER_EXIT = 'Server process exited with code 0.';
 const INLAY_MARKER = '◆';
 const BORDER_WIDTH = { source: 1, accessible: 2, function: 2, compound: 2 } as const;
 let client: LanguageClient | undefined;
+let compatible = true;
+let shutdown: (() => Promise<void>) | undefined;
 
 export interface Applied { version: number; findings: number; segments: number; triggers: number; functionMarkers: Range[]; decorations: { category: Category; range: Range; outline: boolean; families: string[] }[] }
 export interface AuditSnapshot extends Applied { audit: Snapshot }
 export interface StateLensApi {
-  log(): string[];
+  log(after?: number): string[];
+  logCount(): number;
   snapshot(uri: string): Promise<AuditSnapshot | undefined>;
   serverRunning(): boolean;
   status(): string;
   applied(uri: string): Applied | undefined;
+  ui(): { statusVisible: boolean; evidenceVisible: boolean; evidenceUri?: string; lifecycle: ServerState };
 }
 
 function range(value: Range): vscode.Range { return new vscode.Range(value.start.line, value.start.character, value.end.line, value.end.character); }
@@ -31,6 +38,14 @@ class EvidenceView implements vscode.TreeDataProvider<vscode.TreeItem> {
   readonly onDidChangeTreeData = this.emitter.event;
   private snapshots = new Map<string, Snapshot>();
   private selected?: Entry;
+  private activeUri?: string;
+  focus(uri: string | undefined): void {
+    if (uri === this.activeUri) return;
+    this.activeUri = uri;
+    this.selected = undefined;
+    this.roots = undefined;
+    this.emitter.fire();
+  }
   private roots?: EvidenceNode[];
   snapshot(uri: string): Snapshot | undefined { return this.snapshots.get(uri); }
   select(entry: Entry): EvidenceNode | undefined {
@@ -46,7 +61,7 @@ class EvidenceView implements vscode.TreeDataProvider<vscode.TreeItem> {
   getParent(item: EvidenceNode): EvidenceNode | undefined { return this.getChildren().find(root => root.children?.includes(item)); }
   getChildren(element?: EvidenceNode): EvidenceNode[] {
     if (element) return element.children ?? [];
-    return this.roots ??= [...this.snapshots.values()].flatMap(snapshot => snapshot.findings.map(entry => {
+    return this.roots ??= [...this.snapshots.values()].filter(snapshot => snapshot.uri === this.activeUri).flatMap(snapshot => snapshot.findings.map(entry => {
       const item: EvidenceNode = new vscode.TreeItem(entry.finding.defect, entry === this.selected ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed);
       item.entry = entry;
       const metadata = [
@@ -61,7 +76,7 @@ class EvidenceView implements vscode.TreeDataProvider<vscode.TreeItem> {
         return child;
       }).concat([...entry.finding.call_path, ...entry.finding.evidence, ...(entry.finding.compound?.ingredients ?? [])].map(evidence => {
         const child = new vscode.TreeItem(`${vscode.workspace.asRelativePath(vscode.Uri.parse(evidence.uri))}: bytes ${evidence.range.start}–${evidence.range.end}`);
-        child.command = { command: 'stateLens.openEvidence', title: 'Open originating evidence', arguments: [snapshot.uri, snapshot.version, evidence] };
+        child.command = { command: commandId('openEvidence'), title: 'Open originating evidence', arguments: [snapshot.uri, snapshot.version, evidence] };
         return child;
       }));
       item.description = `${vscode.workspace.asRelativePath(vscode.Uri.parse(snapshot.uri))}:${entry.triggerRange.start.line + 1}`;
@@ -96,15 +111,17 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
   const evidence = new EvidenceView();
   const inlayChanges = new vscode.EventEmitter<void>();
   context.subscriptions.push(inlayChanges);
-  const evidenceTree = vscode.window.createTreeView('stateLens.evidence', { treeDataProvider: evidence });
+  const evidenceTree = vscode.window.createTreeView(commandId('evidence'), { treeDataProvider: evidence });
   context.subscriptions.push(evidence, evidenceTree);
-  const channel = vscode.window.createOutputChannel('State Lens');
+  const channel = vscode.window.createOutputChannel(`State Lens (${LANGUAGE})`);
   const recorded: string[] = [];
+  let recordedCount = 0;
   let partial = '';
   const record = (value: string): void => {
     const lines = (partial + value).split('\n');
     partial = lines.pop() ?? '';
     recorded.push(...lines);
+    recordedCount += lines.length;
     if (recorded.length > LOG_LIMIT) recorded.splice(0, recorded.length - LOG_LIMIT);
   };
   const output: vscode.OutputChannel = {
@@ -121,13 +138,26 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
     dispose: () => channel.dispose()
   };
   const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right);
-  status.command = 'stateLens.toggle';
+  status.command = commandId('toggle');
   context.subscriptions.push(output, status);
   let epoch = 0;
   let timer: ReturnType<typeof setTimeout> | undefined;
   let running = false;
   let rerun = false;
   let disposed = false;
+  let statusVisible = false;
+  const requests = new Set<vscode.CancellationTokenSource>();
+  const supports = (editor: vscode.TextEditor | undefined): boolean => editor?.document.languageId === LANGUAGE && editor.document.uri.scheme === 'file';
+  function updateUi(): void {
+    const active = vscode.window.activeTextEditor;
+    statusVisible = !disposed && supports(active);
+    evidence.focus(statusVisible ? active?.document.uri.toString() : undefined);
+    void vscode.commands.executeCommand('setContext', commandId('activeEditor'), statusVisible);
+    status.name = 'State Lens';
+    if (!config().get<boolean>('enabled', true)) status.text = 'State Lens: off';
+    status.tooltip = `${LANGUAGE}: ${status.text}. Click to toggle State Lens for this language.`;
+    if (statusVisible) status.show(); else status.hide();
+  }
   const functionStyle = vscode.window.createTextEditorDecorationType({
     borderWidth: `0 0 0 ${BORDER_WIDTH.function}px`, borderStyle: 'solid', borderColor: PALETTE['mutated-state'],
     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
@@ -140,6 +170,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
     if (!client?.isRunning()) throw new Error('State Lens server unavailable');
     const started = Date.now();
     const cancellation = new vscode.CancellationTokenSource();
+    requests.add(cancellation);
+    const requestedEpoch = epoch;
     let timer: ReturnType<typeof setTimeout> | undefined;
     try {
       const snapshot = await Promise.race([
@@ -154,15 +186,17 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
       output.appendLine(`Analysis ${uri}: version=${snapshot.version} findings=${snapshot.findings.length} indexing=${snapshot.indexing} elapsed=${Date.now() - started}ms`);
       return snapshot;
     } catch (error) {
-      if (!(error instanceof ResponseError && error.code === LSPErrorCodes.ContentModified)) output.appendLine(`[Error] Analysis ${uri} after ${Date.now() - started}ms: ${String(error)}`);
+      if (requestedEpoch === epoch && !(error instanceof ResponseError && error.code === LSPErrorCodes.ContentModified)) output.appendLine(`[Error] Analysis ${uri} after ${Date.now() - started}ms: ${String(error)}`);
       throw error;
     } finally {
       if (timer) clearTimeout(timer);
+      requests.delete(cancellation);
       cancellation.dispose();
     }
   }
   const api: StateLensApi = {
-    log: () => [...recorded, ...(partial ? [partial] : [])],
+    log: (after = 0) => [...recorded.slice(Math.max(0, after - (recordedCount - recorded.length))), ...(partial ? [partial] : [])],
+    logCount: () => recordedCount,
     snapshot: async uri => {
       const document = vscode.workspace.textDocuments.find(doc => doc.uri.toString() === uri);
       if (!document || !client?.isRunning()) throw new Error('State Lens document or server unavailable');
@@ -181,7 +215,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
     },
     serverRunning: () => client?.isRunning() ?? false,
     status: () => status.text,
-    applied: uri => applied.get(uri)
+    applied: uri => applied.get(uri),
+    ui: () => ({ statusVisible, evidenceVisible: evidenceTree.visible, evidenceUri: statusVisible ? vscode.window.activeTextEditor?.document.uri.toString() : undefined, lifecycle: lifecycle.state })
   };
   const config = () => vscode.workspace.getConfiguration(CONFIG_SECTION);
   function styles(): void {
@@ -189,7 +224,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
     const opacity = config().get<number>('opacity', 0.10);
     stylesByCategory = (Object.entries(PALETTE) as [Category, string][]).flatMap(([category, hex]) => {
       const rgb = [1, 3, 5].map(offset => parseInt(hex.slice(offset, offset + 2), 16)).join(', ');
-      const outline = !category.endsWith('-state');
+      const outline = CATEGORY_STYLE[category] === 'outline';
       return [false, true].map(propagated => {
         const alpha = propagated ? opacity / 2 : opacity;
         return { category, propagated, type: vscode.window.createTextEditorDecorationType({
@@ -221,7 +256,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
     timer = setTimeout(() => { void refresh(); }, REFRESH_DELAY_MS);
   }
   async function refresh(): Promise<void> {
-    if (disposed || !client?.isRunning()) return;
+    if (disposed || lifecycle.state !== 'running' || !client?.isRunning()) return;
     if (running) { rerun = true; return; }
     if (!config().get<boolean>('enabled', true)) { clear(); status.text = 'State Lens: off'; return; }
     running = true;
@@ -230,6 +265,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
     try {
       const editors = vscode.window.visibleTextEditors.filter(e => LANGUAGES.includes(e.document.languageId) && e.document.uri.scheme === 'file');
       let incomplete = false;
+      const reasons = new Set<string>();
       for (const editor of editors) {
         const uri = editor.document.uri.toString();
         const snapshot = await requestSnapshot(uri);
@@ -250,38 +286,47 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
           decorations: painted.map(({ category, range, outline, families }) => ({ category, range, outline, families })) });
         evidence.update({ ...snapshot, findings: snapshot.findings.filter(e => !directOnly || e.finding.origin === 'direct') });
         inlayChanges.fire();
+        if (snapshot.indexing) reasons.add('Workspace indexing is in progress.');
+        if (snapshot.parseErrors) reasons.add('The document has parse errors.');
+        snapshot.unresolved.forEach(item => reasons.add(item.reason));
         incomplete ||= Boolean(snapshot.indexing) || snapshot.parseErrors || snapshot.unresolved.length > 0;
       }
-      if (requestedEpoch === epoch) status.text = `State Lens: active${incomplete ? ' (partial)' : ''}`;
+      if (requestedEpoch === epoch) { status.text = `State Lens: active${incomplete ? ' (partial)' : ''}`; if (!compatible) status.text = 'State Lens: incompatible server'; status.tooltip = [...reasons, 'Valid findings remain visible. Use State Lens: Show Debug Information for server details.'].join('\n'); }
     } catch (error) {
       if (error instanceof ResponseError && error.code === LSPErrorCodes.ContentModified) { rerun = true; return; }
+      if (disposed || requestedEpoch !== epoch) return;
       clear();
       status.text = 'State Lens: unavailable';
       status.tooltip = `${String(error)}\nRun State Lens: Show Debug Information for server details and logs.`;
       output.appendLine(`[Error] ${String(error)}`);
     } finally {
+      updateUi();
       running = false;
       if (rerun || epoch !== requestedEpoch) { rerun = false; schedule(); }
     }
   }
   styles();
-  context.subscriptions.push({ dispose: () => { disposed = true; epoch++; clear(); if (timer) clearTimeout(timer); decorations.forEach(d => d.dispose()); } });
+  context.subscriptions.push({ dispose: () => { void shutdown?.(); decorations.forEach(d => d.dispose()); } });
   context.subscriptions.push(
-    vscode.commands.registerCommand('stateLens.toggle', async () => { await config().update('enabled', !config().get<boolean>('enabled', true), vscode.ConfigurationTarget.Global); }),
-    vscode.commands.registerCommand('stateLens.refresh', schedule),
-    vscode.commands.registerCommand('stateLens.debug', async () => {
+    vscode.commands.registerCommand(commandId('toggle'), async () => { await config().update('enabled', !config().get<boolean>('enabled', true), vscode.ConfigurationTarget.Global); }),
+    vscode.commands.registerCommand(commandId('refresh'), () => reconcile(true)),
+    vscode.commands.registerCommand(commandId('debug'), async () => {
+      const command = serverCommand();
+      const resolvedServer = (path.isAbsolute(command) || command.includes(path.sep) ? [path.resolve(command)] : (process.env.PATH ?? '').split(path.delimiter).map(folder => path.join(folder, command)))
+        .find(file => { try { fs.accessSync(file, fs.constants.X_OK); return true; } catch { return false; } });
+      let serverHash: string | undefined;
+      try { if (resolvedServer) serverHash = createHash('sha256').update(await fs.promises.readFile(resolvedServer)).digest('hex'); } catch {}
       const document = await vscode.workspace.openTextDocument({ language: 'json', content: JSON.stringify({
         extensionVersion: context.extension.packageJSON.version,
         configuredServer: config().get<string>('serverPath'),
-        environmentServer: process.env[SERVER_ENV],
-        command, path: process.env.PATH, serverInfo: client?.initializeResult?.serverInfo,
+        command, resolvedServer, serverHash, path: process.env.PATH, serverInfo: client?.initializeResult?.serverInfo,
         serverRunning: api.serverRunning(), status: status.text,
         documents: vscode.window.visibleTextEditors.map(editor => ({ uri: editor.document.uri.toString(), language: editor.document.languageId, version: editor.document.version, applied: applied.get(editor.document.uri.toString()) })),
         logs: api.log()
       }, null, 2) });
       await vscode.window.showTextDocument(document);
     }),
-    vscode.commands.registerCommand('stateLens.openEvidence', async (uri: unknown, version: unknown, requested: unknown) => {
+    vscode.commands.registerCommand(commandId('openEvidence'), async (uri: unknown, version: unknown, requested: unknown) => {
       if (typeof uri !== 'string' || typeof version !== 'number') return;
       const snapshot = evidence.snapshot(uri);
       const parent = vscode.workspace.textDocuments.find(doc => doc.uri.toString() === uri);
@@ -347,25 +392,81 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
         return new vscode.Hover(contents);
       }
     }),
-    vscode.workspace.onDidChangeConfiguration(event => { if (event.affectsConfiguration(CONFIG_SECTION)) { styles(); schedule(); } }),
+    vscode.workspace.onDidChangeConfiguration(event => { if (event.affectsConfiguration(CONFIG_SECTION)) { styles(); void reconcile(); } }),
     vscode.workspace.onDidChangeTextDocument(event => { if (LANGUAGES.includes(event.document.languageId)) schedule(); }),
     vscode.workspace.onDidCloseTextDocument(schedule),
-    vscode.window.onDidChangeVisibleTextEditors(schedule)
+    vscode.window.onDidChangeVisibleTextEditors(() => { void reconcile(); }),
+    vscode.window.onDidChangeActiveTextEditor(updateUi)
   );
-  const watcher = vscode.workspace.createFileSystemWatcher('**/*.{go,rs,ts,py}');
+  const watcher = vscode.workspace.createFileSystemWatcher(`**/*.{${EXTENSIONS.join(',')}}`);
   context.subscriptions.push(watcher, watcher.onDidCreate(schedule), watcher.onDidChange(schedule), watcher.onDidDelete(schedule));
-  const command = config().get<string>('serverPath') || process.env[SERVER_ENV] || SERVER_BINARY;
-  output.appendLine(`Starting ${command} serve (extension ${context.extension.packageJSON.version})`);
-  client = new LanguageClient(CONFIG_SECTION, 'State Lens', { command, args: ['serve'] }, {
-    documentSelector: LANGUAGES.map(language => ({ scheme: 'file', language })),
-    initializationOptions: { diagnostics: config().get<boolean>('diagnostics', true) },
-    middleware: { provideHover: () => null, provideInlayHints: () => [] },
-    synchronize: { fileEvents: watcher, configurationSection: CONFIG_SECTION }, outputChannel: output
+  const serverCommand = () => config().get<string>('serverPath') || context.asAbsolutePath(`bin/state-lens${process.platform === 'win32' ? '.exe' : ''}`);
+  let sessionSubscriptions: vscode.Disposable[] = [];
+  let session: { stopping: boolean } | undefined;
+  const lifecycle = new ServerLifecycle({
+    invalidate: () => {
+      epoch++;
+      requests.forEach(request => request.cancel());
+      if (timer) clearTimeout(timer);
+      clear();
+    },
+    changed: state => {
+      status.text = `State Lens: ${config().get<boolean>('enabled', true) ? state : 'off'}`;
+      updateUi();
+      if (state === 'running') schedule();
+    },
+    error: error => {
+      output.appendLine(`[Error] ${String(error)}`);
+      status.text = 'State Lens: unavailable';
+      updateUi();
+    },
+    start: async () => {
+      sessionSubscriptions.forEach(subscription => subscription.dispose());
+      sessionSubscriptions = [];
+      if (client) await client.dispose();
+      const command = serverCommand();
+      output.appendLine(`Starting ${command} serve (extension ${context.extension.packageJSON.version})`);
+      const startingSession = { stopping: false };
+      session = startingSession;
+      const sessionOutput: vscode.OutputChannel = { ...output, appendLine: value => {
+        if (startingSession.stopping && value.includes(CLEAN_SERVER_EXIT)) return;
+        output.appendLine(value);
+      } };
+      client = new LanguageClient(CONFIG_SECTION, 'State Lens', { command, args: ['serve'] }, {
+        documentSelector: LANGUAGES.map(language => ({ scheme: 'file', language })),
+        initializationOptions: { diagnostics: config().get<boolean>('diagnostics', true) },
+        middleware: { provideHover: () => null, provideInlayHints: () => [] },
+        errorHandler: { error: () => ({ action: ErrorAction.Continue }), closed: () => ({ action: CloseAction.DoNotRestart }) },
+        synchronize: { fileEvents: watcher, configurationSection: CONFIG_SECTION }, outputChannel: sessionOutput
+      });
+      sessionSubscriptions.push(client.onNotification('stateLens/indexing', schedule), client.onDidChangeState(event => { if (event.newState === State.Stopped && lifecycle.state === 'running') lifecycle.crashed(); }));
+      await client.start();
+      const capabilities = client.initializeResult?.capabilities;
+      const supported: unknown = capabilities?.experimental?.stateLens?.languages;
+      compatible = divisionCompatible(capabilities) && Array.isArray(supported) && supported.length === 1 && supported[0] === LANGUAGE;
+      if (!compatible) throw new Error(`Server ${command} is incompatible with State Lens (${LANGUAGE}). Reinstall the extension or correct ${CONFIG_SECTION}.serverPath.`);
+    },
+    stop: async () => {
+      if (session) session.stopping = true;
+      sessionSubscriptions.forEach(subscription => subscription.dispose());
+      sessionSubscriptions = [];
+      const retiring = client;
+      client = undefined;
+      if (retiring?.isRunning()) await retiring.dispose();
+    }
   });
-  context.subscriptions.push(client.onDidChangeState(event => { if (event.newState === State.Stopped) { epoch++; clear(); status.text = 'State Lens: stopped'; } }));
-  context.subscriptions.push(client.onNotification('stateLens/indexing', () => schedule()));
-  try { await client.start(); status.show(); schedule(); }
-  catch (error) { output.appendLine(`[Error] ${String(error)}`); void vscode.window.showErrorMessage('State Lens could not start. Install the state-lens binary or configure stateLens.serverPath.'); }
+  async function reconcile(retry = false): Promise<void> {
+    updateUi();
+    await lifecycle.update(!disposed && config().get<boolean>('enabled', true) && vscode.window.visibleTextEditors.some(supports), retry);
+    if (lifecycle.state === 'running') schedule();
+  }
+  shutdown = async () => {
+    disposed = true;
+    updateUi();
+    await lifecycle.update(false);
+  };
+  status.text = 'State Lens: idle';
+  await reconcile();
   return api;
 }
-export async function deactivate(): Promise<void> { await client?.stop(); client = undefined; }
+export async function deactivate(): Promise<void> { await shutdown?.(); shutdown = undefined; }

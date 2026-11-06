@@ -198,6 +198,36 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "entered True"
+    },
+    {
+      "file": "javascript/01_async_lock_not_released_on_throw.js",
+      "language": "javascript",
+      "bug_lines": [
+        15,
+        16
+      ],
+      "summary": "The validation throw happens after acquire and before release, so the lock is held forever.",
+      "mechanism": "Release not in finally (CWE-667).",
+      "observed_output": "rejected: negative amount\nnext entry still waiting for the ledger lock after 200ms",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "entry posted"
+    },
+    {
+      "file": "javascript/02_opposite_order_async_locks.js",
+      "language": "javascript",
+      "bug_lines": [
+        17,
+        19,
+        24,
+        26
+      ],
+      "summary": "Sale and refund acquire two async locks in opposite order across an await and deadlock.",
+      "mechanism": "Lock-order inversion works the same with promises as with threads.",
+      "observed_output": "sale and refund still blocked after 200ms",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "both completed"
     }
   ]
 }

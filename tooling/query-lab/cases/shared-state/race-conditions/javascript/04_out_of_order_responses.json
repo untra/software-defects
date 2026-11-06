@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject stale responses using a monotonically increasing request generation.",
+  "original": {
+    "source_hash": "ffaf60402b252719c05be67051d70e7b39a50b0eff821d93d0e1d72649e44e3c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              310,
+              316
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "91879be4cc3d5fe1785194130d59c6b05c0e67ddaaa7ee0df796a83e2da9e0cc",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              373,
+              379
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "'abc-result-1', 'abc-result-2'"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Responses complete out of order; no request token or cancellation guards the shared result. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

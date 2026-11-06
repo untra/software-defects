@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Share one Gregorian calendar implementation.",
+  "original": {
+    "source_hash": "73bb72d9ee35e13c8a3c1079a97b589caf29938a9fe277717edff2146985f7a6",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/version-library-mismanagement/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "2d02aed22c87007ff4b10dfe65000fa6abcbf12542a4a8b2e0cfe82ac3c43b44",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/version-library-mismanagement/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "billing 2024 february 29\npayroll 2024 february 29"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The copied helper no longer matches the one that was fixed (CWE-1104). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

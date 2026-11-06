@@ -152,6 +152,41 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_refund_balance.js",
+      "language": "javascript",
+      "bug_lines": [
+        11,
+        12
+      ],
+      "summary": "A refund becomes a huge credit while competing callers share a single posting slot.",
+      "mechanism": "The >>> 0 escape hatch converts -1 to 4294967295; concurrent posting attempts contend for one slot, and the accepted posting adds that unsigned value to the shared balance.",
+      "observed_output": "busy 1\nbalance 4294967395",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "The accepted refund leaves balance 99; excess work is queued or reported busy.",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "The negative refund is converted to an unsigned 32-bit credit.",
+          "evidence": [
+            "const credit = refund >>> 0;",
+            "const REFUND = -1;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "resource-contention",
+          "suggests": "Two refund calls contend for one shared posting slot held across an await.",
+          "evidence": [
+            "const POSTING_CAPACITY = 1;",
+            "if (inFlight > POSTING_CAPACITY)\n            throw new Error(\"ledger busy\");",
+            "const postings = await Promise.allSettled([postRefund(REFUND), postRefund(REFUND)]);"
+          ]
+        }
+      ]
     }
   ]
 }

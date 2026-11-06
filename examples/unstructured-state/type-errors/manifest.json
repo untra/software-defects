@@ -177,6 +177,71 @@
       "exit_code": 1,
       "deterministic": true,
       "expected_behavior": "10"
+    },
+    {
+      "file": "javascript/01_plus_total.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "Adding a fee to a string price concatenates.",
+      "mechanism": "`+` concatenates when either side is a string (CWE-704).",
+      "observed_output": "due 19.992",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "due 21.99"
+    },
+    {
+      "file": "javascript/02_loose_compare.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "A string code loosely equals the number 0.",
+      "mechanism": "`==` coerces operands; `===` would keep them apart (CWE-704).",
+      "observed_output": "open true",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "open false"
+    },
+    {
+      "file": "javascript/03_falsy_quantity.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "A quantity of 0 is treated as missing and replaced with 1.",
+      "mechanism": "`!quantity` is true for 0, so a real zero becomes the default (CWE-704).",
+      "observed_output": "qty 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "qty 0"
+    },
+    {
+      "file": "javascript/04_numeric_sort.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "Numeric strings sort as text, so 10 lands before 2.",
+      "mechanism": "Default sort compares UTF-16 code units, not numeric value (CWE-704).",
+      "observed_output": "order 1,10,2",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "order 1,2,10"
+    },
+    {
+      "file": "javascript/05_parse_prefix.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "parseInt accepts 10px and returns 10.",
+      "mechanism": "parseInt stops at the first non-digit instead of rejecting the whole token (CWE-704).",
+      "observed_output": "size 10",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "size rejected"
     }
   ]
 }

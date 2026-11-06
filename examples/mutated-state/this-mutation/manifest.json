@@ -179,6 +179,72 @@
       "exit_code": 1,
       "deterministic": true,
       "expected_behavior": "pen"
+    },
+    {
+      "file": "javascript/01_unbound_method_callback.js",
+      "language": "javascript",
+      "bug_lines": [
+        9
+      ],
+      "summary": "Passing `tracker.handle` detaches it from its receiver; `this` is undefined when invoked.",
+      "mechanism": "Method references don't carry `this`; class bodies are strict mode.",
+      "observed_output": "error: Cannot read properties of undefined (reading 'clicks')\nclicks: 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "clicks: 1"
+    },
+    {
+      "file": "javascript/02_call_order_dependent_methods.js",
+      "language": "javascript",
+      "bug_lines": [
+        10,
+        14
+      ],
+      "summary": "Methods mutate `this.subtotal` in place, so totals depend on call order and retries compound tax.",
+      "mechanism": "Each call reads state written by previous calls instead of deriving from inputs.",
+      "observed_output": "tax then coupon: 100\ncoupon then tax: 99\ntax retried: 121",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "consistent total regardless of order; idempotent tax"
+    },
+    {
+      "file": "javascript/03_fluent_builder_returns_this.js",
+      "language": "javascript",
+      "bug_lines": [
+        5
+      ],
+      "summary": "Builder mutates and returns `this`; two queries branched from one base share every filter.",
+      "mechanism": "Fluent API returns the same mutable instance rather than a new builder.",
+      "observed_output": "SELECT * FROM users WHERE active = true AND role = 'admin' AND role = 'guest'\nSELECT * FROM users WHERE active = true AND role = 'admin' AND role = 'guest'",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "admins: active AND admin / guests: active AND guest"
+    },
+    {
+      "file": "javascript/04_instance_field_shadows_override.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "Arrow-function class field is assigned on the instance, shadowing the subclass's prototype override.",
+      "mechanism": "Instance fields are set in the base constructor and take precedence over prototype methods.",
+      "observed_output": "[hello]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "[HELLO]"
+    },
+    {
+      "file": "javascript/05_function_callback_rebinds_this.js",
+      "language": "javascript",
+      "bug_lines": [
+        6
+      ],
+      "summary": "`function` callback passed to setTimeout gets Node's Timeout object as `this`; the session flag is written onto the timer.",
+      "mechanism": "Non-arrow functions rebind `this` to the caller-chosen receiver.",
+      "observed_output": "expired: false",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "expired: true"
     }
   ]
 }

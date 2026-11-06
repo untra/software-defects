@@ -24,6 +24,7 @@ const SITE_ORIGIN: &str = "https://badsoftware.untra.io";
 const SITE_LOCALE: &str = "en";
 const GUIDE_LINK_LABEL: &str = "Guide";
 const SEVERITY_INFORMATION: u8 = 3;
+const SEVERITY_WARNING: u8 = 2;
 const INLAY_MARKER: &str = "◆";
 const SUPERSEDED: &str = "analysis superseded by document changes";
 const CONTENT_MODIFIED: i64 = -32801;
@@ -161,13 +162,13 @@ fn diagnostics(engine: &Engine, report: &Report, uri: &str) -> Option<Value> {
                 .collect();
             json!({
                 "range":lsp_range(source,f.trigger),
-                "severity":SEVERITY_INFORMATION,
+                "severity":if f.division_risk.as_ref().is_some_and(|r| r.confidence != "candidate") { SEVERITY_WARNING } else { SEVERITY_INFORMATION },
                 "source":SOURCE,
                 "code":f.rule_id,
                 "codeDescription":{"href":finding_guide_url(f)},
                 "message":format!("{}: {}", f.defect, short_explanation(f)),
                 "relatedInformation":related,
-                "data":{"family":f.family,"origin":f.origin,"effect":f.effect,"compound":f.compound}
+                "data":{"division_risk":f.division_risk,"family":f.family,"origin":f.origin,"effect":f.effect,"compound":f.compound}
             })
         })
         .collect();
@@ -206,9 +207,27 @@ fn inlay_hints(report: &Report, source: &str, uri: &str) -> Value {
     json!(hints)
 }
 fn diagnostics_setting(settings: &Value) -> Option<bool> {
-    settings["stateLens"]["diagnostics"]
+    let selected = if crate::analysis::SUPPORTED_LANGUAGES.len() == 1 {
+        &settings["stateLens"][crate::analysis::SUPPORTED_LANGUAGES[0]]
+    } else {
+        &settings["stateLens"]
+    };
+    let dotted = crate::analysis::SUPPORTED_LANGUAGES
+        .first()
+        .map(|language| &settings[format!("stateLens.{language}")]);
+    let selected = if let Some(value) = dotted.filter(|value| value.is_object()) {
+        value
+    } else {
+        selected
+    };
+    let selected = if selected.is_object() {
+        selected
+    } else {
+        settings
+    };
+    selected["diagnostics"]
         .as_bool()
-        .or_else(|| settings["diagnostics"].as_bool())
+        .map(|diagnostics| diagnostics && selected["enabled"].as_bool().unwrap_or(true))
 }
 
 pub fn serve() -> Result<()> {
@@ -317,7 +336,7 @@ pub fn serve() -> Result<()> {
                 publish_diagnostics =
                     diagnostics_setting(&p["initializationOptions"]).unwrap_or(true);
                 Ok(
-                    json!({"capabilities":{"positionEncoding":"utf-16","textDocumentSync":{"openClose":true,"change":2,"save":{"includeText":false}},"hoverProvider":true,"inlayHintProvider":true},"serverInfo":{"name":SOURCE,"version":env!("CARGO_PKG_VERSION")}}),
+                    json!({"capabilities":{"experimental":{"stateLens":{"divisionAnalysis":1,"languages":crate::analysis::SUPPORTED_LANGUAGES}},"positionEncoding":"utf-16","textDocumentSync":{"openClose":true,"change":2,"save":{"includeText":false}},"hoverProvider":true,"inlayHintProvider":true},"serverInfo":{"name":SOURCE,"version":env!("CARGO_PKG_VERSION")}}),
                 )
             }
             "initialized" => {

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Allocate call history on each instance rather than on its prototype.",
+  "original": {
+    "source_hash": "050b1fb8240f1ffaafd3b0c78a5b74bd98b604a2f08b8cbc018db848336dd8c4",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/macro-mixin-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              227,
+              231
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "818a82e5f6ebcc1760250499bc9da34be8ddb3a133b9dff6d4ca4ba351a8e480",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/macro-mixin-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              269,
+              273
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "billing calls: [ '/invoices' ]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Mutable state on a prototype is shared by every instance. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

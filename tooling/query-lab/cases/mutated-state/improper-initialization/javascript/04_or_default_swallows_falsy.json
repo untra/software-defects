@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Default only absent values, preserving zero retries and an empty label.",
+  "original": {
+    "source_hash": "b5af81a4fc52b6127bbed681bdbc4af659d1aae402cc6080f435553683ec55bb",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/improper-initialization/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "c064983f14127323d552d60275c0a7ceae4c00ec98f82cf82cd8bfe6c4fa18fc",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/improper-initialization/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "{ retries: 0, label: '' }"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Logical OR treats 0 and '' as missing; use `??`. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -152,6 +152,41 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_invoice_total.js",
+      "language": "javascript",
+      "bug_lines": [
+        9,
+        10
+      ],
+      "summary": "The locked ledger drops the fractional part of an invoice.",
+      "mechanism": "Bitwise OR converts a floating-point number to a signed 32-bit integer before a protected update to the shared total.",
+      "observed_output": "total 19",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "total 19.75",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "The monetary float is narrowed to an integer before posting.",
+          "evidence": [
+            "const wholeAmount = amount | 0;",
+            "const INVOICE_AMOUNT = 19.75;"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "The shared total is modified while the ledger lock flag is held.",
+          "evidence": [
+            "let ledgerHeld = false;",
+            "ledgerHeld = true;",
+            "total += wholeAmount;"
+          ]
+        }
+      ]
     }
   ]
 }

@@ -148,6 +148,40 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_cart_payload.js",
+      "language": "javascript",
+      "bug_lines": [
+        6,
+        10
+      ],
+      "summary": "Applying an incomplete payload overwrites the cart quantity with undefined before formatting.",
+      "mechanism": "The apply function mutates a module-level cart using an unchecked optional payload field, so the next numeric method call receives undefined.",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'toFixed')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Reject a payload missing qty and retain the original cart quantity of 2.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "The apply function changes the cart outside its arguments.",
+          "evidence": [
+            "const cart = { qty: INITIAL_QUANTITY };",
+            "cart.qty = payload.qty;"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "An empty payload is accepted and its missing qty is copied without validation.",
+          "evidence": [
+            "const PAYLOAD = {};",
+            "cart.qty = payload.qty;"
+          ]
+        }
+      ]
     }
   ]
 }

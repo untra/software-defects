@@ -231,6 +231,73 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "9 None, or 9 and the pencil price kept"
+    },
+    {
+      "file": "javascript/01_stale_read_after_update.js",
+      "language": "javascript",
+      "bug_lines": [
+        12
+      ],
+      "summary": "Upgrade writes the db but leaves the cached plan, so a paying user stays on free.",
+      "mechanism": "Missing invalidation on write (CWE-524).",
+      "observed_output": "ana's plan after paying: free",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "ana's plan after paying: pro"
+    },
+    {
+      "file": "javascript/02_memo_keyed_by_identity.js",
+      "language": "javascript",
+      "bug_lines": [
+        3,
+        12
+      ],
+      "summary": "Memo keyed by array identity misses in-place pushes; total stays stale.",
+      "mechanism": "Identity-keyed cache assumes the key object is immutable.",
+      "observed_output": "total charged: 30",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "total charged: 60"
+    },
+    {
+      "file": "javascript/03_thundering_herd.js",
+      "language": "javascript",
+      "bug_lines": [
+        14
+      ],
+      "summary": "Fifty concurrent misses each fetch from origin because the in-flight load isn't shared.",
+      "mechanism": "Cache stores values, not pending promises; no single-flight.",
+      "observed_output": "origin fetches for one page: 50",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "origin fetches for one page: 1"
+    },
+    {
+      "file": "javascript/04_cached_rejected_promise.js",
+      "language": "javascript",
+      "bug_lines": [
+        9,
+        10
+      ],
+      "summary": "A rejected promise is cached, so the failure is returned forever after the server recovers.",
+      "mechanism": "Failures are cached with no eviction on rejection.",
+      "observed_output": "after recovery: config server unavailable",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "checkout=enabled"
+    },
+    {
+      "file": "javascript/05_invalidate_wrong_key.js",
+      "language": "javascript",
+      "bug_lines": [
+        15
+      ],
+      "summary": "The cache is written with a normalized key but invalidated with the raw key.",
+      "mechanism": "Key derivation differs between write and invalidate paths.",
+      "observed_output": "greeting: Ana",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "greeting: Ana Lopez"
     }
   ]
 }

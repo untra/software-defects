@@ -244,10 +244,12 @@ def _corpus_example(lang, slug, ex, is_open):
     if ex["fixed_source"]:
         why = (f'<div class="code-explain">{e(ex["fix_rationale"])}</div>'
                if ex["fix_rationale"] else "")
+        fixed_path = ex["path"].replace("examples/", "examples-fixed/", 1)
         fixed = (f'<details class="corpus-fix"><summary>{L("fixed_version")}</summary>'
-                 f'{why}{_corpus_code(lang, ex["fixed_source"], slug, fname)}</details>')
+                 f'{why}{_corpus_code(lang, ex["fixed_source"], slug, fname)}'
+                 f'<a class="corpus-ex__src" href="{REPO_URL}/{e(fixed_path)}">{L("view_source")}</a></details>')
     return (
-        f'<details class="corpus-ex"{" open" if is_open else ""}>'
+        f'<details class="corpus-ex" id="example-{e(ex["file"].replace("/", "-").replace(".", "-"))}"{" open" if is_open else ""}>'
         f'<summary><span class="fname">{e(fname)}</span>{badge}'
         f'<span class="corpus-ex__summary">{e(ex["summary"])}</span></summary>'
         f'{_corpus_code(lang, ex["source"], slug, fname, ex["bug_lines"])}'

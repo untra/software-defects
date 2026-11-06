@@ -9,10 +9,31 @@
         "query": "tooling/query-lab/queries/rust/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              80,
+              100
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              80,
+              87
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               88,
               89
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              90,
+              100
             ]
           }
         ]
@@ -26,10 +47,31 @@
         "query": "tooling/query-lab/queries/rust/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              163,
+              183
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              163,
+              170
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               171,
               172
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              173,
+              183
             ]
           }
         ]
@@ -43,5 +85,5 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. f64 division follows IEEE-754 and does not panic (CWE-682). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Syntax captures remain in guarded fixes. Production analysis separately checks scoped denominator values and guards; dynamic aliases and dispatch remain unresolved."
 }

@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Compute the end date on a copy.",
+  "original": {
+    "source_hash": "36ba233900143d3c10a3ee92ca5e985b5b865850e4803dd98b66b70dd8084fe0",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/time-money-entropy/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              107,
+              117
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "74882327122f56baa1422f22eaa07a6e6f3b490e135605ae8424f41b17a7500e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/time-money-entropy/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              138,
+              148
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "start 2026-10-01",
+      "end   2026-10-15"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Date objects are mutable and passed by reference. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

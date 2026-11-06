@@ -3,7 +3,7 @@
   "status": "syntax-candidate",
   "rationale": "Reserve one result slot per worker so losing senders can finish.",
   "original": {
-    "source_hash": "3cc1568219d177ff6d6078b85f866a3f77df1dd0da696919ea1b9734bf92377d",
+    "source_hash": "32718aae94d77e5eaf084756bda8de16c7825d79695d2f8d015c93858e3b2463",
     "queries": [
       {
         "query": "tooling/query-lab/queries/go/shared-state/async-io-misuse/signals.scm",
@@ -11,8 +11,8 @@
           {
             "name": "callee",
             "range": [
-              288,
-              292
+              299,
+              303
             ]
           }
         ]

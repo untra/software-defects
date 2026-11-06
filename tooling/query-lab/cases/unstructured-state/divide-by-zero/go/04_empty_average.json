@@ -9,10 +9,31 @@
         "query": "tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              133,
+              152
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              133,
+              138
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               139,
               140
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              141,
+              152
             ]
           }
         ]
@@ -26,10 +47,31 @@
         "query": "tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              185,
+              204
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              185,
+              190
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               191,
               192
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              193,
+              204
             ]
           }
         ]
@@ -43,5 +85,5 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. A nil or empty slice has length 0; integer division by that length panics (CWE-369). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Syntax captures remain in guarded fixes. Production analysis separately checks scoped denominator values and guards; dynamic aliases and dispatch remain unresolved."
 }

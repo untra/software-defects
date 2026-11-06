@@ -155,6 +155,42 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_meter_reading.js",
+      "language": "javascript",
+      "bug_lines": [
+        7,
+        8,
+        11
+      ],
+      "summary": "Loading a JSON string reading replaces a numeric meter field before numeric formatting.",
+      "mechanism": "JSON.parse returns an unchecked runtime value and the erased any field allows it to replace the instance number; the string has no toFixed method.",
+      "observed_output": "TypeError: this.reading.toFixed is not a function",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Validate or convert the incoming reading and print reading 10.0.",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "insecure-deserialization",
+          "suggests": "The parsed reading is trusted and copied directly from JSON into the meter.",
+          "evidence": [
+            "const BODY = '{\"reading\":\"10\"}';",
+            "const record = JSON.parse(body);",
+            "this.reading = record.reading;"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "this-mutation",
+          "suggests": "Loading the record changes the existing meter reading from its numeric initial value.",
+          "evidence": [
+            "reading = INITIAL_READING;",
+            "this.reading = record.reading;"
+          ]
+        }
+      ]
     }
   ]
 }

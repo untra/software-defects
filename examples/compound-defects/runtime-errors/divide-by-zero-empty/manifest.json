@@ -153,6 +153,41 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_sample_mean.js",
+      "language": "javascript",
+      "bug_lines": [
+        3,
+        5,
+        7
+      ],
+      "summary": "An empty sample list leaves the running total at zero and produces a NaN mean.",
+      "mechanism": "The mutable accumulator remains zero when no samples arrive, and JavaScript number division computes NaN for zero divided by zero.",
+      "observed_output": "mean NaN",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Report that no mean is available for an empty sample set.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "var-let-mut",
+          "suggests": "The mean uses a loop-carried mutable total that remains zero for empty input.",
+          "evidence": [
+            "let total = 0;",
+            "total += sample;"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "divide-by-zero",
+          "suggests": "The empty sample count becomes the denominator of the zero total.",
+          "evidence": [
+            "const SAMPLES = [];",
+            "return total / samples.length;"
+          ]
+        }
+      ]
     }
   ]
 }

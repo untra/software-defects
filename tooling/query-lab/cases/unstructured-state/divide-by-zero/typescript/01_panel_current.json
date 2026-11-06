@@ -9,10 +9,31 @@
         "query": "tooling/query-lab/queries/typescript/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              58,
+              78
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              58,
+              65
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               66,
               67
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              68,
+              78
             ]
           }
         ]
@@ -26,10 +47,31 @@
         "query": "tooling/query-lab/queries/typescript/unstructured-state/divide-by-zero/signals.scm",
         "captures": [
           {
+            "name": "division",
+            "range": [
+              84,
+              104
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              84,
+              91
+            ]
+          },
+          {
             "name": "operator",
             "range": [
               92,
               93
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              94,
+              104
             ]
           }
         ]
@@ -43,5 +85,5 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. JS number division by 0 does not throw (CWE-682). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Syntax captures remain in guarded fixes. Production analysis separately checks scoped denominator values and guards; dynamic aliases and dispatch remain unresolved."
 }

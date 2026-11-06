@@ -59,6 +59,8 @@ pub struct Compound {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Finding {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub division_risk: Option<DivisionRisk>,
     pub rule_id: String,
     pub family: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -148,4 +150,11 @@ pub fn byte_offset(source: &str, pos: Position) -> Option<usize> {
         }
     }
     (units == pos.character).then_some(source.len())
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DivisionRisk {
+    pub confidence: String,
+    pub outcome: String,
+    pub mutated: bool,
 }

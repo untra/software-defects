@@ -27,9 +27,9 @@ class CorpusTests(unittest.TestCase):
             identifiers.add(rule['id'])
             path = root / rule['query']
             registered.add(path)
-            self.assertEqual(sorted(set(re.findall(r'@([a-z_]+)', path.read_text()))), rule['captures'])
+            self.assertEqual(sorted(set(re.findall(r'@([a-z_]+)', path.read_text()))), sorted(rule['captures']))
             self.assertTrue(rule['related_cwes'])
-        self.assertEqual(set(root.glob('*/mutated-state/*/*.scm')), registered)
+        self.assertEqual(set(root.glob('*/*/*/*.scm')), registered)
 
     def test_blind_export_keeps_all_labels_outside_sources(self):
         with tempfile.TemporaryDirectory(prefix='state-lens-blind-test-') as directory:

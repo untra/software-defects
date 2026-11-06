@@ -149,6 +149,41 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_account_profile.js",
+      "language": "javascript",
+      "bug_lines": [
+        3,
+        4
+      ],
+      "summary": "A profile request promotes the shared account to administrator.",
+      "mechanism": "JSON received at the profile boundary is deserialized and copied wholesale onto the account, including its privileged admin field.",
+      "observed_output": "admin true",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "admin false; profile updates cannot set authorization fields.",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "A serialized request body crosses into the account profile receiver.",
+          "evidence": [
+            "function receiveProfile(body) {",
+            "receiveProfile(REQUEST_BODY);"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "insecure-deserialization",
+          "suggests": "All parsed fields, including admin, are assigned to the account.",
+          "evidence": [
+            "const profile = JSON.parse(body);",
+            "Object.assign(account, profile);",
+            "const REQUEST_BODY = '{\"name\":\"mira\",\"admin\":true}';"
+          ]
+        }
+      ]
     }
   ]
 }

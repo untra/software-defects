@@ -12,7 +12,8 @@ use url::Url;
 fn rule_metadata() -> &'static serde_json::Value {
     static METADATA: OnceLock<serde_json::Value> = OnceLock::new();
     METADATA.get_or_init(|| {
-        serde_json::from_str(include_str!("../../../queries/rules.json")).expect("rule metadata")
+        serde_json::from_str(include_str!(concat!(env!("OUT_DIR"), "/rules.json")))
+            .expect("rule metadata")
     })
 }
 fn related_cwes(rule_id: &str) -> Vec<String> {
@@ -58,18 +59,30 @@ const MUTATING_METHODS: &[&str] = &[
 
 pub fn language_name(path: &Path) -> Option<&'static str> {
     match path.extension()?.to_str()? {
+        #[cfg(feature = "go")]
         "go" => Some("go"),
+        #[cfg(feature = "rust")]
         "rs" => Some("rust"),
+        #[cfg(feature = "typescript")]
         "ts" => Some("typescript"),
+        #[cfg(feature = "javascript")]
+        "js" | "mjs" | "cjs" => Some("javascript"),
+        #[cfg(feature = "python")]
         "py" => Some("python"),
         _ => None,
     }
 }
 fn grammar(name: &str) -> Result<Language> {
     Ok(match name {
+        #[cfg(feature = "go")]
         "go" => tree_sitter_go::LANGUAGE.into(),
+        #[cfg(feature = "python")]
         "python" => tree_sitter_python::LANGUAGE.into(),
+        #[cfg(feature = "rust")]
         "rust" => tree_sitter_rust::LANGUAGE.into(),
+        #[cfg(feature = "javascript")]
+        "javascript" => tree_sitter_javascript::LANGUAGE.into(),
+        #[cfg(feature = "typescript")]
         "typescript" => tree_sitter_typescript::LANGUAGE_TYPESCRIPT.into(),
         _ => bail!("unsupported language: {name}"),
     })
@@ -391,7 +404,7 @@ fn binding<'a>(bindings: &'a [Binding], name: &str, at: Span) -> Option<&'a Bind
                 && b.scope.contains(at)
                 && (b.parameter.is_some()
                     || b.function.is_none()
-                    || b.language == "typescript"
+                    || matches!(b.language.as_str(), "typescript" | "javascript")
                     || b.language == "python"
                     || b.range.start <= at.start)
         })
@@ -503,6 +516,7 @@ fn add(
         }
     }
     facts.report.findings.push(Finding {
+        division_risk: None,
         rule_id: rule_id.clone(),
         family: family.into(),
         compound: None,
@@ -763,7 +777,7 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
                             nodes(*n).iter().any(|x| x.kind() == "mutable_specifier")
                                 || n.kind() == "static_item"
                         }
-                        "typescript" => {
+                        "typescript" | "javascript" => {
                             n.parent().is_some_and(|p| {
                                 p.kind() == "variable_declaration"
                                     || text(p, source).starts_with("let ")
@@ -831,6 +845,11 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
         }
         extract_import(*n, source, &parsed.language, &mut facts.imports);
     }
+    let divisions = captures
+        .iter()
+        .filter(|(_, capture, _)| *capture == "division")
+        .map(|(_, _, node)| *node)
+        .collect::<Vec<_>>();
     for (path, capture, node) in captures {
         if node.has_error() || node.is_missing() {
             continue;
@@ -888,6 +907,7 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
             _=>{}
         }
     }
+    crate::division::analyze(&divisions, source, &mut facts.report);
     if root.has_error() {
         facts.report.unresolved.push(Unresolved {
             range: Span::of(root),
@@ -898,7 +918,7 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
 }
 
 fn extract_import(node: Node<'_>, source: &str, language: &str, imports: &mut Vec<Import>) {
-    if language == "typescript" && node.kind() == "import_statement" {
+    if matches!(language, "typescript" | "javascript") && node.kind() == "import_statement" {
         let Some(module) = node.child_by_field_name("source") else {
             return;
         };
@@ -965,7 +985,7 @@ fn model_call(facts: &mut Facts, node: Node<'_>, callee: Node<'_>, source: &str)
             .map(|i| i.module.as_str())
     };
     let nondeterministic = match facts.report.language.as_str() {
-        "typescript" => {
+        "typescript" | "javascript" => {
             matches!(name, "Date.now" | "Math.random")
                 && binding(&facts.bindings, base_name(name), at).is_none()
         }
@@ -1054,7 +1074,7 @@ fn model_call(facts: &mut Facts, node: Node<'_>, callee: Node<'_>, source: &str)
             let known = binding(&facts.bindings, text(object, source), at).is_some_and(|b| {
                 let ty = b.type_name.replace(' ', "");
                 match facts.report.language.as_str() {
-                    "typescript" => {
+                    "typescript" | "javascript" => {
                         ty.ends_with("[]")
                             && matches!(
                                 text(method, source),
@@ -1173,10 +1193,20 @@ fn resolve(
         }
     }
     let target = match local.report.language.as_str() {
-        "typescript" => {
+        "typescript" | "javascript" => {
             let module = target_module.filter(|m| m.starts_with('.'))?;
             let base = normalize(&path.parent()?.join(module));
-            Target::Files(vec![base.with_extension("ts"), base.join("index.ts")])
+            let extensions = if local.report.language == "javascript" {
+                &["js", "mjs", "cjs"][..]
+            } else {
+                &["ts"][..]
+            };
+            Target::Files(
+                extensions
+                    .iter()
+                    .flat_map(|ext| [base.with_extension(ext), base.join(format!("index.{ext}"))])
+                    .collect(),
+            )
         }
         "go" => match target_module {
             None if call.name.contains('.') => return None,
@@ -1228,13 +1258,14 @@ fn resolve(
                     && !other.report.functions.iter().any(|outer| {
                         outer.range != function.range && outer.range.contains(function.range)
                     });
-                let exported = local.report.language != "typescript"
-                    || other.source[..function.range.start]
-                        .trim_end()
-                        .ends_with("export")
-                    || other.source[..function.range.start]
-                        .trim_end()
-                        .ends_with("export async");
+                let exported =
+                    !matches!(local.report.language.as_str(), "typescript" | "javascript")
+                        || other.source[..function.range.start]
+                            .trim_end()
+                            .ends_with("export")
+                        || other.source[..function.range.start]
+                            .trim_end()
+                            .ends_with("export async");
                 if function.name == target_symbol && is_top && exported {
                     targets.push((d, f));
                 }
@@ -1418,3 +1449,16 @@ fn same_effect(a: &Finding, b: &Finding) -> bool {
         && a.evidence == b.evidence
         && a.origin == b.origin
 }
+
+pub const SUPPORTED_LANGUAGES: &[&str] = &[
+    #[cfg(feature = "go")]
+    "go",
+    #[cfg(feature = "rust")]
+    "rust",
+    #[cfg(feature = "typescript")]
+    "typescript",
+    #[cfg(feature = "javascript")]
+    "javascript",
+    #[cfg(feature = "python")]
+    "python",
+];

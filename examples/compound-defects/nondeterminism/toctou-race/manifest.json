@@ -152,6 +152,42 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_workspace_directory.js",
+      "language": "javascript",
+      "bug_lines": [
+        12,
+        14
+      ],
+      "summary": "Directory initialization fails with EEXIST after another initializer creates the checked path.",
+      "mechanism": "The existence check and directory initialization are separate operations with an await between them.",
+      "observed_output": "directory EEXIST",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "directory ready",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "race-conditions",
+          "suggests": "A second creator can claim the path between the existence check and mkdir.",
+          "evidence": [
+            "if (!existsSync(path)) {",
+            "await ready;",
+            "mkdirSync(path);"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "improper-initialization",
+          "suggests": "Initialization assumes an absent directory stays absent until it is created.",
+          "evidence": [
+            "async function initialize(path, ready) {",
+            "if (!existsSync(path)) {",
+            "mkdirSync(path);"
+          ]
+        }
+      ]
     }
   ]
 }

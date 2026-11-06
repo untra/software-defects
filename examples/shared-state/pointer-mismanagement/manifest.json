@@ -131,6 +131,34 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "the cached row is still pen"
+    },
+    {
+      "file": "javascript/01_detached_arraybuffer.js",
+      "language": "javascript",
+      "bug_lines": [
+        4,
+        8
+      ],
+      "summary": "The frame's buffer is transferred, detaching it; the original typed array is then read.",
+      "mechanism": "Transfer moves ownership; views over the old buffer become length 0 and throw.",
+      "observed_output": "TypeError: Cannot perform %TypedArray%.prototype.reduce on a detached ArrayBuffer",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "frame bytes: 1024 checksum: 7168"
+    },
+    {
+      "file": "javascript/02_stale_reference_after_replace.js",
+      "language": "javascript",
+      "bug_lines": [
+        5,
+        7
+      ],
+      "summary": "A panel keeps a reference to the old cart object after the store replaces it; the added item never reaches checkout.",
+      "mechanism": "Stale reference to an object no longer owned by the store.",
+      "observed_output": "panel shows: [ 'boots', 'scarf' ] checkout sees: []",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "checkout sees: [ 'scarf' ]"
     }
   ]
 }

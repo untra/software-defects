@@ -26,6 +26,11 @@ class BuildTests(unittest.TestCase):
     def tearDownClass(cls):
         cls.tmp.cleanup()
 
+    def test_volatile_properties_links(self):
+        page = self.page("en", "mutated-state", "volatile-properties")
+        self.assertIn("examples/mutated-state/volatile-properties/", page)
+        self.assertIn("examples-fixed/mutated-state/volatile-properties/", page)
+
     def page(self, lang, family, slug):
         with open(os.path.join(self.tmp.name, lang, family, slug, "index.html"), encoding="utf-8") as f:
             return f.read()

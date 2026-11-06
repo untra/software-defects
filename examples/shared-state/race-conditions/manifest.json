@@ -213,6 +213,61 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "1"
+    },
+    {
+      "file": "javascript/01_read_await_write.js",
+      "language": "javascript",
+      "bug_lines": [
+        6,
+        8
+      ],
+      "summary": "Inventory is read before an `await` and written after it, so the concurrent sale is overwritten.",
+      "mechanism": "Single-threaded JS still interleaves at every await point (CWE-362).",
+      "observed_output": "widgets left: 6",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "widgets left: 3"
+    },
+    {
+      "file": "javascript/02_check_then_insert_across_await.js",
+      "language": "javascript",
+      "bug_lines": [
+        8,
+        9,
+        11
+      ],
+      "summary": "Uniqueness check and insert straddle an `await`, so two signups both pass the check.",
+      "mechanism": "Check-then-act split by an await is a TOCTOU race.",
+      "observed_output": "accounts for ana@example.com: 2",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "accounts for ana@example.com: 1"
+    },
+    {
+      "file": "javascript/03_whole_document_save.js",
+      "language": "javascript",
+      "bug_lines": [
+        9
+      ],
+      "summary": "Each editor saves the whole document it loaded, overwriting the other editor's change.",
+      "mechanism": "Last-write-wins without a version check or field-level patch (lost update).",
+      "observed_output": "{ title: 'Draft', body: 'Hello' }",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "{ title: 'Final', body: 'Hello' }"
+    },
+    {
+      "file": "javascript/04_out_of_order_responses.js",
+      "language": "javascript",
+      "bug_lines": [
+        8
+      ],
+      "summary": "Each keystroke's response is assigned on arrival; the slow response for 'a' lands last and overwrites 'abc'.",
+      "mechanism": "Responses complete out of order; no request token or cancellation guards the shared result.",
+      "observed_output": "search box: abc, showing: [ 'a-result-1', 'a-result-2' ]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "showing abc-result-1, abc-result-2"
     }
   ]
 }

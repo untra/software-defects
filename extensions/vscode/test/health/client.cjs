@@ -5,6 +5,7 @@ const FRAME_LIMIT = 64 * 1024 * 1024;
 class Client {
   constructor(command, args = ['serve']) {
     this.logs = [];
+    this.logCount = 0;
     this.pending = new Map();
     this.nextId = 0;
     this.buffer = Buffer.alloc(0);
@@ -42,8 +43,10 @@ class Client {
   }
   record(value) {
     this.logs.push(value);
+    this.logCount++;
     if (this.logs.length > LOG_LIMIT) this.logs.shift();
   }
+  logsSince(count) { return this.logs.slice(Math.max(0, count - (this.logCount - this.logs.length))); }
   fail(error) {
     this.failure = error;
     for (const request of this.pending.values()) {

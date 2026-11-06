@@ -219,6 +219,72 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "roster names stay ['ada']"
+    },
+    {
+      "file": "javascript/01_shared_default_parameter.js",
+      "language": "javascript",
+      "bug_lines": [
+        2,
+        6
+      ],
+      "summary": "Default parameter references a module-level object; one caller's header write leaks into every later request.",
+      "mechanism": "Default value expression returns the same object each call; callers mutate it.",
+      "observed_output": "{ Accept: 'application/json', Authorization: 'Bearer token' }",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "{ Accept: 'application/json' }"
+    },
+    {
+      "file": "javascript/02_array_fill_shared_object.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "`fill({...})` places the same object in every slot; assigning one seat assigns all.",
+      "mechanism": "`Array.prototype.fill` copies the reference, not the value.",
+      "observed_output": "[ 'ana', 'ana', 'ana' ]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "[ 'ana', 'open', 'open' ]"
+    },
+    {
+      "file": "javascript/03_shallow_spread_copy.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "Object spread is shallow; changing the test config's db host rewrites prod's.",
+      "mechanism": "Nested `db` object is shared between both configs.",
+      "observed_output": "prod -> localhost",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "prod -> db.internal"
+    },
+    {
+      "file": "javascript/04_method_returns_internal_array.js",
+      "language": "javascript",
+      "bug_lines": [
+        8
+      ],
+      "summary": "`list()` returns the private array; truncating the preview truncates the inventory.",
+      "mechanism": "`private readonly` guards the binding, not the array's contents.",
+      "observed_output": "preview: [ 'sku-1' ]\ninventory: [ 'sku-1' ]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "inventory: [ 'sku-1', 'sku-2', 'sku-3' ]"
+    },
+    {
+      "file": "javascript/05_object_assign_mutates_defaults.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "`Object.assign(DEFAULT_SETTINGS, ...)` mutates the defaults and returns them, so every user shares one settings object.",
+      "mechanism": "First argument of Object.assign is the mutation target.",
+      "observed_output": "alice { theme: 'dark', fontSize: 18 }\nbob { theme: 'dark', fontSize: 18 }",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "alice {dark, 14} / bob {light, 18}"
     }
   ]
 }

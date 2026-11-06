@@ -189,6 +189,71 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "80.33, Fahrenheit from 300 K"
+    },
+    {
+      "file": "javascript/01_amount_units.js",
+      "language": "javascript",
+      "bug_lines": [
+        10
+      ],
+      "summary": "An invoice's dollar amount is charged as if it were cents.",
+      "mechanism": "Charger is structural, so a dollars method and a cents method are the same type (CWE-843).",
+      "observed_output": "charged 250\ncharged 250",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "charged 250, then charged 25000"
+    },
+    {
+      "file": "javascript/02_arraylike_titles.js",
+      "language": "javascript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "A string is passed where a list with map is required, and the call throws.",
+      "mechanism": "The cast erases the missing method; at runtime the string has no map (CWE-843).",
+      "observed_output": "TypeError: items.map is not a function",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ADA, or the value rejected"
+    },
+    {
+      "file": "javascript/03_optional_save.js",
+      "language": "javascript",
+      "bug_lines": [
+        2
+      ],
+      "summary": "persist calls save on a document that has no save.",
+      "mechanism": "The method is optional in the type and still invoked (CWE-476).",
+      "observed_output": "TypeError: doc.save is not a function",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "the document rejected"
+    },
+    {
+      "file": "javascript/04_swapped_ids.js",
+      "language": "javascript",
+      "bug_lines": [
+        6
+      ],
+      "summary": "An order id and a user id are swapped at the call.",
+      "mechanism": "Both parameters are string, so the arguments type-check in either order (CWE-843).",
+      "observed_output": "ship order u-9 to user o-4",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "ship order o-4 to user u-9"
+    },
+    {
+      "file": "javascript/05_widened_reading.js",
+      "language": "javascript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "A kelvin reading is converted with the celsius formula.",
+      "mechanism": "Reading only requires value, so the unit field is invisible to the function (CWE-843).",
+      "observed_output": "room 212\nlab 212",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "lab -279.67"
     }
   ]
 }

@@ -155,6 +155,42 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_warehouse_slots.js",
+      "language": "javascript",
+      "bug_lines": [
+        12,
+        16,
+        17
+      ],
+      "summary": "A warehouse scan combines one old slot with two new slots and reports 51.",
+      "mechanism": "SharedArrayBuffer permits a worker to replace slots while another worker walks them without a lock or Atomics; message gates expose a mixed traversal.",
+      "observed_output": "units 51",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "units 6 or units 60 from a consistent inventory snapshot",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "for-loop-control-flow",
+          "suggests": "The indexed loop rereads live slots as its index advances.",
+          "evidence": [
+            "for (let index = 0; index < slots.length; index++) {",
+            "total += slots[index];"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "Reader and writer workers access the same shared slots without mutual exclusion.",
+          "evidence": [
+            "const buffer = new SharedArrayBuffer(BEFORE.length * Int32Array.BYTES_PER_ELEMENT);",
+            "slots.set(AFTER);",
+            "const slots = new Int32Array(workerData.buffer);"
+          ]
+        }
+      ]
     }
   ]
 }

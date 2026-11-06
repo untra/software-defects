@@ -76,7 +76,7 @@ def finish(item, triggers=None):
             issue["where_to_look"] = target + (" (production pack absent)" if not (ROOT / target).exists() else "")
         else:
             issue["where_to_look"] = "tooling/state-lens/src/server.rs" + ("; extensions/vscode/src/extension.ts" if item["layer"] == "editor" else "")
-    gap = item["root"] == "examples" and (item["hinted_functions"] == 0 or bool(item["bug_lines_missed"]))
+    gap = item["root"] == "examples" and (item["findings"] == 0 or bool(item["bug_lines_missed"]))
     item["status"] = "fail" if item["problems"] else "gap" if gap else "pass"
     return item
 
@@ -133,7 +133,7 @@ def write(directory, rows):
     temporary.replace(target)
 
 
-def merge(inputs, layers, shard=None):
+def merge(inputs, layers, shard=None, language=None):
     from smoke import corpus_files, relative
     indexed = {}
     for source in inputs:
@@ -147,6 +147,8 @@ def merge(inputs, layers, shard=None):
                 raise ValueError(f"Duplicate smoke row: {key}")
             indexed[key] = finish(item)
     for file in map(relative, corpus_files()):
+        if language and Path(file).parent.name != language:
+            continue
         if shard and not file.startswith(shard + "/"):
             continue
         for layer in layers:
@@ -163,10 +165,11 @@ def main():
     parser.add_argument("--report", required=True, type=Path)
     parser.add_argument("--layers", nargs="+", choices=LAYERS, default=list(LAYERS))
     parser.add_argument("--shard")
+    parser.add_argument("--language")
     parser.add_argument("--strict-gaps", action="store_true")
     parser.add_argument("--summary", action="store_true")
     args = parser.parse_args()
-    rows = merge(args.inputs, args.layers, args.shard)
+    rows = merge(args.inputs, args.layers, args.shard, args.language)
     write(args.report, rows)
     if args.summary and os.environ.get("GITHUB_STEP_SUMMARY"):
         with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as summary:
@@ -177,8 +180,10 @@ def main():
 
 def check_diagnostics(item, diagnostics):
     for diagnostic in diagnostics:
-        if diagnostic.get("severity") != 3:
-            item["problems"].append(problem("count-mismatch", "Expected Information severity"))
+        risk = diagnostic.get("data", {}).get("division_risk") or {}
+        expected_severity = 2 if risk.get("confidence") in {"known-zero", "possible-zero"} else 3
+        if diagnostic.get("severity") != expected_severity:
+            item["problems"].append(problem("count-mismatch", "Unexpected diagnostic severity"))
         metadata = diagnostic.get("data", {})
         if not metadata.get("family"):
             item["problems"].append(problem("count-mismatch", "Diagnostic lacks family metadata"))
@@ -206,3 +211,13 @@ def check_diagnostics(item, diagnostics):
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+def check_division(item, entries, diagnostics):
+    expected = json.loads((ROOT / "tooling/state-lens/fixtures/division-smoke.json").read_text()).get(item["file"])
+    if expected is None:
+        return
+    actual = [e for e in entries if e["finding"]["rule_id"] == expected["rule_id"]]
+    messages = [d for d in diagnostics if d["code"] == expected["rule_id"]]
+    if [e["triggerRange"] for e in actual] != [e["range"] for e in expected["findings"]] or [(d["range"], d["severity"]) for d in messages] != [(e["range"], e["severity"]) for e in expected["findings"]]:
+        item["problems"].append(problem("count-mismatch", "Division oracle: denominator ranges or Warning diagnostics differ"))

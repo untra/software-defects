@@ -13,6 +13,7 @@ const moduleStub = { exports: {} };
 vm.runInNewContext(readFileSync(join(__dirname, '../dist/hover.js'), 'utf8'), {
   module: moduleStub,
   require(name) {
+    if (name === './package') return require('../dist/package');
     if (name === './ranges') return require('../dist/ranges');
     assert.equal(name, 'vscode');
     return { MarkdownString, Uri: { parse: uri => ({ fsPath: new URL(uri).pathname }) } };
@@ -76,8 +77,8 @@ test('Evidence links carry the snapshot identity and trust only the Evidence com
   const value = entry('mutated-state', 'var-let-mut', 'Mutable binding; local mutation does not imply observable impurity.');
   const hover = explanation(value, 'file:///example.ts', 7);
   const link = hover.parts.at(-1).value;
-  assert.match(link, /command:stateLens.showEvidence/);
+  assert.match(link, /command:stateLens.typescript.showEvidence/);
   assert.deepEqual(JSON.parse(decodeURIComponent(link.split('?')[1].slice(0, -1))), ['file:///example.ts', 7, value.finding]);
-  assert.equal(JSON.stringify(hover.isTrusted), JSON.stringify({ enabledCommands: ['stateLens.showEvidence'] }));
+  assert.equal(JSON.stringify(hover.isTrusted), JSON.stringify({ enabledCommands: ['stateLens.typescript.showEvidence'] }));
   assert.ok(hover.parts.some(part => part.value === '\n\nMutable binding.'));
 });

@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Invalidate the plan after upgrade.",
+  "original": {
+    "source_hash": "1b9124a144658ccea956d56e202e4368dda587f8edd5f1a54505814e99d695ce",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/cache-invalidation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              111,
+              114
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              189,
+              192
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              220,
+              223
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              294,
+              297
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "261773e95505b061340aaad57a50b130d0c6a02ebf09969d473203da4c783f83",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/cache-invalidation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              111,
+              114
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              189,
+              192
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              220,
+              223
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              294,
+              297
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              321,
+              327
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "plan after paying: pro"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Missing invalidation on write (CWE-524). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

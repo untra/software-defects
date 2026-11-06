@@ -152,6 +152,41 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_shipping_rate.js",
+      "language": "javascript",
+      "bug_lines": [
+        6,
+        7
+      ],
+      "summary": "A blank shipping-rate input becomes NaN and selects an absent rate label.",
+      "mechanism": "An unvalidated parse mutates the monetary rate to NaN; rounding preserves NaN, so indexing yields undefined and the next method call throws.",
+      "observed_output": "TypeError: Cannot read properties of undefined (reading 'toUpperCase')",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "Reject the blank rate before updating the quote or indexing the rate table.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "time-money-entropy",
+          "suggests": "The mutable shipping rate is parsed as a floating-point value and rounded into a pricing tier.",
+          "evidence": [
+            "let rate = STARTING_RATE;",
+            "rate = Number.parseFloat(input);",
+            "return RATE_LABELS[Math.round(rate)].toUpperCase();"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "lack-of-input-validation",
+          "suggests": "A blank input is parsed and immediately used as a table index without a finite-number check.",
+          "evidence": [
+            "const RATE_INPUT = \"\";",
+            "return RATE_LABELS[Math.round(rate)].toUpperCase();"
+          ]
+        }
+      ]
     }
   ]
 }

@@ -3,6 +3,7 @@ export interface Range { start: Position; end: Position }
 export interface FunctionRange { range: Range; body: Range; name: string }
 export interface Evidence { uri: string; range: { start: number; end: number }; rule_id: string }
 export interface Finding {
+  division_risk?: { confidence: string; outcome: string; mutated: boolean };
   rule_id: string;
   trigger?: { start: number; end: number };
   defect: string;
@@ -67,6 +68,7 @@ export const PALETTE = {
   'mutated-state': '#78A65A',
   'unstructured-state': '#3D85C6',
   'shared-state': '#DD3333',
+  'division-risk': '#FFE599',
   nondeterminism: '#FFE599',
   'runtime-errors': '#9FC5E8',
   'data-corruption': '#C27BA0'
@@ -82,6 +84,7 @@ export interface Decoration {
   families: string[];
 }
 function category(entry: Entry): Category | undefined {
+  if (entry.finding.division_risk?.mutated && entry.finding.division_risk.confidence !== 'candidate') return 'division-risk';
   const key = entry.finding.compound?.class ?? entry.finding.family;
   return Object.prototype.hasOwnProperty.call(PALETTE, key) ? key as Category : undefined;
 }
@@ -127,4 +130,13 @@ export function functionMarkers(snapshot: Snapshot, directOnly: boolean): { rang
       && (!directOnly || entry.finding.origin === 'direct') && isImpure(entry));
     return entries.length ? [{ range: { start: fn.range.start, end: fn.body.start }, entries }] : [];
   });
+}
+
+export const CATEGORY_STYLE: Record<Category, 'fill' | 'outline'> = {
+  'mutated-state': 'fill', 'unstructured-state': 'fill', 'shared-state': 'fill',
+  'division-risk': 'fill', nondeterminism: 'outline', 'runtime-errors': 'outline', 'data-corruption': 'outline'
+};
+export function divisionCompatible(capabilities: { experimental?: unknown } | undefined): boolean {
+  const experimental = capabilities?.experimental as { stateLens?: { divisionAnalysis?: number } } | undefined;
+  return experimental?.stateLens?.divisionAnalysis === 1;
 }

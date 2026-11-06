@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Deduplicate retries using a stable identity for the logical charge.",
+  "original": {
+    "source_hash": "3339221fab9b1d9e57bfb3de61ef582455df26df92929019bb7cb873e9f69ded",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              384,
+              394
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "052cde3e68ef7559f08f42ccc51a24e378e186c0d6226f5cba8e1cfbeceb6394",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              481,
+              491
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "charges recorded: 1"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Retry without idempotency key. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

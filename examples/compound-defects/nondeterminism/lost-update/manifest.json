@@ -153,6 +153,41 @@
           ]
         }
       ]
+    },
+    {
+      "file": "javascript/01_parcel_counter.js",
+      "language": "javascript",
+      "bug_lines": [
+        10,
+        13,
+        14
+      ],
+      "summary": "Two clerks record two parcels but the shared counter ends at one.",
+      "mechanism": "SharedArrayBuffer exposes the counter to worker threads; separate unsynchronized load, increment, and store lose one increment.",
+      "observed_output": "parcels 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "parcels 2",
+      "ingredients": [
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "Workers update the same SharedArrayBuffer counter without mutual exclusion.",
+          "evidence": [
+            "const buffer = new SharedArrayBuffer(COUNTER_SLOTS * Int32Array.BYTES_PER_ELEMENT);",
+            "counts[COUNTER_SLOT] = parcels;"
+          ]
+        },
+        {
+          "family": "mutated-state",
+          "defect": "increment-decrement-operators",
+          "suggests": "Each clerk increments its own previously loaded counter value.",
+          "evidence": [
+            "let parcels = counts[COUNTER_SLOT];",
+            "parcels++;"
+          ]
+        }
+      ]
     }
   ]
 }

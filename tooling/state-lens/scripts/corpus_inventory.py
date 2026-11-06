@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
-EXTENSIONS = {".go": "go", ".rs": "rust", ".ts": "typescript", ".py": "python"}
+EXTENSIONS = {".go": "go", ".rs": "rust", ".ts": "typescript", ".js": "javascript", ".mjs": "javascript", ".cjs": "javascript", ".py": "python"}
 COMPOUND = "compound-defects"
 
 
@@ -37,7 +37,7 @@ def expectations(file):
 
 def files():
     return sorted(p for root in ("examples", "examples-fixed") for p in (ROOT / root).rglob("*")
-                  if p.suffix in EXTENSIONS and p.is_file())
+                  if p.suffix in EXTENSIONS and p.is_file() and p.parent.name == EXTENSIONS[p.suffix])
 
 
 def shard(file):

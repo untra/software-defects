@@ -87,3 +87,27 @@ test('function markers include local mutation and observable effects, but exclud
   global.finding.effect = { kind: 'local_mutation' };
   assert.deepEqual(functionMarkers({ functions, findings: [global] }, false), []);
 });
+
+test('yellow division risk requires denominator mutation evidence', () => {
+  const { decorations } = require('../dist/ranges');
+  const entry = { triggerRange: r(1, 2), functionRange: null, finding: {
+    rule_id: 'typescript.unstructured-state.divide-by-zero', family: 'unstructured-state', origin: 'direct',
+    division_risk: { confidence: 'known-zero', outcome: 'non-finite', mutated: false }
+  } };
+  const snapshot = { functions: [], findings: [entry] };
+  assert.equal(decorations(snapshot, false)[0].category, 'unstructured-state');
+  entry.finding.division_risk.mutated = true;
+  assert.equal(decorations(snapshot, false)[0].category, 'division-risk');
+  entry.finding.division_risk.confidence = 'candidate';
+  assert.equal(decorations(snapshot, false)[0].category, 'unstructured-state');
+});
+
+test('division categories use fills and stale servers fail the capability check', () => {
+  const { CATEGORY_STYLE, divisionCompatible } = require('../dist/ranges');
+  assert.equal(CATEGORY_STYLE['division-risk'], 'fill');
+  assert.equal(CATEGORY_STYLE['unstructured-state'], 'fill');
+  assert.equal(CATEGORY_STYLE['runtime-errors'], 'outline');
+  assert.equal(divisionCompatible(undefined), false);
+  assert.equal(divisionCompatible({}), false);
+  assert.equal(divisionCompatible({ experimental: { stateLens: { divisionAnalysis: 1 } } }), true);
+});

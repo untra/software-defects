@@ -18,8 +18,11 @@ Score **1–5**: how likely the defect is to show up in everyday code in that la
 ## Rationale
 
 **divide-by-zero**
+
+[Detection and minimal-fix review](divide-by-zero/REVIEW.md) covers all 16 original/fixed pairs.
+
 - Go 4: integer `/` and `%` panic; float64 yields `+Inf`; an empty average divides by `len`.
-- Rust 3: the same three operators. Nothing in the type system tracks a non-zero divisor.
+- Rust 3: integer division, floating-point division, and integer remainder. Integer zero division and remainder panic in debug and release. Nothing in the type system tracks a non-zero divisor.
 - TS 5: `/ 0` is `Infinity`, `0/0` and `% 0` are `NaN`, an empty mean is `NaN`, and a `bigint` divisor throws.
 - Python 4: `/`, `//`, and `%` all raise, including a float dividend. There is no silent `Infinity` from division. The fourth case is an empty mean.
 

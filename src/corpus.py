@@ -15,7 +15,7 @@ FIXED_DIR = os.path.join(REPO_ROOT, "examples-fixed")
 CASES_DIR = os.path.join(REPO_ROOT, "tooling", "query-lab", "cases")
 MANIFEST = "manifest.json"
 
-CORPUS_LANGUAGES = {"go": "Go", "rust": "Rust", "typescript": "TypeScript", "python": "Python"}
+CORPUS_LANGUAGES = {"go": "Go", "rust": "Rust", "typescript": "TypeScript", "javascript": "JavaScript", "python": "Python"}
 
 
 class CorpusError(ValueError):
