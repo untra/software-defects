@@ -2,10 +2,10 @@ name: State Lens
 
 on:
   pull_request:
-    paths: ['tooling/state-lens/**', 'queries/**', 'extensions/vscode/**', 'extensions/zed/**', 'examples/**', 'examples-fixed/**', 'Makefile', '.github/workflows/state-lens.yml']
+    paths: ['.vscode/**', 'tooling/state-lens/**', 'queries/**', 'extensions/vscode/**', 'extensions/zed/**', 'examples/**', 'examples-fixed/**', 'Makefile', '.github/workflows/state-lens.yml']
   push:
     branches: [main]
-    paths: ['tooling/state-lens/**', 'queries/**', 'extensions/vscode/**', 'extensions/zed/**', 'examples/**', 'examples-fixed/**', 'Makefile', '.github/workflows/state-lens.yml']
+    paths: ['.vscode/**', 'tooling/state-lens/**', 'queries/**', 'extensions/vscode/**', 'extensions/zed/**', 'examples/**', 'examples-fixed/**', 'Makefile', '.github/workflows/state-lens.yml']
 
 permissions:
   contents: read

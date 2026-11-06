@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Compute from the module subtotal without rebinding it; repeat calls remain independent.",
+  "analysis_limit": "Syntax candidates do not establish incorrect behavior. Safe repair requires scope, data-flow and domain intent; legitimate mutation can remain after repair.",
+  "runtime": {
+    "status": "supported",
+    "stdout": "44\n",
+    "exit_code": 0
+  },
+  "original": {
+    "source_hash": "6492e1c0e771fb9d8780ea573281d11468df9872ac47c9962be44c554aad4199",
+    "queries": [
+      {
+        "query": "queries/python/mutated-state/var-let-mut/signals.scm",
+        "captures": [
+          {
+            "name": "binding",
+            "range": [
+              0,
+              13
+            ]
+          },
+          {
+            "name": "write",
+            "range": [
+              0,
+              13
+            ]
+          },
+          {
+            "name": "binding",
+            "range": [
+              58,
+              102
+            ]
+          },
+          {
+            "name": "write",
+            "range": [
+              58,
+              102
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "96b9078be590d0881c6783b3681c606e189b09ee1d34cd73a31c24d87d995d5e",
+    "queries": [
+      {
+        "query": "queries/python/mutated-state/var-let-mut/signals.scm",
+        "captures": [
+          {
+            "name": "binding",
+            "range": [
+              0,
+              13
+            ]
+          },
+          {
+            "name": "write",
+            "range": [
+              0,
+              13
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

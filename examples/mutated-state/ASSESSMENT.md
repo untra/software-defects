@@ -1,6 +1,6 @@
 # Bugs of Mutated State — language susceptibility
 
-Score **1–5**: how likely the defect is to show up in everyday code in that language, and how many distinct, demonstrable forms it takes. Each cell has exactly that many example files.
+Score **1–5**: how likely the defect is to show up in everyday code in that language, and how many distinct, demonstrable forms it takes. Scores describe susceptibility, not fixture counts. Additional regression examples and repair pairs may exceed a score.
 
 | Defect | Go | Rust | TypeScript | Python |
 |---|:-:|:-:|:-:|:-:|
@@ -18,8 +18,11 @@ Score **1–5**: how likely the defect is to show up in everyday code in that la
 ## Rationale
 
 **var-let-mut**
+
+The corpus now has 5 Go, 3 Rust, 5 TypeScript, and 5 Python examples, each with a mirrored repair. See [repair review](var-let-mut/REVIEW.md) for detection limits. Mutable syntax is a review signal, not proof of a defect; correct repairs can retain necessary mutation.
+
 - Go 4: every binding is mutable; `:=` shadowing, closure capture of reassigned vars, and mutable named returns.
-- Rust 2: immutable by default. Shadowing and loop-scoped `mut` resets are still possible.
+- Rust 2: immutable by default. Shadowing, accumulator resets, and accidental threshold reassignment are still possible.
 - TS 4: `var` hoisting, `let` reassigned across `await`, and `const` that only freezes the binding.
 - Python 4: closures bind late, a loop name leaks after the loop, an assignment anywhere makes the name local, and `global` rebinds a module name.
 

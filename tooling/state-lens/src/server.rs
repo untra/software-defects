@@ -22,7 +22,7 @@ const MAX_MESSAGE: usize = 16 * 1024 * 1024;
 const SOURCE: &str = "state-lens";
 const SITE_ORIGIN: &str = "https://badsoftware.untra.io";
 const SITE_LOCALE: &str = "en";
-const GUIDE_LINK_LABEL: &str = "Read the defect guide ↗";
+const GUIDE_LINK_LABEL: &str = "Guide";
 const SEVERITY_INFORMATION: u8 = 3;
 const INLAY_MARKER: &str = "◆";
 const SUPERSEDED: &str = "analysis superseded by document changes";
@@ -115,18 +115,17 @@ fn markdown_text(value: &str) -> String {
     }
     escaped
 }
+fn short_explanation(finding: &Finding) -> &str {
+    match finding.explanation.as_str() {
+        "Mutable binding; local mutation does not imply observable impurity." => "Mutable binding.",
+        explanation => explanation,
+    }
+}
+fn impure(finding: &Finding) -> bool {
+    !matches!(finding.effect, crate::model::Effect::StructuralSignal)
+}
 fn hover_description(finding: &Finding, markdown: bool) -> String {
-    let description = format!(
-        "{} / {}: {} ({}, {}).\n\nSusceptibility is not a bug diagnosis.",
-        finding
-            .compound
-            .as_ref()
-            .map_or(finding.family.as_str(), |c| c.category.as_str()),
-        finding.defect,
-        finding.explanation,
-        finding.origin,
-        finding.resolution
-    );
+    let description = format!("{}: {}", finding.defect, short_explanation(finding));
     let url = finding_guide_url(finding);
     if markdown {
         format!(
@@ -153,7 +152,12 @@ fn diagnostics(engine: &Engine, report: &Report, uri: &str) -> Option<Value> {
                         .iter()
                         .filter_map(|e| evidence_location(engine, e, "evidence")),
                 )
-                .chain(f.compound.iter().flat_map(|c| c.ingredients.iter()).filter_map(|e| evidence_location(engine, e, "ingredient")))
+                .chain(
+                    f.compound
+                        .iter()
+                        .flat_map(|c| c.ingredients.iter())
+                        .filter_map(|e| evidence_location(engine, e, "ingredient")),
+                )
                 .collect();
             json!({
                 "range":lsp_range(source,f.trigger),
@@ -161,7 +165,7 @@ fn diagnostics(engine: &Engine, report: &Report, uri: &str) -> Option<Value> {
                 "source":SOURCE,
                 "code":f.rule_id,
                 "codeDescription":{"href":finding_guide_url(f)},
-                "message":format!("{} / {}: {} ({}, {}). Susceptibility, not a bug diagnosis.", f.compound.as_ref().map_or(f.family.as_str(), |c| c.category.as_str()),f.defect,f.explanation,f.origin,f.resolution),
+                "message":format!("{}: {}", f.defect, short_explanation(f)),
                 "relatedInformation":related,
                 "data":{"family":f.family,"origin":f.origin,"effect":f.effect,"compound":f.compound}
             })
@@ -185,26 +189,17 @@ fn inlay_hints(report: &Report, source: &str, uri: &str) -> Value {
             if owned.is_empty() {
                 return None;
             }
-            let mut families: BTreeMap<&str, (usize, usize)> = BTreeMap::new();
-            for finding in &owned {
-                let count = families.entry(finding.family.as_str()).or_default();
-                count.0 += 1;
-                count.1 += usize::from(finding.origin == "propagated");
-            }
-            let label = families
-                .iter()
-                .map(|(family, (total, propagated))| match propagated {
-                    0 => format!("{family}×{total}"),
-                    _ => format!("{family}×{total} ({propagated} propagated)"),
-                })
-                .collect::<Vec<_>>()
-                .join(" · ");
+            let label = if owned.iter().any(|finding| impure(finding)) {
+                "Impure"
+            } else {
+                "Signals"
+            };
             Some(json!({
                 "position":position(source,function.body.start),
                 "label":format!("{INLAY_MARKER} {label}"),
                 "paddingLeft":true,
                 "paddingRight":true,
-                "tooltip":format!("{}: state susceptibility, not a bug diagnosis", function.name)
+                "tooltip":format!("{}: {label}", function.name)
             }))
         })
         .collect();
@@ -560,7 +555,9 @@ mod tests {
         finding.explanation = "[Open](command:unexpected) <b>text</b> *emphasis*".into();
         let hover = hover_description(&finding, true);
         assert!(hover.contains(r"\[Open\]\(command\:unexpected\) \<b\>text\<\/b\> \*emphasis\*"));
-        assert!(hover.contains("[Read the defect guide ↗](<https://badsoftware.untra.io/en/mutated-state/time-money-entropy/>)"));
+        assert!(hover.contains(
+            "[Guide](<https://badsoftware.untra.io/en/mutated-state/time-money-entropy/>)"
+        ));
         assert!(hover_description(&finding, false).contains(&finding.explanation));
     }
 }

@@ -255,10 +255,7 @@ fn inlay_hints_summarize_function_findings() {
     );
     let hints = hints["result"].as_array().unwrap();
     assert_eq!(hints.len(), 1);
-    assert!(hints[0]["label"]
-        .as_str()
-        .unwrap()
-        .contains("mutated-state×1"));
+    assert!(hints[0]["label"].as_str().unwrap().contains("Impure"));
     assert_eq!(
         hints[0]["position"],
         json!(position(CLOCK_SOURCE, CLOCK_SOURCE.find('{').unwrap()))
@@ -274,18 +271,14 @@ fn hover_guide_links_respect_client_markup_support() {
         (
             json!({"textDocument":{"hover":{"contentFormat":["markdown","plaintext"]}}}),
             "markdown",
-            format!("[Read the defect guide ↗](<{url}>)"),
+            format!("[Guide](<{url}>)"),
         ),
         (
             json!({"textDocument":{"hover":{"contentFormat":["plaintext"]}}}),
             "plaintext",
-            format!("Read the defect guide ↗: {url}"),
+            format!("Guide: {url}"),
         ),
-        (
-            json!({}),
-            "plaintext",
-            format!("Read the defect guide ↗: {url}"),
-        ),
+        (json!({}), "plaintext", format!("Guide: {url}")),
     ] {
         let mut server = Server::start_with_capabilities(json!({"diagnostics":true}), capabilities);
         server.notify("textDocument/didOpen", json!({"textDocument":{"uri":uri,"languageId":"typescript","version":1,"text":CLOCK_SOURCE}}));
@@ -296,6 +289,13 @@ fn hover_guide_links_respect_client_markup_support() {
         let value = hover["result"]["contents"]["value"].as_str().unwrap();
         assert_eq!(value.matches(&link).count(), 1);
         assert!(!value.contains("/for-loop-control-flow/"));
+        for removed in ["Susceptibility", "Related taxonomy", "bytes", "syntax"] {
+            assert!(!value.contains(removed));
+            assert!(!diagnostic["diagnostics"][0]["message"]
+                .as_str()
+                .unwrap()
+                .contains(removed));
+        }
         server.stop();
     }
 }

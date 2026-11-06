@@ -66,3 +66,24 @@ test('decoration palette matches authoritative website CSS', () => {
     assert.equal(css.match(new RegExp(`--${variable}:\\s*(#[a-fA-F0-9]{6})`))[1], PALETTE[category]);
   }
 });
+
+test('function markers include local mutation and observable effects, but exclude structural signals and pure closures', () => {
+  const { functionMarkers } = require('../dist/ranges');
+  const outer = r(0, 10), inner = r(3, 6);
+  const functions = [{ range: outer, body: r(1, 10) }, { range: inner, body: r(4, 6) }];
+  for (const kind of ['local_mutation', 'argument_mutation', 'receiver_mutation', 'global_mutation', 'external_read', 'nondeterminism']) {
+    const entry = finding(outer);
+    entry.finding.effect = { kind };
+    assert.deepEqual(functionMarkers({ functions, findings: [entry] }, false).map(marker => marker.range), [r(0, 1)]);
+  }
+  const structural = finding(outer);
+  structural.finding.effect = { kind: 'structural_signal' };
+  assert.deepEqual(functionMarkers({ functions, findings: [structural] }, false), []);
+  const propagated = finding(outer, 'propagated');
+  propagated.finding.effect = { kind: 'external_read' };
+  assert.equal(functionMarkers({ functions, findings: [propagated] }, false).length, 1);
+  assert.deepEqual(functionMarkers({ functions, findings: [propagated] }, true), []);
+  const global = finding(null);
+  global.finding.effect = { kind: 'local_mutation' };
+  assert.deepEqual(functionMarkers({ functions, findings: [global] }, false), []);
+});

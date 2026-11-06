@@ -13,6 +13,7 @@ func parsePort(raw string) (int, error) {
 		port, err := strconv.Atoi(raw)
 		if err == nil && port > 0 {
 			fmt.Println("parsed port", port)
+
 		}
 	}
 	if port == 0 && err == nil {

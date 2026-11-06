@@ -118,3 +118,13 @@ export function decorations(snapshot: Snapshot, directOnly: boolean): Decoration
   }
   return result;
 }
+
+export const IMPURE_EFFECTS = new Set(['local_mutation', 'argument_mutation', 'receiver_mutation', 'global_mutation', 'external_read', 'nondeterminism']);
+export function isImpure(entry: Entry): boolean { return IMPURE_EFFECTS.has(entry.finding.effect.kind); }
+export function functionMarkers(snapshot: Snapshot, directOnly: boolean): { range: Range; entries: Entry[] }[] {
+  return snapshot.functions.flatMap(fn => {
+    const entries = snapshot.findings.filter(entry => entry.functionRange && equal(entry.functionRange, fn.range)
+      && (!directOnly || entry.finding.origin === 'direct') && isImpure(entry));
+    return entries.length ? [{ range: { start: fn.range.start, end: fn.body.start }, entries }] : [];
+  });
+}

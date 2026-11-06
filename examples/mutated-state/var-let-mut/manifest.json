@@ -178,7 +178,7 @@
       "observed_output": "UnboundLocalError: cannot access local variable 'subtotal' where it is not associated with a value",
       "exit_code": 1,
       "deterministic": true,
-      "expected_behavior": "subtotal 44"
+      "expected_behavior": "44"
     },
     {
       "file": "python/04_module_global_rebound.py",
@@ -193,6 +193,65 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "before 5.0, after 5.0"
+    },
+    {
+      "file": "rust/03_threshold_drifts.rs",
+      "language": "rust",
+      "bug_lines": [
+        6,
+        9
+      ],
+      "summary": "Threshold reassignment drops later signals that still exceed the configured threshold.",
+      "mechanism": "The loop carries the previous accepted signal into the next comparison.",
+      "observed_output": "[40, 60]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "[40, 30, 60]"
+    },
+    {
+      "file": "go/05_reused_task_pointer.go",
+      "language": "go",
+      "bug_lines": [
+        12,
+        14,
+        15,
+        16
+      ],
+      "summary": "Registry entries alias one reused task.",
+      "mechanism": "Every appended pointer addresses the same variable outside the loop.",
+      "observed_output": "1 second\n1 second\ndistinct: false",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "0 first\n1 second\ndistinct: true"
+    },
+    {
+      "file": "typescript/05_async_id_capture.ts",
+      "language": "typescript",
+      "bug_lines": [
+        7,
+        9,
+        11
+      ],
+      "summary": "Post-await logging reads a shared overwritten identifier.",
+      "mechanism": "Callbacks assign currentId synchronously before yielding; resumed callbacks read the final value.",
+      "observed_output": "Processed for ID: 2\nProcessed for ID: 2\n1,2",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Processed for ID: 1\nProcessed for ID: 2\n1,2"
+    },
+    {
+      "file": "python/05_accumulator_leaks_across_calls.py",
+      "language": "python",
+      "bug_lines": [
+        7,
+        10
+      ],
+      "summary": "A module accumulator leaks totals between independent calls.",
+      "mechanism": "Each invocation starts from the preceding invocation's final total.",
+      "observed_output": "[50]\n[60, 50]",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "[50]\n[50]"
     }
   ]
 }

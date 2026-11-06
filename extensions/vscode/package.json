@@ -1,7 +1,7 @@
 {
   "name": "state-lens",
   "displayName": "State Lens",
-  "description": "Show state susceptibility and resolved effect propagation without treating ordinary mutation as a bug.",
+  "description": "Highlight mutation sources, impure functions, input signals, and shared-state risks.",
   "version": "0.1.0",
   "publisher": "state-lens",
   "license": "MIT",
@@ -26,6 +26,10 @@
   },
   "contributes": {
     "commands": [
+      {
+        "command": "stateLens.debug",
+        "title": "State Lens: Show Debug Information"
+      },
       {
         "command": "stateLens.toggle",
         "title": "State Lens: Toggle Susceptibility Lens"
@@ -74,7 +78,7 @@
         "stateLens.accessibleMarkers": {
           "type": "boolean",
           "default": false,
-          "description": "Use a visible border in addition to color; evidence labels are always available."
+          "description": "Use thicker source borders; source borders and Evidence labels are always available."
         },
         "stateLens.diagnostics": {
           "type": "boolean",
@@ -91,7 +95,8 @@
     "build": "npm run typecheck && npm run bundle && npm run build:test",
     "test": "npm run build && node --test test/*.test.cjs",
     "package": "npm run build && vsce package --no-dependencies",
-    "test:e2e": "node test/e2e/run.cjs"
+    "test:e2e": "node test/e2e/run.cjs",
+    "test:health": "node test/health/run.cjs"
   },
   "dependencies": {
     "vscode-languageclient": "^9.0.1"

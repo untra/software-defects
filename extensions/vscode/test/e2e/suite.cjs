@@ -6,6 +6,7 @@ const crypto = require('node:crypto');
 const EXTENSION_ID = 'state-lens.state-lens';
 const SOURCE = 'state-lens';
 const INLAY_MARKER = '◆';
+const PRESENTATION_EXAMPLE = 'examples/shared-state/async-io-misuse/go/03_goroutine_leak_unbuffered_result.go';
 const DEADLINE_MS = 10000;
 const STARTUP_MS = 30000;
 const POLL_MS = 25;
@@ -13,6 +14,7 @@ const FAILED_STATUS = /unavailable|stopped/;
 const ROOT = process.env.STATE_LENS_ROOT;
 const SHARD = process.env.STATE_LENS_SHARD;
 const REPORT = process.env.STATE_LENS_REPORT;
+const HEALTH = process.env.STATE_LENS_HEALTH_ONLY === '1';
 const EXTENSIONS = new Set(['.go', '.rs', '.ts', '.py']);
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const issue = (category, message) => ({ category, message: String(message) });
@@ -41,13 +43,13 @@ function makeRow(file) {
   const compound_class = family === 'compound-defects' ? parts[2] : null;
   const manifest = compound_class ? JSON.parse(fs.readFileSync(path.join(ROOT, path.dirname(path.dirname(file)), 'manifest.json'), 'utf8')) : null;
   const example = manifest?.examples.find(e => e.file === parts.slice(-2).join('/'));
-  const expected_rule_ids = example ? [...example.ingredients.map(i => `${language}.${i.family}.${i.defect}`), `${language}.${family}.${compound_class}.${defect}`] : [];
+  const expected_rule_ids = !HEALTH && example ? [...example.ingredients.map(i => `${language}.${i.family}.${i.defect}`), `${language}.${family}.${compound_class}.${defect}`] : [];
   return { layer: 'editor', file, family, defect, language, root, compound_class, compound_category: manifest?.category ?? null, expected_rule_ids, missing_rule_ids: [...expected_rule_ids], status: 'pass', problems: [], findings: null,
     hinted_functions: null, ms: 0, bug_lines_hit: [], bug_lines_missed: [] };
 }
 function finish(row) {
   if (row.missing_rule_ids.length && !row.problems.some(p => p.category === 'count-mismatch')) row.problems.push(issue('count-mismatch', `Missing identities: ${row.missing_rule_ids.join(', ')}`));
-  row.status = row.problems.length ? 'fail' : row.root === 'examples' && (row.hinted_functions === 0 || row.bug_lines_missed.length) ? 'gap' : 'pass';
+  row.status = row.problems.length ? 'fail' : !HEALTH && row.root === 'examples' && (row.hinted_functions === 0 || row.bug_lines_missed.length) ? 'gap' : 'pass';
   return row;
 }
 function checkpoint(rows) {
@@ -103,7 +105,7 @@ async function check(api, document, row, expected, state) {
   const hinted = new Set(snapshot.findings.filter(e => e.functionRange).map(e => JSON.stringify(e.functionRange))).size;
   row.findings = result.findings;
   row.hinted_functions = hinted;
-  if (row.compound_class) {
+  if (!HEALTH && row.compound_class) {
     row.missing_rule_ids = row.expected_rule_ids.filter(id => !rules[id]);
     if (row.missing_rule_ids.length || Object.keys(rules).length < 3) row.problems.push(issue('count-mismatch', `Missing identities: ${row.missing_rule_ids.join(', ')}; expected at least three diagnostics`));
     for (const { finding } of snapshot.findings.filter(e => e.finding.rule_id === row.expected_rule_ids[2])) {
@@ -116,42 +118,80 @@ async function check(api, document, row, expected, state) {
     }
   }
   checkRanges(snapshot, document, row);
-  coverage(row, snapshot);
+  if (!HEALTH) coverage(row, snapshot);
   const hash = crypto.createHash('sha256').update(fs.readFileSync(document.uri.fsPath)).digest('hex');
   if (snapshot.sourceHash !== hash) row.problems.push(issue('error', 'snapshot source hash differs from file'));
   const sorted = value => JSON.stringify(Object.entries(value).sort(([a], [b]) => a.localeCompare(b)));
-  if (!expected || expected.source_hash !== hash || expected.parse_errors !== snapshot.parseErrors || expected.hinted_functions !== hinted || sorted(expected.rule_ids) !== sorted(rules)) row.problems.push(issue('baseline-drift', `snapshot differs from smoke.json: ${JSON.stringify({ source_hash: hash, parse_errors: snapshot.parseErrors, rule_ids: rules, hinted_functions: hinted })}`));
+  if (!HEALTH && (!expected || expected.source_hash !== hash || expected.parse_errors !== snapshot.parseErrors || expected.hinted_functions !== hinted || sorted(expected.rule_ids) !== sorted(rules))) row.problems.push(issue('baseline-drift', `snapshot differs from smoke.json: ${JSON.stringify({ source_hash: hash, parse_errors: snapshot.parseErrors, rule_ids: rules, hinted_functions: hinted })}`));
   if ((result.segments > 0) !== (hinted > 0)) row.problems.push(issue('count-mismatch', 'decoration segments differ from hinted functions'));
   const diagnostics = await until(() => lensDiagnostics(uri).length === result.findings && lensDiagnostics(uri), state, 'settled diagnostics');
   if (state.expired) return;
   if (diagnostics.some(d => d.severity !== vscode.DiagnosticSeverity.Information)) row.problems.push(issue('count-mismatch', 'Expected Information diagnostics'));
   const expectedFindings = expected && Object.values(expected.rule_ids).reduce((a, b) => a + b, 0);
-  if (expected && diagnostics.length !== expectedFindings) row.problems.push(issue('count-mismatch', `${diagnostics.length} diagnostics, baseline ${expectedFindings}`));
+  if (!HEALTH && expected && diagnostics.length !== expectedFindings) row.problems.push(issue('count-mismatch', `${diagnostics.length} diagnostics, baseline ${expectedFindings}`));
+  await until(() => api.applied(uri.toString())?.version === document.version, state, 'presentation snapshot');
   const whole = new vscode.Range(0, 0, document.lineCount, 0);
   const hints = (await bounded(vscode.commands.executeCommand('vscode.executeInlayHintProvider', uri, whole), state, 'inlay hints') || []).filter(h => label(h).startsWith(INLAY_MARKER));
   if (state.expired) return;
+  if (hints.some(hint => !/^◆ (Impure|Signals)$/.test(label(hint)))) row.problems.push(issue('error', 'verbose function summary'));
   if (hints.length !== hinted) row.problems.push(issue('count-mismatch', `${hints.length} inlay hints for ${hinted} functions`));
   const target = diagnostics.find(d => !d.range.isEmpty);
   if (target) {
+    await until(() => api.applied(uri.toString())?.version === document.version, state, 'hover snapshot');
     const hovers = await bounded(vscode.commands.executeCommand('vscode.executeHoverProvider', uri, target.range.start), state, 'hover');
     if (state.expired) return;
     const guide = target.code?.target?.toString();
-    if (!guide || !hoverText(hovers || []).includes(guide)) row.problems.push(issue('error', `hover lacks guide URL ${guide}`));
+    const text = hoverText(hovers || []);
+    if (/Susceptibility is not|Related taxonomy|\[bytes|• local_mutation •/.test(text)) row.problems.push(issue('error', 'hover contains removed metadata'));
+    if (!text.includes('command:stateLens.showEvidence')) row.problems.push(issue('error', 'hover lacks Evidence action'));
+    if (!guide || !text.includes(guide)) row.problems.push(issue('error', `hover lacks guide URL ${guide}`));
+    if (!HEALTH && row.file === PRESENTATION_EXAMPLE) {
+      const link = text.match(/command:stateLens.showEvidence\?([^)]*)/);
+      if (link) {
+        const args = JSON.parse(decodeURIComponent(link[1]));
+        await bounded(vscode.commands.executeCommand('stateLens.showEvidence', ...args), state, 'reveal Evidence');
+        const editor = vscode.window.activeTextEditor;
+        if (editor?.document !== document || !editor.selection.start.isEqual(target.range.start)) row.problems.push(issue('error', 'Evidence did not select its source'));
+        const before = editor?.selection;
+        await bounded(vscode.commands.executeCommand('stateLens.showEvidence', args[0], args[1] - 1, args[2]), state, 'reject stale Evidence');
+        if (!before?.isEqual(vscode.window.activeTextEditor?.selection)) row.problems.push(issue('error', 'stale Evidence changed the selection'));
+        const configuration = vscode.workspace.getConfiguration('stateLens');
+        const originalDirectOnly = configuration.inspect('directOnly').workspaceValue;
+        const previous = api.applied(uri.toString());
+        try {
+          await bounded(configuration.update('directOnly', true, vscode.ConfigurationTarget.Workspace), state, 'hide propagated effects');
+          const filtered = await until(() => {
+            const value = api.applied(uri.toString());
+            return value && value !== previous && value.version === document.version && value;
+          }, state, 'direct-only decorations');
+          const expected = await bounded(api.snapshot(uri.toString()), state, 'direct-only snapshot');
+          if (JSON.stringify(filtered.functionMarkers) !== JSON.stringify(expected?.functionMarkers) || filtered.triggers !== expected?.triggers) row.problems.push(issue('error', 'directOnly presentation differs from current findings'));
+        } finally {
+          const filtered = api.applied(uri.toString());
+          await configuration.update('directOnly', originalDirectOnly, vscode.ConfigurationTarget.Workspace);
+          await until(() => {
+            const value = api.applied(uri.toString());
+            return value && value !== filtered && value.version === document.version;
+          }, state, 'restore all effects');
+        }
+      }
+    }
   }
 }
 
 exports.run = async () => {
   const baseline = JSON.parse(fs.readFileSync(process.env.STATE_LENS_BASELINE, 'utf8')).files;
-  const corpus = files(path.join(ROOT, SHARD));
+  const corpus = files(path.join(ROOT, SHARD)).filter(file => (!process.env.STATE_LENS_FILE || file === process.env.STATE_LENS_FILE) && (!process.env.STATE_LENS_LANGUAGE || file.split('/').at(-2) === process.env.STATE_LENS_LANGUAGE));
+  if (!corpus.length) throw new Error(`No matching files in ${SHARD}`);
   const rows = corpus.map(makeRow);
-  const removed = Object.keys(baseline).filter(file => file.startsWith(SHARD + '/') && !corpus.includes(file)).map(file => {
+  const removed = Object.keys(baseline).filter(file => !HEALTH && file.startsWith(SHARD + '/') && !corpus.includes(file)).map(file => {
     const row = makeRow(file);
     row.problems.push(issue('baseline-drift', 'baseline file missing from corpus'));
     return finish(row);
   });
   const groups = new Map();
   for (const row of rows) {
-    const group = path.posix.dirname(row.file);
+    const group = HEALTH ? row.file : path.posix.dirname(row.file);
     if (!groups.has(group)) groups.set(group, []);
     groups.get(group).push(row);
   }
@@ -175,26 +215,38 @@ exports.run = async () => {
           await bounded(vscode.window.showTextDocument(document, { preview: false, preserveFocus: true }), state, 'open tab');
           documents.push(document);
         }
-        const editor = await bounded(vscode.window.showTextDocument(documents[0], { preview: false }), state, 'select visible editor');
-        await Promise.all(group.map((row, index) => check(api, documents[index], row, baseline[row.file], state).catch(error => {
-          if (!state.expired || error.category === 'timeout') row.problems.push(issue(error.category || 'error', error.message));
-        })));
+        let editor = await bounded(vscode.window.showTextDocument(documents[0], { preview: false }), state, 'select visible editor');
         for (let index = 0; index < group.length; index++) {
           const row = group[index];
-          if (!row.compound_class) continue;
+          await bounded(vscode.window.showTextDocument(documents[index], { preview: false }), state, 'activate document');
+          try { await check(api, documents[index], row, baseline[row.file], state); }
+          catch (error) { if (!state.expired || error.category === 'timeout') row.problems.push(issue(error.category || 'error', error.message)); }
+        }
+        if (HEALTH) {
+          await bounded(vscode.commands.executeCommand('workbench.action.closeAllEditors'), state, 'close document');
+          continue;
+        }
+        for (let index = 0; index < group.length; index++) {
+          const row = group[index];
           const document = documents[index];
-          await bounded(vscode.window.showTextDocument(document, { preview: false }), state, 'activate compound');
+          await bounded(vscode.window.showTextDocument(document, { preview: false }), state, 'activate presentation');
           const actual = await until(() => {
             const value = api.applied(document.uri.toString());
             return value?.version === document.version && value;
-          }, state, 'compound decorations');
+          }, state, 'source decorations');
+          const audit = (await bounded(api.snapshot(document.uri.toString()), state, 'marker snapshot'))?.audit;
+          const effects = new Set(['local_mutation', 'argument_mutation', 'receiver_mutation', 'global_mutation', 'external_read', 'nondeterminism']);
+          const expectedMarkers = audit?.functions.filter(fn => audit.findings.some(entry => JSON.stringify(entry.functionRange) === JSON.stringify(fn.range) && effects.has(entry.finding.effect.kind))).map(fn => ({ start: fn.range.start, end: fn.body.start }));
+          if (JSON.stringify(actual.functionMarkers) !== JSON.stringify(expectedMarkers)) row.problems.push(issue('count-mismatch', 'Applied function markers differ from owned effects'));
+          if (audit?.findings.length && !actual.decorations.length) row.problems.push(issue('count-mismatch', 'Missing source decorations'));
+          if (!row.compound_class) continue;
           const required = [...row.expected_rule_ids.slice(0, 2).map(id => id.split('.')[1]), row.compound_class];
           for (const category of required) {
             if (!actual.decorations.some(d => d.category === category || d.families.includes(category))) row.problems.push(issue('count-mismatch', `Missing painted category: ${category}`));
           }
           if (!actual.decorations.some(d => d.category === row.compound_class && d.outline)) row.problems.push(issue('count-mismatch', 'Missing compound outline'));
         }
-        await bounded(vscode.window.showTextDocument(editor.document, { preview: false }), state, 'restore active editor');
+        editor = await bounded(vscode.window.showTextDocument(documents[0], { preview: false }), state, 'restore active editor');
         const painted = () => api.applied(editor.document.uri.toString())?.version === editor.document.version;
         await until(painted, state, 'visible decorations');
         edited = editor.document;
@@ -240,6 +292,7 @@ exports.run = async () => {
       if (!processed.has(row.file) && !row.problems.length) row.problems.push(issue('crash', 'not executed after shard failure'));
     }
     if (api) {
+      fs.writeFileSync(path.join(path.dirname(REPORT), 'state-lens.log'), api.log().join('\n'));
       const tail = logProblems(api.log().slice(logCursor));
       for (const row of rows) row.problems.push(...tail);
     }

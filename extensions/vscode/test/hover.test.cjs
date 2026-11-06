@@ -13,6 +13,7 @@ const moduleStub = { exports: {} };
 vm.runInNewContext(readFileSync(join(__dirname, '../dist/hover.js'), 'utf8'), {
   module: moduleStub,
   require(name) {
+    if (name === './ranges') return require('../dist/ranges');
     assert.equal(name, 'vscode');
     return { MarkdownString, Uri: { parse: uri => ({ fsPath: new URL(uri).pathname }) } };
   }
@@ -37,11 +38,11 @@ test('hover guide links follow findings rather than the evidence directory', () 
   ]) {
     const hover = explanation(entry(family, defect));
     const links = hover.parts.filter(p => p.kind === 'markdown');
-    assert.equal(links.length, 1);
-    assert.equal(links[0].value, `\n\n[Read the defect guide ↗](<https://badsoftware.untra.io/en/${family}/${defect}/>)`);
-    const linkIndex = hover.parts.indexOf(links[0]);
-    assert.match(hover.parts[linkIndex - 1].value, /Susceptibility is not a bug diagnosis/);
-    assert.match(hover.parts[linkIndex + 1].value, /Related taxonomy/);
+    assert.equal(links.length, 2);
+    assert.equal(links[1].value, `\n\n[Guide](<https://badsoftware.untra.io/en/${family}/${defect}/>)`);
+    const content = hover.parts.map(part => part.value).join('');
+    assert.doesNotMatch(content, /Susceptibility|Related taxonomy|bytes|file:\/\//);
+    assert.doesNotMatch(content, /direct|argument_mutation|modeled-api/);
   }
 });
 
@@ -57,6 +58,26 @@ test('compound hover names its category and uses the class route', () => {
   const value = entry('compound-defects', 'lost-update', 'An increment writes back a shared snapshot.');
   value.finding.compound = { class: 'nondeterminism', category: 'temporal-interleaving', ingredients: [] };
   const hover = explanation(value);
-  assert.ok(hover.parts.some(p => p.value.includes('temporal-interleaving')));
+  assert.ok(hover.parts.some(p => p.value.includes('lost-update')));
+  assert.ok(hover.parts.some(p => p.value.includes('#FFE599')));
   assert.ok(hover.parts.some(p => p.value.includes('/en/compound-defects/nondeterminism/lost-update/')));
+});
+
+test('family titles use the palette and escape HTML', () => {
+  const { PALETTE } = require('../dist/ranges');
+  for (const family of ['mutated-state', 'unstructured-state', 'shared-state']) {
+    const hover = explanation(entry(family, '<img src=x>'));
+    assert.equal(hover.supportHtml, true);
+    assert.ok(hover.parts[0].value.includes(PALETTE[family]));
+    assert.ok(hover.parts[0].value.includes('&lt;img src=x&gt;'));
+  }
+});
+test('Evidence links carry the snapshot identity and trust only the Evidence command', () => {
+  const value = entry('mutated-state', 'var-let-mut', 'Mutable binding; local mutation does not imply observable impurity.');
+  const hover = explanation(value, 'file:///example.ts', 7);
+  const link = hover.parts.at(-1).value;
+  assert.match(link, /command:stateLens.showEvidence/);
+  assert.deepEqual(JSON.parse(decodeURIComponent(link.split('?')[1].slice(0, -1))), ['file:///example.ts', 7, value.finding]);
+  assert.equal(JSON.stringify(hover.isTrusted), JSON.stringify({ enabledCommands: ['stateLens.showEvidence'] }));
+  assert.ok(hover.parts.some(part => part.value === '\n\nMutable binding.'));
 });

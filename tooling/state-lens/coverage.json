@@ -1209,7 +1209,7 @@
       "family": "mutated-state",
       "defect": "var-let-mut",
       "language": "go",
-      "source_hash": "9c65b2d1c73e86ff9ac058f3437ca77386ac65276a54a9c6d79dcf5bc5142919",
+      "source_hash": "7f03e0ee10c650f577c17189096d037b3e7430cab2679f7a46a72c64d6205e8c",
       "susceptibility_status": "query-plus-analysis",
       "observed_rule_ids": [
         "go.mutated-state.var-let-mut"
@@ -1354,6 +1354,54 @@
       "defect": "var-let-mut",
       "language": "typescript",
       "source_hash": "fabd5cb20a3643785ab43b06c392551c2637b15af4a71433d65fcb49a7660461",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "typescript.mutated-state.var-let-mut"
+      ],
+      "trigger_count": 2,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/var-let-mut/rust/03_threshold_drifts.rs",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "language": "rust",
+      "source_hash": "dc89c1a3d43066afd984e1ab13858fd7d6544ea5ce0e5f0b4fa329b5fd4dfcd8",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "rust.mutated-state.var-let-mut"
+      ],
+      "trigger_count": 3,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/var-let-mut/go/05_reused_task_pointer.go",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "language": "go",
+      "source_hash": "76166ccfa5f488a12f9e545df945fb8ae0bce5b80d6dc11edd7162f64419afac",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "go.mutated-state.var-let-mut"
+      ],
+      "trigger_count": 6,
+      "bug_detection": "unsupported",
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/var-let-mut/typescript/05_async_id_capture.ts",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "language": "typescript",
+      "source_hash": "d6df2b42f2107fc28c00a964b044a27d247307d8485cc0cea1072d23cf981ab2",
       "susceptibility_status": "query-plus-analysis",
       "observed_rule_ids": [
         "typescript.mutated-state.var-let-mut"

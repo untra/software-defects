@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use the callback parameter for requests and post-await context; each invocation owns a separate binding.",
+  "analysis_limit": "Syntax candidates do not establish incorrect behavior. Safe repair requires scope, data-flow and domain intent; legitimate mutation can remain after repair.",
+  "runtime": {
+    "status": "supported",
+    "stdout": "Processed for ID: 1\nProcessed for ID: 2\n1,2\n",
+    "exit_code": 0
+  },
+  "original": {
+    "source_hash": "d6df2b42f2107fc28c00a964b044a27d247307d8485cc0cea1072d23cf981ab2",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/var-let-mut/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "31141fb9f359b7f1f5e6fb9f0c325ef43895d5422ce1202bc81e479184f32f27",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/var-let-mut/signals.scm",
+        "captures": []
+      }
+    ]
+  }
+}
