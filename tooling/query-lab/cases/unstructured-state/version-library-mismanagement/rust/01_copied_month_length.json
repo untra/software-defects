@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use the same complete leap-year rule for both consumers.",
+  "original": {
+    "source_hash": "8053620353d07b6038b4ec34cff08b3081269ea87fc959b58ccf06f091b96e27",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/version-library-mismanagement/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "e7809b222b7d95226821e1f0f523fab0b97e9b388dd37321ba8acbd2ffad7781",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/version-library-mismanagement/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "billing 2024 february 29\npayroll 2024 february 29"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The copied helper no longer matches the one that was fixed (CWE-1104). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

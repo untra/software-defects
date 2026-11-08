@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Invalidate a cached absence when registering the handle.",
+  "original": {
+    "source_hash": "14f2c4a4532c618037e271b807188a996df439a99c3f62489e26da74321d2842",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/cache-invalidation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "fb33bf3b7b500da19ad158c002813a0f0ae18cb085ca3e15d1c15a12c24ce857",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/cache-invalidation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              433,
+              439
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "@ana found after signup: true"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Negative caching without TTL or invalidation on create. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

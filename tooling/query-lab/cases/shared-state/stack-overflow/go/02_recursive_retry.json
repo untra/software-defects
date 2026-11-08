@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use a bounded iterative retry loop.",
+  "original": {
+    "source_hash": "50bd61834f0ce83be7759985668b197cd9e3589ad8580c20ec8749b696b617ca",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/stack-overflow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              324,
+              338
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              429,
+              443
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "bcf3623bef17d73ff7926e73e3818d6a9eb0ff689349c170bec68f0024ad0005",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/stack-overflow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              514,
+              528
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "503 service unavailable"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. No attempt cap or base case besides success (CWE-674). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

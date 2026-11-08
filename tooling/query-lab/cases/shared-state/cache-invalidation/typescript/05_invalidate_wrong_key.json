@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use identical normalized keys for reads and invalidation.",
+  "original": {
+    "source_hash": "76bed76cae214e176cb324f9ba0b175ed53c34a1388db22178030a9e8ebbdbbe",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/cache-invalidation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              272,
+              275
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              337,
+              340
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              368,
+              371
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              460,
+              463
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              497,
+              503
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "a10c2fb1037d65b09771eec1af5447440fbb6446c0beac13c781b6ce4fab7bc9",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/cache-invalidation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              272,
+              275
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              337,
+              340
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              368,
+              371
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              460,
+              463
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              497,
+              503
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "greeting: Ana Lopez"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Key derivation differs between write and invalidate paths. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

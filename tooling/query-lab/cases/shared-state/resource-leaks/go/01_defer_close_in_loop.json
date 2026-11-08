@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Close each file before opening the next one.",
+  "original": {
+    "source_hash": "48830c4b3a34759e3aa816bb853f97bdd383ac5c57a04bb0ad95fdd642a6db00",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              233,
+              237
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              294,
+              299
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "8e4a77c40cd6a42d5f41c94a1cd84251f28e3c097799d3672ec609f280d67b66",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              233,
+              237
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              308,
+              313
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "processed 64 of 64 files, error: false"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Defers run at function exit, not iteration end (CWE-775). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

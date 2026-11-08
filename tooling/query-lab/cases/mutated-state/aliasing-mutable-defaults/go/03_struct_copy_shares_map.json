@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Copy the nested map to make the profile clone independent.",
+  "original": {
+    "source_hash": "d7f94a5b039d52fd5f9d9d21d3ce14d4ce02e99caf13974c1925fa5f3d96cc00",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "e08b11b6ade59e651a54dac0b5f9a4e4b89b97ae31aedec905bba8bcab8c4a82",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "base darkMode: false"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Struct assignment is shallow; map fields alias the same underlying table. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

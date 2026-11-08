@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Preserve the original 64-bit length.",
+  "original": {
+    "source_hash": "f68d3b29d142f315cf08cae3d5cca9a4d1995a257d1a08369925e76982d62e64",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/increment-decrement-operators/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              96,
+              101
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "4727ab9f69e75225dbf52b766f0de9052ae9127cbfc6819d65fc35ab9225a098",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/increment-decrement-operators/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "content-length: 3000000000"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Narrowing integer conversion discards high bits without error. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

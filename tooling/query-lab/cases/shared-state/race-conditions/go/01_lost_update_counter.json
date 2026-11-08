@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Serialize counter updates with a mutex; reads occur after all workers join.",
+  "original": {
+    "source_hash": "b8b00adf2ba141f68b27cc042fc8cad8db1712c6479d40c4608f82ed2eed2aff",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              260,
+              263
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "47191c0d19e84b85acf8fce6c21aa41516f3e79fd1c6e5820aa9ec4d8237d8ed",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              186,
+              190
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              205,
+              211
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              312,
+              315
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "recorded 8000000 of 8000000 views"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `++` compiles to load, add, store; interleaved goroutines overwrite each other (CWE-362). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

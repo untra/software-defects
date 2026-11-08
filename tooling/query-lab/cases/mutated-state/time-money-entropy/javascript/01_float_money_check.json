@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use integer cents for exact payment equality.",
+  "original": {
+    "source_hash": "bc56934728a7666576341081ba66cb9a16ff98c93293aa8430b9ecac3d9196e3",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/time-money-entropy/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "4eb280f642a92b0adde35aedb343469b2f49d6da88174616144d014345daa50f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/time-money-entropy/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "paid in full"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. IEEE-754 doubles cannot represent decimal money exactly. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Sort a copy so the arrival-ordered input stays unchanged.",
+  "original": {
+    "source_hash": "f1c9d9d80a430947bea6679405a9bde6dd6ce631e35020504d36197f85aec11f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/impure-functions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              82,
+              86
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "e4f71d1e55adcc9f5122794ce4e754dc09bf86a69b427de4ec0ae77a23717636",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/impure-functions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              128,
+              132
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "median: 20 first request latency: 30"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. sort.Ints mutates its argument; the function should copy first. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

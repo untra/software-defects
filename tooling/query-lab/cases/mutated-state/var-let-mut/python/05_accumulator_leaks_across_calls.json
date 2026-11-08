@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Initialize the total locally per invocation. Local accumulation and list mutation are intentional.",
+  "analysis_limit": "Syntax candidates do not establish incorrect behavior. Safe repair requires scope, data-flow and domain intent; legitimate mutation can remain after repair.",
+  "runtime": {
+    "status": "supported",
+    "stdout": "[50]\n[50]\n",
+    "exit_code": 0
+  },
+  "original": {
+    "source_hash": "ae9fadf3817da327d5ca9f3b74b44791b02c8e1802c3c2291b416c36033b1e75",
+    "queries": [
+      {
+        "query": "queries/python/mutated-state/var-let-mut/signals.scm",
+        "captures": [
+          {
+            "name": "binding",
+            "range": [
+              0,
+              14
+            ]
+          },
+          {
+            "name": "write",
+            "range": [
+              0,
+              14
+            ]
+          },
+          {
+            "name": "binding",
+            "range": [
+              15,
+              24
+            ]
+          },
+          {
+            "name": "write",
+            "range": [
+              15,
+              24
+            ]
+          },
+          {
+            "name": "binding",
+            "range": [
+              25,
+              42
+            ]
+          },
+          {
+            "name": "write",
+            "range": [
+              25,
+              42
+            ]
+          },
+          {
+            "name": "binding",
+            "range": [
+              107,
+              118
+            ]
+          },
+          {
+            "name": "write",
+            "range": [
+              107,
+              118
+            ]
+          },
+          {
+            "name": "write",
+            "range": [
+              150,
+              171
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "3b54e58ab37f3344224f33c3f1cc869da9bec3b345bd25526bb4094d5c498037",
+    "queries": [
+      {
+        "query": "queries/python/mutated-state/var-let-mut/signals.scm",
+        "captures": [
+          {
+            "name": "binding",
+            "range": [
+              0,
+              14
+            ]
+          },
+          {
+            "name": "write",
+            "range": [
+              0,
+              14
+            ]
+          },
+          {
+            "name": "binding",
+            "range": [
+              15,
+              24
+            ]
+          },
+          {
+            "name": "write",
+            "range": [
+              15,
+              24
+            ]
+          },
+          {
+            "name": "binding",
+            "range": [
+              64,
+              81
+            ]
+          },
+          {
+            "name": "write",
+            "range": [
+              64,
+              81
+            ]
+          },
+          {
+            "name": "binding",
+            "range": [
+              86,
+              97
+            ]
+          },
+          {
+            "name": "write",
+            "range": [
+              86,
+              97
+            ]
+          },
+          {
+            "name": "write",
+            "range": [
+              129,
+              150
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

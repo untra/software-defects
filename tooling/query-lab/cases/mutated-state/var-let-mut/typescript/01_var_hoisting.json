@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Initialize the no-discount path before the conditional assignment.",
+  "original": {
+    "source_hash": "0e781aaf7ab809372492f47f891f5a6082bcfbbaf46c74738a00a77412026f81",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/var-let-mut/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "8e56a3d271433ba17980358eeefca2895b7d5c60238d558a98e3b6b4b8c9b2d4",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/var-let-mut/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "without code: 100"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `var` declarations hoist without initialization; reading it outside the block yields undefined. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

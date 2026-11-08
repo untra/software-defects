@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Hold one guard across stock validation and decrement.",
+  "original": {
+    "source_hash": "65c73ad0c7f4641dfb8ca7de5240e18bd9de70be94df27214b7aa0e2cba70551",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              249,
+              253
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              344,
+              348
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "9985854495a950636afcb192b938d38b48b877c32ea5b7859e8a9eec20a27f56",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              252,
+              256
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "sold 1 units with 1 in stock"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The guard is dropped between check and act, so the invariant is not held across both (CWE-367). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

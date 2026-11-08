@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reuse the transport connection pool and close it during shutdown.",
+  "original": {
+    "source_hash": "052e9c10dbe1c8e314f00615593bae5544a3e56182a2b61c9f7394f4c2169b48",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/resource-contention/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              236,
+              239
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "cc90fa763bdee1e46a2119cc58ea67144938143f9f1186831cf746b55c885e34",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/resource-contention/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              249,
+              252
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "20 requests opened 1 connections"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Transports own the connection pool; creating one per request defeats pooling. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

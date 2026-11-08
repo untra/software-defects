@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Await each save before reporting completion.",
+  "original": {
+    "source_hash": "a98d4e22f509337d5a0c21654877b3e4f75ff979fac334192c6b1e07e8514256",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/for-loop-control-flow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              96,
+              106
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              226,
+              233
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "dbbd28aef24f5b6e4532dfa42fe90d00c3321d0dc26d6c2c26a8d05bad08ff2e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/for-loop-control-flow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              96,
+              106
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "saved before report: 3"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. async callbacks are fired and forgotten; forEach does not await. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

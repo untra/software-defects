@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Require the whole string to be a finite numeric value.",
+  "original": {
+    "source_hash": "0b4558962ae4b94d1b8e2cabb22c69ad19299714e7213195491fb5ba2ab1f391",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/type-errors/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              40,
+              48
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "17c4a196bb4af3979ff64462db987ee82ccac100d2abb3280aa42771457fdcea",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/type-errors/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              56,
+              62
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              71,
+              77
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "size invalid"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. parseInt stops at the first non-digit instead of rejecting the whole token (CWE-704). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

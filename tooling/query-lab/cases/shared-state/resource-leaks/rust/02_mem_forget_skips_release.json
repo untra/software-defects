@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Allow the connection destructor to return the slot.",
+  "original": {
+    "source_hash": "3750a911eb0a6aa3859140b8e5dd7c6d790bd3ff50a38dcfc0ddfe8f54ce50ef",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              648,
+              654
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "afdc6cdd212465766f8fb770e8602e233d43fabe50be0c3a7c446ab2ce9c81ec",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              638,
+              642
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "served 5 of 5 requests, connections available: 3"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Forgetting an RAII guard leaks the resource it releases (CWE-772). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

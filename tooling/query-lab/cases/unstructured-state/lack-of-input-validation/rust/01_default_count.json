@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Do not silently default a failed parse.",
+  "original": {
+    "source_hash": "ba553d46831da58c70e3e4094f9b8b3216c5a437b903e8684575a2fef3e6db48",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              70,
+              79
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "ffbbf7e7680637b1a46857a6b994b010fd556f63ee9b5be3ee1616253fc70d06",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "token rejected"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. unwrap_or turns a parse error into a quantity (CWE-20). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

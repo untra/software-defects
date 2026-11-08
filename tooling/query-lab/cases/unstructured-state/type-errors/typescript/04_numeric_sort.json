@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Sort by numeric value rather than lexicographic order.",
+  "original": {
+    "source_hash": "ecba6837005da855348b2a9fff0b61485898f11cbe1dff6cfb746a2dc7381e63",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/type-errors/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              40,
+              44
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "b704d140ccf8c2f2eb255fac0fffdb8e1ba1235849f4d37ca6bcd08c0866033c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/type-errors/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              40,
+              44
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              55,
+              61
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              67,
+              73
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "order 1,2,10"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Default sort compares UTF-16 code units, not numeric value (CWE-704). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

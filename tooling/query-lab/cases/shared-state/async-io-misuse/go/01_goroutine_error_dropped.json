@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Collect worker failures and return them after joining all work.",
+  "original": {
+    "source_hash": "2be611cae32c17cabf95e66046a070b5c49fe495cb8754ac6b4836270bbc7575",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              349,
+              353
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "815d92c3fee03425ccf5b2528657794b1cfe7132300ebebcbb60521fcc934c25",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              262,
+              266
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              403,
+              407
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "saved 2 of 3, error: empty record"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Fire-and-forget goroutines have no channel for failures (use errgroup). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

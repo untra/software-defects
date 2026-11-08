@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Accumulate this bounded upload example in a wide integer. General overflow detection requires range analysis.",
+  "original": {
+    "source_hash": "717eec5460bb130adde36a5a40106a9d5cad17f922d8c832a20fb17f69ac4bd8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/increment-decrement-operators/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "c232fec711d262264aa5223df33e2dfb6d8495a4317665cc0aa00407537df869",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/increment-decrement-operators/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "rejected: over quota"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Fixed-width signed overflow wraps silently in Go (CWE-190). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

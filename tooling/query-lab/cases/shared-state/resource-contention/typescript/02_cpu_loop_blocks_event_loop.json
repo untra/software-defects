@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Yield cooperatively during this simulated hash workload so timers can run.",
+  "original": {
+    "source_hash": "796458efecbb3d0dc47d89a79a26f83ed2af11235829a2c54f1650ffd32ac932",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/resource-contention/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "74fce16e1061b0f2a1bbca437ddbf3a8fa363f2eff0c4bfa1a30c17685dc326e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/resource-contention/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "heartbeat on time: true"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The single event-loop thread is a shared resource monopolized by CPU work. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

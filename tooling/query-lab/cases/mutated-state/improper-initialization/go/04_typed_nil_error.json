@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return a nil interface on success instead of a typed nil pointer.",
+  "original": {
+    "source_hash": "9e445ea767deb5c89fd5498dc0c5b9da585a24de401ed8250d3f2c47f9756ba9",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/improper-initialization/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "823e04d230d00d001e1c1abeec578c69a28205df11c578611e41f221f3da833b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/improper-initialization/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "accepted"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Interface holding a typed nil pointer is not equal to nil. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

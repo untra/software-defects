@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Close the descriptor even if JSON parsing throws.",
+  "original": {
+    "source_hash": "94fe718d37e05199ba837bee7364d9945e375784822abf814e41c6cccd8d66cb",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              290,
+              294
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              401,
+              406
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "67e65c63d27abee9b682257371cc000868de11f1d7171e5e1ffa312d596a64c5",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              290,
+              294
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              388,
+              393
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "file descriptors leaked: 0"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Close not in finally (CWE-775). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

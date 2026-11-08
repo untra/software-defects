@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return the matching value immediately and explicitly handle missing and empty searches.",
+  "analysis_limit": "Syntax candidates do not establish incorrect behavior. Safe repair requires scope, data-flow and domain intent; legitimate mutation can remain after repair.",
+  "runtime": {
+    "status": "supported",
+    "stdout": "selected cam is missing\n",
+    "exit_code": 0
+  },
+  "original": {
+    "source_hash": "c2873436d319dd8b0309cb3e83e45f1ec768400eb04e93f5c368c28e56878288",
+    "queries": [
+      {
+        "query": "queries/python/mutated-state/var-let-mut/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "215771a9e09d0a84dd05977be4f617c3539020a64277ea86df5ada7ee73f5645",
+    "queries": [
+      {
+        "query": "queries/python/mutated-state/var-let-mut/signals.scm",
+        "captures": []
+      }
+    ]
+  }
+}

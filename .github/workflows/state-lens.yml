@@ -1,0 +1,180 @@
+name: State Lens
+
+on:
+  pull_request:
+    paths: ['.vscode/**', 'tooling/state-lens/**', 'queries/**', 'extensions/vscode/**', 'extensions/zed/**', 'examples/**', 'examples-fixed/**', 'Makefile', '.github/workflows/state-lens.yml']
+  push:
+    branches: [main]
+    paths: ['.vscode/**', 'tooling/state-lens/**', 'queries/**', 'extensions/vscode/**', 'extensions/zed/**', 'examples/**', 'examples-fixed/**', 'Makefile', '.github/workflows/state-lens.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    outputs:
+      shards: ${{ steps.corpus.outputs.shards }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - id: corpus
+        run: echo "shards=$(python3 tooling/state-lens/scripts/corpus_inventory.py)" >> "$GITHUB_OUTPUT"
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component clippy,rustfmt --target wasm32-wasip2
+      - name: Rust checks
+        run: |
+          cargo +1.95.0 fmt --manifest-path tooling/state-lens/Cargo.toml --check
+          cargo +1.95.0 clippy --locked --manifest-path tooling/state-lens/Cargo.toml --all-targets -- -D warnings
+          cargo +1.95.0 test --locked --manifest-path tooling/state-lens/Cargo.toml
+          cargo +1.95.0 run --locked --manifest-path tooling/state-lens/Cargo.toml -- score tooling/state-lens/fixtures/expectations.json
+      - name: Verify query metadata and corpus tooling
+        run: python3 -m unittest discover -s tooling/state-lens/scripts -p 'test_*.py'
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: extensions/vscode/package-lock.json
+      - name: Extension checks
+        run: |
+          npm ci --prefix extensions/vscode
+          npm test --prefix extensions/vscode
+      - name: Zed extension checks
+        run: |
+          cargo +1.95.0 fmt --manifest-path extensions/zed/Cargo.toml --check
+          cargo +1.95.0 clippy --manifest-path extensions/zed/Cargo.toml --target wasm32-wasip2 -- -D warnings
+
+      - name: Build release server
+        run: cargo +1.95.0 build --release --locked --manifest-path tooling/state-lens/Cargo.toml
+      - name: Protocol smoke
+        run: python3 tooling/state-lens/scripts/smoke.py --report build/smoke/protocol
+      - name: Protocol summary
+        if: always()
+        run: cat build/smoke/protocol/smoke-report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: smoke-protocol
+          path: build/smoke/protocol/smoke-report.*
+          if-no-files-found: error
+
+  editor-smoke:
+    needs: [test, inventory, packages]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJSON(needs.inventory.outputs.shards) }}
+        language: [typescript, javascript, go, rust, python]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: extensions/vscode/package-lock.json
+      - run: npm ci --prefix extensions/vscode
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: vsix-${{ matrix.language }}-linux-x64
+          path: build/vsix
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: extensions/vscode/.vscode-test
+          key: vscode-${{ runner.os }}-${{ runner.arch }}-1.142.0
+      - name: Editor smoke
+        working-directory: extensions/vscode
+        run: xvfb-run -a npm run test:e2e -- --language '${{ matrix.language }}' --shard '${{ matrix.shard }}' --report ../../build/smoke/editor
+      - name: Editor summary
+        if: always()
+        run: cat build/smoke/editor/smoke-report.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: smoke-editor-${{ strategy.job-index }}
+          path: build/smoke/editor/smoke-report.*
+          if-no-files-found: error
+
+  smoke-report:
+    needs: [test, editor-smoke]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: smoke-*
+          path: build/smoke/downloads
+      - name: Merge smoke audit
+        if: always()
+        run: |
+          python3 - <<'PYTHON'
+          import subprocess
+          from pathlib import Path
+          reports = sorted(Path('build/smoke/downloads').glob('*/smoke-report.json'))
+          raise SystemExit(subprocess.call(['python3', 'tooling/state-lens/scripts/smoke_report.py', *map(str, reports), '--report', 'build/smoke', '--summary']))
+          PYTHON
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: smoke-audit
+          path: build/smoke/smoke-report.*
+          if-no-files-found: error
+
+  packages:
+    runs-on: ${{ matrix.platform.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [typescript, javascript, go, rust, python]
+        platform:
+          - { target: linux-x64, rust: x86_64-unknown-linux-gnu, runner: ubuntu-24.04 }
+          - { target: linux-arm64, rust: aarch64-unknown-linux-gnu, runner: ubuntu-24.04-arm }
+          - { target: darwin-x64, rust: x86_64-apple-darwin, runner: macos-15-intel }
+          - { target: darwin-arm64, rust: aarch64-apple-darwin, runner: macos-15 }
+          - { target: win32-x64, rust: x86_64-pc-windows-msvc, runner: windows-2025 }
+          - { target: win32-arm64, rust: aarch64-pc-windows-msvc, runner: windows-11-arm }
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: extensions/vscode/package-lock.json
+      - run: rustup toolchain install 1.95.0 --profile minimal
+      - run: rustup default 1.95.0
+      - run: rustup target add ${{ matrix.platform.rust }}
+      - run: npm ci --prefix extensions/vscode
+      - run: npm run package --prefix extensions/vscode -- ${{ matrix.language }} ${{ matrix.platform.target }}
+      - run: python tooling/state-lens/scripts/verify_vsix.py ${{ matrix.language }} ${{ matrix.platform.target }}
+      - name: Packaged editor isolation (Linux)
+        if: runner.os == 'Linux'
+        run: xvfb-run -a npm run test:isolation --prefix extensions/vscode -- ${{ matrix.language }}
+      - name: Packaged editor isolation (macOS and Windows)
+        if: runner.os != 'Linux'
+        run: npm run test:isolation --prefix extensions/vscode -- ${{ matrix.language }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: vsix-${{ matrix.language }}-${{ matrix.platform.target }}
+          path: build/vsix/*.vsix
+          if-no-files-found: error
+
+  coexistence:
+    needs: packages
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+      - run: npm ci --prefix extensions/vscode
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: vsix-*-linux-x64
+          merge-multiple: true
+          path: build/vsix
+      - run: xvfb-run -a npm run test:isolation --prefix extensions/vscode

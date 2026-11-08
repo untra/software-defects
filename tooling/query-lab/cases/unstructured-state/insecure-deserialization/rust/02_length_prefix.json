@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject malformed length/name data instead of guessing the intended length; the stated desired name cannot be inferred safely from this corrupt record.",
+  "original": {
+    "source_hash": "220bd9b9d96ec6b00a762193dde90d9d74529d03b7df9d9135d236773a2d32a7",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/insecure-deserialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              104,
+              119
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "27ac2c00a255bbb1ad7508127ce376cc735e0f0e0853e78a1606e4189e6db0d7",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/insecure-deserialization/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "invalid record"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The length is taken from the buffer and not checked against the field that follows (CWE-502). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

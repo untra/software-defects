@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Read the protected field directly while already holding its mutex.",
+  "original": {
+    "source_hash": "c1b6b08dfc3da27ffb645b87cc6236335068c96fff42604f852fca806a34dda6",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              163,
+              167
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              182,
+              188
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              263,
+              267
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              282,
+              288
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "e3783dc6d1a0adf30a947a8df8cc29b75a89396ee6a6a01340c40a5541e3c5ec",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              163,
+              167
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              182,
+              188
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              263,
+              267
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              282,
+              288
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "withdrawn: true"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. sync.Mutex is not reentrant; self-deadlock (CWE-667). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

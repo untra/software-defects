@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Normalize invoice amounts to the interface contract of cents.",
+  "original": {
+    "source_hash": "01787fad9bbe750ae9765a79db50d63a85922b3663777a979052fe13db08ba51",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/duck-typing-without-contracts/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              288,
+              294
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "a804d36ba5f68a3034662f3307a05144852e2cbbe155d6e135d91307acbb3326",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/duck-typing-without-contracts/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              333,
+              339
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "charged 250\ncharged 25000"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Charger only requires Amount() int, so dollars and cents both satisfy it (CWE-843). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

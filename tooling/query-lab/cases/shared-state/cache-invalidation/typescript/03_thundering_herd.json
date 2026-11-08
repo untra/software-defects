@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Publish the in-flight promise before yielding and evict failed loads.",
+  "original": {
+    "source_hash": "0a29146c2ce3f2158d976144bcc6fd39176e5af199970dcecc9daa111a46ed2d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/cache-invalidation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              385,
+              388
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              484,
+              487
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              613,
+              616
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "1e0f435a28aa5774396e7f892e5308938cff80c25d89885a621bf5c2067b75f5",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/cache-invalidation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              394,
+              397
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              503,
+              509
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              541,
+              544
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              674,
+              677
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "origin fetches for one page: 1"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Cache stores values, not pending promises; no single-flight. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

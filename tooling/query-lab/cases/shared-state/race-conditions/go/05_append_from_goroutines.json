@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Protect both slice length and backing storage during append.",
+  "original": {
+    "source_hash": "2ea3ed81f65660ae176959377f0ce3616ac7bf3012cd7a113a3719f5b656345b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              179,
+              182
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              263,
+              269
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "a9803293eb144ccff575f2ce60fcf6b81c7a9bdf21c6bc4a6fee635219fdf271",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              198,
+              201
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              278,
+              282
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              296,
+              302
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              334,
+              340
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "collected 80000 of 80000 rows"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. append reads len/cap/pointer and writes back a new header; concurrent appends clobber each other. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

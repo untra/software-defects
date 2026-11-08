@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Stop on deserialization type errors.",
+  "original": {
+    "source_hash": "5c71107ff01c3d966da51d1a74173d5b32ad694a53f6b55cc1940d03ed599ec9",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/insecure-deserialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              166,
+              175
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "9abfb0ac91ea2ffd38574a43287dfa62df2dc86aa45067839da876076519e424",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/insecure-deserialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              172,
+              181
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "body rejected"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Unmarshal fails the type mismatch and the blank assignment keeps the zero Qty (CWE-502). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Include tenant identity in every cache key.",
+  "original": {
+    "source_hash": "00e77dc1a9a11e859221dc2af9386a9ac146e7f83205f85432b64c8bb6f676a8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              264,
+              267
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              411,
+              414
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              532,
+              535
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              594,
+              597
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "d1f5e904d7da6b6a057d220a02b7656fdc12de8d56a5b872dc2a22e65c8ea92b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              320,
+              323
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              472,
+              475
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              598,
+              601
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              660,
+              663
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "globex -> https://globex.example/hooks"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Class-level static state crosses tenant boundaries when the key omits the tenant. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,3 +1,12 @@
+build/
 /site/
 __pycache__/
 *.pyc
+target/
+node_modules/
+extensions/vscode/dist/
+*.vsix
+tooling/query-lab/.cache/
+
+build/smoke/
+extensions/vscode/.vscode-test/

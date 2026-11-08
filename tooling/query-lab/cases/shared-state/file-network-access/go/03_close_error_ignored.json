@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Propagate flush/close failure as part of backup completion.",
+  "original": {
+    "source_hash": "5bf80a9ce96474bab33e2ef46ee1c237dfb56b4a71058eee6cf43eeff1f9af17",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              461,
+              466
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "ba034d8c74745bd871c41b1fd2748aaef0ca01697c6cf94398cb28f800fa23d3",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              504,
+              509
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "backup error: flush failed: quota exceeded"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Buffered writers report errors on Close; deferring without checking loses them. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

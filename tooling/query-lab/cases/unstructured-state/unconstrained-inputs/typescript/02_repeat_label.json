@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Validate the label-size budget before repetition.",
+  "original": {
+    "source_hash": "81ffa549da7980d8c975578498383084f661eb3766ed98976b6bdf219f2baf4c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              39,
+              45
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "c7c123c9c27cf9e002f5917cdad398536be2e0ca1c97bbd500ccbe59e2f288a4",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              148,
+              154
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "label rejected"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. String repeat trusts the count (CWE-400). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

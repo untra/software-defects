@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return an explicit unavailable value for a zero divisor.",
+  "original": {
+    "source_hash": "f6caf8f2d58d2afea0c80d67372909884906b1cc722d797a2ace5107e30f9e73",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "division",
+            "range": [
+              58,
+              78
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              58,
+              65
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              68,
+              78
+            ]
+          },
+          {
+            "name": "operator",
+            "range": [
+              66,
+              67
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "3bf198144e7825b6511921bc6788cbf546074796c6157ff594cd6ebb4fda7dfb",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "division",
+            "range": [
+              84,
+              104
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              84,
+              91
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              94,
+              104
+            ]
+          },
+          {
+            "name": "operator",
+            "range": [
+              92,
+              93
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "current null"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Syntax captures remain in guarded fixes. Production analysis separately checks scoped denominator values and guards; dynamic aliases and dispatch remain unresolved."
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Apply field patches against current state after yielding instead of replacing with stale snapshots.",
+  "original": {
+    "source_hash": "add9115ada52a688963e7801dc8cdc09418cf4804128972826e3c5019650da00",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/race-conditions/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "3855189d3d7826ff3472600a23dda00aff215b38a8c20748731bb220b9b2bfa2",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/race-conditions/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "{ title: 'Final', body: 'Hello' }"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Last-write-wins without a version check or field-level patch (lost update). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

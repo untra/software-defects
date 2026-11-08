@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Expose and handle the optional search result.",
+  "original": {
+    "source_hash": "a863732f6cb19d4c6c7e5baf84d6e65a069c61f731ed979d3c5d596045e3789f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              189,
+              198
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "74a9c14526c744838722ae6937adf8a2caff9438ee08e1a46b0e480106f1e31a",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              201,
+              210
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "no administrator"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The loop can finish without returning; the property read then throws (CWE-476). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

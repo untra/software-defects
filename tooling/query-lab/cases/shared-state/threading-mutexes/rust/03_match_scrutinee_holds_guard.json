@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "End the temporary guard lifetime before reacquiring in the match arm.",
+  "original": {
+    "source_hash": "6247b00fc2c758417670dc166771c59a6f3f7ea7cef53015a5fdab40a950fd59",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/threading-mutexes/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              194,
+              198
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              245,
+              249
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "3323d880b796edcfed694635a3d46962f2f914097c6ae682584550b0ac9873e2",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/threading-mutexes/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              198,
+              202
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              264,
+              268
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "queue: [\"send-email-retry\"]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Temporaries in a match scrutinee are dropped at the end of the match. Establishing incorrect behavior requires semantic or domain evidence beyond these captures. Calls inside macro token trees are not parsed as call_expression nodes; macro expansion or a dedicated token-tree query is required."
+}

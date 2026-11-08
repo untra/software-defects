@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use non-owning peer links to break the strong reference cycle.",
+  "original": {
+    "source_hash": "12eeb77b63d1db8c32c9dfa0392b583c5fd8d096b0a5e8ca9e66ef783f758901",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              538,
+              543
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              596,
+              601
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "5a6d3953883707a723f0e8ef0c2ca3d81a97ca9e144a387dac8831bdbaba26ca",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              590,
+              599
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              652,
+              661
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "nodes freed after session ended: 2 of 2"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Reference cycles leak under reference counting; use Weak (CWE-401). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

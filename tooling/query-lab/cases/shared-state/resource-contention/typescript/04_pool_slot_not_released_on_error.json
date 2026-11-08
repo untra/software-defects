@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return the pool slot on both success and failure.",
+  "original": {
+    "source_hash": "6dea2fcf512819f19c1942d26e0c78af6af5d0224a7b7c9782277e0627a99280",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/resource-contention/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              294,
+              298
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              526,
+              533
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              604,
+              611
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "c16488c8d3485805c66e7ee4d7e343ab3f8ebc5ee887209a15d3bf0ea523341c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/resource-contention/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              294,
+              298
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              526,
+              533
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              656,
+              663
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "rows for select 1"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Release not in finally; each error permanently removes a connection (CWE-772). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

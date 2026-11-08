@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Store the live limiter pointer in the interface.",
+  "original": {
+    "source_hash": "bac28371a7d639d68d4f443397cd0d899c8a4e322318a353637cd3bcf4aa9fc2",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/this-mutation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              347,
+              352
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "b737efca7b08b5b9e506e88821d68be90c7e52e2dc10301d53e2b7b056db7a5d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/this-mutation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              348,
+              353
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "allow 50: true"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Interface values box a copy of non-pointer values. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

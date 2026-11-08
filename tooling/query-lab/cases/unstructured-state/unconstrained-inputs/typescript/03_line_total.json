@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject a non-finite product.",
+  "original": {
+    "source_hash": "83d1c8f6d10ecfddb15d1e007f63d0798f3b320f7b142d6b53fa0f6b8ca15cf0",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "cf861d05df716e96610e6cf6134fa0cdd4a814bb891f3ebf6e58e1b544e76c66",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "total rejected"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Number multiplication overflows to Infinity instead of rejecting the magnitude (CWE-190). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

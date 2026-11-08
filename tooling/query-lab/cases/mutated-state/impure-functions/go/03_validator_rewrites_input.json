@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Validate the quantity without rewriting the caller order.",
+  "original": {
+    "source_hash": "9b221b8c5f08fd380751456fa100e525304ff48d28838b6a8b566454df652d2e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/impure-functions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              170,
+              177
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              186,
+              195
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "c25c14c34598e456674d3e89cefd7f91b5edf468fc9cad38515dbd9d22331fdc",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/impure-functions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              167,
+              176
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "valid: false quantity to ship: 0"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Side effect on a pointer argument inside a function that should only answer a question (CWE-374). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

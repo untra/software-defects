@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Only allow external updates to the public name field.",
+  "original": {
+    "source_hash": "688d206fe82e2725a5cb4e8d9bdd0022ef286dda8a329d1e8f551f4380d1fef3",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/insecure-deserialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              129,
+              134
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              172,
+              178
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "ad6cd8ecb8ebbf6815fff0fae4d410f78e3cea96010b60719e15f36fc6ccab23",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/insecure-deserialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              125,
+              130
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              168,
+              174
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "name=ada admin=false"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Every key in the line is applied, including a flag the caller should not write (CWE-915). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

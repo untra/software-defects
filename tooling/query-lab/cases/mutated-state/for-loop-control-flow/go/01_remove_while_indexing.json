@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Remove from the end so shifting elements cannot skip the next candidate.",
+  "original": {
+    "source_hash": "ad550f933251162f167088e4c7345a8fa7b3baee3e6956655eb5fc6e3a4e0336",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/for-loop-control-flow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              210,
+              216
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "482f646ca36fb1ab17940843820578edd9a6b6754987ed45c1227692018c6afe",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/for-loop-control-flow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              215,
+              221
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "[active]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. In-place `append(s[:i], s[i+1:]...)` shifts later elements left while `i++` still advances. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

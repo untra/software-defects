@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Represent parameterized SQL separately from untrusted values; execution needs a database adapter.",
+  "original": {
+    "source_hash": "5ee1dbf6ccb2e0ee6a3b0598c83ba9d679ecb1f984b771b9c9decf16511811a1",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "3124a3b99969505088312c8621393d4a5d52c88677af5cda8f23515f5a299ae6",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "SELECT id FROM users WHERE name = ? [\"O'Brien\"]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The format string puts the name in the query text (CWE-89). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

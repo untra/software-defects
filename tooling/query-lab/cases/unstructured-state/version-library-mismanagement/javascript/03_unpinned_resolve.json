@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Resolve the tested exact release and fail if unavailable.",
+  "original": {
+    "source_hash": "f96899c8eb5603c05494eb331ba594c59d67f2f2215b478207e92609c4ea83ad",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/version-library-mismanagement/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              256,
+              269
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "fd3a18fc3bc3af5871bd5c41603dd50b1b9fe59a62d3816a6253322f69c106d1",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/version-library-mismanagement/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              379,
+              392
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "february 2024: 29 via 1.2.1"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. An unpinned dependency installs a later build than the one that was tested (CWE-1395). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

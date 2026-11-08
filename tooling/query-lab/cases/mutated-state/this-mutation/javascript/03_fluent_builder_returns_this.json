@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return an independent builder for each branch.",
+  "original": {
+    "source_hash": "4daacf463a0ad143b44d443f577a774ca1a876e2bd23a605e9e6f109ad9c1b14",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/this-mutation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              80,
+              84
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "e24c4c2226f8bb85efcb17088c894fe730b2062aa572c0d198f0a6b68b852fd8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/this-mutation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "WHERE active = true AND role = 'admin'\nSELECT * FROM users WHERE active = true AND role = 'guest'"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Fluent API returns the same mutable instance rather than a new builder. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

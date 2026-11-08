@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reuse a stable operation key across retries and atomically deduplicate on the simulated server.",
+  "original": {
+    "source_hash": "7a274f7ea3fc0e80e451dd233e1928817ff9439c9ed2350ca68e24d0f68a3605",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              356,
+              360
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              453,
+              458
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              827,
+              832
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "4ee62ea2c52ac2f8334da5b8288976620236a065ec9f6dca3d72d45aae95eb97",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              586,
+              588
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              629,
+              634
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              1131,
+              1136
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "card charged 1 times"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Timeouts are ambiguous; retrying non-idempotent requests duplicates side effects. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

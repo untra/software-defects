@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Initialize the prefix before invoking the function that reads it.",
+  "original": {
+    "source_hash": "05c552f62f01d6108a97bef212f68088910e5cfa7293a7d3a34f0b4deae9a54e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/improper-initialization/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "2093acded31261339c7d20eed5ae12b1b583883a6ef872cdfc66f5f71df49bce",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/improper-initialization/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "Welcome, guest"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `const` is in the temporal dead zone until its declaration executes. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

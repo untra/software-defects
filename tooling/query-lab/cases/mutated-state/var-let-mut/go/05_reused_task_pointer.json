@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Initialize a fresh task inside each loop iteration before taking its address; := does not imply immutability.",
+  "analysis_limit": "Syntax candidates do not establish incorrect behavior. Safe repair requires scope, data-flow and domain intent; legitimate mutation can remain after repair.",
+  "runtime": {
+    "status": "supported",
+    "stdout": "0 first\n1 second\ndistinct: true\n",
+    "exit_code": 0
+  },
+  "original": {
+    "source_hash": "76166ccfa5f488a12f9e545df945fb8ae0bce5b80d6dc11edd7162f64419afac",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/var-let-mut/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "1eb7d66d85cb03dee3fad3e6e4beb3adbd6cdb657b76f5d0e95ef58c15b98baf",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/var-let-mut/signals.scm",
+        "captures": []
+      }
+    ]
+  }
+}

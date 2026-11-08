@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Report insufficient funds rather than wrap to a large balance.",
+  "original": {
+    "source_hash": "9bf6f969c3c77e2805e6a9d8397fe6b0ca32e96311ecf873bd2913fd18f60037",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/increment-decrement-operators/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              60,
+              72
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "33de35aed0ec4f378facd5c8272779d52a19365c1c4c0951c435a42894b1475a",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/increment-decrement-operators/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "remaining balance: None"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Explicit wrapping arithmetic masks underflow instead of rejecting it; use checked_sub. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

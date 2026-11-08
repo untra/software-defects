@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Pass identifiers in their intended domain roles; generic strings cannot encode this distinction.",
+  "original": {
+    "source_hash": "aca82383ec3dc7357850cbe5881324084aeb6d5c0d9cfd315027ff0b0571a9d1",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/duck-typing-without-contracts/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "a996c4fba4dc04521a94ac6f01373bda1356b3615b78064b54ef5b11d0dc7d3f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/duck-typing-without-contracts/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "ship order o-4 to user u-9"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Both parameters are string, so the arguments type-check in either order (CWE-843). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

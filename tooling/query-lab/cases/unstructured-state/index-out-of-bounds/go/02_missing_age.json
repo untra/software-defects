@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use map presence instead of treating a missing value as age zero.",
+  "original": {
+    "source_hash": "75afa9b038d121e0f00cda2dabf171ad360e424a78d98ce5cce3c352f947a4bf",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "2f45e5ad081e69964c958eb97a42da495eef612eb2317f2388eb2eafb5b0f12d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "age unavailable"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Map reads return the zero value when the key is absent and the comma-ok bit is ignored (CWE-125). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

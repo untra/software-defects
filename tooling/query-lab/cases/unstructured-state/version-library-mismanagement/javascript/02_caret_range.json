@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Match the tested exact version.",
+  "original": {
+    "source_hash": "7fae893374b3aca47c60e3a29a499c252f870cf6faf5cfa75986b2a855d7789f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/version-library-mismanagement/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              293,
+              305
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "387339cfa41b819cca5c708efc0efdfde4997ec948e740f4f4f3a6b2616d087b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/version-library-mismanagement/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              316,
+              329
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "february 2024: 29 via 1.2.0"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `^1.2.0` allows any later 1.x (CWE-1395). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Detach and destroy the linked history iteratively.",
+  "original": {
+    "source_hash": "cbafb17e5affa2a7c096e3a110c5946c96766d9809f23c66affdfebd72dad25c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/stack-overflow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              356,
+              360
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "849635dee6f701adc709217d12ad98c137d09fba62fcf81e02ca0c3c169e93bf",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/stack-overflow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              594,
+              598
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "history cleared"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Compiler-generated Drop for nested Box is recursive; implement an iterative Drop. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

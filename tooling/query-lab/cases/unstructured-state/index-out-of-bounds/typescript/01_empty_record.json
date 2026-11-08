@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Guard the missing first record.",
+  "original": {
+    "source_hash": "52ab58bc6d9dedb573a1fdd7bee92b29adcf2a1e07cdbe707ada533062b2d98c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "1aa37a310e4731de57bbbe71e7e74ac8f4630a740254f08c45ec2cd003c8c135",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "id unavailable"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. An out-of-range index is undefined; the property read then throws (CWE-476). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Keep the uniqueness check and insert in the same synchronous turn. A real database needs a unique constraint.",
+  "original": {
+    "source_hash": "a159ca3a796bd920d4f3686a55c139bc3c5fa86f4637fd83949e78ef5a2e2be0",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              262,
+              266
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              376,
+              380
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "4b6281186072f8b31ec839a0026e815dd44f527058ad6faf02886adbf433a93a",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              309,
+              313
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              376,
+              380
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "accounts for ana@example.com: 1"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Check-then-act split by an await is a TOCTOU race. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

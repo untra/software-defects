@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Merge into a fresh object instead of the shared default settings.",
+  "original": {
+    "source_hash": "a11b31604350d36b063c04b5b9c232bf0486700148a8ffb41681fd7c17957031",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              148,
+              154
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "8692a57e30af00f565fa4a47367e66c233b576492dbf489124d98972012a08bc",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              148,
+              154
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "alice { theme: 'dark', fontSize: 14 }",
+      "bob { theme: 'light', fontSize: 18 }"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. First argument of Object.assign is the mutation target. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Treat whitespace-only email input as absent.",
+  "original": {
+    "source_hash": "9aef184fc0b47f1f4ccebcd15b33eba0be37b9930774fadae17c601506f71a60",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "4f02d596b94a8b4575dc5cd4967f8a9ed38cf5ed202eba1e03855d4349e548ac",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "missing"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `if (!email)` rejects only empty strings, not blank or malformed ones (CWE-20). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

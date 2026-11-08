@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Pass a per-call rate instead of changing the shared default. This requires an API/call-site change, not an automatic global-keyword removal.",
+  "analysis_limit": "Syntax candidates do not establish incorrect behavior. Safe repair requires scope, data-flow and domain intent; legitimate mutation can remain after repair.",
+  "runtime": {
+    "status": "supported",
+    "stdout": "before 5.0\nafter 5.0\n",
+    "exit_code": 0
+  },
+  "original": {
+    "source_hash": "2b0c16b955f20c27c179539373f8f011ddcdf2795f81e5a7fbe383bc6d758d4d",
+    "queries": [
+      {
+        "query": "queries/python/mutated-state/var-let-mut/signals.scm",
+        "captures": [
+          {
+            "name": "binding",
+            "range": [
+              0,
+              11
+            ]
+          },
+          {
+            "name": "write",
+            "range": [
+              0,
+              11
+            ]
+          },
+          {
+            "name": "binding",
+            "range": [
+              113,
+              129
+            ]
+          },
+          {
+            "name": "write",
+            "range": [
+              113,
+              129
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "5b927438db169c11e6619ec2866e20e353fc14bae11049b4e6f5167a7211eebb",
+    "queries": [
+      {
+        "query": "queries/python/mutated-state/var-let-mut/signals.scm",
+        "captures": [
+          {
+            "name": "binding",
+            "range": [
+              0,
+              11
+            ]
+          },
+          {
+            "name": "write",
+            "range": [
+              0,
+              11
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

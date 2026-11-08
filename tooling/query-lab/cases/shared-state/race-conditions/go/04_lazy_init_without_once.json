@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Publish initialized immutable registry state through sync.Once.",
+  "original": {
+    "source_hash": "64681e48b54f164b8c8b57844334b07032e2ce540790e4aa31a2d518f2120325",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              269,
+              272
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              404,
+              407
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "b059a657d5d0718952804e139916dd3cef8d82e3d2b01341954a9579be971616",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              254,
+              256
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              300,
+              303
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              436,
+              439
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "registry loaded 1 times"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Unsynchronized check-then-set on a shared global; use sync.Once. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

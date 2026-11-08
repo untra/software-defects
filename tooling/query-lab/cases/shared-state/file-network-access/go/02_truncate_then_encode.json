@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Serialize first, then write and atomically rename a temporary file to preserve existing configuration on failure.",
+  "original": {
+    "source_hash": "9a7f16958ac52975398040911cf96e5de8fb1a99c84b808396a3f2554a9c7bf7",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              239,
+              245
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              294,
+              299
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              465,
+              474
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "172024e1286ec59cec9bae79ed976d441897ce42944ad5f3d257b8ef575edf2f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              304,
+              314
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              457,
+              462
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              527,
+              532
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              589,
+              594
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              626,
+              631
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              822,
+              831
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "config on disk now: \"{\\\"Name\\\":\\\"production\\\"}\""
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Non-atomic in-place write; write to temp and rename. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

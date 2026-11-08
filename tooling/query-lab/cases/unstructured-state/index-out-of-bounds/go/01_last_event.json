@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Check empty input before computing the final index.",
+  "original": {
+    "source_hash": "8e390a929ec3d3d5ac347e689044dea8c162e00148a22591167032b73a85251a",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              91,
+              94
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "a33271b15fcb9691d50dcb00da82127a24f4ac2e8095aa26b016c4bc8304995f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              67,
+              70
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              153,
+              156
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "no events"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `len-1` on an empty slice is -1, and the index check panics (CWE-129). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

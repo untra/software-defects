@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Include locale in the cache key.",
+  "original": {
+    "source_hash": "8086334f11350c7f47812c3dc8bf99c799acbeed4583614676af90b60aad4426",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/impure-functions/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "784d8005770867474ae62283673d561676eff7afe2cd6b6385ccab2d537afbee",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/impure-functions/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "1.234,50"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Cache key omits a hidden dependency, returning stale results after state changes. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

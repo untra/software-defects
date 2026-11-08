@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Release the async lock even when validation throws.",
+  "original": {
+    "source_hash": "356ff4abd5cbcb47196afdb95f0d336208629883842b24c1449dfa787bfaa720",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/threading-mutexes/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              444,
+              451
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              511,
+              518
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "8a655546d49974a63c1705b4101aa4af9865f915b9001e60cd27317727120bf5",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/threading-mutexes/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              444,
+              451
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              529,
+              536
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "entry posted"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Release not in finally (CWE-667). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use bounded-channel backpressure and join the consumer before completion.",
+  "original": {
+    "source_hash": "8b34be29a02ebeef47912bbc35a845d74ada443142d961ff0a2fde17b0743f37",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/resource-contention/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              466,
+              471
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "bbd90469d32e8c05e3151c67593e23a2f247781b40c10bcbd3f0356bcf7216e7",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/resource-contention/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              497,
+              502
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "backlog over 1000 events: false"
+    ],
+    "exit_code": 0,
+    "timeout_seconds": 30
+  },
+  "analysis_limit": "These are syntax candidates only. No backpressure: memory grows with the backlog. Use sync_channel. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

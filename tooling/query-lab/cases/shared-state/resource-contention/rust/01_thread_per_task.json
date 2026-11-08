@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use a fixed worker pool consuming an atomic task index.",
+  "original": {
+    "source_hash": "6f2ffd444526c7648a5812aca7a0caca6afd28c836000cf9ddb37f70c25365d3",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/resource-contention/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              443,
+              448
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "7accd03c0a13ad2836b012bd21bfa74c2ceb48d5b53c6a898397d61ac3f541f3",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/resource-contention/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              537,
+              542
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "peak OS threads exceeded 8: false"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Unbounded thread creation exhausts scheduler and memory (CWE-770). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,149 @@
+# Query Lab
+
+Query Lab is an external-first development CLI for Tree-sitter queries. It runs the official Tree-sitter CLI against the same grammar packages as State Lens, reads `.scm` edits immediately, and reports exact captures as JSON. It does not execute source during parsing or query testing.
+
+The supported development corpus has 388 original/fixed pairs and 88 experimental language/category packs, including Python volatile-properties, and source-hashed sidecar expectations. These packs expose **syntax candidates**, not validated bug diagnostics. Correct fixes often retain captures. Coverage reports distinguish tested cases from cases containing candidates; neither is detector accuracy. Examples subsequently added in other languages appear separately in `unsupported_cases`; supported-language tests neither execute them nor claim to cover them.
+
+## Setup
+
+Requires macOS or Linux, Python 3.12+, Cargo/Rust, and a C compiler. Runtime checks additionally need Go and Node 22.20+. CI uses Rust 1.95.0 and Go 1.26.3. From the repository root:
+
+```sh
+python3 tooling/query-lab/query_lab.py setup
+python3 tooling/query-lab/query_lab.py doctor
+```
+
+Only `setup` downloads dependencies. It installs `tree-sitter-cli` 0.25.10 locally and verifies grammar crate downloads against `tooling/state-lens/Cargo.lock`: Go 0.25.0, Rust 0.24.0, TypeScript 0.23.2, and Python 0.25.0. It builds the supplied parser C sources without regenerating grammars. Configuration and native libraries live in the ignored `.cache/`, keyed by platform and package pins; global Tree-sitter configuration is not used. Setup is serialized with a file lock. Changing a grammar pin requires updating both projects together.
+
+## Agent workflow
+
+```sh
+python3 tooling/query-lab/query_lab.py list --language go --defect divide-by-zero
+python3 tooling/query-lab/query_lab.py nodes --language go --kind binary_expression
+python3 tooling/query-lab/query_lab.py parse examples/unstructured-state/divide-by-zero/go/01_panel_current.go --lines 5:10 --format text
+python3 tooling/query-lab/query_lab.py check --language go --query tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm
+python3 tooling/query-lab/query_lab.py run --query tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm --source examples/unstructured-state/divide-by-zero/go/01_panel_current.go
+python3 tooling/query-lab/query_lab.py compare --case unstructured-state/divide-by-zero/go/01_panel_current
+python3 tooling/query-lab/query_lab.py test --language go --defect divide-by-zero
+python3 tooling/query-lab/query_lab.py test
+python3 tooling/query-lab/query_lab.py coverage
+```
+
+Inspect the syntax tree and grammar fields before editing a query. Use normal file-editing tools to create or modify `.scm` files, then `check`, `run`, and `test` without a rebuild. Compile failures include Tree-sitter's node/field/syntax diagnostics. `list` includes matching query paths and limitations. `compare` returns actual captures, missing/unexpected captures, expected captures for each variant, and the repair rationale.
+
+Outputs have `schema_version: 1`; JSON is the default. Use `--format text` before or after the subcommand for readable output. Captures include pattern indices, names, captured source text, and **half-open UTF-8 byte ranges**. `--lines` is an inclusive, one-indexed display filter that retains enclosing tree nodes; it does not parse a detached snippet. These are Tree-sitter concrete syntax trees, not compiler-resolved ASTs.
+
+Each query invocation uses private immutable source/query snapshots and reports their SHA-256 hashes and grammar version. Sources over 2 MiB, commands exceeding 30 seconds, and combined subprocess output over 16 MiB fail explicitly. Parser errors remain visible. The adapter rejects unknown output and match-limit warnings; unsupported custom predicates/directives are rejected instead of silently ignored. Supported predicates are the Rust binding's equality, regex, and string-set predicates. An unsupported node-kind lookup returns an empty list.
+
+Exit codes: `0` successful execution or matching expectations; `1` expectation/runtime mismatch; `2` invalid input, stale expectations, parse error, missing tools, timeout, or incomplete execution. A query returning no matches succeeds. Failed batch cases are retained in the JSON report instead of hiding later cases. Compilation and execution never upload source.
+
+## Expectations and interpretation
+
+`cases/<family>/<defect>/<language>/<example>.json` links to the original and mirrored fixed source through its location. Each sidecar contains:
+
+- Source hashes, repair rationale, and analysis limitations.
+- Independently specified capture-name/range multisets for both variants, including explicit empty results.
+- Query paths and a separate behavioral oracle with expected exit status and stdout assertions.
+
+The initial expectations were anchored in reviewed source tokens, then checked against grammar boundaries. They were not recorded by copying detector output. In particular, declarations are not calls, and Rust macro token trees do not expose embedded calls as ordinary `call_expression` nodes. The tests assert these boundaries. There is no snapshot-update or automatic blessing command: inspect a changed source/query and edit its expectations deliberately. After whitespace edits, update source hashes and ranges without changing the intended capture tokens.
+
+The experimental API-name queries intentionally do not infer receiver types or resolve shadowed functions. A method named `lock`, for example, is only a candidate. The arithmetic query captures division/remainder operators even when guarded correctly. No source filename, manifest explanation, `bug_lines`, or susceptibility score is supplied to a query. Existing `bug_lines` keep their bug-location meaning.
+
+All experimental packs live under this tool, **outside production `queries/`**, because State Lens embeds every `.scm` in that directory. Promotion requires supported semantic handlers, production metadata, independent analyzer expectations, and State Lens validation. Division/remainder queries are also embedded in production, where denominator and guard analysis determine diagnostic severity. Other experimental packs remain separate.
+
+## Behavioral checks and tests
+
+```sh
+python3 tooling/query-lab/query_lab.py verify-fixes --case mutated-state/var-let-mut/go/01_shadowed_err_in_if
+python3 tooling/query-lab/query_lab.py verify-fixes
+python3 -m unittest discover -s tooling/query-lab -p 'test_*.py'
+cargo test --locked --manifest-path tooling/state-lens/Cargo.toml --test query_lab -- --ignored
+```
+
+`verify-fixes` is the only corpus command that executes example code. It copies each fixed source into a separate temporary directory, builds Go/Rust examples individually, preserves the corpus Go module semantics, and runs with a bounded process group, CPU/file/descriptor limits, and a temporary filesystem location. The default runtime deadline is 15 seconds, with a sidecar override capped at 30 seconds. Original crashing/racy examples are not executed. This is resource-bounded execution of repository fixtures, not a security sandbox for arbitrary untrusted programs. Network fixtures use local loopback servers and require permission to bind sockets.
+
+Some example reports measure elapsed time. Their results are development checks, not performance guarantees or proofs of race freedom. Unsupported behavioral checks must carry an explicit reason; they are reported separately. The malformed Rust length-prefix example rejects the invalid record rather than guessing its intended contents; its rationale records that ground-truth ambiguity.
+
+Tests cover adapter failure modes, Unicode/CRLF byte ranges, duplicate/multiline captures, live query edits, malformed syntax, stale hashes, corpus completeness, and a positive/benign-negative syntax control for every pack. The explicit Rust parity test compares all 30 embedded production queries on representative fixtures against direct captures from the pinned Rust bindings. CI separates static query tests from fixed-example execution and uploads both reports.
+
+## Optional external editing assistance
+
+[ts_query_ls](https://github.com/ribru17/ts_query_ls#standalone-tool) supplies standalone `check`, `lint`, `format`, and editor completion. It is optional and is not installed by setup; the pinned official CLI remains authoritative for compilation and execution. [Official query CLI documentation](https://tree-sitter.github.io/tree-sitter/cli/query.html) describes direct usage, but newer documentation may include flags absent in the pinned version. Prefer the installed CLI's `--help` when invoking it directly.
+
+Python parsing and execution are available, but corpus query coverage is limited to volatile-properties; other Python categories remain explicitly unsupported pending reviewed packs and expectations. See [operation coverage](../../examples/mutated-state/volatile-properties/REVIEW.md).
+
+## Reviewed repair previews
+
+`repair-preview` creates a patch in memory from explicit, source-hashed recipe
+edits in a reviewed case sidecar. It parses and analyzes both snapshots in a
+temporary directory and emits a source patch, AST text diff, and analysis reports.
+It does not apply the patch to repository files. The candidate must exactly match
+the reviewed fixed fixture before its existing behavioral check can run.
+
+```sh
+python3 tooling/query-lab/query_lab.py repair-preview \
+  --case unstructured-state/divide-by-zero/typescript/01_panel_current \
+  --analyzer tooling/state-lens/target/debug/state-lens --run-behavior
+```
+
+Initial recipes cover that denominator guard and
+`mutated-state/aliasing-mutable-defaults/typescript/01_shared_default_parameter`.
+Other cases report unsupported. Stale hashes, overlapping edits, incorrect source
+preconditions, unreviewed outputs, and parse errors reject the preview.
+`--run-behavior` explicitly opts into the existing bounded fixture runner.
+
+This is reviewed edit replay, not general repair synthesis. AST text differences
+do not establish binding-aware operation correspondence. Analysis reports and
+behavioral results remain separate; neither diagnostic disappearance nor a passing
+fixture establishes general correctness. Valid-input regression variants and
+binding-aware structural matching remain follow-up work.
+
+## Semantic pair pilots
+
+Semantic specifications live in the `semantic` field of reviewed pair sidecars.
+They record AST edits, changed facts, failure conditions, blocking reasons,
+applicability assumptions, source hashes, and explicit contracts. The extractor
+receives only source; it never reads these expectations. Its facts remain
+candidates until checked against a reviewed contract.
+
+```sh
+python3 tooling/query-lab/query_lab.py semantic-inventory
+python3 tooling/query-lab/query_lab.py semantic-compare \
+  --case mutated-state/var-let-mut/go/01_shadowed_err_in_if \
+  --analyzer tooling/state-lens/target/debug/state-lens
+python3 tooling/query-lab/query_lab.py semantic-preview \
+  --case mutated-state/aliasing-mutable-defaults/javascript/03_shallow_spread_copy \
+  --analyzer tooling/state-lens/target/debug/state-lens --run-behavior
+```
+
+The Go pilot compares assignment target and return-consumer binding identities,
+selecting the reviewed producer call rather than treating all same-named writes
+as equivalent. The JavaScript pilot compares allocation identities at the written
+and read properties. An explicit nested copy separates `db`, not every deeper
+object. Spread precedence is modeled. Unknown calls, getters, dynamic indexes,
+nontrivial control flow, and ambiguous targets reject JavaScript validation.
+
+Semantic previews generate edits from these relationships, then re-extract facts
+and check the blocking postcondition. The resulting candidate need not equal the
+fixed fixture byte-for-byte. Opt-in behavioral checks execute the actual candidate,
+verify the original violates the reviewed output contract, and run reviewed input
+variants. These checks use the existing bounded fixture runner. No repository
+source is modified. The original `repair-preview` command remains exact edit replay.
+
+The inventory includes manifest-authored examples, including compound examples,
+and fixed counterparts. It distinguishes unpaired, unsupported, reviewed, and
+stale cases; semantic comparison additionally reports ambiguous or failed cases.
+Reviewed inventory status alone is not a passing semantic comparison.
+
+These pilots are a separate development analysis API, not full control-flow or
+ownership analysis. Go binding facts do not prove that every path reaches a return.
+Contracts and source hashes bound repair applicability to the reviewed fixtures.
+General cross-file traces and promotion into editor diagnostics remain unsupported.
+
+## Structured task execution
+
+See [task-chain instructions](tasks/README.md) for strict task packets, registered
+tools, manual model handoffs, resumable execution, artifact schemas, and evidence
+requirements. `task_runner.py` is a separate command so existing Query Lab commands
+retain their contracts. This runner requires the pinned `jsonschema` dependency in
+`requirements.txt`. Production graph extraction uses the graph emitted by `scan`.

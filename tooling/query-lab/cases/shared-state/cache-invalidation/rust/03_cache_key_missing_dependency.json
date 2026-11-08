@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Include the destination country in the shipping quote key.",
+  "original": {
+    "source_hash": "c2210c440973c0de62842c6b7ae6f68a99399aad3aff755a9993d54d19f99517",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/cache-invalidation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              362,
+              368
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              555,
+              561
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "30865b771308a0604c12456110c415432625191a8ec4c18664c09c6f7c065d30",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/cache-invalidation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              466,
+              472
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              679,
+              685
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "shipping to JP quoted at 2500 cents"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Cache key omits an input; the address change does not invalidate. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

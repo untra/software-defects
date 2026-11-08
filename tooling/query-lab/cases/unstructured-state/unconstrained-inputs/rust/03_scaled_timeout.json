@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject unrepresentable timeout values rather than truncate.",
+  "original": {
+    "source_hash": "bea8b90fa271541b616a375ab02d390c96f2dfbdba8fcc37cd645943d610e759",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "ce40961aab293c8d62b3d220b01154375e9ced8e39de7ca9ab5dd8a6a76ec1bf",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "timeout rejected"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `as u32` drops the high bits instead of failing the conversion (CWE-190). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

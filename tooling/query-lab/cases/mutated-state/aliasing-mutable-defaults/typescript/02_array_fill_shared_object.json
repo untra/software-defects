@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Allocate one seat object per array element.",
+  "original": {
+    "source_hash": "8d7330832d9f731083fb40f0d2390cd702f75cd14f3b9e306d198cbb9e8860d1",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              59,
+              63
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "0d271674a5846c5dece2ee41bb1728c782a21bad3ca11010ce80bd6467c5938d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "'ana', 'open', 'open'"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `Array.prototype.fill` copies the reference, not the value. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

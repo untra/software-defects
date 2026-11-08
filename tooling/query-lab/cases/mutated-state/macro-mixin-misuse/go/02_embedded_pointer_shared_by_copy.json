@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Copy the embedded stats value for an independent handler.",
+  "original": {
+    "source_hash": "d190edf4e61638cee596b8ed7d0ab0d57ef1759316fa562860cb9015b00c2f43",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/macro-mixin-misuse/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "86cb2a61a205c719c455199d757625b967b2e25c3e590db52f5660e7984548ae",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/macro-mixin-misuse/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "/ 1 | /api 2"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Embedded pointer is copied as a pointer; promoted fields alias the same Stats. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

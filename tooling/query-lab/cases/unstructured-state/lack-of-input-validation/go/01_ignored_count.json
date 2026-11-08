@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Handle the conversion error before using the quantity.",
+  "original": {
+    "source_hash": "433915bb436435af537d6bf825b0878c2fd564a3955ca4e989306454254be949",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              97,
+              101
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "b1ccaef912ff8537484431c6026bb5608700f29462acf2b525b0474d9064ce4a",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              99,
+              103
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "token rejected"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The parse error is discarded, so the zero value is treated as a count (CWE-20). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

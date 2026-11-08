@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Allocate the large frame directly on the heap.",
+  "original": {
+    "source_hash": "0e97decfb8bbe98d15766bdf2c108508ef34dba31b3659f8acc5e7bbad3e2c27",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/stack-overflow/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "9a2b86dfc9a3bd76c0cb44529b5914d927e440243279e532ca0b0f5680e0c484",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/stack-overflow/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "checksum 16777216"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Fixed-size arrays live on the stack (CWE-121); use Vec/Box. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

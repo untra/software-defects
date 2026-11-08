@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return a detached slice rather than expose internal storage.",
+  "original": {
+    "source_hash": "2d806f3299467f3e531932e3ea4df2cba320e1e073312afbd3bdf4ee5c5b75c2",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "2a3d33e35402bc4f27443319044fffc7183991b7cccc894c8e2f66aad5083db6",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              116,
+              122
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "[ana ben]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Returned slice shares the backing array with the struct field (CWE-375). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

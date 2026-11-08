@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use integer cents for exact monetary accumulation.",
+  "original": {
+    "source_hash": "ecfcda249c1966001b5ea2c9f17eb53317b47445a2292d3f7338afd2a7b3dc8f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/time-money-entropy/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "8a6b123f348f44ff281308f36b3553fed8626aedd3a29fec8ddd90ac500de617",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/time-money-entropy/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "goal reached"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Binary floating point accumulates representation error (CWE-1339). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

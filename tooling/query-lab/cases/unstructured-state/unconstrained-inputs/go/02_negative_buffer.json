@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Bound allocation size before calling make.",
+  "original": {
+    "source_hash": "5aea77c282308db4654a5867db93dca2ddca025fb60cca5994d7cf6eaa8aa292",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              67,
+              71
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "38a194acab45cae39b187a254aa003ab3e4e1240286e9a57a32a679165a68058",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              192,
+              196
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "request rejected"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. A length from the caller is not checked before allocation (CWE-400). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

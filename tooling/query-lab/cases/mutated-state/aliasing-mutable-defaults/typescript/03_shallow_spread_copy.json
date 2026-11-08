@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Copy the nested database configuration before changing its host.",
+  "original": {
+    "source_hash": "8d5948433e900b6b067d98f86d72c05584130b1ba0fc0ff33f96944c11e4d8d9",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "7c3501a7e78d92b53f3e6596fe4efdd16acd3d854b63177bc8ef65ac4101cab4",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "prod -> db.internal"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Nested `db` object is shared between both configs. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

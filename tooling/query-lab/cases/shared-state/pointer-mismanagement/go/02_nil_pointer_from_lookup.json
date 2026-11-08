@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Handle a missing map entry before dereferencing the pointer.",
+  "original": {
+    "source_hash": "e673648c6c5be90e46609c0e612a8e28fb356fb0d34d979f4c79f00491ff0776",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/pointer-mismanagement/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "67f18088c41c0c96aa6673d445901ed1d39e1fc28d0d666d845c07feef9595d5",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/pointer-mismanagement/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "ana\nunknown user"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Map lookup of a pointer type returns nil for absent keys (CWE-476). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

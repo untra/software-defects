@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "purpose": "Manually specified susceptibility regression expectations; not held-out bug labels.",
+  "cases": [
+    {
+      "file": "typescript/pure.ts",
+      "source_hash": "6a4b4638bbecf5607940f616a1153473476b1316075fa409869c16dcbefd68a5",
+      "expected": []
+    },
+    {
+      "file": "go/pure.go",
+      "source_hash": "30e1f4946b1a97668149b1dcdabd68e8c13efa1efd6119c80a2627e9e6878dd9",
+      "expected": []
+    },
+    {
+      "file": "rust/pure.rs",
+      "source_hash": "b9ebac9612a14a69caa56ac6263f8aed28f393d16d903b89497a8d7d2e9bf745",
+      "expected": []
+    },
+    {
+      "file": "typescript/clock.ts",
+      "source_hash": "57fcfcc3abac3b1a4bf0d3a16e9a55ef696c9b8daaf8094f046fe1bff39c11f1",
+      "expected": [
+        {
+          "defect": "time-money-entropy",
+          "trigger": {
+            "start": 47,
+            "end": 57
+          },
+          "function": {
+            "start": 7,
+            "end": 60
+          },
+          "effect": {
+            "kind": "nondeterminism"
+          },
+          "origin": "direct"
+        }
+      ]
+    },
+    {
+      "file": "typescript/caller.ts",
+      "source_hash": "292ce63ce9e80b7f2786f62002cc6c2e45bad59ebd74c71280e1e0f4e49c2094",
+      "expected": [
+        {
+          "defect": "time-money-entropy",
+          "trigger": {
+            "start": 100,
+            "end": 113
+          },
+          "function": {
+            "start": 59,
+            "end": 116
+          },
+          "effect": {
+            "kind": "nondeterminism"
+          },
+          "origin": "propagated"
+        }
+      ]
+    },
+    {
+      "file": "typescript/local.ts",
+      "source_hash": "b62346bd8fa2127ca1ced2304d7dd7bb193c13fe6e42a3e81b65990adfe205b3",
+      "expected": [
+        {
+          "defect": "var-let-mut",
+          "trigger": {
+            "start": 50,
+            "end": 70
+          },
+          "function": {
+            "start": 7,
+            "end": 99
+          },
+          "effect": {
+            "kind": "local_mutation"
+          },
+          "origin": "direct"
+        },
+        {
+          "defect": "increment-decrement-operators",
+          "trigger": {
+            "start": 73,
+            "end": 80
+          },
+          "function": {
+            "start": 7,
+            "end": 99
+          },
+          "effect": {
+            "kind": "local_mutation"
+          },
+          "origin": "direct"
+        },
+        {
+          "defect": "aliasing-mutable-defaults",
+          "trigger": {
+            "start": 54,
+            "end": 69
+          },
+          "function": {
+            "start": 7,
+            "end": 99
+          },
+          "effect": {
+            "kind": "structural_signal"
+          },
+          "origin": "direct"
+        }
+      ]
+    },
+    {
+      "file": "typescript/argument.ts",
+      "source_hash": "3ca36cd8da546f222d769bc6dad1a01de6fd07754bc130de023c6a0456a63d27",
+      "expected": [
+        {
+          "defect": "impure-functions",
+          "trigger": {
+            "start": 50,
+            "end": 63
+          },
+          "function": {
+            "start": 7,
+            "end": 66
+          },
+          "effect": {
+            "kind": "argument_mutation",
+            "parameter": 0
+          },
+          "origin": "direct"
+        }
+      ]
+    },
+    {
+      "file": "go/clock.go",
+      "source_hash": "d8f2e66a945efc493490f865825daa036676f14d3466b0bc7fad0b52f21e7185",
+      "expected": [
+        {
+          "defect": "time-money-entropy",
+          "trigger": {
+            "start": 76,
+            "end": 87
+          },
+          "function": {
+            "start": 38,
+            "end": 89
+          },
+          "effect": {
+            "kind": "nondeterminism"
+          },
+          "origin": "direct"
+        }
+      ]
+    },
+    {
+      "file": "rust/clock.rs",
+      "source_hash": "0c7e407862de0511d9d72f577c5dd797795926f90ad0db80a70a01addac044e0",
+      "expected": [
+        {
+          "defect": "time-money-entropy",
+          "trigger": {
+            "start": 67,
+            "end": 84
+          },
+          "function": {
+            "start": 28,
+            "end": 86
+          },
+          "effect": {
+            "kind": "nondeterminism"
+          },
+          "origin": "direct"
+        }
+      ]
+    }
+  ]
+}

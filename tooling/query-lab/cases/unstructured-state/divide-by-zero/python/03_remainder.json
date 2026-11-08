@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return None when the divisor is zero; valid inputs retain their result.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "None"
+    ]
+  },
+  "original": {
+    "source_hash": "7e123de73c3762ba394d79267fc77c89b61210ed0423758724e56a5035eafc05",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "division",
+            "range": [
+              41,
+              56
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              41,
+              46
+            ]
+          },
+          {
+            "name": "operator",
+            "range": [
+              47,
+              48
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              49,
+              56
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "fe1c068408d5d82612e30de58af1517e8020da31a8cfd9f7db5e70512287fb89",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "division",
+            "range": [
+              67,
+              82
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              67,
+              72
+            ]
+          },
+          {
+            "name": "operator",
+            "range": [
+              73,
+              74
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              75,
+              82
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "analysis_limit": "Syntax captures remain in guarded fixes. Production analysis separately checks scoped denominator values and guards; dynamic aliases and dispatch remain unresolved."
+}

@@ -80,6 +80,12 @@ site/
 
 ---
 
+## State Lens tooling
+
+The [State Lens analyzer](tooling/state-lens/README.md) adds Tree-sitter query packs, a corpus coverage ledger, source-only blind exports, and a [VS Code susceptibility lens](extensions/vscode/README.md) for Go, Rust, and TypeScript. The first release highlights mutated-state mechanisms and resolved effect propagation; highlighted code is not necessarily buggy. This tooling is independent of the static site build.
+
+[Query Lab](tooling/query-lab/README.md) provides a pinned external Tree-sitter CLI workflow for inspecting syntax trees, editing and testing live queries, and comparing 284 Go/Rust/TypeScript examples with their [fixed counterparts](examples-fixed/README.md). Its 84 experimental query packs expose syntax candidates separately from production analyzer diagnostics.
+
 ## Rebuilding
 
 Requires Python 3.10+.

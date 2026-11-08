@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Invalidate the cached value after updating its backing record.",
+  "original": {
+    "source_hash": "4466377b355806a746bab3a9275ab3e0084a1310e2e89071247576afb10abed9",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/cache-invalidation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "e40e81265eebc10197e5fe72253c1aea8e0f345a2daf7b8f9b870769dc1e5ce8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/cache-invalidation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              327,
+              333
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "password reset sent to: new@example.com"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Write path does not invalidate the read-through cache (CWE-524). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

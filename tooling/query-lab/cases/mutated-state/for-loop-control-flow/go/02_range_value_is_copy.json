@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Write the slice element instead of a copied range value.",
+  "original": {
+    "source_hash": "f591893a9dcca09e3e75bd461f542976520c275e76b5e17d9d1aeeddba2c6e4e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/for-loop-control-flow/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "aaea485ae4afc7765126b261362043b51f964384aecb2f195d59ba7142448558",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/for-loop-control-flow/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "[{a 105} {b 205}]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `for _, v := range` yields a copy of each struct. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

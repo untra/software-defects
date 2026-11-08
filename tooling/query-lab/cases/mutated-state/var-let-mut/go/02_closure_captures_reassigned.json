@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Each closure captures a distinct parameter binding. Capture lifetime and reassignment require semantic analysis.",
+  "original": {
+    "source_hash": "a86e922eee446e9bad157411a4240fbed37d5ab8d151c0306230cfb1456c24a8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/var-let-mut/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "27a0c366ca36510d42ae82a6f239103d46d648f7cf246ee245f2862a0b01962e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/var-let-mut/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "welcome email to alice\nwelcome email to bob"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Go closures capture variables by reference; `user = \"bob\"` rewrites the binding both closures share. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

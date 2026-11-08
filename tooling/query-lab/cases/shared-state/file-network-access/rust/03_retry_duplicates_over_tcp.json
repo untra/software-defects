@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Carry a stable operation ID and deduplicate committed requests across reconnects.",
+  "original": {
+    "source_hash": "86c47daa2c97454cf4cfcb16bd0c2d4891cfd584a572e507cac9987c8cf58e17",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              537,
+              544
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              622,
+              631
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              1610,
+              1619
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "d7f44eb4b2b4f347b4372b8f2324fbb741f76a7ce587409b5519f0614dc492e6",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              630,
+              637
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              715,
+              724
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              1955,
+              1964
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "orders created 1"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Retry without idempotency over an ambiguous failure. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

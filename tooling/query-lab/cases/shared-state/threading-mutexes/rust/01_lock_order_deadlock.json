@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Serialize transfers before acquiring either account guard.",
+  "original": {
+    "source_hash": "9bd4ad78943b3a3218e3d002f11cde218ce5e2533bb2132465b0b32734360dba",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/threading-mutexes/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              277,
+              281
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              347,
+              351
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "5186d958fd250f668ae891fd737e32d4b771bad91abad20dc36e896886153fab",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/threading-mutexes/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              382,
+              386
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              425,
+              429
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              495,
+              499
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "balances 110 90"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Inconsistent lock ordering (CWE-833). Establishing incorrect behavior requires semantic or domain evidence beyond these captures. Calls inside macro token trees are not parsed as call_expression nodes; macro expansion or a dedicated token-tree query is required."
+}

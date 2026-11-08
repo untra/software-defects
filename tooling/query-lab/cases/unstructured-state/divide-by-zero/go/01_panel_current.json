@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject a zero divisor before computing the ratio or remainder.",
+  "original": {
+    "source_hash": "0547d2d80d093927961a0967aa3d5372d4fd222f00deef7729bd437f7bcedc45",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "division",
+            "range": [
+              86,
+              106
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              86,
+              93
+            ]
+          },
+          {
+            "name": "operator",
+            "range": [
+              94,
+              95
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              96,
+              106
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "96f81e5d84ecef650c735268bd4137605303cd7158d4d2bf6f0bd144ef3320ee",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "division",
+            "range": [
+              150,
+              170
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              150,
+              157
+            ]
+          },
+          {
+            "name": "operator",
+            "range": [
+              158,
+              159
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              160,
+              170
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "zero divisor"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Syntax captures remain in guarded fixes. Production analysis separately checks scoped denominator values and guards; dynamic aliases and dispatch remain unresolved."
+}

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Enforce a three-level nesting contract and surface rejection.",
+  "original": {
+    "source_hash": "a0cf49951c8ba8da9c8ea686f7a8a74bdf62401d4dcd18f9c89eb38b71eece68",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              102,
+              107
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              352,
+              357
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "cc4a5526a2b2e52f90784663d0f0ad0b76d0cf808969b906be6e743c794b2bd7",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              210,
+              215
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              481,
+              486
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "group depth exceeded"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The recursion follows every nested list the input contains (CWE-400). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

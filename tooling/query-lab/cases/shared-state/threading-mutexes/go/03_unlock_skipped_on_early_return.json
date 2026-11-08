@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Release the mutex on every return path with defer.",
+  "original": {
+    "source_hash": "57aafe82f0b3c513cf41c640b09b0f30f9480ddebc1aec4c6dbc5e6c85705944",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              205,
+              209
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              279,
+              285
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "14d808b3f84f17b32497041fe9ae7dbb5f531d2cba8b043348babee336901d9f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              205,
+              209
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              224,
+              230
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "guest 4: sold out"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Unlock not deferred; error path skips release (CWE-667). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

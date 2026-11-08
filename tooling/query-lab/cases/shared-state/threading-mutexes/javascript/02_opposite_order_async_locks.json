@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Acquire locks in one order and release them through finally blocks.",
+  "original": {
+    "source_hash": "f2c71c1dad40f403cf88bfabd1e02745686ae867b121939ff585d580a378ad1c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/threading-mutexes/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              515,
+              522
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              585,
+              592
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              716,
+              723
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              792,
+              799
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "9ee5ffdc425b44ed1932e14ecedcfb68fff23254ad6bacdc612cafdc01b3f4a3",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/threading-mutexes/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              515,
+              522
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              603,
+              610
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              822,
+              829
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              910,
+              917
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "both completed"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Lock-order inversion works the same with promises as with threads. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

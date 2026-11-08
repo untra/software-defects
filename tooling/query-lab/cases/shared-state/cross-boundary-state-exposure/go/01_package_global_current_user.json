@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Keep user identity request-local rather than in package state.",
+  "original": {
+    "source_hash": "2efaf4ad7067e39c22000fd65f7476244fce03b8b8ae9908cc81e1f22ece79fb",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "70ab0cbac50f4e3ed0d8afd3489372d347d45431666300d7e8fcfec962f791fe",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "alice received account data of alice",
+      "bob received account data of bob"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Per-request identity stored in process-wide state (CWE-488, CWE-1108). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

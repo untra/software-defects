@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Only restore the balance on the panic path, preserving successful withdrawal results.",
+  "original": {
+    "source_hash": "7d6d14cf64923d6d5deaa5a305576fd0ea13b56c66fee617bd73a9b484513679",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/var-let-mut/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "55e5c195fe029f03b116be1186ed890e220f183ffed947e293de9a3d54f52de0",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/var-let-mut/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "remaining=70 err=<nil>"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Named results are mutable variables visible to deferred closures; the defer runs after `return` sets them and overwrites the value. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

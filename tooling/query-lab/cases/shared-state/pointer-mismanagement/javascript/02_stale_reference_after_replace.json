@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Preserve the shared cart identity while clearing its contents.",
+  "original": {
+    "source_hash": "553ae6030efe6bc7cc46429432e5f8419893e4c3ae7a97cd34c060a35619943b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/pointer-mismanagement/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              162,
+              166
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "ca06bc041b7dfec4bb4eee7644bf1c5b8fb1b50216015e666308448289bda55d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/pointer-mismanagement/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              163,
+              167
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "panel shows: [ 'scarf' ] checkout sees: [ 'scarf' ]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Stale reference to an object no longer owned by the store. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

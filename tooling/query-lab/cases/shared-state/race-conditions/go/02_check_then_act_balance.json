@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Keep the balance check and debit in one critical section.",
+  "original": {
+    "source_hash": "8bd94ec35c1cb8e97a009e030aedeaa20ff2c420c57b36c7f9a26b7fdc0698d3",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              271,
+              275
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              290,
+              296
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              363,
+              367
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              382,
+              388
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              687,
+              690
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "ee228aa21aa4b60f823fde1d498252aaa3b56e0a9b60ed55c07a0d82828fe226",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              271,
+              275
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              290,
+              296
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              363,
+              367
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              382,
+              388
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              465,
+              469
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              484,
+              490
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              738,
+              741
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "final balance: 0"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Check-then-act across two critical sections (TOCTOU, CWE-367). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

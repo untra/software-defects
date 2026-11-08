@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Compare parsed origins rather than textual URL prefixes.",
+  "original": {
+    "source_hash": "d0c2057015e1cb83e6a0f6ef8bfe15ed246a16ad2714a9158af9e48657956a68",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              102,
+              112
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "a016522a0b009f9be226c7b6d64d446788b3911ef450dff87b18b64d76aa6b87",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "allowed false"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The prefix matches a different host that merely begins with the allowed text (CWE-20). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,73 @@
+name: Query Lab
+
+on:
+  pull_request:
+    paths: ['tooling/query-lab/**', 'tooling/state-lens/**', 'queries/**', 'examples/**', 'examples-fixed/**', '.github/workflows/query-lab.yml']
+  push:
+    branches: [main]
+    paths: ['tooling/query-lab/**', 'tooling/state-lens/**', 'queries/**', 'examples/**', 'examples-fixed/**', '.github/workflows/query-lab.yml']
+
+permissions:
+  contents: read
+
+jobs:
+  queries:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Install Rust
+        run: rustup toolchain install 1.95.0 --profile minimal
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: tooling/query-lab/.cache
+          key: query-lab-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('tooling/state-lens/Cargo.lock', 'tooling/query-lab/query_lab.py') }}
+      - name: Set up pinned external CLI and grammars
+        run: python3 tooling/query-lab/query_lab.py setup
+        env:
+          RUSTUP_TOOLCHAIN: '1.95.0'
+      - name: Adapter, corpus integrity, and positive/negative controls
+        run: python3 -m unittest discover -s tooling/query-lab -p 'test_*.py'
+      - name: Full corpus capture expectations
+        run: python3 tooling/query-lab/query_lab.py test > query-results.json
+      - name: Production capture parity
+        run: cargo +1.95.0 test --locked --manifest-path tooling/state-lens/Cargo.toml --test query_lab -- --ignored
+      - name: Coverage matrix
+        run: python3 tooling/query-lab/query_lab.py coverage > query-coverage.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: query-reports
+          path: |
+            query-results.json
+            query-coverage.json
+
+  fixed-examples:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.6.0
+        with:
+          go-version: '1.26.3'
+          cache: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22.20.0'
+      - name: Install Rust
+        run: rustup toolchain install 1.95.0 --profile minimal
+      - name: Bounded isolated fixed-example checks
+        run: python3 tooling/query-lab/query_lab.py verify-fixes > fixed-results.json
+        env:
+          RUSTUP_TOOLCHAIN: '1.95.0'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: fixed-example-results
+          path: fixed-results.json

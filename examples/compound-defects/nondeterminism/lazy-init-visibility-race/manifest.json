@@ -1,0 +1,88 @@
+{
+  "family": "compound-defects",
+  "class": "nondeterminism",
+  "category": "observational-staleness",
+  "defect": "lazy-init-visibility-race",
+  "name": "Lazy-Init Visibility Race (Double-Checked Locking)",
+  "essence": "A reader observes the service pointer before name and ready are stored.",
+  "cwes": [
+    "CWE-609"
+  ],
+  "scores": {
+    "python": 0,
+    "typescript": 0,
+    "go": 2,
+    "rust": 1
+  },
+  "examples": [
+    {
+      "file": "go/01_published_before_ready.go",
+      "language": "go",
+      "bug_lines": [
+        28,
+        43
+      ],
+      "summary": "current is stored before name and ready, and main reads it without the lock.",
+      "mechanism": "The inner check publishes the pointer, then fills the fields. The read of current does not happen-before those field writes, so the reader observes the zero Service (CWE-609). publishWindow only widens that window; it is not the defect.",
+      "observed_output": "name \"\" ready 0",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "name \"billing\" ready 1",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "improper-initialization",
+          "suggests": "The service pointer is published before name and ready are initialized.",
+          "evidence": [
+            "current = service",
+            "service.name = \"billing\""
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "The reader accesses current without holding the writer mutex.",
+          "evidence": [
+            "mu.Lock()",
+            "seen = current"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_service_registry.rs",
+      "language": "rust",
+      "bug_lines": [
+        14,
+        23
+      ],
+      "summary": "The observer sees a published service with a zero ready field.",
+      "mechanism": "Ordering::Relaxed is the score-1 atomic publication escape hatch. The double-checked initializer publishes before its ready field is written, and readers skip the initialization Mutex.",
+      "observed_output": "ready 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "ready 1",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "improper-initialization",
+          "suggests": "Publication marks the service available before its ready field is initialized.",
+          "evidence": [
+            "PUBLISHED.store(true, Ordering::Relaxed);",
+            "READY.store(READY_VALUE, Ordering::Relaxed);"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "threading-mutexes",
+          "suggests": "The initializer locks its double check, but the observer relies on relaxed publication without taking that lock.",
+          "evidence": [
+            "let _initializing = INIT.lock().unwrap();",
+            "PUBLISHED.load(Ordering::Relaxed)",
+            "READY.load(Ordering::Relaxed)"
+          ]
+        }
+      ]
+    }
+  ]
+}

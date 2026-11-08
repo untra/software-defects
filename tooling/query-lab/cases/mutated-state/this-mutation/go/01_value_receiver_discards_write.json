@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use a pointer receiver for persistent counter writes.",
+  "original": {
+    "source_hash": "c87bf57bfaf539cd8267dff93fbb06e66dbdde8ccdefd8a8ed2e32abe73fbeec",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/this-mutation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              187,
+              193
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "4248a2429e7f0655cc96ac1511a29880014a62d8fc409831f88be8db65475fe7",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/this-mutation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              188,
+              194
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "hits: 3"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Value receivers get a copy of the struct; writes do not reach the caller. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

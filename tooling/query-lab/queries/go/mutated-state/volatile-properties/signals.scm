@@ -1,0 +1,5 @@
+((call_expression function: (identifier) @callee arguments: (argument_list . (_) @receiver))
+ (#any-of? @callee "append" "copy" "delete"))
+(assignment_statement left: (expression_list (index_expression operand: (_) @receiver) @operation))
+((call_expression function: (selector_expression operand: (_) @receiver field: (field_identifier) @callee)) (#any-of? @callee "Write" "WriteString" "WriteByte" "Reset"))
+((call_expression function: (selector_expression field: (field_identifier) @callee) arguments: (argument_list . (_) @receiver)) (#eq? @callee "Sort"))

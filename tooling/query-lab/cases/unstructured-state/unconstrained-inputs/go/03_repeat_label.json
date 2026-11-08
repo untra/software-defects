@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Enforce an explicit six-character label budget.",
+  "original": {
+    "source_hash": "ed04b9671fb97151e5efa293c680d16f1c9741d23ac62ce3306cd3126665ee91",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              92,
+              98
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "974cfb719c6f725fc80296012be91338edcfc62fe3f9fc84b07e822db77ca667",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              212,
+              218
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "label rejected"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. strings.Repeat trusts the count, so one request sets the size (CWE-400). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}
