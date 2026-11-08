@@ -23,6 +23,13 @@ export function explanation(entry: Entry, uri?: string, version?: number): vscod
   if (color) text.appendMarkdown(`<span style="color:${color};"><strong>${escapeHtml(entry.finding.defect)}</strong></span>`);
   else text.appendText(entry.finding.defect);
   text.appendText(`\n\n${SHORT_EXPLANATIONS[entry.finding.explanation] ?? entry.finding.explanation}`);
+  const trace = entry.finding.state_trace;
+  if (trace) {
+    text.appendText(`\n\nEvidence: ${trace.evidence_level.replaceAll('_', ' ')}`);
+    if (trace.required_condition) text.appendText(`\nRequired condition: ${trace.required_condition}`);
+    text.appendText(`\nOrigin locations: ${trace.origins.length}; invalidations: ${trace.invalidations.length}; affected uses: ${trace.affected_uses.length}.`);
+    if (trace.assumptions.length) text.appendText(`\nAssumptions: ${trace.assumptions.join(' ')}`);
+  }
   text.appendMarkdown(`\n\n[Guide](<${defectGuideUrl(entry.finding.family, entry.finding.defect, entry.finding.compound?.class)}>)`);
   if (uri !== undefined && version !== undefined) {
     const args = encodeURIComponent(JSON.stringify([uri, version, entry.finding]));

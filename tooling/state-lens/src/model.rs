@@ -60,12 +60,16 @@ pub struct Compound {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Finding {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub state_trace: Option<crate::state::StateTrace>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub division_risk: Option<DivisionRisk>,
     pub rule_id: String,
     pub family: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub compound: Option<Compound>,
     pub defect: String,
+    #[serde(default)]
+    pub blast_radius: Vec<Span>,
     pub trigger: Span,
     pub function: Option<Span>,
     pub effect: Effect,
@@ -94,6 +98,10 @@ pub struct Unresolved {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DocumentReport {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub state_graph: Option<crate::state::StateGraph>,
+    #[serde(default)]
+    pub annotations: Vec<StateAnnotation>,
     pub uri: String,
     pub language: String,
     pub source_hash: String,
@@ -157,4 +165,47 @@ pub struct DivisionRisk {
     pub confidence: String,
     pub outcome: String,
     pub mutated: bool,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+#[serde(rename_all = "kebab-case")]
+pub enum StateCategory {
+    CompoundDefects,
+    MutatedState,
+    UnstructuredState,
+    SharedState,
+}
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+#[serde(rename_all = "lowercase")]
+pub enum AnnotationTarget {
+    Function,
+    Property,
+    Segment,
+}
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+pub enum AnnotationLabel {
+    Impure,
+    Mutacious,
+    Volatile,
+    Polymorphic,
+    Untyped,
+    Unstable,
+    Fragile,
+    Corruptible,
+    Unstructured,
+    Insecure,
+    Async,
+    Shared,
+    Lifecycle,
+}
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StateAnnotation {
+    pub depth: usize,
+    pub category: StateCategory,
+    pub target: AnnotationTarget,
+    pub range: Span,
+    pub position: usize,
+    pub label: AnnotationLabel,
+    pub function: Option<Span>,
+    pub findings: Vec<usize>,
 }

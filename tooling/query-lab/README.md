@@ -71,3 +71,79 @@ Tests cover adapter failure modes, Unicode/CRLF byte ranges, duplicate/multiline
 [ts_query_ls](https://github.com/ribru17/ts_query_ls#standalone-tool) supplies standalone `check`, `lint`, `format`, and editor completion. It is optional and is not installed by setup; the pinned official CLI remains authoritative for compilation and execution. [Official query CLI documentation](https://tree-sitter.github.io/tree-sitter/cli/query.html) describes direct usage, but newer documentation may include flags absent in the pinned version. Prefer the installed CLI's `--help` when invoking it directly.
 
 Python parsing and execution are available, but corpus query coverage is limited to volatile-properties; other Python categories remain explicitly unsupported pending reviewed packs and expectations. See [operation coverage](../../examples/mutated-state/volatile-properties/REVIEW.md).
+
+## Reviewed repair previews
+
+`repair-preview` creates a patch in memory from explicit, source-hashed recipe
+edits in a reviewed case sidecar. It parses and analyzes both snapshots in a
+temporary directory and emits a source patch, AST text diff, and analysis reports.
+It does not apply the patch to repository files. The candidate must exactly match
+the reviewed fixed fixture before its existing behavioral check can run.
+
+```sh
+python3 tooling/query-lab/query_lab.py repair-preview \
+  --case unstructured-state/divide-by-zero/typescript/01_panel_current \
+  --analyzer tooling/state-lens/target/debug/state-lens --run-behavior
+```
+
+Initial recipes cover that denominator guard and
+`mutated-state/aliasing-mutable-defaults/typescript/01_shared_default_parameter`.
+Other cases report unsupported. Stale hashes, overlapping edits, incorrect source
+preconditions, unreviewed outputs, and parse errors reject the preview.
+`--run-behavior` explicitly opts into the existing bounded fixture runner.
+
+This is reviewed edit replay, not general repair synthesis. AST text differences
+do not establish binding-aware operation correspondence. Analysis reports and
+behavioral results remain separate; neither diagnostic disappearance nor a passing
+fixture establishes general correctness. Valid-input regression variants and
+binding-aware structural matching remain follow-up work.
+
+## Semantic pair pilots
+
+Semantic specifications live in the `semantic` field of reviewed pair sidecars.
+They record AST edits, changed facts, failure conditions, blocking reasons,
+applicability assumptions, source hashes, and explicit contracts. The extractor
+receives only source; it never reads these expectations. Its facts remain
+candidates until checked against a reviewed contract.
+
+```sh
+python3 tooling/query-lab/query_lab.py semantic-inventory
+python3 tooling/query-lab/query_lab.py semantic-compare \
+  --case mutated-state/var-let-mut/go/01_shadowed_err_in_if \
+  --analyzer tooling/state-lens/target/debug/state-lens
+python3 tooling/query-lab/query_lab.py semantic-preview \
+  --case mutated-state/aliasing-mutable-defaults/javascript/03_shallow_spread_copy \
+  --analyzer tooling/state-lens/target/debug/state-lens --run-behavior
+```
+
+The Go pilot compares assignment target and return-consumer binding identities,
+selecting the reviewed producer call rather than treating all same-named writes
+as equivalent. The JavaScript pilot compares allocation identities at the written
+and read properties. An explicit nested copy separates `db`, not every deeper
+object. Spread precedence is modeled. Unknown calls, getters, dynamic indexes,
+nontrivial control flow, and ambiguous targets reject JavaScript validation.
+
+Semantic previews generate edits from these relationships, then re-extract facts
+and check the blocking postcondition. The resulting candidate need not equal the
+fixed fixture byte-for-byte. Opt-in behavioral checks execute the actual candidate,
+verify the original violates the reviewed output contract, and run reviewed input
+variants. These checks use the existing bounded fixture runner. No repository
+source is modified. The original `repair-preview` command remains exact edit replay.
+
+The inventory includes manifest-authored examples, including compound examples,
+and fixed counterparts. It distinguishes unpaired, unsupported, reviewed, and
+stale cases; semantic comparison additionally reports ambiguous or failed cases.
+Reviewed inventory status alone is not a passing semantic comparison.
+
+These pilots are a separate development analysis API, not full control-flow or
+ownership analysis. Go binding facts do not prove that every path reaches a return.
+Contracts and source hashes bound repair applicability to the reviewed fixtures.
+General cross-file traces and promotion into editor diagnostics remain unsupported.
+
+## Structured task execution
+
+See [task-chain instructions](tasks/README.md) for strict task packets, registered
+tools, manual model handoffs, resumable execution, artifact schemas, and evidence
+requirements. `task_runner.py` is a separate command so existing Query Lab commands
+retain their contracts. This runner requires the pinned `jsonschema` dependency in
+`requirements.txt`. Production graph extraction uses the graph emitted by `scan`.

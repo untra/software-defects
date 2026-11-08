@@ -84,6 +84,15 @@
           "type": "boolean",
           "default": true,
           "description": "Publish evidence-backed division warnings and informational susceptibility findings."
+        },
+        "stateLens.disabledChecks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true,
+          "default": [],
+          "description": "Base defect IDs to disable in analysis, including dependent compounds."
         }
       }
     }

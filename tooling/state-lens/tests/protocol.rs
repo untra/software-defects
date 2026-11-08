@@ -47,6 +47,10 @@ impl Server {
             result["result"]["capabilities"]["positionEncoding"],
             "utf-16"
         );
+        assert_eq!(
+            result["result"]["capabilities"]["experimental"]["stateLens"]["stateAnnotations"],
+            2
+        );
         server.notify("initialized", json!({}));
         server
     }
@@ -167,9 +171,20 @@ fn cli_and_server_share_findings() {
     let mut server = Server::start();
     server.notify("textDocument/didOpen",json!({"textDocument":{"uri":uri,"languageId":"typescript","version":1,"text":std::fs::read_to_string(path).unwrap()}}));
     let report = server.request("stateLens/ranges", json!({"textDocument":{"uri":uri}}));
+    let cli_finding = &cli["documents"][0]["findings"][0];
+    let editor_finding = &report["result"]["findings"][0]["finding"];
+    let cli_snapshot = cli_finding["state_trace"]["snapshot_id"].as_str().unwrap();
+    let editor_snapshot = editor_finding["state_trace"]["snapshot_id"]
+        .as_str()
+        .unwrap();
+    assert_ne!(cli_snapshot, editor_snapshot);
     assert_eq!(
-        cli["documents"][0]["findings"][0],
-        report["result"]["findings"][0]["finding"]
+        serde_json::to_string(cli_finding)
+            .unwrap()
+            .replace(cli_snapshot, "SNAPSHOT"),
+        serde_json::to_string(editor_finding)
+            .unwrap()
+            .replace(editor_snapshot, "SNAPSHOT")
     );
     server.stop();
 }
@@ -246,20 +261,31 @@ fn configuration_toggles_diagnostics() {
     server.stop();
 }
 #[test]
-fn inlay_hints_summarize_function_findings() {
+fn inlay_hints_match_annotations_and_requested_ranges() {
     let mut server = Server::start();
     server.open_clock();
     let hints = server.request(
         "textDocument/inlayHint",
-        json!({"textDocument":{"uri":CLOCK_URI},"range":{"start":{"line":0,"character":0},"end":{"line":1,"character":0}}}),
+        json!({"textDocument":{"uri":CLOCK_URI},"range":{"start":{"line":0,"character":0},"end":{"line":99,"character":0}}}),
     );
     let hints = hints["result"].as_array().unwrap();
     assert_eq!(hints.len(), 1);
-    assert!(hints[0]["label"].as_str().unwrap().contains("Impure"));
+    assert_eq!(hints[0]["label"], "◆ Mutacious");
     assert_eq!(
         hints[0]["position"],
-        json!(position(CLOCK_SOURCE, CLOCK_SOURCE.find('{').unwrap()))
+        json!(position(
+            CLOCK_SOURCE,
+            CLOCK_SOURCE.find("Date.now()").unwrap()
+        ))
     );
+    let snapshot = server.request(
+        "stateLens/ranges",
+        json!({"textDocument":{"uri":CLOCK_URI}}),
+    );
+    assert!(snapshot["result"]["annotations"].as_array().unwrap().len() > hints.len());
+    assert_eq!(hints[0]["data"]["findings"], json!([0]));
+    let empty = server.request("textDocument/inlayHint", json!({"textDocument":{"uri":CLOCK_URI}, "range":{"start":{"line":0,"character":0},"end":{"line":0,"character":1}}}));
+    assert!(empty["result"].as_array().unwrap().is_empty());
     server.stop();
 }
 
@@ -343,5 +369,29 @@ fn division_warning_links_and_clears_after_guard() {
         .unwrap()
         .iter()
         .all(|d| !d["code"].as_str().unwrap().ends_with("divide-by-zero")));
+    server.stop();
+}
+
+#[test]
+fn check_configuration_removes_and_restores_findings() {
+    let mut server = Server::start();
+    server.open_clock();
+    for checks in [json!(["time-money-entropy"]), json!([])] {
+        server.notify(
+            "workspace/didChangeConfiguration",
+            json!({"settings":{"stateLens":{"disabledChecks":checks}}}),
+        );
+        let snapshot = server.request(
+            "stateLens/ranges",
+            json!({"textDocument":{"uri":CLOCK_URI}}),
+        );
+        assert_eq!(
+            snapshot["result"]["findings"]
+                .as_array()
+                .unwrap()
+                .is_empty(),
+            !checks.as_array().unwrap().is_empty()
+        );
+    }
     server.stop();
 }

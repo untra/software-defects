@@ -143,8 +143,10 @@ async function check(api, document, row, expected, state) {
   const whole = new vscode.Range(0, 0, document.lineCount, 0);
   const hints = (await bounded(vscode.commands.executeCommand('vscode.executeInlayHintProvider', uri, whole), state, 'inlay hints') || []).filter(h => label(h).startsWith(INLAY_MARKER));
   if (state.expired) return;
-  if (hints.some(hint => !/^◆ (Impure|Signals)$/.test(label(hint)))) row.problems.push(issue('error', 'verbose function summary'));
-  if (hints.length !== hinted) row.problems.push(issue('count-mismatch', `${hints.length} inlay hints for ${hinted} functions`));
+  if (hints.length) row.problems.push(issue('count-mismatch', 'Native hints duplicate colored decorations'));
+  const appliedLabels = api.applied(uri.toString())?.labels ?? [];
+  const labelKeys = appliedLabels.map(a => `${a.category}:${a.position.line}:${a.category === 'compound-defects' ? a.label : ''}`);
+  if (new Set(labelKeys).size !== labelKeys.length) row.problems.push(issue('count-mismatch', 'Duplicate line labels'));
   const target = diagnostics.find(d => !d.range.isEmpty);
   if (target) {
     await until(() => api.applied(uri.toString())?.version === document.version, state, 'hover snapshot');
@@ -263,10 +265,9 @@ exports.run = async () => {
             return value?.version === document.version && value;
           }, state, 'source decorations');
           const audit = (await bounded(api.snapshot(document.uri.toString()), state, 'marker snapshot'))?.audit;
-          const effects = new Set(['local_mutation', 'argument_mutation', 'receiver_mutation', 'global_mutation', 'external_read', 'nondeterminism']);
-          const expectedMarkers = audit?.functions.filter(fn => audit.findings.some(entry => JSON.stringify(entry.functionRange) === JSON.stringify(fn.range) && effects.has(entry.finding.effect.kind))).map(fn => ({ start: fn.range.start, end: fn.body.start }));
+          const expectedMarkers = actual.labels.filter(annotation => annotation.target === 'function').map(annotation => annotation.range);
           if (JSON.stringify(actual.functionMarkers) !== JSON.stringify(expectedMarkers)) row.problems.push(issue('count-mismatch', 'Applied function markers differ from owned effects'));
-          if (audit?.findings.length && !actual.decorations.length) row.problems.push(issue('count-mismatch', 'Missing source decorations'));
+          if (audit?.findings.length && !actual.triggers) row.problems.push(issue('count-mismatch', 'Missing source decorations'));
           if (!row.compound_class) continue;
           const required = [...row.expected_rule_ids.slice(0, 2).map(id => id.split('.')[1]), row.compound_class];
           for (const category of required) {

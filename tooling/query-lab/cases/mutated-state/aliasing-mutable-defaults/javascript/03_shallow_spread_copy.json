@@ -27,5 +27,39 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Nested `db` object is shared between both configs. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "These are syntax candidates only. Nested `db` object is shared between both configs. Establishing incorrect behavior requires semantic or domain evidence beyond these captures.",
+  "semantic": {
+    "schema_version": 1,
+    "review_status": "reviewed",
+    "pattern": "shared-nested-object",
+    "source_hashes": {
+      "original": "8d5948433e900b6b067d98f86d72c05584130b1ba0fc0ff33f96944c11e4d8d9",
+      "fixed": "7c3501a7e78d92b53f3e6596fe4efdd16acd3d854b63177bc8ef65ac4101cab4"
+    },
+    "contract": {
+      "write": "testConfig.db.host",
+      "read": "prodConfig.db.host",
+      "assertion": "The production host remains db.internal after the test host changes."
+    },
+    "ast_edit": "Add an explicit nested db spread after the outer spread.",
+    "changed_fact": "testConfig.db references a newly allocated db object.",
+    "failure_condition": "The test host write reaches the later production host read.",
+    "blocking_reason": "The write and read refer to distinct db allocations.",
+    "assumptions": [
+      "Objects are plain data objects without getters or proxies.",
+      "Only the db allocation is separated; deeper objects may remain shared.",
+      "Production configuration isolation is a reviewed requirement."
+    ],
+    "regression_cases": [
+      {
+        "replace": "\"localhost\"",
+        "with": "\"staging.internal\"",
+        "runtime": {
+          "status": "supported",
+          "stdout": "prod -> db.internal\n",
+          "exit_code": 0
+        }
+      }
+    ]
+  }
 }

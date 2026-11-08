@@ -72,7 +72,7 @@ pub fn language_name(path: &Path) -> Option<&'static str> {
         _ => None,
     }
 }
-fn grammar(name: &str) -> Result<Language> {
+pub(crate) fn grammar(name: &str) -> Result<Language> {
     Ok(match name {
         #[cfg(feature = "go")]
         "go" => tree_sitter_go::LANGUAGE.into(),
@@ -208,6 +208,7 @@ pub struct Engine {
     cache: BTreeMap<String, Facts>,
     pub generation: u64,
     pub skipped: Vec<String>,
+    disabled_checks: BTreeSet<String>,
     memo: Option<(u64, usize, Arc<Report>)>,
 }
 impl Engine {
@@ -228,6 +229,7 @@ impl Engine {
             cache: BTreeMap::new(),
             generation: 0,
             skipped: vec![],
+            disabled_checks: BTreeSet::new(),
             memo: None,
         })
     }
@@ -364,6 +366,13 @@ impl Engine {
             .to_string();
         self.set(uri, language, source, None)
     }
+    pub fn set_disabled_checks(&mut self, checks: BTreeSet<String>) {
+        if self.disabled_checks != checks {
+            self.disabled_checks = checks;
+            self.generation += 1;
+            self.memo = None;
+        }
+    }
     pub fn analyze(&mut self) -> Report {
         (*self.report()).clone()
     }
@@ -385,12 +394,44 @@ impl Engine {
             }
         }
         let mut facts: Vec<_> = self.cache.values().cloned().collect();
+        for f in &mut facts {
+            f.report
+                .findings
+                .retain(|finding| !self.disabled_checks.contains(&finding.defect));
+        }
         propagate(&mut facts);
+        let mut documents = facts
+            .iter()
+            .map(|f| crate::state::DocumentIdentity {
+                id: f.report.uri.clone(),
+                uri: f.report.uri.clone(),
+                source_hash: crate::model::hash(&f.source),
+                byte_length: f.source.len(),
+                version: self.parsed[&f.report.uri].version,
+            })
+            .collect::<Vec<_>>();
+        documents.sort_by(|a, b| a.id.cmp(&b.id));
+        let snapshot_id = crate::model::hash(
+            &serde_json::to_string(
+                &serde_json::to_value((self.generation, &documents)).expect("snapshot value"),
+            )
+            .expect("snapshot serialization"),
+        );
         Report { schema_version: SCHEMA_VERSION, generation: self.generation, documents: facts.into_iter().map(|mut f| {
             for function in &mut f.report.functions {
                 function.effects = f.report.findings.iter().filter(|x| x.function == Some(function.range)).map(|x| x.effect.clone()).collect::<BTreeSet<_>>().into_iter().collect();
             }
             f.report.findings.sort_by_key(|x| (x.trigger.start,x.rule_id.clone(),x.origin.clone()));
+            let parsed = &self.parsed[&f.report.uri];
+            let imports: Vec<_> = f.imports.iter().map(|i| (i.local.clone(), i.module.clone(), i.symbol.clone())).collect();
+            crate::annotations::analyze(parsed.tree.root_node(), &f.source, &mut f.report, &imports, |name, at| binding(&f.bindings, name, at).is_some());
+            f.report.findings.retain(|finding| !self.disabled_checks.contains(&finding.defect));
+            crate::annotations::resolve_regions(parsed.tree.root_node(), &mut f.report);
+            let mut graph = crate::state::extract(parsed.tree.root_node(), &f.report.uri, &f.source, |name, at| binding(&f.bindings, name, at).map(|b| b.range));
+            graph.qualify_snapshot(self.generation, documents.clone(), snapshot_id.clone());
+            graph.explain(&mut f.report);
+            f.report.state_graph = Some(graph);
+            crate::annotations::build_annotations(&crate::annotations::nodes(parsed.tree.root_node()), &f.source, &mut f.report);
             f.report
         }).collect(), limitations: std::iter::once("Susceptibility is not a bug diagnosis. Dynamic dispatch, general alias escape, macro expansion, type inference and domain invariants are not resolved.".into()).chain(self.skipped.clone()).collect() }
     }
@@ -516,10 +557,12 @@ fn add(
         }
     }
     facts.report.findings.push(Finding {
+        state_trace: None,
         division_risk: None,
         rule_id: rule_id.clone(),
         family: family.into(),
         compound: None,
+        blast_radius: vec![],
         defect: defect.into(),
         trigger,
         function: owner(&facts.report.functions, trigger).map(|i| facts.report.functions[i].range),
@@ -585,6 +628,8 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
     functions.dedup_by_key(|f| f.range);
     let mut facts = Facts {
         report: DocumentReport {
+            state_graph: None,
+            annotations: vec![],
             uri: uri.into(),
             language: parsed.language.clone(),
             source_hash: hash(source),
@@ -613,23 +658,34 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
                         .is_some_and(|p| p.kind() == "declaration_list"))),
         );
     }
-    if parsed.language == "python" {
+    if matches!(parsed.language.as_str(), "python" | "javascript") {
         for (index, function) in facts.report.functions.iter_mut().enumerate() {
             let node = all
                 .iter()
                 .find(|n| Span::of(**n) == function.range)
                 .unwrap();
-            if let Some(parameters) = node.child_by_field_name("parameters") {
+            if let Some(parameters) = node
+                .child_by_field_name("parameters")
+                .or_else(|| node.child_by_field_name("parameter"))
+            {
                 let mut cursor = parameters.walk();
-                for parameter in parameters.named_children(&mut cursor) {
+                let parameters: Vec<_> = if parameters.kind() == "identifier" {
+                    vec![parameters]
+                } else {
+                    parameters.named_children(&mut cursor).collect()
+                };
+                for parameter in parameters {
                     let name = if parameter.kind() == "identifier" {
                         Some(parameter)
                     } else {
-                        parameter.child_by_field_name("name").or_else(|| {
-                            parameter
-                                .named_child(0)
-                                .filter(|n| n.kind() == "identifier")
-                        })
+                        parameter
+                            .child_by_field_name("name")
+                            .or_else(|| parameter.child_by_field_name("left"))
+                            .or_else(|| {
+                                parameter
+                                    .named_child(0)
+                                    .filter(|n| n.kind() == "identifier")
+                            })
                     };
                     if let Some(name) = name {
                         let value = text(name, source).to_string();

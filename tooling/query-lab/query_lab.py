@@ -470,12 +470,15 @@ def arguments():
     run.add_argument("--query", type=Path, required=True)
     run.add_argument("--source", type=Path, required=True)
     run.add_argument("--language", choices=LANGUAGES)
-    for name in ("list", "test", "compare", "coverage", "verify-fixes"):
+    for name in ("list", "test", "compare", "coverage", "verify-fixes", "repair-preview", "semantic-compare", "semantic-preview", "semantic-inventory"):
         command = commands.add_parser(name)
         command.add_argument("--language", choices=LANGUAGES)
         command.add_argument("--family")
         command.add_argument("--defect")
-        command.add_argument("--case", required=name == "compare")
+        command.add_argument("--case", required=name in {"compare", "repair-preview", "semantic-compare", "semantic-preview"})
+        if name in {"repair-preview", "semantic-compare", "semantic-preview"}:
+            command.add_argument("--analyzer", type=Path, required=True)
+            command.add_argument("--run-behavior", action="store_true")
     for command in commands.choices.values():
         command.add_argument("--format", choices=("json", "text"), default=argparse.SUPPRESS)
     return parser.parse_args()
@@ -497,7 +500,20 @@ def dispatch(args):
     if args.command == "run":
         result = run_query(args.query, args.source, args.language)
         return result, EXIT_ERROR if result["parse_errors"] else 0
+    if args.command == "semantic-inventory":
+        import semantic_pairs
+        return semantic_pairs.inventory(sys.modules[__name__]), 0
     cases = select(args)
+    if args.command in {"semantic-compare", "semantic-preview"}:
+        import semantic_pairs
+        lab = sys.modules[__name__]
+        result = semantic_pairs.compare(cases[0], lab, args.analyzer) if args.command == "semantic-compare" else semantic_pairs.preview(cases[0], lab, args.analyzer, args.run_behavior)
+        failed = result["status"] not in {"validated", "preview"} or result.get("behavior", {}).get("status") == "failed"
+        return {"cases": [result]}, EXIT_MISMATCH if failed else 0
+    if args.command == "repair-preview":
+        import repair_preview
+        result = repair_preview.preview(cases[0], sys.modules[__name__], args.analyzer, args.run_behavior)
+        return {"cases": [result]}, EXIT_MISMATCH if result.get("behavior", {}).get("status") == "failed" else 0
     if args.command == "list":
         rules = json.loads((HERE / "queries/rules.json").read_text())["rules"]
         selected = {(c["language"], c["family"], c["defect"]) for c in cases}

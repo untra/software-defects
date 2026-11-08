@@ -49,9 +49,27 @@ The server supports `initialize`, open/change/close/save synchronization, watche
 
 - `schemaVersion`, `generation`, `uri`, `version`, `sourceHash`;
 - `findings`, each containing the raw finding plus UTF-16 `triggerRange` and `functionRange`;
+- `annotations`, each with `category`, `target` (function/property/segment), UTF-16 `range` and `position`, `label`, `functionRange`, and `findings` indices into the full findings array;
 - function/body ranges, `unresolved`, `parseErrors`, and `indexing`.
 
-`stateLens/indexing` notifies the client when background indexing completes. Changes queued during analysis invalidate the response. The client also checks its workspace epoch and current document version before accepting any decoration. Diagnostics are enabled by default and can be disabled with `initializationOptions.diagnostics` (or `settings.stateLens.diagnostics` / `settings.diagnostics` in `workspace/didChangeConfiguration`) set to `false`. When enabled, the server publishes one diagnostic per finding for each open document: Warning for evidence-backed division risks and Information for structural candidates. Each carries `code` = rule ID, a `codeDescription` link to the site page, evidence and call path as `relatedInformation`, `data` = family/origin/effect, and the analyzed document `version`. Publishing happens only when no document change is pending; superseded analyses are discarded and retried, unchanged results are not resent, and documents are cleared on close or when diagnostics are disabled. `textDocument/inlayHint` returns one per-function family summary at the body start. These remain susceptibility signals; validated bug-pattern diagnostics are a future, independently scored capability.
+`stateLens/indexing` notifies the client when background indexing completes. Changes queued during analysis invalidate the response. The client also checks its workspace epoch and current document version before accepting any decoration. Diagnostics are enabled by default and can be disabled with `initializationOptions.diagnostics` (or `settings.stateLens.diagnostics` / `settings.diagnostics` in `workspace/didChangeConfiguration`) set to `false`. When enabled, the server publishes one diagnostic per finding for each open document: Warning for evidence-backed division risks and Information for structural candidates. Each carries `code` = rule ID, a `codeDescription` link to the site page, evidence and call path as `relatedInformation`, `data` = family/origin/effect, and the analyzed document `version`. Publishing happens only when no document change is pending; superseded analyses are discarded and retried, unchanged results are not resent, and documents are cleared on close or when diagnostics are disabled. `textDocument/inlayHint` projects the same annotations within the requested range. Initialization advertises `experimental.stateLens.stateAnnotations: 1`; clients must retain the full findings array so annotation evidence indices remain stable when filtering propagated effects. These remain susceptibility signals, not proven bug diagnoses.
+
+### Annotations
+
+Annotations are computed from findings and supported syntax once per report, then consumed by native LSP hints and VS Code. Mutated-state functions use **Impure**, bindings/properties **Mutacious**, and segments **Volatile**. Shared-state functions use **Async** for explicit async declarations or directly launched Go function literals, otherwise **Shared**; bindings use **Shared**, matched resource regions **Lifecycle**, and goroutine launches **Async**. Unstructured-state uses **Unstructured**, specializing to **Polymorphic** for functions branching on an input's runtime type and **Insecure** for modeled dynamic execution of external input. A function can retain annotations and evidence from multiple categories.
+
+The initial structural models are deliberately bounded:
+
+| Language | External-input sources | Explicit resource pairs |
+| --- | --- | --- |
+| TypeScript / JavaScript | Unshadowed global `fetch`, its assigned response's `text`/`json`, imported `fs` / `node:fs` `readFileSync` | Imported namespace `openSync` / `closeSync` with the same binding |
+| Python | Unshadowed `input`, simple `import requests` get/post and `import json` loads | Built-in `open` / binding's `close`, or `with open(...)` |
+| Go | Imported `net/http.Get`/`Post`, `io.ReadAll` | Imported `os.Open`/`Create` and binding's `Close`, including defer |
+| Rust | Qualified `reqwest::get`, `std::env::args`, `std::fs::read_to_string` | Qualified `std::fs::File::open` and explicit `drop` of the binding |
+
+JavaScript/TypeScript `typeof` and Python `isinstance` need an if/else branch over an unchanged modeled input binding to establish Polymorphic. Insecure is limited to direct `eval` (or Python `exec`) of Python input/JSON results, fetch response text, or UTF-8 file text. Passing a value through a transformation or reassigning it stops this direct-flow model; that does not prove the transformation validates or sanitizes it. Ordinary division findings remain Unstructured and retain their existing risk colors.
+
+Resource matching rejects intervening rebinding and cross-function/block matches, but does not prove execution order on every path, exception safety, ownership types, or Rust implicit RAII release. General aliases, arbitrary network APIs, cross-function input flow, and validation proofs are not modeled. New structural findings retain taxonomy guide links and source evidence; inherited mutation effects retain their original propagation paths.
 
 ## Queries and corpus
 
@@ -177,3 +195,130 @@ python3 tooling/state-lens/scripts/smoke.py --shard examples/compound-defects --
 ```
 
 Division findings include optional `division_risk` metadata (confidence, outcome, mutated). Yellow denominator decorations require mutation evidence; blue identifies unstructured risk alone. See [division review](../../examples/unstructured-state/divide-by-zero/REVIEW.md) for supported models and limitations.
+
+### Annotation contract and check exclusions
+
+`Finding.trigger` is the source underline. `Finding.blast_radius` contains explicit
+byte spans established by a relationship resolver; an empty list means that the
+blast radius is unsupported, not that the entire function is affected. The ranges
+endpoint exposes these as UTF-16 `blastRadius` ranges. Owning functions are
+navigation/annotation context, not implicit blast radii. State annotation capability
+version 2 is required by the bundled extension.
+
+Function/property/segment labels are Impure/Volatile/Mutacious for mutation,
+Polymorphic/Untyped/Unstructured for unstructured state, and Async or Shared/Shared/Shared
+for shared state. Polymorphic requires runtime type-dispatch evidence. Lifecycle
+and unsafe-execution mechanisms remain available in evidence. Presentation merges
+same-family annotations per line after visibility filtering, retaining all findings.
+
+Set `stateLens.<language>.disabledChecks` to base defect IDs, for example
+`["var-let-mut", "divide-by-zero"]`. Defaults enable all checks. Configuration is
+applied before propagation and again after structural analysis; changes invalidate
+the report cache. Reusable extraction still runs for other enabled checks.
+
+Run `python3 tooling/state-lens/scripts/annotation_audit.py` from the repository
+root to regenerate the implementation inventory. Unknown blast radii are explicitly
+unsupported; currently only linked mutated-denominator regions are resolved.
+
+### Shared state graph foundation
+
+`state::extract` produces a snapshot-scoped candidate dependency graph using the
+engine's lexical binding resolver. Operations carry URI-qualified byte spans,
+binding declaration spans, and guard references. Reads link to reaching writes;
+branch joins retain alternatives and definite binding overwrites replace prior
+assignments. `candidate_region` intersects forward and backward dependencies.
+This intersection does not establish executable reachability.
+
+Direct findings over supported reads now optionally contain `state_trace` with
+origins, invalidations, affected uses, requirements, operations, relationships,
+and explicit assumptions. The source hash scopes graph IDs to their snapshot.
+The existing `origin` field still means direct/propagated. Missing denominator
+guards are represented as required-condition text, never synthetic source spans.
+The server advertises `stateTraces: 1`, includes traces in diagnostic data, and
+presents candidate assignment locations as related information. These candidate
+traces do not expand blast radii or change finding severity.
+
+This is an initial foundation, not the completed shared-analysis migration.
+Division still uses its existing classifier. Object identities/access paths,
+alias propagation, branch polarity, loop fixed points, exceptional control flow,
+resource transitions, interprocedural state summaries, and interference predicates
+remain unimplemented in the new graph. Function bodies are analyzed separately;
+closure creation is not linked to execution. Graph limitations accompany each
+trace. Existing compound detectors and editor decoration behavior remain in place.
+
+### Source-only semantic pilot facts
+
+`state-lens semantic-facts PATH` emits versioned JSON with the source URI/hash and
+AST-derived events. Go events expose lexical declaration identity, previous visible
+bindings, producer calls, and return reads. JavaScript events expose allocation
+identity, object binding, property writes, and reads for plain straight-line object
+flows. Object spreads preserve nested aliases unless an explicit nested allocation
+replaces them; later spreads override earlier properties.
+
+This API supplies Query Lab semantic comparison and generated repair previews.
+It does not consume reviewed contracts or issue bug diagnostics on its own.
+Unsupported JavaScript behavior is explicit. Go facts model lexical relationships,
+not reachability, type checking, or general intent. Production tracing continues
+using its existing graph; integrating these pilot facts into that shared graph and
+editor affected-use highlights remains follow-up work.
+
+### Production graph export and structured artifacts
+
+Document reports now include `state_graph`, the same graph used to construct their
+candidate traces. The task runner converts this into URI/hash-scoped graph artifacts
+validated against the schemas in `schemas/`. Trace evidence levels are explicit;
+current production graph traces remain `candidate_relationship`.
+
+The editor evidence view exposes origin, invalidation, and affected-use locations.
+Trace navigation verifies source hashes. Hover displays required conditions and
+assumptions. These additive fields retain protocol schema 1 for compatibility;
+full version-2 negotiation and new affected-use decorations are not yet implemented.
+
+Returned branches no longer contribute reaching assignments to subsequent uses.
+This is still not general CFG analysis: loops, exception completion, interprocedural
+object identity, scheduling feasibility, and compiler type integration remain
+unsupported. Semantic pilots still use their separate extractor. Graph export and
+artifact validation do not imply that these integration gates have passed.
+
+### Graph contract version 2
+
+`StateGraph` and `StateTrace` share the declarations generated by
+`tooling/query-lab/tasks/build_schemas.py`. Run that script with `--check` to
+verify generated schemas, Rust additions, and TypeScript interfaces. The shared
+fixture in `tests/fixtures/state-contract.json` exercises serialization and
+reference validation across Rust and Python.
+
+A snapshot identity is SHA-256 of compact, recursively key-sorted UTF-8 JSON
+`[generation, documents]`, with documents sorted by identity. Document records
+include URI, source SHA-256, byte length, and nullable editor version. Entity
+identities begin with the snapshot identity and include their kind and local
+identity. Source ranges are half-open UTF-8 byte ranges; editor presentation
+converts these to UTF-16. A changed dependency changes the document manifest,
+invalidating identities even when the current document is unchanged.
+
+Artifact envelope version 2 distinguishes file `byte_digest` from canonical
+`artifact_id`. Canonical artifact identity excludes only the top-level
+`artifact_id`. Historical envelope version 1 remains validated against its own
+schemas; it is never promoted to a complete version-2 graph. Task packets retain
+their version-1 byte-hash input contract.
+
+Graph artifacts contain complete `graphs` and their `traces`; operations,
+bindings, guards, evidence, and snapshot manifests are retained. Validators
+check typed references and source bounds. Dependency edges describe candidates;
+control-flow edges describe successors separately. Empty control-flow, alias,
+and obligation collections do not establish completeness. Current extraction
+retains its limitations and does not provide new solver outcomes. Structural
+condition text is presentation, never proof input. The protocol advertises
+`stateTraces: 2` and `conditionContract: 1`; legacy trace presentation fields
+remain available to clients without those capabilities.
+
+Validation on 2026-11-08: the Rust suite, 53 Python tests, 28 extension unit
+tests, generated-interface checks (including TypeScript fixture compilation),
+formatting, and Clippy passed. The divide-by-zero protocol shard had 20 existing
+annotation-count failures and one pass; the TypeScript editor shard had five
+existing timeouts. Both sets were reproduced with the pre-change staged analyzer
+and matched by file and failure category. No smoke baselines were updated.
+On the existing 100-file synthetic benchmark, median scan/warm-edit latency was
+104.85/3.97 ms versus 95.88/2.23 ms for the pre-change analyzer. The larger snapshot
+and evidence payloads add measurable overhead; workspace snapshot hashing is
+performed once per analysis rather than once per document.

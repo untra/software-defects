@@ -18,7 +18,32 @@ async function main() {
     return path.join(destination, 'extension');
   });
   const workspace = path.join(scratch, 'workspace'); fs.mkdirSync(workspace);
-  const sources = { typescript: 'function clock(){return Date.now();}', javascript: 'function clock(){return Date.now();}', python: 'import time\ndef clock():\n    return time.time()\n', go: 'package main\nimport "time"\nfunc clock() int64 { return time.Now().Unix() }', rust: 'fn clock() { let _ = std::time::SystemTime::now(); }' };
+  const script = `import * as fs from 'node:fs';
+async function load(){
+  let count=0; count+=1;
+  const response=await fetch('/api'); const data=await response.text();
+  const file=fs.openSync('x','r'); fs.closeSync(file);
+  if(typeof data === 'string'){eval(data);}else{return count;}
+}`;
+  const sources = {
+    typescript: script, javascript: script,
+    python: `async def load():
+    count=0
+    count+=1
+    data=input()
+    file=open('x')
+    file.close()
+    if isinstance(data, str):
+        eval(data)
+    else:
+        return count
+`,
+    go: `package main
+import "net/http"
+import "os"
+func load(){count:=0; count+=1; data,err:=http.Get("url"); file,err:=os.Open("x"); defer file.Close(); go func(){}(); _,_,_=count,data,err;}`,
+    rust: `async fn load(){let mut count=0; count+=1; let data=std::env::args(); let file=std::fs::File::open("x"); drop(file); let _=(count,data);}`
+  };
   for (const [language, info] of Object.entries(registry)) fs.writeFileSync(path.join(workspace, `sample.${info.extensions[0]}`), sources[language]);
   await runTests({ vscodeExecutablePath: await downloadAndUnzipVSCode('1.142.0'), extensionDevelopmentPath: extensions, extensionTestsPath: path.join(__dirname, 'suite.cjs'), extensionTestsEnv: { STATE_LENS_ISOLATION_LANGUAGES: JSON.stringify(languages), STATE_LENS_ISOLATION_WORKSPACE: workspace }, launchArgs: [workspace, '--user-data-dir', path.join(scratch, 'profile'), '--extensions-dir', path.join(scratch, 'installed'), '--disable-workspace-trust', '--skip-welcome', '--skip-release-notes', '--disable-extension', 'github.copilot-chat'] });
 }

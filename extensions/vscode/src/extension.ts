@@ -6,7 +6,7 @@ import * as path from 'node:path';
 import { createHash } from 'node:crypto';
 import { EVIDENCE_COMMAND, explanation } from './hover';
 import { LanguageClient, LSPErrorCodes, ResponseError, State, CloseAction, ErrorAction } from 'vscode-languageclient/node';
-import { accepts, compare, contains, equal, functionMarkers, isImpure, Entry, Evidence, segments, triggerSegments, Snapshot, Range, decorations as paint, PALETTE, Category, CATEGORY_STYLE, divisionCompatible } from './ranges';
+import { findingEvidence, accepts, compare, contains, equal, functionMarkers, annotations, Entry, Evidence, segments, triggerSegments, Snapshot, Range, decorations as paint, PALETTE, Category, CATEGORY_STYLE, divisionCompatible, StateAnnotation } from './ranges';
 
 const LANGUAGES = [LANGUAGE];
 const REFRESH_DELAY_MS = 180;
@@ -14,12 +14,14 @@ const ANALYSIS_TIMEOUT_MS = 10000;
 const LOG_LIMIT = 200;
 const CLEAN_SERVER_EXIT = 'Server process exited with code 0.';
 const INLAY_MARKER = '◆';
+const ANNOTATION_MARKER_MARGIN = '0 0 0 0.5em';
+const ANNOTATION_LABEL_MARGIN = '0 0.5em 0 0.25em';
 const BORDER_WIDTH = { source: 1, accessible: 2, function: 2, compound: 2 } as const;
 let client: LanguageClient | undefined;
 let compatible = true;
 let shutdown: (() => Promise<void>) | undefined;
 
-export interface Applied { version: number; findings: number; segments: number; triggers: number; functionMarkers: Range[]; decorations: { category: Category; range: Range; outline: boolean; families: string[] }[] }
+export interface Applied { labels: StateAnnotation[]; version: number; findings: number; segments: number; triggers: number; functionMarkers: Range[]; decorations: { category: Category; range: Range; outline: boolean; families: string[] }[] }
 export interface AuditSnapshot extends Applied { audit: Snapshot }
 export interface StateLensApi {
   log(after?: number): string[];
@@ -61,7 +63,7 @@ class EvidenceView implements vscode.TreeDataProvider<vscode.TreeItem> {
   getParent(item: EvidenceNode): EvidenceNode | undefined { return this.getChildren().find(root => root.children?.includes(item)); }
   getChildren(element?: EvidenceNode): EvidenceNode[] {
     if (element) return element.children ?? [];
-    return this.roots ??= [...this.snapshots.values()].filter(snapshot => snapshot.uri === this.activeUri).flatMap(snapshot => snapshot.findings.map(entry => {
+    return this.roots ??= [...this.snapshots.values()].filter(snapshot => snapshot.uri === this.activeUri).flatMap(snapshot => snapshot.findings.filter(entry => !vscode.workspace.getConfiguration(CONFIG_SECTION).get<boolean>('directOnly', false) || entry.finding.origin === 'direct').map(entry => {
       const item: EvidenceNode = new vscode.TreeItem(entry.finding.defect, entry === this.selected ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed);
       item.entry = entry;
       const metadata = [
@@ -74,8 +76,8 @@ class EvidenceView implements vscode.TreeDataProvider<vscode.TreeItem> {
         const child = new vscode.TreeItem(`${label}: ${value}`);
         child.tooltip = tooltip;
         return child;
-      }).concat([...entry.finding.call_path, ...entry.finding.evidence, ...(entry.finding.compound?.ingredients ?? [])].map(evidence => {
-        const child = new vscode.TreeItem(`${vscode.workspace.asRelativePath(vscode.Uri.parse(evidence.uri))}: bytes ${evidence.range.start}–${evidence.range.end}`);
+      }).concat(findingEvidence(entry.finding).map(evidence => {
+        const child = new vscode.TreeItem(`${evidence.role ? evidence.role + ": " : ""}${vscode.workspace.asRelativePath(vscode.Uri.parse(evidence.uri))}: bytes ${evidence.range.start}–${evidence.range.end}`);
         child.command = { command: commandId('openEvidence'), title: 'Open originating evidence', arguments: [snapshot.uri, snapshot.version, evidence] };
         return child;
       }));
@@ -158,11 +160,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
     status.tooltip = `${LANGUAGE}: ${status.text}. Click to toggle State Lens for this language.`;
     if (statusVisible) status.show(); else status.hide();
   }
-  const functionStyle = vscode.window.createTextEditorDecorationType({
-    borderWidth: `0 0 0 ${BORDER_WIDTH.function}px`, borderStyle: 'solid', borderColor: PALETTE['mutated-state'],
-    rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
-  });
-  context.subscriptions.push(functionStyle);
+  const functionStyles = (['mutated-state', 'unstructured-state', 'shared-state'] as const).map(category => ({ category, type: vscode.window.createTextEditorDecorationType({
+    before: { contentText: '▌', color: PALETTE[category] }, rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed
+  }) }));
+  context.subscriptions.push(...functionStyles.map(style => style.type));
+  const sourceStyle = vscode.window.createTextEditorDecorationType({ textDecoration: 'underline dotted', rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed });
+  context.subscriptions.push(sourceStyle);
+  const labelStyle = vscode.window.createTextEditorDecorationType({ rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed });
+  context.subscriptions.push(labelStyle);
   let decorations: vscode.TextEditorDecorationType[] = [];
   let stylesByCategory: { category: Category; propagated: boolean; type: vscode.TextEditorDecorationType }[] = [];
   const applied = new Map<string, Applied>();
@@ -206,7 +211,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
         const snapshot = await requestSnapshot(uri);
         if (disposed || !accepts(snapshot, uri, document.version, requestedEpoch, epoch) || version !== document.version) return undefined;
         const directOnly = config().get<boolean>('directOnly', false);
-        return { version, findings: snapshot.findings.length, segments: segments(snapshot, directOnly).length,
+        return { labels: annotations(snapshot, directOnly), version, findings: snapshot.findings.length, segments: segments(snapshot, directOnly).length,
           triggers: triggerSegments(snapshot, directOnly).length, functionMarkers: functionMarkers(snapshot, directOnly).map(marker => marker.range), decorations: paint(snapshot, directOnly).map(({ category, range, outline, families }) => ({ category, range, outline, families })), audit: snapshot };
       } catch (error) {
         if (error instanceof ResponseError && error.code === LSPErrorCodes.ContentModified) return undefined;
@@ -241,8 +246,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
   }
   function clear(): void {
     for (const editor of vscode.window.visibleTextEditors) {
+      editor.setDecorations(labelStyle, []);
+      editor.setDecorations(sourceStyle, []);
+
       decorations.forEach(d => editor.setDecorations(d, []));
-      editor.setDecorations(functionStyle, []);
+      functionStyles.forEach(style => editor.setDecorations(style.type, []));
     }
     applied.clear();
     evidence.clear();
@@ -273,6 +281,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
         const directOnly = config().get<boolean>('directOnly', false);
         const parts = segments(snapshot, directOnly);
         const painted = paint(snapshot, directOnly);
+        editor.setDecorations(sourceStyle, triggerSegments(snapshot, directOnly).filter(p => !p.entry.finding.compound).map(p => ({ range: range(p.range) })));
+        editor.setDecorations(labelStyle, annotations(snapshot, directOnly).map(annotation => ({
+          range: new vscode.Range(annotation.position.line, annotation.position.character, annotation.position.line, annotation.position.character),
+          hoverMessage: annotation.findings.map(index => snapshot.findings[index].finding.explanation).join('\n'),
+          renderOptions: {
+            before: { contentText: INLAY_MARKER, color: PALETTE[annotation.category], margin: ANNOTATION_MARKER_MARGIN },
+            after: { contentText: annotation.label, color: new vscode.ThemeColor('editor.foreground'), margin: ANNOTATION_LABEL_MARGIN }
+          }
+        })));
         for (const style of stylesByCategory) {
           editor.setDecorations(style.type, painted.filter(p => p.category === style.category && p.propagated === style.propagated).map(p => ({
             range: range(p.range),
@@ -280,11 +297,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
           })));
         }
         const markers = functionMarkers(snapshot, directOnly);
-        editor.setDecorations(functionStyle, markers.map(marker => range(marker.range)));
+        functionStyles.forEach(style => editor.setDecorations(style.type, markers.filter(marker => marker.category === style.category).map(marker => range(marker.range))));
         const triggers = triggerSegments(snapshot, directOnly);
-        applied.set(uri, { version: editor.document.version, findings: snapshot.findings.length, segments: parts.length, triggers: triggers.length, functionMarkers: markers.map(marker => marker.range),
+        applied.set(uri, { labels: annotations(snapshot, directOnly), version: editor.document.version, findings: snapshot.findings.length, segments: parts.length, triggers: triggers.length, functionMarkers: markers.map(marker => marker.range),
           decorations: painted.map(({ category, range, outline, families }) => ({ category, range, outline, families })) });
-        evidence.update({ ...snapshot, findings: snapshot.findings.filter(e => !directOnly || e.finding.origin === 'direct') });
+        evidence.update(snapshot);
         inlayChanges.fire();
         if (snapshot.indexing) reasons.add('Workspace indexing is in progress.');
         if (snapshot.parseErrors) reasons.add('The document has parse errors.');
@@ -331,13 +348,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
       const snapshot = evidence.snapshot(uri);
       const parent = vscode.workspace.textDocuments.find(doc => doc.uri.toString() === uri);
       if (!snapshot || !parent || snapshot.version !== version || parent.version !== version) return;
-      const target = snapshot.findings.flatMap(entry => [...entry.finding.call_path, ...entry.finding.evidence, ...(entry.finding.compound?.ingredients ?? [])])
+      const target = snapshot.findings.flatMap(entry => findingEvidence(entry.finding))
         .find(item => JSON.stringify(item) === JSON.stringify(requested));
       if (!target) return;
       const requestedEpoch = epoch;
       const doc = await vscode.workspace.openTextDocument(vscode.Uri.parse(target.uri));
       if (epoch !== requestedEpoch || evidence.snapshot(uri) !== snapshot || parent.version !== version) return;
       const bytes = Buffer.from(doc.getText(), 'utf8');
+      if (target.source_hash && createHash('sha256').update(bytes).digest('hex') !== target.source_hash) return;
       if (target.range.start < 0 || target.range.end > bytes.length || target.range.start > target.range.end) return;
       const start = doc.positionAt(bytes.subarray(0, target.range.start).toString('utf8').length);
       const end = doc.positionAt(bytes.subarray(0, target.range.end).toString('utf8').length);
@@ -355,38 +373,20 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
       const item = evidence.select(entry);
       if (item) await evidenceTree.reveal(item, { focus: true, select: true, expand: 1 });
     }),
-    vscode.languages.registerInlayHintsProvider(LANGUAGES.map(language => ({ scheme: 'file', language })), {
-      onDidChangeInlayHints: inlayChanges.event,
-      provideInlayHints(document, requestedRange) {
-        const snapshot = evidence.snapshot(document.uri.toString());
-        if (!snapshot || snapshot.version !== document.version || !config().get<boolean>('enabled', true)) return [];
-        return snapshot.functions.flatMap(fn => {
-          const entries = snapshot.findings.filter(entry => entry.functionRange && equal(entry.functionRange, fn.range));
-          const start = new vscode.Position(fn.body.start.line, fn.body.start.character);
-          if (!entries.length || !requestedRange.contains(start)) return [];
-          const label = entries.some(isImpure) ? 'Impure' : 'Signals';
-          const hint = new vscode.InlayHint(start, `${INLAY_MARKER} ${label}`);
-          hint.paddingLeft = true;
-          hint.paddingRight = true;
-          hint.tooltip = `${fn.name}: ${label}`;
-          return [hint];
-        });
-      }
-    }),
     vscode.languages.registerHoverProvider(LANGUAGES.map(language => ({ scheme: 'file', language })), {
       provideHover(document, position) {
         const snapshot = evidence.snapshot(document.uri.toString());
         if (!snapshot || snapshot.version !== document.version || !config().get<boolean>('enabled', true)) return;
         const point = { line: position.line, character: position.character };
-        const matches = triggerSegments(snapshot, false).filter(segment => compare(segment.range.start, point) <= 0 && compare(point, segment.range.end) < 0);
-        const marker = functionMarkers(snapshot, false).find(marker => contains(marker.range, { start: point, end: point }) && compare(point, marker.range.end) < 0);
-        const entries = [...new Set(matches.map(match => match.entry).concat(marker?.entries ?? []))];
+        const matches = triggerSegments(snapshot, config().get<boolean>('directOnly', false)).filter(segment => compare(segment.range.start, point) <= 0 && compare(point, segment.range.end) < 0);
+        const markers = functionMarkers(snapshot, config().get<boolean>('directOnly', false)).filter(marker => contains(marker.range, { start: point, end: point }) && compare(point, marker.range.end) < 0);
+        const entries = [...new Set(matches.map(match => match.entry).concat(markers.flatMap(marker => marker.entries)))];
         if (!entries.length) return;
         const contents = entries.map(entry => explanation(entry, snapshot.uri, snapshot.version));
-        if (marker) {
+        for (const marker of markers) {
           const title = new vscode.MarkdownString();
           title.supportHtml = true;
-          title.appendMarkdown(`<span style="color:${PALETTE['mutated-state']};"><strong>Impure</strong></span>`);
+          title.appendMarkdown(`<span style="color:${PALETTE[marker.category]};"><strong>${marker.label}</strong></span>`);
           contents.unshift(title);
         }
         return new vscode.Hover(contents);
@@ -434,7 +434,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
       } };
       client = new LanguageClient(CONFIG_SECTION, 'State Lens', { command, args: ['serve'] }, {
         documentSelector: LANGUAGES.map(language => ({ scheme: 'file', language })),
-        initializationOptions: { diagnostics: config().get<boolean>('diagnostics', true) },
+        initializationOptions: { disabledChecks: config().get<string[]>('disabledChecks', []), diagnostics: config().get<boolean>('diagnostics', true) },
         middleware: { provideHover: () => null, provideInlayHints: () => [] },
         errorHandler: { error: () => ({ action: ErrorAction.Continue }), closed: () => ({ action: CloseAction.DoNotRestart }) },
         synchronize: { fileEvents: watcher, configurationSection: CONFIG_SECTION }, outputChannel: sessionOutput
@@ -443,7 +443,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
       await client.start();
       const capabilities = client.initializeResult?.capabilities;
       const supported: unknown = capabilities?.experimental?.stateLens?.languages;
-      compatible = divisionCompatible(capabilities) && Array.isArray(supported) && supported.length === 1 && supported[0] === LANGUAGE;
+      compatible = capabilities?.experimental?.stateLens?.stateAnnotations === 2 && divisionCompatible(capabilities) && Array.isArray(supported) && supported.length === 1 && supported[0] === LANGUAGE;
       if (!compatible) throw new Error(`Server ${command} is incompatible with State Lens (${LANGUAGE}). Reinstall the extension or correct ${CONFIG_SECTION}.serverPath.`);
     },
     stop: async () => {

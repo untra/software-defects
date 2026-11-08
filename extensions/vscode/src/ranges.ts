@@ -1,8 +1,14 @@
 export interface Position { line: number; character: number }
 export interface Range { start: Position; end: Position }
 export interface FunctionRange { range: Range; body: Range; name: string }
-export interface Evidence { uri: string; range: { start: number; end: number }; rule_id: string }
+export interface Evidence { uri: string; range: { start: number; end: number }; rule_id: string; role?: string; source_hash?: string }
+export interface TraceLocation { uri: string; range: { start: number; end: number } }
+export type StateTrace = Pick<import('./state-contract').StateTrace,
+  'source_hash' | 'evidence_level' | 'origins' | 'invalidations' | 'affected_uses' | 'required_condition' | 'assumptions'>
+  & Partial<import('./state-contract').StateTrace>;
+
 export interface Finding {
+  state_trace?: StateTrace;
   division_risk?: { confidence: string; outcome: string; mutated: boolean };
   rule_id: string;
   trigger?: { start: number; end: number };
@@ -17,8 +23,38 @@ export interface Finding {
   call_path: Evidence[];
   related_cwes?: string[];
 }
-export interface Entry { finding: Finding; triggerRange: Range; functionRange: Range | null }
+export interface Entry { finding: Finding; triggerRange: Range; blastRadius?: Range[]; functionRange: Range | null }
+export interface StateAnnotation {
+  depth?: number;
+  category: 'compound-defects' | 'mutated-state' | 'unstructured-state' | 'shared-state';
+  target: 'function' | 'property' | 'segment';
+  range: Range;
+  position: Position;
+  label: 'Untyped' | 'Unstable' | 'Fragile' | 'Corruptible' | 'Impure' | 'Mutacious' | 'Volatile' | 'Polymorphic' | 'Unstructured' | 'Insecure' | 'Async' | 'Shared' | 'Lifecycle';
+  functionRange: Range | null;
+  findings: number[];
+}
+export function annotations(snapshot: Snapshot, directOnly: boolean): StateAnnotation[] {
+  const groups = new Map<string, StateAnnotation[]>();
+  for (const annotation of snapshot.annotations ?? []) {
+    const findings = annotation.findings.filter(index => snapshot.findings[index] && (!directOnly || snapshot.findings[index].finding.origin === 'direct'));
+    if (!findings.length) continue;
+    const key = `${annotation.category}:${annotation.position.line}:${annotation.category === 'compound-defects' ? annotation.label : ''}`;
+    groups.set(key, [...(groups.get(key) ?? []), { ...annotation, findings }]);
+  }
+  return [...groups.values()].map(group => {
+    group.sort((a, b) => (b.depth ?? 0) - (a.depth ?? 0) || (a.range.end.line - a.range.start.line) - (b.range.end.line - b.range.start.line) ||
+      (a.range.end.character - a.range.start.character) - (b.range.end.character - b.range.start.character) || compare(b.position, a.position));
+    const selected = { ...group[0], findings: [...new Set(group.flatMap(a => a.findings))] };
+    if (group.length > 1 && selected.category !== 'compound-defects') {
+      selected.target = 'segment';
+      selected.label = selected.category === 'mutated-state' ? 'Mutacious' : selected.category === 'unstructured-state' ? 'Unstructured' : 'Shared';
+    }
+    return selected;
+  });
+}
 export interface Snapshot {
+  annotations?: StateAnnotation[];
   schemaVersion: number;
   generation: number;
   uri: string;
@@ -65,13 +101,14 @@ export function triggerSegments(snapshot: Snapshot, directOnly: boolean): { rang
 }
 
 export const PALETTE = {
+  'compound-defects': '#C9A227',
   'mutated-state': '#78A65A',
   'unstructured-state': '#3D85C6',
   'shared-state': '#DD3333',
   'division-risk': '#FFE599',
-  nondeterminism: '#FFE599',
-  'runtime-errors': '#9FC5E8',
-  'data-corruption': '#C27BA0'
+  nondeterminism: '#C9A227',
+  'runtime-errors': '#C9A227',
+  'data-corruption': '#C9A227'
 } as const;
 export type Category = keyof typeof PALETTE;
 const FAMILY_ORDER: Category[] = ['mutated-state', 'unstructured-state', 'shared-state'];
@@ -84,13 +121,12 @@ export interface Decoration {
   families: string[];
 }
 function category(entry: Entry): Category | undefined {
-  if (entry.finding.division_risk?.mutated && entry.finding.division_risk.confidence !== 'candidate') return 'division-risk';
   const key = entry.finding.compound?.class ?? entry.finding.family;
   return Object.prototype.hasOwnProperty.call(PALETTE, key) ? key as Category : undefined;
 }
 export function decorations(snapshot: Snapshot, directOnly: boolean): Decoration[] {
-  const triggers = triggerSegments(snapshot, directOnly);
-  const base = triggers.filter(p => !p.entry.finding.compound && category(p.entry));
+
+  const base = snapshot.findings.filter(entry => (!directOnly || entry.finding.origin === 'direct') && !entry.finding.compound && category(entry)).flatMap(entry => (entry.blastRadius ?? []).map(range => ({ entry, range })));
   const points = base.flatMap(p => [p.range.start, p.range.end]).sort(compare);
   const unique = points.filter((p, i) => i === 0 || compare(points[i - 1], p) !== 0);
   const result: Decoration[] = [];
@@ -115,28 +151,33 @@ export function decorations(snapshot: Snapshot, directOnly: boolean): Decoration
     const families = FAMILY_ORDER.filter(f => active.some(e => e.finding.family === f));
     result.push({ range, category: category(active[0])!, propagated: active[0].finding.origin === 'propagated', outline: false, entries: active, families });
   }
-  for (const { entry, range } of triggers.filter(p => p.entry.finding.compound)) {
+  for (const { entry, range } of snapshot.findings.filter(entry => entry.finding.compound && (!directOnly || entry.finding.origin === 'direct')).flatMap(entry => (entry.blastRadius ?? []).map(range => ({ entry, range })))) {
     const key = category(entry);
     if (key) result.push({ range, category: key, propagated: entry.finding.origin === 'propagated', outline: true, entries: [entry], families: [] });
   }
   return result;
 }
 
-export const IMPURE_EFFECTS = new Set(['local_mutation', 'argument_mutation', 'receiver_mutation', 'global_mutation', 'external_read', 'nondeterminism']);
-export function isImpure(entry: Entry): boolean { return IMPURE_EFFECTS.has(entry.finding.effect.kind); }
-export function functionMarkers(snapshot: Snapshot, directOnly: boolean): { range: Range; entries: Entry[] }[] {
-  return snapshot.functions.flatMap(fn => {
-    const entries = snapshot.findings.filter(entry => entry.functionRange && equal(entry.functionRange, fn.range)
-      && (!directOnly || entry.finding.origin === 'direct') && isImpure(entry));
-    return entries.length ? [{ range: { start: fn.range.start, end: fn.body.start }, entries }] : [];
-  });
+export function functionMarkers(snapshot: Snapshot, directOnly: boolean): { range: Range; category: Category; label: string; entries: Entry[] }[] {
+  return annotations(snapshot, directOnly).filter(annotation => annotation.target === 'function').map(annotation => ({ range: annotation.range, category: annotation.category, label: annotation.label, entries: annotation.findings.map(index => snapshot.findings[index]).filter(entry => !directOnly || entry.finding.origin === 'direct') }));
 }
 
 export const CATEGORY_STYLE: Record<Category, 'fill' | 'outline'> = {
   'mutated-state': 'fill', 'unstructured-state': 'fill', 'shared-state': 'fill',
-  'division-risk': 'fill', nondeterminism: 'outline', 'runtime-errors': 'outline', 'data-corruption': 'outline'
+  'compound-defects': 'outline', 'division-risk': 'fill', nondeterminism: 'outline', 'runtime-errors': 'outline', 'data-corruption': 'outline'
 };
 export function divisionCompatible(capabilities: { experimental?: unknown } | undefined): boolean {
   const experimental = capabilities?.experimental as { stateLens?: { divisionAnalysis?: number } } | undefined;
   return experimental?.stateLens?.divisionAnalysis === 1;
+}
+
+export function findingEvidence(finding: Finding): Evidence[] {
+  const result = [...finding.call_path, ...finding.evidence, ...(finding.compound?.ingredients ?? [])];
+  const trace = finding.state_trace;
+  if (trace) {
+    for (const [role, locations] of [['Origin', trace.origins], ['Invalidation', trace.invalidations], ['Affected use', trace.affected_uses]] as const) {
+      result.push(...locations.map(location => ({ ...location, rule_id: finding.rule_id, role, source_hash: trace.source_hash })));
+    }
+  }
+  return result;
 }

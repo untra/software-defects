@@ -273,8 +273,11 @@ def check_group(client, paths, rows, baseline, update, summaries):
             for field in ("range", "body"):
                 item["problems"] += [audit.problem("range", message) for message in range_problems(field, function[field], lines)]
         hints = result(client, client.begin("textDocument/inlayHint", {**params[p], "range": whole[p]}), item)
-        if hints is not None and len(hints) != summary["hinted_functions"]:
-            item["problems"].append(audit.problem("count-mismatch", f"{len(hints)} hints for {summary['hinted_functions']} functions"))
+        if hints is not None:
+            expected_hints = [(a["position"], "◆ " + a["label"]) for a in snapshot.get("annotations", [])]
+            actual_hints = [(hint["position"], hint["label"]) for hint in hints]
+            if actual_hints != expected_hints:
+                item["problems"].append(audit.problem("count-mismatch", "Inlay hints differ from server annotations"))
         # A settled ranges response follows the versioned publish on the same stream.
         diagnostics = client.latest_diagnostics.get(p.as_uri(), {})
         if diagnostics.get("version") != RESTORED_VERSION or len(diagnostics.get("diagnostics", [])) != item["findings"]:

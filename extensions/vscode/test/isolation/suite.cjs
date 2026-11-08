@@ -5,10 +5,10 @@ const registry = require('../../languages.json');
 const TIMEOUT_MS = 15000;
 const POLL_MS = 50;
 const ACTIVATION_SETTLE_MS = 500;
-async function until(predicate) {
+async function until(predicate, detail = () => '') {
   const deadline = Date.now() + TIMEOUT_MS;
   while (!await predicate()) {
-    assert.ok(Date.now() < deadline, 'Timed out waiting for extension state');
+    assert.ok(Date.now() < deadline, `Timed out waiting for extension state: ${detail()}`);
     await new Promise(resolve => setTimeout(resolve, POLL_MS));
   }
 }
@@ -33,6 +33,22 @@ exports.run = async () => {
     assert.equal(api.serverRunning(), false);
     const editor = await vscode.window.showTextDocument(document, { preview: false, viewColumn: vscode.ViewColumn.Beside });
     await until(() => api.serverRunning() && api.applied(document.uri.toString()));
+    const snapshot = (await api.snapshot(document.uri.toString())).audit;
+    const labels = new Set(snapshot.annotations.map(annotation => annotation.label));
+    for (const label of ['Impure', 'Mutacious', 'Volatile', 'Unstructured', 'Async', 'Shared', 'Untyped']) {
+      assert.ok(labels.has(label), `${language}: missing ${label}`);
+    }
+    if (['typescript', 'javascript', 'python'].includes(language)) {
+      assert.ok(labels.has('Polymorphic'), `${language}: missing Polymorphic`);
+      assert.ok(snapshot.findings.some(entry => entry.finding.resolution === 'unsafe-input-execution'));
+    }
+    assert.ok(snapshot.findings.some(entry => entry.finding.resolution === 'resource-lifecycle'));
+    const applied = api.applied(document.uri.toString());
+    assert.ok(applied.triggers > 0);
+    assert.ok(applied.labels.length > 0);
+    const keys = applied.labels.map(a => `${a.category}:${a.position.line}`);
+    assert.equal(new Set(keys).size, keys.length);
+    for (const annotation of applied.labels) assert.ok(annotation.findings.every(index => index < snapshot.findings.length));
     const configuration = vscode.workspace.getConfiguration(`stateLens.${language}`);
     instances.push({ language, api, document, configuration, column: editor.viewColumn });
   }
@@ -48,7 +64,7 @@ exports.run = async () => {
     }
     await vscode.commands.executeCommand(`stateLens.${current.language}.toggle`);
     await until(() => current.api.applied(current.document.uri.toString()));
-    await until(() => current.api.ui().statusVisible && instances.filter(instance => instance.api.ui().statusVisible).length === 1);
+    await until(() => current.api.ui().statusVisible && instances.filter(instance => instance.api.ui().statusVisible).length === 1, () => JSON.stringify({ expected: current.language, active: vscode.window.activeTextEditor?.document.uri.toString(), instances: instances.map(instance => ({ language: instance.language, ...instance.api.ui() })) }));
     assert.equal(current.api.ui().statusVisible, true);
     assert.equal(current.api.ui().evidenceUri, current.document.uri.toString());
     await vscode.commands.executeCommand(`stateLens.${current.language}.evidence.focus`);

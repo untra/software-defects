@@ -60,7 +60,7 @@ test('compound hover names its category and uses the class route', () => {
   value.finding.compound = { class: 'nondeterminism', category: 'temporal-interleaving', ingredients: [] };
   const hover = explanation(value);
   assert.ok(hover.parts.some(p => p.value.includes('lost-update')));
-  assert.ok(hover.parts.some(p => p.value.includes('#FFE599')));
+  assert.ok(hover.parts.some(p => p.value.includes('#C9A227')));
   assert.ok(hover.parts.some(p => p.value.includes('/en/compound-defects/nondeterminism/lost-update/')));
 });
 

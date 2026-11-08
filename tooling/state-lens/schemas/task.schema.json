@@ -1,0 +1,141 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "stage": {
+      "enum": [
+        "inventory",
+        "extract",
+        "align",
+        "compare",
+        "hypothesize",
+        "challenge",
+        "evaluate",
+        "repair",
+        "review",
+        "held_out"
+      ]
+    },
+    "inputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "required": [
+          "path",
+          "sha256"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "tool": {
+      "enum": [
+        "inventory",
+        "scan",
+        "graph",
+        "semantic_facts",
+        "semantic_compare",
+        "semantic_preview",
+        "submission"
+      ]
+    },
+    "case": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "output_kind": {
+      "enum": [
+        "source_snapshot",
+        "state_graph",
+        "contract",
+        "alignment",
+        "semantic_delta",
+        "rule",
+        "compound",
+        "finding",
+        "repair",
+        "evaluation",
+        "hypothesis",
+        "challenge",
+        "tool_result"
+      ]
+    },
+    "behavioral_execution": {
+      "type": "boolean"
+    },
+    "split": {
+      "enum": [
+        "development",
+        "validation",
+        "held_out"
+      ]
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "configuration_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "limits": {
+      "type": "object",
+      "properties": {
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 600
+        },
+        "output_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16777216
+        }
+      },
+      "required": [
+        "timeout_seconds",
+        "output_bytes"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema_version",
+    "stage",
+    "inputs",
+    "tool",
+    "case",
+    "source",
+    "output_kind",
+    "behavioral_execution",
+    "split",
+    "groups",
+    "configuration_hash",
+    "limits"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

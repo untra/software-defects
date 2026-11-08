@@ -28,13 +28,21 @@ Use your host target instead of `darwin-arm64`. Omit the language from `test:iso
 
 ## Use
 
-Open a `.go`, `.rs`, `.ts`, or `.py` file. Sources use dotted borders and subtle fills: green (`#78A65A`) for mutated state, blue (`#3D85C6`) for unstructured state, and red (`#DD3333`) for shared state. Propagated effects use dashed borders and lighter fills. Compound findings retain their yellow, light-blue, or magenta outlines. Overlaps retain all findings in the hover.
+Open a `.go`, `.rs`, `.ts`, `.js`, or `.py` file. Sources use dotted borders and subtle fills: green (`#78A65A`) for mutated state, blue (`#3D85C6`) for unstructured state, and red (`#DD3333`) for shared state. Propagated effects use dashed borders and lighter fills. Compound findings retain their yellow, light-blue, or magenta outlines. Overlaps retain all findings in the hover.
 
 Hover a source for its colored defect title, short explanation, **Guide**, and **Evidence**. Evidence opens the selected finding in the Explorer with origin, effect, resolution, taxonomy, and navigable source locations and call paths. File paths and byte offsets appear in Evidence rather than the hover.
 
-A green declaration border identifies an **Impure** function. State Lens uses a strict convention: local mutable bindings and writes also qualify, alongside argument/receiver/global mutation, external mutable reads, and nondeterminism. Local effects still do not propagate to callers. Structural signals alone do not establish impurity. Nested closures own their findings. No marker means no qualifying finding was detected; it does not prove purity.
+Function declaration markers use the category color. A function can have more than one category. Inlay hints use the server's annotations:
 
-Function inlays summarize findings as `◆ Impure` or `◆ Signals`. The supported affected scope consists of the owning function and resolved call paths shown in Evidence; it is not a complete dataflow analysis.
+| Category | Function | Property or binding | Code segment |
+| --- | --- | --- | --- |
+| Mutated (green) | Impure | Mutacious | Volatile |
+| Unstructured (blue) | Polymorphic when runtime type dispatch is evidenced; otherwise Unstructured | Unstructured | Insecure for modeled unsafe input execution; otherwise Unstructured |
+| Shared (red) | Async for explicit async functions; otherwise Shared | Shared | Lifecycle for matched acquisition/release; Async for explicit launches; otherwise Shared |
+
+State Lens uses a strict impurity convention: local mutable bindings and writes qualify alongside argument/receiver/global mutation, external mutable reads, and nondeterminism. Local effects do not propagate to callers. Structural signals alone do not establish impurity. Nested closures own their findings; no marker does not prove purity.
+
+External-input models identify selected network, file, console, and deserialization boundaries. Polymorphic requires branching on the runtime type of a modeled input binding. Insecure requires an unchanged executable-input binding passed directly to a modeled execution sink. Lifecycle identifies selected resource pairs in the same lexical scope; it does not prove exception-safe cleanup. Reassignment, shadowing, transformations, and unsupported APIs limit these models. See the [server documentation](../../tooling/state-lens/README.md#annotations) for coverage. All labels describe susceptibility mechanisms, not proven bugs or a complete dataflow analysis.
 
 - **State Lens: Toggle Susceptibility Lens** enables/disables decoration and source hovers.
 - **State Lens: Refresh Analysis** requests a new snapshot.
@@ -98,7 +106,7 @@ an unsupported-language response, fragmented/out-of-order frames, a hung request
 
 1. From the repository root, run `npm test --prefix extensions/vscode`.
 2. Launch **State Lens: Extension Development Host** from Run and Debug. The existing launch task builds both the extension and release server.
-3. Open `examples/shared-state/async-io-misuse/go/03_goroutine_leak_unbuffered_result.go`. Hover line 12: `var-let-mut`, `Mutable binding.`, and the two links should appear. Inspect the external read inside `firstResult` and its green function marker.
+3. Open `examples/shared-state/async-io-misuse/go/03_goroutine_leak_unbuffered_result.go`. Hover line 12: `var-let-mut`, `Mutable binding.`, and the two links should appear. Inspect the external read inside `firstResult` and its category markers.
 4. Compare representative mutated-state, unstructured-state, and shared-state examples in light, dark, and high-contrast themes. Check multiline borders, overlapping findings, nested closures, Evidence, toggle, edits, and `directOnly`.
 5. For presentation changes, edit `src/hover.ts`, `src/ranges.ts`, or decoration options in `src/extension.ts`, then rebuild and reload the development host. Standard server hover, diagnostics, and inlay text live in `tooling/state-lens/src/server.rs`; rebuild the server and reload the host after changing them.
 6. Run `cargo +1.95.0 test --locked --manifest-path tooling/state-lens/Cargo.toml`, then `cargo +1.95.0 build --release --locked --manifest-path tooling/state-lens/Cargo.toml` and `python3 tooling/state-lens/scripts/smoke.py --report build/smoke/protocol`.
@@ -132,3 +140,14 @@ The editor suite checks exact denominator ranges, Warning diagnostics, blue/yell
 The footer shows one State Lens entry for the active supported file. Its tooltip identifies the language, and clicking toggles that language. The State Lens Evidence view follows the active file; language-specific commands, settings, and output channels remain available. Unsupported editors hide both UI entries.
 
 Servers run only for enabled languages with visible file editors. Split editors can keep several language servers running, while hidden tabs alone do not. Closing the last visible editor or disabling its language stops the corresponding server and clears its results. Returning to that language starts a fresh server. Failed startup requires Refresh Analysis, re-enabling, or a new visibility transition to retry.
+
+Annotation labels use inline decorations with a colored diamond and neutral label
+text. The diamond follows the website's family palette and has extra left spacing.
+Source underlines are independent of affected
+region highlights. A missing highlight means no blast radius is established.
+Compounds use gold and retain ingredient evidence; overlapping family colors alone
+do not establish a compound. Standard LSP clients still receive textual inlay hints.
+
+Each language package exposes `stateLens.<language>.disabledChecks` (default `[]`).
+Use base defect IDs such as `var-let-mut` or `divide-by-zero`. Disabling a check also
+removes compounds that require it. No restart is required.

@@ -1,6 +1,6 @@
 use crate::{
     analysis::{language_name, Engine},
-    model::{byte_offset, position, Evidence, Finding, Report, Span},
+    model::{byte_offset, position, Evidence, Finding, Position, Report, Span},
 };
 use anyhow::{bail, Context, Result};
 use serde_json::{json, Value};
@@ -122,11 +122,17 @@ fn short_explanation(finding: &Finding) -> &str {
         explanation => explanation,
     }
 }
-fn impure(finding: &Finding) -> bool {
-    !matches!(finding.effect, crate::model::Effect::StructuralSignal)
-}
 fn hover_description(finding: &Finding, markdown: bool) -> String {
-    let description = format!("{}: {}", finding.defect, short_explanation(finding));
+    let mut description = format!("{}: {}", finding.defect, short_explanation(finding));
+    if let Some(trace) = &finding.state_trace {
+        if !trace.origins.is_empty() {
+            description.push_str("\n\nCandidate state path: reaching assignment → affected read. Path feasibility is unresolved.");
+        }
+        if let Some(condition) = &trace.required_condition {
+            description.push_str("\n\nRequired condition: ");
+            description.push_str(condition);
+        }
+    }
     let url = finding_guide_url(finding);
     if markdown {
         format!(
@@ -159,6 +165,10 @@ fn diagnostics(engine: &Engine, report: &Report, uri: &str) -> Option<Value> {
                         .flat_map(|c| c.ingredients.iter())
                         .filter_map(|e| evidence_location(engine, e, "ingredient")),
                 )
+                .chain(f.state_trace.iter().flat_map(|trace| trace.origins.iter()).filter_map(|location| {
+                    let evidence = Evidence { uri: location.uri.clone(), range: location.range, rule_id: f.rule_id.clone() };
+                    evidence_location(engine, &evidence, "candidate reaching assignment")
+                }))
                 .collect();
             json!({
                 "range":lsp_range(source,f.trigger),
@@ -168,45 +178,25 @@ fn diagnostics(engine: &Engine, report: &Report, uri: &str) -> Option<Value> {
                 "codeDescription":{"href":finding_guide_url(f)},
                 "message":format!("{}: {}", f.defect, short_explanation(f)),
                 "relatedInformation":related,
-                "data":{"division_risk":f.division_risk,"family":f.family,"origin":f.origin,"effect":f.effect,"compound":f.compound}
+                "data":{"state_trace":f.state_trace,"division_risk":f.division_risk,"family":f.family,"origin":f.origin,"effect":f.effect,"compound":f.compound}
             })
         })
         .collect();
     Some(json!({"uri":uri,"version":document.version,"diagnostics":items}))
 }
-fn inlay_hints(report: &Report, source: &str, uri: &str) -> Value {
+fn inlay_hints(report: &Report, source: &str, uri: &str, start: Position, end: Position) -> Value {
     let Some(document) = report.documents.iter().find(|d| d.uri == uri) else {
         return json!([]);
     };
-    let hints: Vec<_> = document
-        .functions
-        .iter()
-        .filter_map(|function| {
-            let owned: Vec<_> = document
-                .findings
-                .iter()
-                .filter(|f| f.function == Some(function.range))
-                .collect();
-            if owned.is_empty() {
-                return None;
-            }
-            let label = if owned.iter().any(|finding| impure(finding)) {
-                "Impure"
-            } else {
-                "Signals"
-            };
-            Some(json!({
-                "position":position(source,function.body.start),
-                "label":format!("{INLAY_MARKER} {label}"),
-                "paddingLeft":true,
-                "paddingRight":true,
-                "tooltip":format!("{}: {label}", function.name)
-            }))
-        })
-        .collect();
+    let hints: Vec<_> = crate::annotations::coalesce(document, source).iter().filter(|a| { let pos = position(source, a.position); (start.line, start.character) <= (pos.line, pos.character) && (pos.line, pos.character) <= (end.line, end.character) }).map(|annotation| {
+        let label = serde_json::to_value(annotation.label).unwrap();
+        let evidence: Vec<_> = annotation.findings.iter().map(|&index| document.findings[index].explanation.as_str()).collect();
+        json!({ "position": position(source, annotation.position), "label": format!("{INLAY_MARKER} {}", label.as_str().unwrap()),
+            "paddingLeft":true, "paddingRight":true, "tooltip": evidence.join("\n"), "data": annotation })
+    }).collect();
     json!(hints)
 }
-fn diagnostics_setting(settings: &Value) -> Option<bool> {
+fn selected_settings(settings: &Value) -> &Value {
     let selected = if crate::analysis::SUPPORTED_LANGUAGES.len() == 1 {
         &settings["stateLens"][crate::analysis::SUPPORTED_LANGUAGES[0]]
     } else {
@@ -220,16 +210,27 @@ fn diagnostics_setting(settings: &Value) -> Option<bool> {
     } else {
         selected
     };
-    let selected = if selected.is_object() {
+    if selected.is_object() {
         selected
     } else {
         settings
-    };
+    }
+}
+fn diagnostics_setting(settings: &Value) -> Option<bool> {
+    let selected = selected_settings(settings);
     selected["diagnostics"]
         .as_bool()
         .map(|diagnostics| diagnostics && selected["enabled"].as_bool().unwrap_or(true))
 }
 
+fn disabled_checks(settings: &Value) -> std::collections::BTreeSet<String> {
+    selected_settings(settings)["disabledChecks"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .filter_map(|v| v.as_str().map(String::from))
+        .collect()
+}
 pub fn serve() -> Result<()> {
     let (sender, receiver) = mpsc::channel();
     let incoming = Arc::new(AtomicU64::new(0));
@@ -333,10 +334,11 @@ pub fn serve() -> Result<()> {
                         roots.push(root);
                     }
                 }
+                engine.set_disabled_checks(disabled_checks(&p["initializationOptions"]));
                 publish_diagnostics =
                     diagnostics_setting(&p["initializationOptions"]).unwrap_or(true);
                 Ok(
-                    json!({"capabilities":{"experimental":{"stateLens":{"divisionAnalysis":1,"languages":crate::analysis::SUPPORTED_LANGUAGES}},"positionEncoding":"utf-16","textDocumentSync":{"openClose":true,"change":2,"save":{"includeText":false}},"hoverProvider":true,"inlayHintProvider":true},"serverInfo":{"name":SOURCE,"version":env!("CARGO_PKG_VERSION")}}),
+                    json!({"capabilities":{"experimental":{"stateLens":{"divisionAnalysis":1,"stateTraces":2,"conditionContract":1,"stateAnnotations":2,"languages":crate::analysis::SUPPORTED_LANGUAGES}},"positionEncoding":"utf-16","textDocumentSync":{"openClose":true,"change":2,"save":{"includeText":false}},"hoverProvider":true,"inlayHintProvider":true},"serverInfo":{"name":SOURCE,"version":env!("CARGO_PKG_VERSION")}}),
                 )
             }
             "initialized" => {
@@ -457,7 +459,9 @@ pub fn serve() -> Result<()> {
                 let uri = p["textDocument"]["uri"].as_str().context("URI")?;
                 if method == "textDocument/inlayHint" {
                     let source = engine.source(uri).context("source unavailable")?;
-                    return Ok(inlay_hints(&report, source, uri));
+                    let start = serde_json::from_value(p["range"]["start"].clone())?;
+                    let end = serde_json::from_value(p["range"]["end"].clone())?;
+                    return Ok(inlay_hints(&report, source, uri, start, end));
                 }
                 let document = report
                     .documents
@@ -483,14 +487,17 @@ pub fn serve() -> Result<()> {
                         )
                     }
                 } else {
-                    let findings:Vec<_>=document.findings.iter().map(|f|json!({"finding":f,"triggerRange":lsp_range(source,f.trigger),"functionRange":f.function.map(|s|lsp_range(source,s))})).collect();
+                    let findings:Vec<_>=document.findings.iter().map(|f|json!({"finding":f,"triggerRange":lsp_range(source,f.trigger),"blastRadius":f.blast_radius.iter().map(|s|lsp_range(source,*s)).collect::<Vec<_>>(),"functionRange":f.function.map(|s|lsp_range(source,s))})).collect();
+                    let annotations:Vec<_> = document.annotations.iter().map(|a| json!({"depth":a.depth,"category":a.category,"target":a.target,"range":lsp_range(source,a.range),"position":position(source,a.position),"label":a.label,"functionRange":a.function.map(|f|lsp_range(source,f)),"findings":a.findings})).collect();
                     let functions:Vec<_>=document.functions.iter().map(|f|json!({"name":f.name,"range":lsp_range(source,f.range),"body":lsp_range(source,f.body)})).collect();
                     Ok(
-                        json!({"schemaVersion":report.schema_version,"generation":report.generation,"uri":uri,"version":document.version,"sourceHash":document.source_hash,"findings":findings,"functions":functions,"unresolved":document.unresolved,"parseErrors":document.parse_errors,"indexing":indexing,"limitations":report.limitations}),
+                        json!({"schemaVersion":report.schema_version,"generation":report.generation,"uri":uri,"version":document.version,"sourceHash":document.source_hash,"findings":findings,"annotations":annotations,"functions":functions,"unresolved":document.unresolved,"parseErrors":document.parse_errors,"indexing":indexing,"limitations":report.limitations}),
                     )
                 }
             }
             "workspace/didChangeConfiguration" => {
+                engine.set_disabled_checks(disabled_checks(&p["settings"]));
+                dirty = true;
                 if let Some(enabled) = diagnostics_setting(&p["settings"]) {
                     publish_diagnostics = enabled;
                     dirty = enabled;

@@ -30,5 +30,20 @@
       "Authorization"
     ]
   },
-  "analysis_limit": "These are syntax candidates only. Default value expression returns the same object each call; callers mutate it. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "These are syntax candidates only. Default value expression returns the same object each call; callers mutate it. Establishing incorrect behavior requires semantic or domain evidence beyond these captures.",
+  "repair": {
+    "kind": "independent-default",
+    "source_hash": "95f7ffefccd0fced151ae0802484309cdbc67501b0e73de3189c49f04bbc6a38",
+    "result_hash": "febc47d4b49d197bc4a0c797f749820107ef63e6669bde54e56d5dc174bbc3e6",
+    "edits": [
+      {
+        "range": [
+          147,
+          171
+        ],
+        "expected": "return { url, headers };",
+        "replacement": "return { url, headers: { ...headers } };"
+      }
+    ]
+  }
 }

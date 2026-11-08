@@ -2,7 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { segments, accepts } = require('../dist/ranges');
 const r = (start, end) => ({ start: { line: start, character: 0 }, end: { line: end, character: 0 } });
-const finding = (fn, origin = 'direct') => ({ functionRange: fn, triggerRange: r(1, 2), finding: { origin } });
+const finding = (fn, origin = 'direct') => ({ functionRange: fn, triggerRange: r(1, 2), blastRadius: [r(1, 2)], finding: { origin } });
 test('a pure nested closure does not inherit its containing function color', () => {
   const outer = r(0, 10), inner = r(3, 6);
   const snapshot = { functions: [{ range: outer, body: outer }, { range: inner, body: r(4, 6) }], findings: [finding(outer)] };
@@ -31,7 +31,7 @@ test('large trigger ranges exclude independently analyzed nested functions', () 
 
 test('overlapping families split fills, preserve hovers, and paint a separate compound outline', () => {
   const { decorations } = require('../dist/ranges');
-  const entry = (family, start, end, compound) => ({ triggerRange: r(start, end), functionRange: null,
+  const entry = (family, start, end, compound) => ({ triggerRange: r(start, end), blastRadius: [r(start, end)], functionRange: null,
     finding: { family, rule_id: family, origin: 'direct', compound } });
   const snapshot = { functions: [], findings: [entry('shared-state', 0, 6), entry('mutated-state', 2, 4),
     entry('compound-defects', 2, 5, { class: 'nondeterminism' })] };
@@ -48,7 +48,7 @@ test('overlapping families split fills, preserve hovers, and paint a separate co
 test('equal trigger widths use a stable family order independent of finding order', () => {
   const { decorations } = require('../dist/ranges');
   const findings = ['shared-state', 'unstructured-state', 'mutated-state'].map(family => ({
-    triggerRange: r(1, 2), functionRange: null, finding: { family, rule_id: family, origin: 'direct' }
+    triggerRange: r(1, 2), blastRadius: [r(1, 2)], functionRange: null, finding: { family, rule_id: family, origin: 'direct' }
   }));
   const snapshot = { functions: [], findings };
   assert.equal(decorations(snapshot, false)[0].category, 'mutated-state');
@@ -61,43 +61,34 @@ test('decoration palette matches authoritative website CSS', () => {
   const { PALETTE } = require('../dist/ranges');
   const css = fs.readFileSync(path.resolve(__dirname, '../../../src/assets/css/style.css'), 'utf8');
   const variables = { 'mutated-state': 'mutated', 'unstructured-state': 'unstructured', 'shared-state': 'shared',
-    nondeterminism: 'compound-nd', 'runtime-errors': 'compound-rt', 'data-corruption': 'compound-dc' };
+    nondeterminism: 'compound', 'runtime-errors': 'compound', 'data-corruption': 'compound' };
   for (const [category, variable] of Object.entries(variables)) {
     assert.equal(css.match(new RegExp(`--${variable}:\\s*(#[a-fA-F0-9]{6})`))[1], PALETTE[category]);
   }
 });
 
-test('function markers include local mutation and observable effects, but exclude structural signals and pure closures', () => {
+test('function markers preserve server categories and direct-only evidence', () => {
   const { functionMarkers } = require('../dist/ranges');
-  const outer = r(0, 10), inner = r(3, 6);
-  const functions = [{ range: outer, body: r(1, 10) }, { range: inner, body: r(4, 6) }];
-  for (const kind of ['local_mutation', 'argument_mutation', 'receiver_mutation', 'global_mutation', 'external_read', 'nondeterminism']) {
-    const entry = finding(outer);
-    entry.finding.effect = { kind };
-    assert.deepEqual(functionMarkers({ functions, findings: [entry] }, false).map(marker => marker.range), [r(0, 1)]);
-  }
-  const structural = finding(outer);
-  structural.finding.effect = { kind: 'structural_signal' };
-  assert.deepEqual(functionMarkers({ functions, findings: [structural] }, false), []);
-  const propagated = finding(outer, 'propagated');
-  propagated.finding.effect = { kind: 'external_read' };
-  assert.equal(functionMarkers({ functions, findings: [propagated] }, false).length, 1);
-  assert.deepEqual(functionMarkers({ functions, findings: [propagated] }, true), []);
-  const global = finding(null);
-  global.finding.effect = { kind: 'local_mutation' };
-  assert.deepEqual(functionMarkers({ functions, findings: [global] }, false), []);
+  const outer = r(0, 10);
+  const snapshot = { functions: [{range: outer, body: r(1,10)}], findings: [finding(outer), finding(outer, 'propagated')], annotations: [
+    {position: {line:0,character:0},target:'function',category:'mutated-state',label:'Impure',range:r(0,1),findings:[0]},
+    {position: {line:0,character:0},target:'function',category:'shared-state',label:'Shared',range:r(0,1),findings:[1]}
+  ] };
+  assert.deepEqual(functionMarkers(snapshot,false).map(m => m.label), ['Impure','Shared']);
+  assert.deepEqual(functionMarkers(snapshot,true).map(m => m.category), ['mutated-state']);
+  assert.deepEqual(functionMarkers({...snapshot,annotations:undefined},false), []);
 });
 
-test('yellow division risk requires denominator mutation evidence', () => {
+test('base division retains its family color; gold requires a compound recipe', () => {
   const { decorations } = require('../dist/ranges');
-  const entry = { triggerRange: r(1, 2), functionRange: null, finding: {
+  const entry = { triggerRange: r(1, 2), blastRadius: [r(1, 2)], functionRange: null, finding: {
     rule_id: 'typescript.unstructured-state.divide-by-zero', family: 'unstructured-state', origin: 'direct',
     division_risk: { confidence: 'known-zero', outcome: 'non-finite', mutated: false }
   } };
   const snapshot = { functions: [], findings: [entry] };
   assert.equal(decorations(snapshot, false)[0].category, 'unstructured-state');
   entry.finding.division_risk.mutated = true;
-  assert.equal(decorations(snapshot, false)[0].category, 'division-risk');
+  assert.equal(decorations(snapshot, false)[0].category, 'unstructured-state');
   entry.finding.division_risk.confidence = 'candidate';
   assert.equal(decorations(snapshot, false)[0].category, 'unstructured-state');
 });
@@ -110,4 +101,48 @@ test('division categories use fills and stale servers fail the capability check'
   assert.equal(divisionCompatible(undefined), false);
   assert.equal(divisionCompatible({}), false);
   assert.equal(divisionCompatible({ experimental: { stateLens: { divisionAnalysis: 1 } } }), true);
+});
+
+test('annotation filtering preserves snapshot indices and hides propagated tooltip evidence', () => {
+  const { annotations } = require('../dist/ranges');
+  const direct = finding(r(0, 2));
+  const propagated = finding(r(0, 2), 'propagated');
+  const snapshot = { findings: [propagated, direct], annotations: [
+    { position: {line:0,character:0}, range:r(0,1), category: 'mutated-state', target: 'function', label: 'Impure', findings: [0, 1] },
+    { position: {line:0,character:0}, range:r(0,1), category: 'shared-state', target: 'property', label: 'Shared', findings: [0] }
+  ] };
+  assert.deepEqual(annotations(snapshot, true).map(a => a.findings), [[1]]);
+  assert.equal(snapshot.findings[1], direct);
+  assert.deepEqual(snapshot.annotations[0].findings, [0, 1]);
+  assert.deepEqual(annotations(snapshot, false).map(a => a.findings), [[0, 1], [0]]);
+});
+
+test('same family merges after visibility filtering at the narrowest source', () => {
+  const { annotations } = require('../dist/ranges');
+  const snapshot = { findings: [finding(r(0,2)), finding(r(0,2), 'propagated')], annotations: [
+    {category:'mutated-state',target:'function',label:'Impure',range:r(0,2),position:{line:0,character:0},findings:[0]},
+    {category:'mutated-state',target:'property',label:'Volatile',range:{start:{line:0,character:8},end:{line:0,character:9}},position:{line:0,character:9},findings:[1]}
+  ]};
+  assert.equal(annotations(snapshot,false).length,1);
+  assert.equal(annotations(snapshot,false)[0].label,'Mutacious');
+  assert.equal(annotations(snapshot,false)[0].position.character,9);
+  assert.equal(annotations(snapshot,true)[0].label,'Impure');
+  assert.equal(annotations(snapshot,true)[0].position.character,0);
+});
+
+test('unsupported blast radius does not invent a function highlight', () => {
+  const { decorations } = require('../dist/ranges');
+  assert.deepEqual(decorations({functions:[],findings:[{...finding(r(0,10)),blastRadius:[],finding:{family:'mutated-state',origin:'direct'}}]},false),[]);
+});
+
+test('trace evidence retains distinct roles and source hashes without inventing omissions', () => {
+  const { findingEvidence } = require('../dist/ranges');
+  const origin = { uri: 'file:///a.ts', range: { start: 0, end: 1 } };
+  const use = { uri: 'file:///a.ts', range: { start: 20, end: 21 } };
+  const evidence = findingEvidence({ rule_id: 'rule', call_path: [], evidence: [], state_trace: {
+    source_hash: 'snapshot', origins: [origin], invalidations: [], affected_uses: [use]
+  } });
+  assert.deepEqual(evidence.map(e => e.role), ['Origin', 'Affected use']);
+  assert.ok(evidence.every(e => e.source_hash === 'snapshot'));
+  assert.deepEqual(evidence.map(e => e.range), [origin.range, use.range]);
 });

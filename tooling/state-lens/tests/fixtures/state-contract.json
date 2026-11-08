@@ -1,0 +1,656 @@
+{
+  "graphs": [
+    {
+      "contract_version": 2,
+      "snapshot_id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58",
+      "generation": 1,
+      "documents": [
+        {
+          "id": "file:///private/tmp/t01-case.ts",
+          "uri": "file:///private/tmp/t01-case.ts",
+          "source_hash": "20b40f4b804a0000c0866d07e6c453429842196a00afff94377a67f48d151a94",
+          "byte_length": 30,
+          "version": null
+        },
+        {
+          "id": "file:///tmp/t01-evidence.ts",
+          "uri": "file:///tmp/t01-evidence.ts",
+          "source_hash": "f0443a342c5ef54783a111b51ba56c938e474c32324d90c3a60c9c8e3a37e2d9",
+          "byte_length": 4,
+          "version": 3
+        }
+      ],
+      "bindings": [
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:binding:15:21",
+          "location": {
+            "uri": "file:///private/tmp/t01-case.ts",
+            "range": {
+              "start": 15,
+              "end": 21
+            }
+          }
+        },
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:binding:4:5",
+          "location": {
+            "uri": "file:///private/tmp/t01-case.ts",
+            "range": {
+              "start": 4,
+              "end": 5
+            }
+          }
+        }
+      ],
+      "allocations": [
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:allocation",
+          "operation": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0"
+        }
+      ],
+      "blocks": [
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:block",
+          "operations": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0"
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:1:condition:nonzero",
+          "predicate": {
+            "kind": "nonzero",
+            "value": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:1"
+          },
+          "uncertainty": [
+            "Numeric type and path feasibility are unresolved."
+          ],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:1"
+          ]
+        },
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:condition0",
+          "predicate": {
+            "kind": "comparison",
+            "operator": "equal",
+            "left": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0",
+            "right": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0"
+          },
+          "uncertainty": [],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ]
+        },
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:condition1",
+          "predicate": {
+            "kind": "nonzero",
+            "value": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0"
+          },
+          "uncertainty": [],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ]
+        },
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:condition2",
+          "predicate": {
+            "kind": "valid_index",
+            "index": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0",
+            "collection": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0"
+          },
+          "uncertainty": [],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ]
+        },
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:condition3",
+          "predicate": {
+            "kind": "resource_state",
+            "resource": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0",
+            "state": "open"
+          },
+          "uncertainty": [],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ]
+        },
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:condition4",
+          "predicate": {
+            "kind": "ownership",
+            "owner": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0",
+            "location": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0"
+          },
+          "uncertainty": [],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ]
+        },
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:condition5",
+          "predicate": {
+            "kind": "independence",
+            "left": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0",
+            "right": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0"
+          },
+          "uncertainty": [],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ]
+        },
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:condition6",
+          "predicate": {
+            "kind": "unknown",
+            "reason": "unmodeled"
+          },
+          "uncertainty": [],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ]
+        },
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:conjunction",
+          "predicate": {
+            "kind": "conjunction",
+            "conditions": [
+              "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:condition0"
+            ]
+          },
+          "uncertainty": [],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ]
+        },
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:disjunction",
+          "predicate": {
+            "kind": "disjunction",
+            "conditions": [
+              "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:condition0"
+            ]
+          },
+          "uncertainty": [],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ]
+        }
+      ],
+      "access_paths": [
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:path",
+          "root": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:binding:15:21",
+          "segments": [
+            {
+              "kind": "field",
+              "name": "x"
+            },
+            {
+              "kind": "index",
+              "value": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0"
+            },
+            {
+              "kind": "dereference"
+            }
+          ]
+        }
+      ],
+      "call_contexts": [
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:context",
+          "parent": null,
+          "call": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0",
+          "document": "file:///private/tmp/t01-case.ts",
+          "source_hash": "20b40f4b804a0000c0866d07e6c453429842196a00afff94377a67f48d151a94",
+          "range": {
+            "start": 4,
+            "end": 5
+          }
+        },
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:1",
+          "document": "file:///private/tmp/t01-case.ts",
+          "source_hash": "20b40f4b804a0000c0866d07e6c453429842196a00afff94377a67f48d151a94",
+          "range": {
+            "start": 28,
+            "end": 29
+          }
+        },
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:2",
+          "document": "file:///private/tmp/t01-case.ts",
+          "source_hash": "20b40f4b804a0000c0866d07e6c453429842196a00afff94377a67f48d151a94",
+          "range": {
+            "start": 15,
+            "end": 21
+          }
+        },
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:cross-file:evidence:0",
+          "document": "file:///tmp/t01-evidence.ts",
+          "source_hash": "f0443a342c5ef54783a111b51ba56c938e474c32324d90c3a60c9c8e3a37e2d9",
+          "range": {
+            "start": 0,
+            "end": 4
+          }
+        }
+      ],
+      "control_flow": [
+        {
+          "from": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:block",
+          "to": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:block",
+          "branch": "true",
+          "condition": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:condition0",
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ]
+        },
+        {
+          "from": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:block",
+          "to": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:block",
+          "branch": "false",
+          "condition": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:condition0",
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ]
+        },
+        {
+          "from": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:block",
+          "to": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:block",
+          "branch": "exceptional",
+          "condition": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:condition0",
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ]
+        },
+        {
+          "from": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:block",
+          "to": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:block",
+          "branch": "unconditional",
+          "condition": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:condition0",
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ]
+        }
+      ],
+      "obligations": [
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:established",
+          "operation": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0",
+          "condition": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:condition0",
+          "language_model": "fixture-only",
+          "assumptions": [
+            "Not an analyzer conclusion."
+          ],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ],
+          "outcome": "established"
+        },
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:violated_on_demonstrated_path",
+          "operation": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0",
+          "condition": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:condition0",
+          "language_model": "fixture-only",
+          "assumptions": [
+            "Not an analyzer conclusion."
+          ],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ],
+          "outcome": "violated_on_demonstrated_path"
+        },
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:potential_violation",
+          "operation": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0",
+          "condition": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:condition0",
+          "language_model": "fixture-only",
+          "assumptions": [
+            "Not an analyzer conclusion."
+          ],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ],
+          "outcome": "potential_violation"
+        },
+        {
+          "id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:unknown",
+          "operation": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0",
+          "condition": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:fixture:condition0",
+          "language_model": "fixture-only",
+          "assumptions": [
+            "Not an analyzer conclusion."
+          ],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ],
+          "outcome": "unknown"
+        }
+      ],
+      "source_hash": "20b40f4b804a0000c0866d07e6c453429842196a00afff94377a67f48d151a94",
+      "operations": [
+        {
+          "identity": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0",
+          "binding_id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:binding:4:5",
+          "allocation_id": null,
+          "block_id": null,
+          "access_path": null,
+          "call_context": null,
+          "required_conditions": [],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ],
+          "id": 0,
+          "kind": "write",
+          "location": {
+            "uri": "file:///private/tmp/t01-case.ts",
+            "range": {
+              "start": 4,
+              "end": 5
+            }
+          },
+          "binding": {
+            "start": 4,
+            "end": 5
+          },
+          "guards": []
+        },
+        {
+          "identity": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:1",
+          "binding_id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:binding:4:5",
+          "allocation_id": null,
+          "block_id": null,
+          "access_path": null,
+          "call_context": null,
+          "required_conditions": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:1:condition:nonzero"
+          ],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:1"
+          ],
+          "id": 1,
+          "kind": "read",
+          "location": {
+            "uri": "file:///private/tmp/t01-case.ts",
+            "range": {
+              "start": 28,
+              "end": 29
+            }
+          },
+          "binding": {
+            "start": 4,
+            "end": 5
+          },
+          "guards": []
+        },
+        {
+          "identity": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:2",
+          "binding_id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:binding:15:21",
+          "allocation_id": null,
+          "block_id": null,
+          "access_path": null,
+          "call_context": null,
+          "required_conditions": [],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:2"
+          ],
+          "id": 2,
+          "kind": "write",
+          "location": {
+            "uri": "file:///private/tmp/t01-case.ts",
+            "range": {
+              "start": 15,
+              "end": 21
+            }
+          },
+          "binding": {
+            "start": 15,
+            "end": 21
+          },
+          "guards": []
+        }
+      ],
+      "edges": [
+        {
+          "from": 0,
+          "to": 1,
+          "relationship": "reaching_assignment"
+        },
+        {
+          "from": 1,
+          "to": 2,
+          "relationship": "value_dependency"
+        }
+      ],
+      "limitations": [
+        "Candidate dependencies only: branch polarity, exceptional control flow, closures, aliases and scheduling feasibility are not established."
+      ]
+    }
+  ],
+  "traces": [
+    {
+      "contract_version": 2,
+      "snapshot_id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58",
+      "origin_operations": [
+        "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0"
+      ],
+      "invalidation_status": "unknown",
+      "invalidating_operations": [],
+      "affected_operations": [
+        "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:1"
+      ],
+      "supporting_evidence": [
+        "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0",
+        "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:1",
+        "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:cross-file:evidence:0"
+      ],
+      "required_conditions": [
+        "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:1:condition:nonzero"
+      ],
+      "evidence_level": "candidate_relationship",
+      "source_hash": "20b40f4b804a0000c0866d07e6c453429842196a00afff94377a67f48d151a94",
+      "origins": [
+        {
+          "uri": "file:///private/tmp/t01-case.ts",
+          "range": {
+            "start": 4,
+            "end": 5
+          }
+        }
+      ],
+      "invalidations": [],
+      "affected_uses": [
+        {
+          "uri": "file:///private/tmp/t01-case.ts",
+          "range": {
+            "start": 28,
+            "end": 29
+          }
+        }
+      ],
+      "required_condition": null,
+      "operations": [
+        {
+          "identity": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0",
+          "binding_id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:binding:4:5",
+          "allocation_id": null,
+          "block_id": null,
+          "access_path": null,
+          "call_context": null,
+          "required_conditions": [],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ],
+          "id": 0,
+          "kind": "write",
+          "location": {
+            "uri": "file:///private/tmp/t01-case.ts",
+            "range": {
+              "start": 4,
+              "end": 5
+            }
+          },
+          "binding": {
+            "start": 4,
+            "end": 5
+          },
+          "guards": []
+        },
+        {
+          "identity": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:1",
+          "binding_id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:binding:4:5",
+          "allocation_id": null,
+          "block_id": null,
+          "access_path": null,
+          "call_context": null,
+          "required_conditions": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:1:condition:nonzero"
+          ],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:1"
+          ],
+          "id": 1,
+          "kind": "read",
+          "location": {
+            "uri": "file:///private/tmp/t01-case.ts",
+            "range": {
+              "start": 28,
+              "end": 29
+            }
+          },
+          "binding": {
+            "start": 4,
+            "end": 5
+          },
+          "guards": []
+        }
+      ],
+      "edges": [
+        {
+          "from": 0,
+          "to": 1,
+          "relationship": "reaching_assignment"
+        }
+      ],
+      "assumptions": [
+        "Candidate dependencies only: branch polarity, exceptional control flow, closures, aliases and scheduling feasibility are not established."
+      ]
+    },
+    {
+      "contract_version": 2,
+      "snapshot_id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58",
+      "origin_operations": [
+        "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0"
+      ],
+      "invalidation_status": "unknown",
+      "invalidating_operations": [],
+      "affected_operations": [
+        "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:1"
+      ],
+      "supporting_evidence": [
+        "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0",
+        "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:1"
+      ],
+      "required_conditions": [
+        "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:1:condition:nonzero"
+      ],
+      "evidence_level": "candidate_relationship",
+      "source_hash": "20b40f4b804a0000c0866d07e6c453429842196a00afff94377a67f48d151a94",
+      "origins": [
+        {
+          "uri": "file:///private/tmp/t01-case.ts",
+          "range": {
+            "start": 4,
+            "end": 5
+          }
+        }
+      ],
+      "invalidations": [],
+      "affected_uses": [
+        {
+          "uri": "file:///private/tmp/t01-case.ts",
+          "range": {
+            "start": 28,
+            "end": 29
+          }
+        }
+      ],
+      "required_condition": "Denominator must be nonzero at this operation.",
+      "operations": [
+        {
+          "identity": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:0",
+          "binding_id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:binding:4:5",
+          "allocation_id": null,
+          "block_id": null,
+          "access_path": null,
+          "call_context": null,
+          "required_conditions": [],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:0"
+          ],
+          "id": 0,
+          "kind": "write",
+          "location": {
+            "uri": "file:///private/tmp/t01-case.ts",
+            "range": {
+              "start": 4,
+              "end": 5
+            }
+          },
+          "binding": {
+            "start": 4,
+            "end": 5
+          },
+          "guards": []
+        },
+        {
+          "identity": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:1",
+          "binding_id": "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:binding:4:5",
+          "allocation_id": null,
+          "block_id": null,
+          "access_path": null,
+          "call_context": null,
+          "required_conditions": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:operation:1:condition:nonzero"
+          ],
+          "evidence": [
+            "15728a96a60feb1a7698158a5fa86cf60fde061b01f35283ab78aaa788181a58:file:///private/tmp/t01-case.ts:evidence:1"
+          ],
+          "id": 1,
+          "kind": "read",
+          "location": {
+            "uri": "file:///private/tmp/t01-case.ts",
+            "range": {
+              "start": 28,
+              "end": 29
+            }
+          },
+          "binding": {
+            "start": 4,
+            "end": 5
+          },
+          "guards": []
+        }
+      ],
+      "edges": [
+        {
+          "from": 0,
+          "to": 1,
+          "relationship": "reaching_assignment"
+        }
+      ],
+      "assumptions": [
+        "Candidate dependencies only: branch polarity, exceptional control flow, closures, aliases and scheduling feasibility are not established."
+      ]
+    }
+  ]
+}
