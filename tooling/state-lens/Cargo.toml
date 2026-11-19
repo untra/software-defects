@@ -22,6 +22,14 @@ url = "2"
 [profile.release]
 lto = "thin"
 
+[profile.dist]
+inherits = "release"
+strip = true
+panic = "abort"
+lto = "fat"
+codegen-units = 1
+opt-level = "s"
+
 [features]
 default = ["go", "rust", "typescript", "javascript", "python"]
 go = ["dep:tree-sitter-go"]
