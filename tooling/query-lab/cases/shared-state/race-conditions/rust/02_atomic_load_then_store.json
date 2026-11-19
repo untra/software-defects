@@ -3,23 +3,121 @@
   "status": "syntax-candidate",
   "rationale": "Use a single atomic read-modify-write operation.",
   "original": {
-    "source_hash": "697dc5e358cb34ee91020c33e4278f35493b43018b08ec5b5ef4316db76edce8",
+    "source_hash": "db006f5a99ec7f20e8d1078cc06f2269f59cefdc703ca9617d4a9ba3e6f252b2",
     "queries": [
       {
         "query": "tooling/query-lab/queries/rust/shared-state/race-conditions/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              210,
-              214
+              229,
+              256
             ]
           },
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              243,
-              248
+              262,
+              276
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              282,
+              323
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              355,
+              384
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              364,
+              383
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              404,
+              435
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              413,
+              434
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              463,
+              810
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              463,
+              791
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              518,
+              535
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              563,
+              583
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              597,
+              780
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              687,
+              710
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              732,
+              746
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              843,
+              860
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              843,
+              851
             ]
           }
         ]
@@ -27,16 +125,114 @@
     ]
   },
   "fixed": {
-    "source_hash": "576a8bc8b53991dc40f69dac02042cac341d40a3079cad65804a1b417cf8749e",
+    "source_hash": "179a7f8c79853adcaaf11774a6be92b528ce6eabc76b10e948acc90c4c17a7a5",
     "queries": [
       {
         "query": "tooling/query-lab/queries/rust/shared-state/race-conditions/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              196,
-              205
+              215,
+              229
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              235,
+              270
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              302,
+              331
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              311,
+              330
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              351,
+              382
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              360,
+              381
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              410,
+              757
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              410,
+              738
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              465,
+              482
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              510,
+              530
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              544,
+              727
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              634,
+              657
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              679,
+              693
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              790,
+              807
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              790,
+              798
             ]
           }
         ]
@@ -46,9 +242,14 @@
   "runtime": {
     "status": "supported",
     "stdout_contains": [
-      "recorded 8000000 of 8000000 hits"
+      "recorded 800 of 800 hits"
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Each operation is atomic alone; the read-modify-write is not. Use fetch_add. Establishing incorrect behavior requires semantic or domain evidence beyond these captures. Calls inside macro token trees are not parsed as call_expression nodes; macro expansion or a dedicated token-tree query is required."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

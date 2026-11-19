@@ -8,13 +8,16 @@
       "defect": "aliasing-mutable-defaults",
       "language": "go",
       "source_hash": "d66af38add23f4ec809d81848f24a89ab7a3458243b1b802cb7cd673473c458f",
-      "susceptibility_status": "query-only",
+      "susceptibility_status": "semantic-relationship",
       "observed_rule_ids": [
         "go.mutated-state.aliasing-mutable-defaults"
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
-      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "mechanisms": [
+        "append-within-capacity"
+      ],
+      "rationale": "Object-identity relationship (sharing origin, write, observed read) established from the shared graph; isolation intent is not known, so bug detection remains unsupported.",
       "parse_errors": false,
       "split": "development"
     },
@@ -24,11 +27,16 @@
       "defect": "aliasing-mutable-defaults",
       "language": "go",
       "source_hash": "432012ebb6a4eb3af2409fb8aac5ab2481f2ecf82d7eafd0030adac5e34e68df",
-      "susceptibility_status": "unsupported",
-      "observed_rule_ids": [],
-      "trigger_count": 0,
+      "susceptibility_status": "semantic-relationship",
+      "observed_rule_ids": [
+        "go.mutated-state.aliasing-mutable-defaults"
+      ],
+      "trigger_count": 1,
       "bug_detection": "unsupported",
-      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "mechanisms": [
+        "argument-returned-alias"
+      ],
+      "rationale": "Object-identity relationship (sharing origin, write, observed read) established from the shared graph; isolation intent is not known, so bug detection remains unsupported.",
       "parse_errors": false,
       "split": "development"
     },
@@ -38,13 +46,16 @@
       "defect": "aliasing-mutable-defaults",
       "language": "go",
       "source_hash": "d7f94a5b039d52fd5f9d9d21d3ce14d4ce02e99caf13974c1925fa5f3d96cc00",
-      "susceptibility_status": "query-only",
+      "susceptibility_status": "semantic-relationship",
       "observed_rule_ids": [
         "go.mutated-state.aliasing-mutable-defaults"
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
-      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "mechanisms": [
+        "shallow-copy-nested"
+      ],
+      "rationale": "Object-identity relationship (sharing origin, write, observed read) established from the shared graph; isolation intent is not known, so bug detection remains unsupported.",
       "parse_errors": false,
       "split": "development"
     },
@@ -54,11 +65,16 @@
       "defect": "aliasing-mutable-defaults",
       "language": "go",
       "source_hash": "2d806f3299467f3e531932e3ea4df2cba320e1e073312afbd3bdf4ee5c5b75c2",
-      "susceptibility_status": "unsupported",
-      "observed_rule_ids": [],
-      "trigger_count": 0,
+      "susceptibility_status": "semantic-relationship",
+      "observed_rule_ids": [
+        "go.mutated-state.aliasing-mutable-defaults"
+      ],
+      "trigger_count": 1,
       "bug_detection": "unsupported",
-      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "mechanisms": [
+        "internal-state-escape"
+      ],
+      "rationale": "Object-identity relationship (sharing origin, write, observed read) established from the shared graph; isolation intent is not known, so bug detection remains unsupported.",
       "parse_errors": false,
       "split": "development"
     },
@@ -72,6 +88,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -88,6 +105,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -98,11 +116,16 @@
       "defect": "aliasing-mutable-defaults",
       "language": "typescript",
       "source_hash": "95f7ffefccd0fced151ae0802484309cdbc67501b0e73de3189c49f04bbc6a38",
-      "susceptibility_status": "unsupported",
-      "observed_rule_ids": [],
-      "trigger_count": 0,
+      "susceptibility_status": "semantic-relationship",
+      "observed_rule_ids": [
+        "typescript.mutated-state.aliasing-mutable-defaults"
+      ],
+      "trigger_count": 1,
       "bug_detection": "unsupported",
-      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "mechanisms": [
+        "shared-default"
+      ],
+      "rationale": "Object-identity relationship (sharing origin, write, observed read) established from the shared graph; isolation intent is not known, so bug detection remains unsupported.",
       "parse_errors": false,
       "split": "development"
     },
@@ -112,13 +135,16 @@
       "defect": "aliasing-mutable-defaults",
       "language": "typescript",
       "source_hash": "8d7330832d9f731083fb40f0d2390cd702f75cd14f3b9e306d198cbb9e8860d1",
-      "susceptibility_status": "query-only",
+      "susceptibility_status": "semantic-relationship",
       "observed_rule_ids": [
         "typescript.mutated-state.aliasing-mutable-defaults"
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
-      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "mechanisms": [
+        "repeated-element"
+      ],
+      "rationale": "Object-identity relationship (sharing origin, write, observed read) established from the shared graph; isolation intent is not known, so bug detection remains unsupported.",
       "parse_errors": false,
       "split": "development"
     },
@@ -128,13 +154,16 @@
       "defect": "aliasing-mutable-defaults",
       "language": "typescript",
       "source_hash": "8d5948433e900b6b067d98f86d72c05584130b1ba0fc0ff33f96944c11e4d8d9",
-      "susceptibility_status": "query-only",
+      "susceptibility_status": "semantic-relationship",
       "observed_rule_ids": [
         "typescript.mutated-state.aliasing-mutable-defaults"
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
-      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "mechanisms": [
+        "shallow-copy-nested"
+      ],
+      "rationale": "Object-identity relationship (sharing origin, write, observed read) established from the shared graph; isolation intent is not known, so bug detection remains unsupported.",
       "parse_errors": false,
       "split": "development"
     },
@@ -148,6 +177,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -162,6 +192,94 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/aliasing-mutable-defaults/python/01_mutable_default_list.py",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "language": "python",
+      "source_hash": "1d245e9831d0947fed6cafb8a2fe8b85be67d8ef49d7ae3ede089257b120b6ec",
+      "susceptibility_status": "semantic-relationship",
+      "observed_rule_ids": [
+        "python.mutated-state.aliasing-mutable-defaults"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "mechanisms": [
+        "shared-default"
+      ],
+      "rationale": "Object-identity relationship (sharing origin, write, observed read) established from the shared graph; isolation intent is not known, so bug detection remains unsupported.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/aliasing-mutable-defaults/python/02_repeated_inner_list.py",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "language": "python",
+      "source_hash": "0eb7399806996160d1492c1efc7ce645572693c1d691428d275641a1a6231e94",
+      "susceptibility_status": "semantic-relationship",
+      "observed_rule_ids": [
+        "python.mutated-state.aliasing-mutable-defaults"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "mechanisms": [
+        "repeated-element"
+      ],
+      "rationale": "Object-identity relationship (sharing origin, write, observed read) established from the shared graph; isolation intent is not known, so bug detection remains unsupported.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/aliasing-mutable-defaults/python/03_class_body_list.py",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "language": "python",
+      "source_hash": "e9587a09dd8a8751c0d1d3b3faae1dac0ae83f4f368944257c46f9b83dfd6cba",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/aliasing-mutable-defaults/python/04_shallow_copy.py",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "language": "python",
+      "source_hash": "14f096b8ae237ea49215b566a611b0b3907d414a31ea2e45b600c8a498fe86f1",
+      "susceptibility_status": "semantic-relationship",
+      "observed_rule_ids": [
+        "python.mutated-state.aliasing-mutable-defaults"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "mechanisms": [
+        "shallow-copy-nested"
+      ],
+      "rationale": "Object-identity relationship (sharing origin, write, observed read) established from the shared graph; isolation intent is not known, so bug detection remains unsupported.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/aliasing-mutable-defaults/python/05_return_internal_list.py",
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "language": "python",
+      "source_hash": "bf3eae88f63216cf66b4af8dcb31455a1faef00c117f6536ddc1e2b3ec97c670",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -172,11 +290,16 @@
       "defect": "aliasing-mutable-defaults",
       "language": "javascript",
       "source_hash": "8d2b78cda3d15c851c9098faa79d58ad0ef40bb1be302a487790fec7f68c6a60",
-      "susceptibility_status": "unsupported",
-      "observed_rule_ids": [],
-      "trigger_count": 0,
+      "susceptibility_status": "semantic-relationship",
+      "observed_rule_ids": [
+        "javascript.mutated-state.aliasing-mutable-defaults"
+      ],
+      "trigger_count": 1,
       "bug_detection": "unsupported",
-      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "mechanisms": [
+        "shared-default"
+      ],
+      "rationale": "Object-identity relationship (sharing origin, write, observed read) established from the shared graph; isolation intent is not known, so bug detection remains unsupported.",
       "parse_errors": false,
       "split": "development"
     },
@@ -186,13 +309,16 @@
       "defect": "aliasing-mutable-defaults",
       "language": "javascript",
       "source_hash": "ad8e1228e3b77bd892168bc742a321ff72c2e340455d3762543b7c229e397174",
-      "susceptibility_status": "query-only",
+      "susceptibility_status": "semantic-relationship",
       "observed_rule_ids": [
         "javascript.mutated-state.aliasing-mutable-defaults"
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
-      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "mechanisms": [
+        "repeated-element"
+      ],
+      "rationale": "Object-identity relationship (sharing origin, write, observed read) established from the shared graph; isolation intent is not known, so bug detection remains unsupported.",
       "parse_errors": false,
       "split": "development"
     },
@@ -202,13 +328,16 @@
       "defect": "aliasing-mutable-defaults",
       "language": "javascript",
       "source_hash": "8d5948433e900b6b067d98f86d72c05584130b1ba0fc0ff33f96944c11e4d8d9",
-      "susceptibility_status": "query-only",
+      "susceptibility_status": "semantic-relationship",
       "observed_rule_ids": [
         "javascript.mutated-state.aliasing-mutable-defaults"
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
-      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "mechanisms": [
+        "shallow-copy-nested"
+      ],
+      "rationale": "Object-identity relationship (sharing origin, write, observed read) established from the shared graph; isolation intent is not known, so bug detection remains unsupported.",
       "parse_errors": false,
       "split": "development"
     },
@@ -222,6 +351,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -236,6 +366,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -252,6 +383,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -268,6 +400,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -284,6 +417,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -300,6 +434,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -314,6 +449,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -328,6 +464,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -342,6 +479,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -358,6 +496,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -372,6 +511,69 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/for-loop-control-flow/python/01_delete_while_indexing.py",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "language": "python",
+      "source_hash": "b09854a472784f8b8ebedf0cf681b85f06e476aac564ddfa4dcb417e0a29c6e0",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/for-loop-control-flow/python/02_remove_during_iteration.py",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "language": "python",
+      "source_hash": "861d5ba41458269df8e111a1b96386a0af683044905811d7e2c493c76bbb0028",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/for-loop-control-flow/python/03_for_else_after_search.py",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "language": "python",
+      "source_hash": "d2f6f6bccf929a666319545f5512a4460a8a933d5d53fe95245c10b30f7a5876",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "python.mutated-state.for-loop-control-flow"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/for-loop-control-flow/python/04_dict_size_changed.py",
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "language": "python",
+      "source_hash": "2e7071ea316e89f02228745892a53a8da566d51cb51a33ec6972e63de0226f8a",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -386,6 +588,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -400,6 +603,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -416,6 +620,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -430,6 +635,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -446,6 +652,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -460,6 +667,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -474,6 +682,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -490,6 +699,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -504,6 +714,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -520,6 +731,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -536,6 +748,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -552,6 +765,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -566,6 +780,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -580,6 +795,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -596,7 +812,68 @@
       ],
       "trigger_count": 2,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/improper-initialization/python/01_attribute_on_one_branch.py",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "language": "python",
+      "source_hash": "645c3d50dfc73d24484d591c1547ab3c8adb6071dbedee257fadf734f4cc9729",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/improper-initialization/python/02_or_replaces_zero.py",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "language": "python",
+      "source_hash": "ed563a30ed08c78baf697b6b840ad699504415d9a194b76d361f1ab588e60d97",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/improper-initialization/python/03_used_before_last_field.py",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "language": "python",
+      "source_hash": "b1b1d7ec52ebfc11580c0cded52523d085508c1aa6088b4b8eee9dc6be88fc1f",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/improper-initialization/python/04_optional_stays_none.py",
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "language": "python",
+      "source_hash": "7c86cef0063f7b54d9ce01d6b2ebf2ac5890d116da0f08381bdf158e2552d534",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
     },
@@ -612,6 +889,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -626,6 +904,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -640,6 +919,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -656,6 +936,7 @@
       ],
       "trigger_count": 2,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -672,6 +953,7 @@
       ],
       "trigger_count": 5,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -688,6 +970,7 @@
       ],
       "trigger_count": 2,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -702,6 +985,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -718,6 +1002,7 @@
       ],
       "trigger_count": 9,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -734,6 +1019,7 @@
       ],
       "trigger_count": 6,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -748,6 +1034,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -764,6 +1051,7 @@
       ],
       "trigger_count": 2,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -780,6 +1068,7 @@
       ],
       "trigger_count": 5,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -796,6 +1085,7 @@
       ],
       "trigger_count": 4,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -812,6 +1102,7 @@
       ],
       "trigger_count": 3,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -828,7 +1119,87 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/impure-functions/python/01_sort_in_place.py",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "language": "python",
+      "source_hash": "131ed06037468c8a51ce5cfb4d234179fe2bc7cdb6c6231903f2c62aa3a63dcf",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/impure-functions/python/02_reads_module_global.py",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "language": "python",
+      "source_hash": "1038c2b53996e2baffabf281914090f72bf9da3263b19ddd9fa9cbf22734bfa0",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "python.mutated-state.impure-functions"
+      ],
+      "trigger_count": 4,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/impure-functions/python/03_appends_to_argument.py",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "language": "python",
+      "source_hash": "ad55ef79c5fc45e0ffceec1e05dd86686c5fdf56a26efcfd857d9edb6817dcbd",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/impure-functions/python/04_cache_hides_global.py",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "language": "python",
+      "source_hash": "3bdd6d87c12200604f5818296a6e3e76f337c97ff4cd86c2914c107e64a767cf",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "python.mutated-state.impure-functions"
+      ],
+      "trigger_count": 4,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/impure-functions/python/05_random_in_key.py",
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "language": "python",
+      "source_hash": "fdb314607282d9a1230c33669eef8badef205ac9edce6c20c9bcb94ede7596ac",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
     },
@@ -844,6 +1215,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -860,6 +1232,7 @@
       ],
       "trigger_count": 5,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -876,6 +1249,7 @@
       ],
       "trigger_count": 4,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -892,6 +1266,7 @@
       ],
       "trigger_count": 3,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -908,6 +1283,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -924,6 +1300,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -938,6 +1315,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -954,6 +1332,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -970,6 +1349,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -984,6 +1364,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1000,6 +1381,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1016,6 +1398,7 @@
       ],
       "trigger_count": 2,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1032,6 +1415,7 @@
       ],
       "trigger_count": 2,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1048,7 +1432,38 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/increment-decrement-operators/python/01_float_mantissa.py",
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "language": "python",
+      "source_hash": "9f14c816cbac3f7c99a017478ffd0b53984b5e6026997a1c9a1f01ee8043435f",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/increment-decrement-operators/python/02_bool_added_to_total.py",
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "language": "python",
+      "source_hash": "d115272ab376d8c5a843e4cf5f7f8253e309c8a00d06c29a5cce201b3a947db2",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
     },
@@ -1064,6 +1479,7 @@
       ],
       "trigger_count": 2,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1080,6 +1496,7 @@
       ],
       "trigger_count": 2,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1096,6 +1513,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1112,6 +1530,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1128,6 +1547,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1144,6 +1564,7 @@
       ],
       "trigger_count": 5,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1160,6 +1581,7 @@
       ],
       "trigger_count": 3,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1176,6 +1598,7 @@
       ],
       "trigger_count": 2,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1192,6 +1615,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1206,6 +1630,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1220,6 +1645,52 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/macro-mixin-misuse/python/01_mixin_mro_order.py",
+      "family": "mutated-state",
+      "defect": "macro-mixin-misuse",
+      "language": "python",
+      "source_hash": "e2a845a748e572ccc4c19241d9f239d3ae8ad60e2d99e6fb8418dc1f7801bee3",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/macro-mixin-misuse/python/02_mixin_skips_super.py",
+      "family": "mutated-state",
+      "defect": "macro-mixin-misuse",
+      "language": "python",
+      "source_hash": "686c1b281802b4f926124e8e1203975f705970133738047154224afab05761fe",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/macro-mixin-misuse/python/03_decorator_calls_twice.py",
+      "family": "mutated-state",
+      "defect": "macro-mixin-misuse",
+      "language": "python",
+      "source_hash": "2ad88bd9c584bfc70bef3ff9d98ee1e3236ec439bc3b07467ff23661ce01704f",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1236,6 +1707,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1250,6 +1722,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1264,6 +1737,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1280,6 +1754,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1296,6 +1771,7 @@
       ],
       "trigger_count": 2,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1312,6 +1788,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1328,6 +1805,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1342,6 +1820,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1358,6 +1837,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1372,6 +1852,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1386,6 +1867,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1402,7 +1884,68 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/this-mutation/python/01_class_attribute_through_self.py",
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "language": "python",
+      "source_hash": "94ace17599ee8a9007639422df584b1310ae5e26c0e9f2acbfb41c6da654dd1a",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/this-mutation/python/02_init_calls_override.py",
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "language": "python",
+      "source_hash": "26563c8fd4e93b3b237aa891d8f98907c3714a868d064480b8ea7a2a4553afb1",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/this-mutation/python/03_function_stored_on_instance.py",
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "language": "python",
+      "source_hash": "2e8864a47aecd7d7e490aba1b59288a9ff89689eeecadb7889acc5b61422f9b7",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/this-mutation/python/04_builder_forgets_self.py",
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "language": "python",
+      "source_hash": "cf0fcb35ecfdf5e24198b3b0eb931818ba1e32910faea111c3e784f53fcd6462",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
     },
@@ -1416,6 +1959,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1432,6 +1976,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1446,6 +1991,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1460,6 +2006,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1476,6 +2023,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1490,6 +2038,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1504,6 +2053,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1520,6 +2070,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1534,6 +2085,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1550,6 +2102,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1564,6 +2117,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1578,6 +2132,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1592,6 +2147,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1606,6 +2162,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1622,6 +2179,7 @@
       ],
       "trigger_count": 2,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1638,7 +2196,83 @@
       ],
       "trigger_count": 10,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/time-money-entropy/python/01_float_cents.py",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "language": "python",
+      "source_hash": "2004ced29ca991df2468939a313478139ca842f4b94c07a6a3b0a16ac763775e",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/time-money-entropy/python/02_clock_read_twice.py",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "language": "python",
+      "source_hash": "c1d0ace9f5664583e4dfca0f98207b6502bce187653df2aab13ff444066e080a",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/time-money-entropy/python/03_random_branch.py",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "language": "python",
+      "source_hash": "d7a5bad8f54dcaaf83df591f9a4046e965f5d713fcd70cd397278601dd04d0b8",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/time-money-entropy/python/04_round_half_even.py",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "language": "python",
+      "source_hash": "fda7460a1a4bfe51e401ea86480f8ef95ab4aaab34ae2b261d347eda07350a0c",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/time-money-entropy/python/05_thirty_day_month.py",
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "language": "python",
+      "source_hash": "87c9ed3c6cb121913eff47fe2a2d4047e7b1b91d8feb084623ea874fca33a8c0",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
     },
@@ -1652,6 +2286,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1666,6 +2301,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1680,6 +2316,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -1696,6 +2333,7 @@
       ],
       "trigger_count": 2,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1712,6 +2350,7 @@
       ],
       "trigger_count": 10,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1728,6 +2367,7 @@
       ],
       "trigger_count": 5,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1744,6 +2384,7 @@
       ],
       "trigger_count": 5,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1760,6 +2401,7 @@
       ],
       "trigger_count": 5,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1776,6 +2418,7 @@
       ],
       "trigger_count": 3,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1792,6 +2435,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1808,6 +2452,7 @@
       ],
       "trigger_count": 3,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1824,6 +2469,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1840,6 +2486,7 @@
       ],
       "trigger_count": 3,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1856,6 +2503,7 @@
       ],
       "trigger_count": 2,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1872,6 +2520,73 @@
       ],
       "trigger_count": 2,
       "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/var-let-mut/python/01_closure_late_binding.py",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "language": "python",
+      "source_hash": "2d6016d368fd47f6d410ec205dc7a1a14765fd41864cdb71502576270b1470c3",
+      "susceptibility_status": "query-only",
+      "observed_rule_ids": [
+        "python.mutated-state.var-let-mut"
+      ],
+      "trigger_count": 1,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/var-let-mut/python/02_loop_name_leaks.py",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "language": "python",
+      "source_hash": "c2873436d319dd8b0309cb3e83e45f1ec768400eb04e93f5c368c28e56878288",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/var-let-mut/python/03_assigned_name_is_local.py",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "language": "python",
+      "source_hash": "6492e1c0e771fb9d8780ea573281d11468df9872ac47c9962be44c554aad4199",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "python.mutated-state.var-let-mut"
+      ],
+      "trigger_count": 3,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/var-let-mut/python/04_module_global_rebound.py",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "language": "python",
+      "source_hash": "2b0c16b955f20c27c179539373f8f011ddcdf2795f81e5a7fbe383bc6d758d4d",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "python.mutated-state.var-let-mut"
+      ],
+      "trigger_count": 6,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1888,6 +2603,7 @@
       ],
       "trigger_count": 3,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1904,6 +2620,7 @@
       ],
       "trigger_count": 6,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1920,6 +2637,24 @@
       ],
       "trigger_count": 2,
       "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/var-let-mut/python/05_accumulator_leaks_across_calls.py",
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "language": "python",
+      "source_hash": "ae9fadf3817da327d5ca9f3b74b44791b02c8e1802c3c2291b416c36033b1e75",
+      "susceptibility_status": "query-plus-analysis",
+      "observed_rule_ids": [
+        "python.mutated-state.var-let-mut"
+      ],
+      "trigger_count": 11,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1936,6 +2671,7 @@
       ],
       "trigger_count": 1,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1952,6 +2688,7 @@
       ],
       "trigger_count": 3,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1966,8 +2703,9 @@
       "observed_rule_ids": [
         "javascript.mutated-state.var-let-mut"
       ],
-      "trigger_count": 1,
+      "trigger_count": 2,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -1984,6 +2722,7 @@
       ],
       "trigger_count": 2,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -2000,6 +2739,7 @@
       ],
       "trigger_count": 2,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario.",
       "parse_errors": false,
       "split": "development"
@@ -2014,6 +2754,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2028,6 +2769,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2042,6 +2784,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2056,6 +2799,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2070,6 +2814,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2084,6 +2829,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2098,6 +2844,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2112,6 +2859,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2126,6 +2874,142 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/01_append.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "dc0b4a6260557f5a3fd0dcef356667dc28d8d971e9a2a3ceee71250cc781de46",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/02_extend.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "8978654070001b7c655808132d7c2323fd264d445e82f445e8367a853a263255",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/03_insert.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "09fb22336cc5e5173af92a598d0aa41d8316a175eb989b1fa13f608a9748479e",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/04_remove.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "e17e9bc6947cada3445f1cf580b2e11dac004e88aa3ad5ea20e65b90983f5b26",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/05_pop.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "30a12c3dbffc8dc8a7d2bde5ce2f8b5ebe86ada166024d21f7d200ab111fb140",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/06_clear.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "79c7c7eac86b889a0462942d4c77ce6dcef042e89340d8eb8d33eb25f3953b98",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/07_sort.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "e2dbd0ae2152c66eef1b6a93c6a4aea52e7dab75787d20aad691b945e9b0741c",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/08_reverse.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "9fde1c0b6acaafe678b4eb6183d38fb3c99d8931160051f23f0263cba7974554",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/09_slice_assignment.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "45dabef899a0594b8aefa79d943270a4eb8376576a12540349b7271f21a7509b",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2140,6 +3024,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2154,6 +3039,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2168,6 +3054,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2182,6 +3069,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2196,6 +3084,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2210,6 +3099,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2224,6 +3114,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2238,6 +3129,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2252,6 +3144,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2266,6 +3159,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2280,6 +3174,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2294,6 +3189,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2308,6 +3204,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2322,6 +3219,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2336,6 +3234,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2350,6 +3249,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2364,6 +3264,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2378,6 +3279,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2392,6 +3294,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2406,6 +3309,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2420,6 +3324,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2434,6 +3339,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2448,6 +3354,322 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/10_set_add.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "6942d939b7481257e522da6923672538cfd02b7b1269e02d635058d70d070837",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/11_set_remove.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "e7aaba68f54b66c024731d1de487f6b7c16142edbac8b3cf316acaf1ab663e4f",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/12_set_discard.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "975bdb10c8a024f25ac8d2e61680962368d0fa416414c50479654947fb448aeb",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/13_set_pop.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "23417153cbf2867f1741020d7a6df314a222535797ea52b6d991922cbcbd2ecb",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/14_set_update.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "84698c23e49ed5e5652a3fc6b02295070221d3f9b417c87ca1e1e3b1255ce0de",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/15_set_intersection_update.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "b5194f8b9e89f37b44b75c9197e56b898368f44533f6f2c760cff484f4c78c62",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/16_set_clear.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "2ce82091727a291ae301dd47aae309ac50197a678de87b8e68db87acd45c8a4a",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/17_dict_update.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "58fd0a7b0e9b06c4172d51421e62e1ad94a38fcdf1250fee5aa561c3e355d309",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/18_dict_pop.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "a2f204a75b3058fbbc93031c0aee6d646bc3ddba11c8eb89710516bc527f9b77",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/19_dict_popitem.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "47f7363ce5154f6f3ceadcdd114d4bf87a8d264fd85a61c07ac2b5b4993ebaef",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/20_dict_setdefault.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "791787dfccad8fb02fa1cd62cc87aae2b4890405341b69839cc0f693140d8511",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/21_dict_clear.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "bd88d9d5477bc5c5aeee4e522071c3d65f37af2eb8ec3bf26cf8f36fb4977b55",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/22_deque_append.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "09bf44a54a400db5c33c8c519a6fd2e1d886b39f3a7d59ff74e0202bbe748c54",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/23_deque_appendleft.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "e8a0186a5d82d18356aa8a3b0a96ecc5ac2219b9fdb7d6a4511d93b48426349c",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/24_deque_pop.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "b8078ef5d9a1ed9dce9af3cc2972e275d3f1f1215b257d78f7bbb71b24c257e5",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/25_deque_popleft.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "145f2731c5eb64f2ca440fce2e6d955e0af6b8d6e5d63669dae4e847ffba02aa",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/26_deque_extend.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "7e1e9933eca8288eda7ec26d5b0340915e5b00fcbcd4586a36d3fcd1bc8bc6ac",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/27_deque_rotate.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "091dbf1d8f749d69a010f8a0b5b8d50f367383a0978145bf7a22859cf8e838bd",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/28_stringio_write.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "654794b4c917668f08ddf6cd5f4f3c67f2f9d9a0a8ac444a5838eb34425e5b3e",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/29_stringio_seek.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "a89b1ecfd3c4e01cc50fb18fae8bebaf174c4fd1151bd628e7b86259804b3a98",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
+      "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+      "parse_errors": false,
+      "split": "development"
+    },
+    {
+      "file": "examples/mutated-state/volatile-properties/python/30_stringio_truncate.py",
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "language": "python",
+      "source_hash": "ff1cd610d5d4df197cb4054154a4f736022767191789f3a30129be33941b7492",
+      "susceptibility_status": "unsupported",
+      "observed_rule_ids": [],
+      "trigger_count": 0,
+      "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2462,6 +3684,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2476,6 +3699,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2490,6 +3714,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2504,6 +3729,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2518,6 +3744,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2532,6 +3759,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2546,6 +3774,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2560,6 +3789,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2574,6 +3804,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2588,6 +3819,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2602,6 +3834,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2616,6 +3849,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2630,6 +3864,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2644,6 +3879,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2658,6 +3894,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2672,6 +3909,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2686,6 +3924,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2700,6 +3939,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2714,6 +3954,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2728,6 +3969,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2742,6 +3984,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2756,6 +3999,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2770,6 +4014,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2784,6 +4029,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2798,6 +4044,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2812,6 +4059,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2826,6 +4074,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2840,6 +4089,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2854,6 +4104,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2868,6 +4119,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2882,6 +4134,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2896,6 +4149,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2910,6 +4164,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2924,6 +4179,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2938,6 +4194,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2952,6 +4209,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2966,6 +4224,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2980,6 +4239,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -2994,6 +4254,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -3008,6 +4269,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -3022,6 +4284,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -3036,6 +4299,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -3050,6 +4314,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -3064,6 +4329,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -3078,6 +4344,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -3092,6 +4359,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -3106,6 +4374,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -3120,6 +4389,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -3134,6 +4404,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -3148,6 +4419,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -3162,6 +4434,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -3176,6 +4449,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -3190,6 +4464,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -3204,6 +4479,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -3218,6 +4494,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"
@@ -3232,6 +4509,7 @@
       "observed_rule_ids": [],
       "trigger_count": 0,
       "bug_detection": "unsupported",
+      "mechanisms": [],
       "rationale": "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
       "parse_errors": false,
       "split": "development"

@@ -1,0 +1,11 @@
+[package]
+name = "shared-state-fixture"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "=1.54.1", features = ["rt", "sync", "time", "fs", "io-util"] }
+
+[[bin]]
+name = "fixture"
+path = "main.rs"

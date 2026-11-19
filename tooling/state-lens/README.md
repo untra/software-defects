@@ -79,7 +79,7 @@ Use [Query Lab](../query-lab/README.md) to inspect trees, execute edited queries
 
 Add a rule by extending the relevant `.scm` file, adding any required semantic handler and metadata, and adding independently specified positive and negative expectations. Keep code free of detector labels. Do not use filenames, manifest explanations, output strings, or the assessment's susceptibility scores as analysis inputs.
 
-[coverage.json](coverage.json) inventories every authored mutated-state example by source hash, category, language, and current mechanism coverage. It deliberately records bug detection as unsupported. Regenerate it after corpus/query changes:
+[coverage.json](coverage.json) inventories every authored mutated-state example, Python included, by source hash, category, language, current mechanism coverage and semantic `mechanisms`. `semantic-relationship` marks an object-identity relationship. It deliberately records bug detection as unsupported. Regenerate it after corpus/query changes:
 
 ```sh
 cargo build --locked --manifest-path tooling/state-lens/Cargo.toml
@@ -211,14 +211,17 @@ for shared state. Polymorphic requires runtime type-dispatch evidence. Lifecycle
 and unsafe-execution mechanisms remain available in evidence. Presentation merges
 same-family annotations per line after visibility filtering, retaining all findings.
 
-Set `stateLens.<language>.disabledChecks` to base defect IDs, for example
-`["var-let-mut", "divide-by-zero"]`. Defaults enable all checks. Configuration is
-applied before propagation and again after structural analysis; changes invalidate
-the report cache. Reusable extraction still runs for other enabled checks.
+All rules are enabled for every language, and no workspace configuration is
+required. The existing `stateLens.<language>.disabledChecks` setting remains for
+compatibility, but its development is paused. It defaults to empty and no new
+per-rule toggles are added. When a defect ID is listed, its findings are
+filtered before propagation and again after structural analysis.
 
-Run `python3 tooling/state-lens/scripts/annotation_audit.py` from the repository
-root to regenerate the implementation inventory. Unknown blast radii are explicitly
-unsupported; currently only linked mutated-denominator regions are resolved.
+Run `python3 tooling/state-lens/scripts/annotation_audit.py > tooling/state-lens/annotation-audit.json`
+from the repository root to regenerate the implementation inventory. Unknown blast
+radii are explicitly unsupported. Resolved regions are:
+- linked mutated denominators;
+- object-identity relationships: sharing origin, write and observed reads, as disjoint spans.
 
 ### Shared state graph foundation
 
@@ -249,18 +252,22 @@ trace. Existing compound detectors and editor decoration behavior remain in plac
 ### Source-only semantic pilot facts
 
 `state-lens semantic-facts PATH` emits versioned JSON with the source URI/hash and
-AST-derived events. Go events expose lexical declaration identity, previous visible
-bindings, producer calls, and return reads. JavaScript events expose allocation
-identity, object binding, property writes, and reads for plain straight-line object
-flows. Object spreads preserve nested aliases unless an explicit nested allocation
-replaces them; later spreads override earlier properties.
+events.
 
-This API supplies Query Lab semantic comparison and generated repair previews.
-It does not consume reviewed contracts or issue bug diagnostics on its own.
-Unsupported JavaScript behavior is explicit. Go facts model lexical relationships,
-not reachability, type checking, or general intent. Production tracing continues
-using its existing graph; integrating these pilot facts into that shared graph and
-editor affected-use highlights remains follow-up work.
+For JavaScript (schema 2, `"projection": "state_graph"`), the events are a projection
+of the production shared graph, the same facts `scan` and the LSP use:
+- allocations, object bindings, and property writes and reads;
+- uncertainty boundaries as `unsupported`.
+
+The former independent JavaScript extractor was removed after parity with
+`tests/semantic.rs`.
+
+Go events still come from the source-only pilot: lexical declaration identity,
+previous visible bindings, producer calls and return reads. Migrating them to the
+shared graph is remaining work.
+
+This API supplies Query Lab semantic comparison. Query Lab repair previews call the
+production `repair-check` command.
 
 ### Production graph export and structured artifacts
 
@@ -322,3 +329,104 @@ On the existing 100-file synthetic benchmark, median scan/warm-edit latency was
 104.85/3.97 ms versus 95.88/2.23 ms for the pre-change analyzer. The larger snapshot
 and evidence payloads add measurable overhead; workspace snapshot hashing is
 performed once per analysis rather than once per document.
+
+### Object identity and aliasing
+
+`aliasing-mutable-defaults` is detected from object-identity facts in the shared
+graph (`src/heap/`). Each language lowers its Tree-sitter AST into one small IR
+(`heap/javascript.rs` for JS and TS, `heap/python.rs`, `heap/go.rs`). A single
+interpreter (`heap/interp.rs`) then writes the following into the same `StateGraph`:
+- allocations, `access_paths` and `call_contexts`;
+- `sharing` introductions;
+- `heap_dependency` edges (write → observed read, `definite` or `possible`);
+- `points_to` edges;
+- explicit `boundaries`.
+
+`src/aliasing.rs` reads only those facts. It emits findings with:
+- `resolution: "object-identity"` and `mechanism`;
+- a trace (origins, invalidations and affected uses);
+- an `Independence` condition;
+- a discontinuous blast radius.
+
+Requirement evidence comes only from in-source declarations, such as TS `Readonly`
+or `as const`, `Object.freeze`, and Python read-only annotations. A finding without
+one is a `potentially_invalidated` Information candidate. A finding with one is
+`invalidated`, and becomes Warning when the dependency is definite and no boundary
+is touched.
+
+`state-lens repair-check PATH [--finding N] [--hash SHA256]` chooses the
+postcondition from the mechanism. It verifies candidate edits on a reanalyzed
+snapshot and reports `auto`, `advisory`, `ambiguous` or `rejected`. The full
+specification, predicates, language semantics and limits are in
+[semantics/aliasing-mutable-defaults.v1.md](semantics/aliasing-mutable-defaults.v1.md).
+
+Diagnostics label related locations "sharing origin", "write" and "observed read".
+Initialization advertises `aliasAnalysis: 1`. The extension's evidence view adds
+Mechanism and Requirement rows and a Requirement evidence role.
+
+Supported:
+- JS/TS repeated elements (`fill`), nested shallow copies, shared defaults and
+  returned aliases;
+- Python mutable defaults, `[x] * n`, shallow dict/list copies and returned aliases;
+- Go struct copies, returned maps and slices, in-capacity append, and
+  concrete-receiver accessors.
+
+Candidate-only:
+- class methods (JS/TS 04, Python 05);
+- Python class-body lists;
+- `Object.assign` into shared targets;
+- Go reused buffers in loops;
+- Rust `Rc<RefCell<_>>`.
+
+Cross-file callees, unknown calls, accessors, computed keys and exceptional flow
+are explicit boundaries.
+
+### Rule catalog and striped matrix
+
+[queries/catalog.json](../../queries/catalog.json) defines every taxonomy defect's
+mechanisms. Each mechanism has a cell for every language (go, javascript, python,
+rust, typescript), with a status:
+- `supported`
+- `candidate-only`
+- `syntax-candidate`
+- `planned`
+- `not-applicable`, which also requires the language guarantee that prevents the
+  defect (for example the Rust borrow checker, or TS static types for
+  undeclared-member access).
+
+Every cell other than `supported` has a reason. `build.rs` embeds the catalog,
+filtered to the compiled languages, so each per-language server bundles every rule.
+
+It also generates one test per cell, in `tests/matrix.rs`:
+- `<defect>__<language>__<mechanism>__status` for every cell;
+- `__failing`, `__fixed`, `__intentional`, `__independent` and `__breaker` for
+  supported cells.
+
+Supported cells read `fixtures/rules/<defect>/<language>/<mechanism>/`. Each
+`expect.json` gives hand-written text anchors for exact trigger, origin and
+affected-use spans, the evidence level, requirement, boundaries and repair
+applicability. Optional variants cover further behaviors.
+
+Adding a rule or a language makes every missing cell fail by name. `stateLens/rules`
+(capability `ruleCatalog: 1`) returns the server's cells, and the extension command
+"State Lens: Show Rule Coverage" renders them.
+
+### Shared state analysis
+
+The five language frontends consume structural shared-state query captures. Bounded
+handlers classify known APIs, local async calls, static launches/suspensions, lexical
+resource lifetimes, read–suspend–write, path check/use, split synchronization, and outer
+writes from launched closures. Receiver-shaped synchronization remains candidate-only.
+Direct task/resource aliases are supported only without reassignment; unresolved escapes
+and dynamic dispatch are not assumed safe. No whole-program happens-before proof is claimed.
+
+Task cancellation and observed completion are separate events. Resource release before
+observed asynchronous I/O completion is a candidate. Explicit deferred cleanup is not
+interpreted as release at the textual position of `defer`. Resolved call propagation keeps
+original evidence while rebasing caller decorations to the call range.
+
+The optional `shared_state` payload is specified by `schemas/shared_state.schema.json`.
+`contenders` counts related lexical execution scopes, not simultaneous threads. The audit
+inventory and query expectations distinguish effect coverage, relationship evidence and
+behavioral reproduction. Compound mutation candidates require a connected saved-value
+write after suspension, rather than only sharing an enclosing function.

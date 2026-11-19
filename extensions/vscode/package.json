@@ -41,6 +41,10 @@
       {
         "command": "stateLens.showEvidence",
         "title": "State Lens: Show Evidence"
+      },
+      {
+        "command": "stateLens.showRuleCoverage",
+        "title": "State Lens: Show Rule Coverage"
       }
     ],
     "views": {

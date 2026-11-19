@@ -9,10 +9,45 @@
         "query": "tooling/query-lab/queries/rust/shared-state/async-io-misuse/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "task_call",
             "range": [
-              152,
-              157
+              75,
+              100
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              144,
+              309
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              179,
+              194
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              330,
+              354
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              343,
+              353
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              360,
+              388
             ]
           }
         ]
@@ -26,17 +61,87 @@
         "query": "tooling/query-lab/queries/rust/shared-state/async-io-misuse/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "task_call",
             "range": [
-              174,
-              179
+              75,
+              100
             ]
           },
           {
-            "name": "callee",
+            "name": "task_call",
             "range": [
-              368,
-              372
+              166,
+              362
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              166,
+              374
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              166,
+              429
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              201,
+              216
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              238,
+              279
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              242,
+              278
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              349,
+              355
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              392,
+              428
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              470,
+              494
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              483,
+              493
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              552,
+              580
             ]
           }
         ]
@@ -50,5 +155,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Detached threads lose results and panics. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": false,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

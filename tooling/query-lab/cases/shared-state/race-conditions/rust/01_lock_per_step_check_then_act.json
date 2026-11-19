@@ -3,23 +3,163 @@
   "status": "syntax-candidate",
   "rationale": "Hold one guard across stock validation and decrement.",
   "original": {
-    "source_hash": "65c73ad0c7f4641dfb8ca7de5240e18bd9de70be94df27214b7aa0e2cba70551",
+    "source_hash": "c16ed6b936f4e27ca7eca3db504d00e5a5ac92f51d48a4af1d1dcbcbdc93f8de",
     "queries": [
       {
         "query": "tooling/query-lab/queries/rust/shared-state/race-conditions/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              249,
-              253
+              185,
+              206
             ]
           },
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              344,
-              348
+              185,
+              197
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              212,
+              226
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              259,
+              297
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              260,
+              281
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              260,
+              272
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              367,
+              394
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              376,
+              393
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              414,
+              444
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              423,
+              443
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              471,
+              684
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              471,
+              665
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              526,
+              544
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              572,
+              592
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              606,
+              654
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              628,
+              653
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              701,
+              771
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              701,
+              763
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              701,
+              746
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              701,
+              719
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              728,
+              745
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              728,
+              736
             ]
           }
         ]
@@ -27,16 +167,149 @@
     ]
   },
   "fixed": {
-    "source_hash": "9985854495a950636afcb192b938d38b48b877c32ea5b7859e8a9eec20a27f56",
+    "source_hash": "97c52cd73014761882b1e41f35fe3d9ea98a55cdb05dc6a27a739120d00d5afa",
     "queries": [
       {
         "query": "tooling/query-lab/queries/rust/shared-state/race-conditions/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              252,
-              256
+              168,
+              182
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              208,
+              229
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              208,
+              220
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              263,
+              278
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              348,
+              375
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              357,
+              374
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              395,
+              425
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              404,
+              424
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              452,
+              665
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              452,
+              646
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              507,
+              525
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              553,
+              573
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              587,
+              635
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              609,
+              634
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              682,
+              788
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              682,
+              771
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              682,
+              745
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              682,
+              709
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              727,
+              744
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              727,
+              735
             ]
           }
         ]
@@ -50,5 +323,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. The guard is dropped between check and act, so the invariant is not held across both (CWE-367). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

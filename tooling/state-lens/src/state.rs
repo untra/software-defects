@@ -49,6 +49,8 @@ pub enum Relationship {
     ReachingAssignment,
     ValueDependency,
     GovernedBy,
+    PointsTo,
+    HeapDependency,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -57,6 +59,8 @@ pub struct Edge {
     pub from: OperationId,
     pub to: OperationId,
     pub relationship: Relationship,
+    #[serde(default)]
+    pub certainty: Option<Certainty>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -75,10 +79,16 @@ pub struct StateGraph {
     pub evidence: Vec<SourceEvidence>,
     pub control_flow: Vec<ControlFlowEdge>,
     pub obligations: Vec<Obligation>,
+    #[serde(default)]
+    pub sharing: Vec<SharingIntroduction>,
+    #[serde(default)]
+    pub boundaries: Vec<UncertaintyBoundary>,
     pub source_hash: String,
     pub operations: Vec<Operation>,
     pub edges: Vec<Edge>,
     pub limitations: Vec<String>,
+    #[serde(skip)]
+    pub heap: crate::heap::HeapFacts,
 }
 
 #[derive(Debug, Clone, Copy, Default, Serialize, Deserialize, PartialEq, Eq)]
@@ -111,7 +121,11 @@ pub struct StateTrace {
     pub operations: Vec<Operation>,
     pub edges: Vec<Edge>,
     pub assumptions: Vec<String>,
+    #[serde(default)]
+    pub requirement: Option<RequirementRef>,
 }
+
+mod cfg;
 
 type Definitions = BTreeMap<Span, BTreeSet<OperationId>>;
 
@@ -125,6 +139,7 @@ struct Builder<'a, F> {
     source: &'a str,
     resolve: F,
     terminated: bool,
+    flow: Option<cfg::Flow>,
 }
 
 impl<F: Fn(&str, Span) -> Option<Span>> Builder<'_, F> {
@@ -133,7 +148,7 @@ impl<F: Fn(&str, Span) -> Option<Span>> Builder<'_, F> {
         let range = Span::of(n);
         let binding = (self.resolve)(&self.source[n.byte_range()], range);
         self.graph.operations.push(Operation {
-            identity: String::new(),
+            identity: format!("operation:{id}"),
             binding_id: None,
             allocation_id: None,
             block_id: None,
@@ -150,6 +165,7 @@ impl<F: Fn(&str, Span) -> Option<Span>> Builder<'_, F> {
             binding,
             guards: guards.to_vec(),
         });
+        self.attach(id);
         for &guard in guards {
             self.edge(guard, id, Relationship::GovernedBy);
         }
@@ -161,6 +177,7 @@ impl<F: Fn(&str, Span) -> Option<Span>> Builder<'_, F> {
             from,
             to,
             relationship,
+            certainty: None,
         });
     }
 
@@ -170,6 +187,12 @@ impl<F: Fn(&str, Span) -> Option<Span>> Builder<'_, F> {
         defs: &mut Definitions,
         guards: &[OperationId],
     ) -> Vec<OperationId> {
+        if self.flow.is_some() {
+            self.terminated = false;
+            if let Some(result) = self.flow_visit(n, defs, guards) {
+                return result;
+            }
+        }
         let kind = n.kind();
         if self.terminated {
             return vec![];
@@ -285,7 +308,13 @@ impl<F: Fn(&str, Span) -> Option<Span>> Builder<'_, F> {
                 | "compound_assignment_expr"
         ) {
             if let (Some(left), Some(right)) = (left, right) {
-                let mut inputs = self.visit(right, defs, guards);
+                let mut inputs = vec![];
+                if self.flow.is_some()
+                    && matches!(left.kind(), "member_expression" | "subscript_expression")
+                {
+                    inputs.extend(self.visit(left, defs, guards));
+                }
+                inputs.extend(self.visit(right, defs, guards));
                 if matches!(
                     kind,
                     "augmented_assignment"
@@ -393,6 +422,16 @@ pub fn extract(
     source: &str,
     resolve: impl Fn(&str, Span) -> Option<Span>,
 ) -> StateGraph {
+    extract_with_flow(root, uri, source, resolve, root.kind() == "program")
+}
+
+fn extract_with_flow(
+    root: Node<'_>,
+    uri: &str,
+    source: &str,
+    resolve: impl Fn(&str, Span) -> Option<Span>,
+    control_flow: bool,
+) -> StateGraph {
     let mut builder = Builder {
         graph: StateGraph {
             source_hash: hash(source),
@@ -402,9 +441,14 @@ pub fn extract(
         source,
         resolve,
         terminated: false,
+        flow: None,
     };
+    if control_flow {
+        builder.start_flow();
+    }
     builder.visit(root, &mut Definitions::new(), &[]);
-    builder.graph.limitations.push("Candidate dependencies only: branch polarity, exceptional control flow, closures, aliases and scheduling feasibility are not established.".into());
+    builder.finish_flow();
+    builder.graph.limitations.push("Candidate dependencies only: exceptional control flow, closures and scheduling feasibility are not established in dependency edges.".into());
     builder.graph.limitations.sort();
     builder.graph.limitations.dedup();
     builder.graph.qualify(
@@ -418,6 +462,28 @@ pub fn extract(
         }],
     );
     builder.graph
+}
+
+pub fn extract_for(
+    language: &str,
+    root: Node<'_>,
+    uri: &str,
+    source: &str,
+    resolve: impl Fn(&str, Span) -> Option<Span>,
+) -> StateGraph {
+    let mut graph = extract_with_flow(
+        root,
+        uri,
+        source,
+        &resolve,
+        matches!(language, "javascript" | "typescript"),
+    );
+    crate::heap::lower(language, root, source, uri, &resolve, &mut graph);
+    graph.limitations.sort();
+    graph.limitations.dedup();
+    let documents = graph.documents.clone();
+    graph.qualify(graph.generation, documents);
+    graph
 }
 
 impl StateGraph {
@@ -455,7 +521,10 @@ impl StateGraph {
                 continue;
             }
             for op in &mut self.operations {
-                if op.kind != OperationKind::Read || !finding.trigger.contains(op.location.range) {
+                if op.kind != OperationKind::Read
+                    || !finding.trigger.contains(op.location.range)
+                    || self.heap.ops.contains(&op.id)
+                {
                     continue;
                 }
                 let id = format!("{}:condition:nonzero", op.identity);
@@ -477,14 +546,16 @@ impl StateGraph {
             }
         }
         for finding in &mut report.findings {
-            if finding.origin != "direct" {
+            if finding.origin != "direct" || finding.state_trace.is_some() {
                 continue;
             }
             let uses: Vec<_> = self
                 .operations
                 .iter()
                 .filter(|op| {
-                    op.kind == OperationKind::Read && finding.trigger.contains(op.location.range)
+                    op.kind == OperationKind::Read
+                        && finding.trigger.contains(op.location.range)
+                        && !self.heap.ops.contains(&op.id)
                 })
                 .collect();
             if uses.is_empty() {
@@ -553,6 +624,7 @@ impl StateGraph {
                     .cloned()
                     .collect(),
                 assumptions: self.limitations.clone(),
+                requirement: None,
             });
         }
     }
@@ -583,6 +655,7 @@ impl StateGraph {
     ) {
         self.contract_version = CONTRACT_VERSION;
         self.generation = generation;
+        self.qualify_flow(&snapshot_id);
         self.snapshot_id = snapshot_id;
         self.documents = documents;
         self.bindings.clear();
@@ -626,10 +699,90 @@ impl StateGraph {
             });
             op.evidence = vec![id];
         }
+        self.qualify_heap(&mut bindings);
         self.bindings = bindings
             .into_iter()
             .map(|(id, location)| BindingIdentity { id, location })
             .collect();
+    }
+
+    fn qualify_heap(&mut self, bindings: &mut BTreeMap<String, Location>) {
+        use crate::heap::{Root, Segment};
+        let prefix = |uri: &str| format!("{}:{}", self.snapshot_id, uri);
+        let prefix = prefix(&self.uri());
+        let allocation = |op: OperationId| format!("{prefix}:allocation:{op}");
+        self.access_paths.clear();
+        self.call_contexts.clear();
+        self.sharing.clear();
+        self.boundaries.clear();
+        for (index, context) in self.heap.contexts.iter().enumerate() {
+            self.call_contexts.push(CallContext {
+                id: format!("{prefix}:call_context:{}", index + 1),
+                parent: context.parent.map(|p| format!("{prefix}:call_context:{p}")),
+                call: self.operations[context.call].identity.clone(),
+            });
+        }
+        for (op, path) in &self.heap.paths {
+            let root = match &path.root {
+                Root::Binding(range) => {
+                    let id = format!("{prefix}:binding:{}:{}", range.start, range.end);
+                    bindings.insert(
+                        id.clone(),
+                        Location {
+                            uri: self.operations[*op].location.uri.clone(),
+                            range: *range,
+                        },
+                    );
+                    id
+                }
+                Root::Allocation(id) => allocation(*id),
+            };
+            let id = format!("{prefix}:access_path:{op}");
+            self.access_paths.push(AccessPath {
+                id: id.clone(),
+                root,
+                segments: path
+                    .segments
+                    .iter()
+                    .map(|s| match s {
+                        Segment::Field(name) => PathSegment::Field { name: name.clone() },
+                        Segment::Element(index) => PathSegment::Element { index: *index },
+                    })
+                    .collect(),
+            });
+            self.operations[*op].access_path = Some(id);
+        }
+        for (op, context) in &self.heap.op_context {
+            if *context > 0 {
+                self.operations[*op].call_context =
+                    Some(format!("{prefix}:call_context:{context}"));
+            }
+        }
+        for (index, sharing) in self.heap.sharing.iter().enumerate() {
+            self.sharing.push(SharingIntroduction {
+                id: format!("{prefix}:sharing:{index}"),
+                operation: self.operations[sharing.op].identity.clone(),
+                allocation: allocation(sharing.allocation),
+                mechanism: sharing.kind.mechanism().into(),
+                qualifier: sharing.qualifier,
+            });
+        }
+        for (index, boundary) in self.heap.boundaries.iter().enumerate() {
+            self.boundaries.push(UncertaintyBoundary {
+                id: format!("{prefix}:boundary:{index}"),
+                operation: self.operations[boundary.op].identity.clone(),
+                kind: boundary.kind.into(),
+                reason: boundary.reason.into(),
+            });
+        }
+    }
+
+    fn uri(&self) -> String {
+        self.documents
+            .iter()
+            .find(|d| d.source_hash == self.source_hash)
+            .map(|d| d.uri.clone())
+            .unwrap_or_default()
     }
 }
 
@@ -679,6 +832,8 @@ impl StateGraph {
             "call_contexts",
             "evidence",
             "obligations",
+            "sharing",
+            "boundaries",
         ];
         let mut identities = BTreeMap::new();
         for kind in kinds {
@@ -767,6 +922,7 @@ impl StateGraph {
                     ("call", vec!["operations"]),
                     ("parent", vec!["call_contexts"]),
                     ("condition", vec!["conditions"]),
+                    ("allocation", vec!["allocations"]),
                     ("root", vec!["bindings", "allocations"]),
                 ] {
                     if let Some(id) = item[field].as_str() {
@@ -880,8 +1036,10 @@ impl StateTrace {
                 return Err("dangling trace operation".into());
             }
         }
-        if self.invalidation_status != InvalidationStatus::Invalidated
-            && (!self.invalidations.is_empty() || !self.invalidating_operations.is_empty())
+        if !matches!(
+            self.invalidation_status,
+            InvalidationStatus::Invalidated | InvalidationStatus::PotentiallyInvalidated
+        ) && (!self.invalidations.is_empty() || !self.invalidating_operations.is_empty())
         {
             return Err("invented invalidation".into());
         }
@@ -926,11 +1084,21 @@ impl StateTrace {
                 return Err("inconsistent trace edge".into());
             }
         }
+        if let Some(requirement) = &self.requirement {
+            if !graph
+                .conditions
+                .iter()
+                .any(|c| c.id == requirement.condition)
+            {
+                return Err("dangling requirement condition".into());
+            }
+        }
         for location in self
             .origins
             .iter()
             .chain(&self.invalidations)
             .chain(&self.affected_uses)
+            .chain(self.requirement.iter().flat_map(|r| &r.declarations))
         {
             let document = graph
                 .documents

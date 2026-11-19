@@ -25,6 +25,7 @@ fn add(
     explanation: &str,
     related: &[Span],
 ) {
+    if report.findings.iter().any(|f| f.shared_state.is_some() && f.trigger == range && f.resolution == defect) { return; }
     let mechanism = defect;
     let defect = match mechanism {
         "async-function" | "async-execution" => "async-io-misuse",
@@ -36,12 +37,14 @@ fn add(
     };
     let rule_id = format!("{}.{family}.{defect}", report.language);
     report.findings.push(Finding {
+        shared_state: None,
         state_trace: None,
         division_risk: None,
         rule_id: rule_id.clone(),
         family: family.into(),
         compound: None,
         blast_radius: vec![],
+        mechanism: None,
         defect: defect.into(),
         trigger: range,
         function: owner(report, range),
@@ -557,7 +560,7 @@ pub(crate) fn build_annotations(all: &[Node<'_>], source: &str, report: &mut Doc
             C::CompoundDefects => unreachable!(),
             C::MutatedState => L::Mutacious,
             C::UnstructuredState => L::Unstructured,
-            C::SharedState => L::Shared,
+            C::SharedState => if matches!(finding.resolution.as_str(), "resource-lifecycle" | "task-lifecycle") { L::Lifecycle } else if matches!(finding.resolution.as_str(), "async-function" | "async-execution" | "suspension") { L::Async } else { L::Shared },
         };
         let mut targets = vec![(
             T::Segment,
@@ -577,7 +580,9 @@ pub(crate) fn build_annotations(all: &[Node<'_>], source: &str, report: &mut Doc
                 C::UnstructuredState => {
                     (finding.resolution == "runtime-type-dispatch").then_some(L::Polymorphic)
                 }
-                C::SharedState => Some(if finding.resolution == "async-function" {
+                C::SharedState => Some(if matches!(finding.resolution.as_str(), "resource-lifecycle" | "task-lifecycle") {
+                    L::Lifecycle
+                } else if finding.resolution == "async-function" {
                     L::Async
                 } else {
                     L::Shared
@@ -668,7 +673,7 @@ pub(crate) fn build_annotations(all: &[Node<'_>], source: &str, report: &mut Doc
     }
     let specialized: Vec<_> = annotations
         .iter()
-        .filter(|a| a.target == T::Function && matches!(a.label, L::Polymorphic | L::Async))
+        .filter(|a| a.target == T::Function && matches!(a.label, L::Polymorphic))
         .map(|a| (a.category, a.range))
         .collect();
     let generic: Vec<_> = annotations
@@ -709,7 +714,7 @@ pub(crate) fn coalesce(report: &DocumentReport, source: &str) -> Vec<StateAnnota
             .entry((
                 annotation.category,
                 line,
-                if annotation.category == StateCategory::CompoundDefects {
+                if matches!(annotation.category, StateCategory::CompoundDefects | StateCategory::SharedState) {
                     Some(annotation.label)
                 } else {
                     None
@@ -736,7 +741,7 @@ pub(crate) fn coalesce(report: &DocumentReport, source: &str) -> Vec<StateAnnota
                     StateCategory::CompoundDefects => selected.label,
                     StateCategory::MutatedState => AnnotationLabel::Mutacious,
                     StateCategory::UnstructuredState => AnnotationLabel::Unstructured,
-                    StateCategory::SharedState => AnnotationLabel::Shared,
+                    StateCategory::SharedState => selected.label,
                 };
             }
             selected.findings = group

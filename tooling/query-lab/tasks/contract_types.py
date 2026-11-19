@@ -14,15 +14,19 @@ STRUCTS = {
  'SourceEvidence': {'id':'String','document':'String','source_hash':'String','range':'Span'},
  'ControlFlowEdge': {'from':'String','to':'String','branch':'Branch','condition':'Option<String>','evidence':'Vec<String>'},
  'Obligation': {'id':'String','operation':'String','condition':'String','language_model':'String','assumptions':'Vec<String>','evidence':'Vec<String>','outcome':'Outcome'},
+ 'SharingIntroduction': {'id':'String','operation':'String','allocation':'String','mechanism':'String','qualifier':'Option<u64>'},
+ 'UncertaintyBoundary': {'id':'String','operation':'String','kind':'String','reason':'String'},
+ 'RequirementRef': {'condition':'String','kind':'String','declarations':'Vec<Location>'},
 }
 ENUMS = {
- 'InvalidationStatus':['Invalidated','NeverEstablished','Unknown'],
+ 'InvalidationStatus':['Invalidated','PotentiallyInvalidated','NeverEstablished','Unknown'],
+ 'Certainty':['Definite','Possible'],
  'Outcome':['Established','ViolatedOnDemonstratedPath','PotentialViolation','Unknown'],
  'Branch':['Unconditional','True','False','Exceptional'],
  'Comparison':['Equal','NotEqual','Less','LessEqual','Greater','GreaterEqual'],
 }
 VARIANTS = {
- 'PathSegment': {'Field':{'name':'String'},'Index':{'value':'String'},'Dereference':{}},
+ 'PathSegment': {'Field':{'name':'String'},'Index':{'value':'String'},'Element':{'index':'Option<u64>'},'Dereference':{}},
  'Predicate': {
   'Comparison':{'operator':'Comparison','left':'String','right':'String'},
   'Conjunction':{'conditions':'Vec<String>'},'Disjunction':{'conditions':'Vec<String>'},
@@ -64,7 +68,7 @@ def generated():
         rust += ['#[derive(Debug, Clone, Serialize, Deserialize)]','#[serde(deny_unknown_fields)]',f'pub struct {n} {{',*[f'    pub {k}: {t},' for k,t in f.items()],'}']
         types += [f'export interface {n} {{ '+ '; '.join(f'{k}: {ts(t)}' for k,t in f.items())+' }']
     for n,vs in ENUMS.items():
-        rust += ['#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]','#[serde(rename_all = "snake_case")]',f'pub enum {n} {{'+','.join(vs)+'}']
+        rust += ['#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]','#[serde(rename_all = "snake_case")]',f'pub enum {n} {{'+','.join(vs)+'}']
         types += [f'export type {n} = '+' | '.join(json.dumps(snake(v)) for v in vs)+';']
     for n,vs in VARIANTS.items():
         rust += ['#[derive(Debug, Clone, Serialize, Deserialize)]','#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]',f'pub enum {n} {{',*[v+' { '+','.join(f'{k}: {t}' for k,t in f.items())+' },' for v,f in vs.items()],'}']
@@ -75,11 +79,11 @@ WIRE = {
  'Span':{'start':'usize','end':'usize'},
  'Location':{'uri':'String','range':'Span'},
  'Operation':{'identity':'String','binding_id':'Option<String>','allocation_id':'Option<String>','block_id':'Option<String>','access_path':'Option<String>','call_context':'Option<String>','required_conditions':'Vec<String>','evidence':'Vec<String>','id':'usize','kind':'OperationKind','location':'Location','binding':'Option<Span>','guards':'Vec<usize>'},
- 'Edge':{'from':'usize','to':'usize','relationship':'Relationship'},
- 'StateGraph':{'contract_version':'u32','snapshot_id':'String','generation':'u64','documents':'Vec<DocumentIdentity>','bindings':'Vec<BindingIdentity>','allocations':'Vec<AllocationIdentity>','blocks':'Vec<BasicBlock>','conditions':'Vec<Condition>','access_paths':'Vec<AccessPath>','call_contexts':'Vec<CallContext>','evidence':'Vec<SourceEvidence>','control_flow':'Vec<ControlFlowEdge>','obligations':'Vec<Obligation>','source_hash':'String','operations':'Vec<Operation>','edges':'Vec<Edge>','limitations':'Vec<String>'},
- 'StateTrace':{'contract_version':'u32','snapshot_id':'String','origin_operations':'Vec<String>','invalidation_status':'InvalidationStatus','invalidating_operations':'Vec<String>','affected_operations':'Vec<String>','supporting_evidence':'Vec<String>','required_conditions':'Vec<String>','evidence_level':'EvidenceLevel','source_hash':'String','origins':'Vec<Location>','invalidations':'Vec<Location>','affected_uses':'Vec<Location>','required_condition':'Option<String>','operations':'Vec<Operation>','edges':'Vec<Edge>','assumptions':'Vec<String>'},
+ 'Edge':{'from':'usize','to':'usize','relationship':'Relationship','certainty':'Option<Certainty>'},
+ 'StateGraph':{'contract_version':'u32','snapshot_id':'String','generation':'u64','documents':'Vec<DocumentIdentity>','bindings':'Vec<BindingIdentity>','allocations':'Vec<AllocationIdentity>','blocks':'Vec<BasicBlock>','conditions':'Vec<Condition>','access_paths':'Vec<AccessPath>','call_contexts':'Vec<CallContext>','evidence':'Vec<SourceEvidence>','control_flow':'Vec<ControlFlowEdge>','obligations':'Vec<Obligation>','sharing':'Vec<SharingIntroduction>','boundaries':'Vec<UncertaintyBoundary>','source_hash':'String','operations':'Vec<Operation>','edges':'Vec<Edge>','limitations':'Vec<String>'},
+ 'StateTrace':{'contract_version':'u32','snapshot_id':'String','origin_operations':'Vec<String>','invalidation_status':'InvalidationStatus','invalidating_operations':'Vec<String>','affected_operations':'Vec<String>','supporting_evidence':'Vec<String>','required_conditions':'Vec<String>','evidence_level':'EvidenceLevel','source_hash':'String','origins':'Vec<Location>','invalidations':'Vec<Location>','affected_uses':'Vec<Location>','required_condition':'Option<String>','operations':'Vec<Operation>','edges':'Vec<Edge>','assumptions':'Vec<String>','requirement':'Option<RequirementRef>'},
 }
-WIRE_ENUMS = {'OperationKind':['read','write','allocation','call','return','exceptional_exit','guard','suspension'], 'Relationship':['reaching_assignment','value_dependency','governed_by'], 'EvidenceLevel':['candidate_relationship','feasible_under_model','reproduced']}
+WIRE_ENUMS = {'OperationKind':['read','write','allocation','call','return','exceptional_exit','guard','suspension'], 'Relationship':['reaching_assignment','value_dependency','governed_by','points_to','heap_dependency'], 'EvidenceLevel':['candidate_relationship','feasible_under_model','reproduced']}
 
 def wire_definitions():
     d=declarations()

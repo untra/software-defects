@@ -1,16 +1,12 @@
-use std::cell::RefCell;
-
-async fn send_receipt(outbox: &RefCell<Vec<String>>, email: &str) {
-    outbox.borrow_mut().push(format!("receipt to {}", email));
+async fn send_receipt(outbox: &mut Vec<String>) {
+    tokio::task::yield_now().await;
+    outbox.push("receipt".into());
 }
-
-fn checkout(outbox: &RefCell<Vec<String>>, email: &str) -> &'static str {
-    let _ = send_receipt(outbox, email);
-    "order placed"
+async fn checkout() {
+    let mut outbox = Vec::new();
+    let _ = send_receipt(&mut outbox);
+    println!("receipts sent: {}", outbox.len());
 }
-
 fn main() {
-    let outbox = RefCell::new(Vec::new());
-    println!("{}", checkout(&outbox, "ana@example.com"));
-    println!("receipts sent: {}", outbox.borrow().len());
+    tokio::runtime::Builder::new_current_thread().enable_all().build().unwrap().block_on(checkout());
 }

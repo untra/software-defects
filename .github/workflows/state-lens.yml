@@ -10,6 +10,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: state-lens-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   inventory:
     runs-on: ubuntu-latest
@@ -24,6 +28,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
       - name: Install pinned Rust toolchain
         run: rustup toolchain install 1.95.0 --profile minimal --component clippy,rustfmt --target wasm32-wasip2
       - name: Rust checks
@@ -178,3 +185,11 @@ jobs:
           merge-multiple: true
           path: build/vsix
       - run: xvfb-run -a npm run test:isolation --prefix extensions/vscode
+
+  ci-ok:
+    needs: [inventory, test, packages, editor-smoke, smoke-report, coexistence]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every State Lens job to succeed
+        run: test "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped') }}" = false

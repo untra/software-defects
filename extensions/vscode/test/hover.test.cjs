@@ -82,3 +82,23 @@ test('Evidence links carry the snapshot identity and trust only the Evidence com
   assert.equal(JSON.stringify(hover.isTrusted), JSON.stringify({ enabledCommands: ['stateLens.typescript.showEvidence'] }));
   assert.ok(hover.parts.some(part => part.value === '\n\nMutable binding.'));
 });
+
+test('object-identity hovers distinguish candidate relationships from declared requirements', () => {
+  const trace = { evidence_level: 'feasible_under_model', origins: [{}], invalidations: [{}], affected_uses: [{}], assumptions: [], required_condition: 'independent' };
+  const make = requirement => ({ finding: {
+    family: 'mutated-state', defect: 'aliasing-mutable-defaults', explanation: 'Write through a shallow copy.', origin: 'direct',
+    effect: { kind: 'local_mutation' }, resolution: 'object-identity', mechanism: 'shallow-copy-nested', call_path: [], evidence: [],
+    state_trace: { ...trace, requirement }
+  } });
+  const text = hover => hover.parts.map(p => p.value).join('');
+  assert.match(text(explanation(make(undefined))), /Mechanism: shallow-copy-nested\. No declared isolation requirement/);
+  assert.match(text(explanation(make({ kind: 'declared-readonly', condition: 'c', declarations: [] }))), /Declared requirement \(declared-readonly\) is violated/);
+});
+test('shared-state hovers distinguish static sites from runtime fan-out', () => {
+  const value = entry('shared-state', 'race-conditions');
+  value.finding.shared_state = { evidence_level: 'relationship-candidate', sites: { declarations: 1, launches: 2, suspensions: 3, dynamic_fan_out: true }, contenders: 2, events: [{kind:'read'}, {kind:'suspend'}, {kind:'write'}], assumptions: ['Unknown aliases remain unresolved.'] };
+  const text = explanation(value).parts.map(p => p.value).join('');
+  assert.match(text, /Static sites: 1 async declarations, 2 launches\/compositions, 3 suspensions/);
+  assert.match(text, /Runtime fan-out is unknown/);
+  assert.match(text, /read → suspend → write/);
+});

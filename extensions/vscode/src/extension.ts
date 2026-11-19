@@ -6,7 +6,7 @@ import * as path from 'node:path';
 import { createHash } from 'node:crypto';
 import { EVIDENCE_COMMAND, explanation } from './hover';
 import { LanguageClient, LSPErrorCodes, ResponseError, State, CloseAction, ErrorAction } from 'vscode-languageclient/node';
-import { findingEvidence, accepts, compare, contains, equal, functionMarkers, annotations, Entry, Evidence, segments, triggerSegments, Snapshot, Range, decorations as paint, PALETTE, Category, CATEGORY_STYLE, divisionCompatible, StateAnnotation } from './ranges';
+import { findingEvidence, accepts, compare, contains, equal, functionMarkers, annotations, Entry, Evidence, segments, triggerSegments, Snapshot, Range, decorations as paint, PALETTE, Category, CATEGORY_STYLE, divisionCompatible, StateAnnotation, RuleCatalog, ruleCoverageMarkdown } from './ranges';
 
 const LANGUAGES = [LANGUAGE];
 const REFRESH_DELAY_MS = 180;
@@ -31,6 +31,7 @@ export interface StateLensApi {
   status(): string;
   applied(uri: string): Applied | undefined;
   ui(): { statusVisible: boolean; evidenceVisible: boolean; evidenceUri?: string; lifecycle: ServerState };
+  rules(): Promise<RuleCatalog>;
 }
 
 function range(value: Range): vscode.Range { return new vscode.Range(value.start.line, value.start.character, value.end.line, value.end.character); }
@@ -70,6 +71,8 @@ class EvidenceView implements vscode.TreeDataProvider<vscode.TreeItem> {
         ['Origin', entry.finding.origin, entry.finding.origin === 'direct' ? 'Detected in this function.' : 'Arrives through a resolved call.'],
         ['Effect', entry.finding.effect.kind, effectMeaning(entry.finding.effect.kind)],
         ['Resolution', entry.finding.resolution, resolutionMeaning(entry.finding.resolution)],
+        ...(entry.finding.mechanism ? [['Mechanism', entry.finding.mechanism, 'Catalog mechanism that introduced the shared identity.']] : []),
+        ...(entry.finding.resolution === 'object-identity' ? [['Requirement', entry.finding.state_trace?.requirement?.kind ?? 'none declared', entry.finding.state_trace?.requirement ? 'An in-source declaration requires the written state to stay independent.' : 'Without a declared requirement this is a candidate relationship, not a confirmed defect.']] : []),
         ['Taxonomy', entry.finding.related_cwes?.join(', ') || 'None', 'Related taxonomy references; these are not diagnoses.']
       ];
       item.children = metadata.map(([label, value, tooltip]) => {
@@ -104,7 +107,8 @@ function resolutionMeaning(resolution: string): string {
   const meanings: Record<string, string> = {
     syntax: 'Recognized from code syntax.', 'binding-analysis': 'Resolved using lexical bindings.',
     'modeled-api': 'Recognized using a supported API model.', candidate: 'A candidate whose behavior is not proven.',
-    'resolved-call': 'Resolved to a known function.'
+    'resolved-call': 'Resolved to a known function.',
+    'object-identity': 'Connected through the shared object-identity graph: sharing origin, write, and observed read.'
   };
   return meanings[resolution] ?? `Analyzer resolution: ${resolution}.`;
 }
@@ -219,6 +223,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
       }
     },
     serverRunning: () => client?.isRunning() ?? false,
+    rules: async () => {
+      if (!client?.isRunning()) throw new Error('State Lens server unavailable');
+      return client.sendRequest<RuleCatalog>('stateLens/rules', {});
+    },
     status: () => status.text,
     applied: uri => applied.get(uri),
     ui: () => ({ statusVisible, evidenceVisible: evidenceTree.visible, evidenceUri: statusVisible ? vscode.window.activeTextEditor?.document.uri.toString() : undefined, lifecycle: lifecycle.state })
@@ -342,6 +350,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateL
         logs: api.log()
       }, null, 2) });
       await vscode.window.showTextDocument(document);
+    }),
+    vscode.commands.registerCommand(commandId('showRuleCoverage'), async () => {
+      if (!client?.isRunning()) { void vscode.window.showWarningMessage('State Lens server unavailable.'); return; }
+      const catalog = await client.sendRequest<RuleCatalog>('stateLens/rules', {});
+      const document = await vscode.workspace.openTextDocument({ language: 'markdown', content: ruleCoverageMarkdown(catalog) });
+      await vscode.window.showTextDocument(document, { preview: true });
     }),
     vscode.commands.registerCommand(commandId('openEvidence'), async (uri: unknown, version: unknown, requested: unknown) => {
       if (typeof uri !== 'string' || typeof version !== 'number') return;

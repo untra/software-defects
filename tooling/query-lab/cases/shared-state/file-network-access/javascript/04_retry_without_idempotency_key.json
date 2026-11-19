@@ -9,10 +9,45 @@
         "query": "tooling/query-lab/queries/javascript/shared-state/file-network-access/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "io_call",
+            "range": [
+              110,
+              127
+            ]
+          },
+          {
+            "name": "io_call",
             "range": [
               384,
-              394
+              406
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              550,
+              588
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              568,
+              587
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              594,
+              641
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              645,
+              651
             ]
           }
         ]
@@ -26,10 +61,52 @@
         "query": "tooling/query-lab/queries/javascript/shared-state/file-network-access/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "io_call",
+            "range": [
+              114,
+              158
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              194,
+              211
+            ]
+          },
+          {
+            "name": "io_call",
             "range": [
               481,
-              491
+              521
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              665,
+              714
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              683,
+              713
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              720,
+              767
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              771,
+              777
             ]
           }
         ]
@@ -43,5 +120,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Retry without idempotency key. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

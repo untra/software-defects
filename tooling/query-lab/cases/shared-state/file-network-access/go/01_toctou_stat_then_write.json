@@ -9,17 +9,108 @@
         "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              226,
-              230
+              223,
+              240
             ]
           },
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              302,
-              311
+              242,
+              260
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              265,
+              289
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              299,
+              349
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              402,
+              428
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              436,
+              453
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              467,
+              500
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              615,
+              624
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              630,
+              727
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              648,
+              657
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              664,
+              695
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              702,
+              716
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              732,
+              741
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              743,
+              809
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              794,
+              808
             ]
           }
         ]
@@ -33,17 +124,101 @@
         "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              223,
-              231
+              220,
+              290
             ]
           },
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              377,
-              382
+              342,
+              361
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              375,
+              384
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              456,
+              482
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              490,
+              507
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              521,
+              554
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              669,
+              678
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              684,
+              781
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              702,
+              711
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              718,
+              749
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              756,
+              770
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              786,
+              795
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              797,
+              863
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              848,
+              862
             ]
           }
         ]
@@ -57,5 +232,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Time-of-check/time-of-use on the filesystem (CWE-367). Use O_CREATE|O_EXCL. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": false,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

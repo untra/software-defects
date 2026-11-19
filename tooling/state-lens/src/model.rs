@@ -36,6 +36,8 @@ pub enum Effect {
     ExternalRead,
     Nondeterminism,
     StructuralSignal,
+    AsyncExecution,
+    ResourceAccess,
 }
 impl Effect {
     pub fn observable(&self) -> bool {
@@ -60,6 +62,8 @@ pub struct Compound {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Finding {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub shared_state: Option<crate::shared::SharedState>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub state_trace: Option<crate::state::StateTrace>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub division_risk: Option<DivisionRisk>,
@@ -68,6 +72,8 @@ pub struct Finding {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub compound: Option<Compound>,
     pub defect: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mechanism: Option<String>,
     #[serde(default)]
     pub blast_radius: Vec<Span>,
     pub trigger: Span,

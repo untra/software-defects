@@ -1,38 +1,26 @@
-import os
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
 import tempfile
 import threading
 
+NODES = ("ada", "ben")
+
 
 def main():
-    descriptor, path = tempfile.mkstemp()
-    os.close(descriptor)
-    try:
-        with open(path, "w", encoding="utf-8") as handle:
-            handle.write("old")
-        first_checked = threading.Event()
-        second_done = threading.Event()
+    checked = threading.Barrier(len(NODES))
 
-        def replace():
-            first_checked.wait()
-            with open(path, "w", encoding="utf-8") as handle:
-                handle.write("ben")
-            second_done.set()
+    def claim(node):
+        if not path.exists():
+            checked.wait()
+            path.write_text(node, encoding="utf-8")
+            return True
+        return False
 
-        def writer():
-            if os.path.exists(path):
-                first_checked.set()
-                second_done.wait()
-                with open(path, "w", encoding="utf-8") as handle:
-                    handle.write("ada")
-
-        other = threading.Thread(target=replace)
-        other.start()
-        writer()
-        other.join()
-        with open(path, encoding="utf-8") as handle:
-            print(handle.read())
-    finally:
-        os.remove(path)
+    with tempfile.TemporaryDirectory() as directory:
+        path = Path(directory) / "leader.lock"
+        with ThreadPoolExecutor(max_workers=len(NODES)) as pool:
+            leaders = list(pool.map(claim, NODES))
+        print("leaders:", sum(leaders))
 
 
 main()

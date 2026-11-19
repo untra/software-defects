@@ -393,6 +393,7 @@ pub fn analyze(operations: &[Node<'_>], s: &str, report: &mut DocumentReport) {
             "May panic for integers or produce a non-finite floating-point result."
         };
         report.findings.push(Finding {
+        shared_state: None,
             state_trace: None,
             division_risk: Some(DivisionRisk {
                 confidence: confidence.into(),
@@ -403,6 +404,7 @@ pub fn analyze(operations: &[Node<'_>], s: &str, report: &mut DocumentReport) {
             family: "unstructured-state".into(),
             compound: None,
             blast_radius: vec![],
+            mechanism: None,
             defect: "divide-by-zero".into(),
             trigger: Span::of(den),
             function: report

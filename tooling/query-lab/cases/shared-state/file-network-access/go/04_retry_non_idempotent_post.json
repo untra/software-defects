@@ -9,24 +9,87 @@
         "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              356,
-              360
+              349,
+              421
             ]
           },
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              453,
-              458
+              386,
+              420
             ]
           },
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              827,
-              832
+              443,
+              460
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              548,
+              735
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              567,
+              734
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              636,
+              650
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              661,
+              690
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              697,
+              730
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              792,
+              818
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              820,
+              834
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              836,
+              912
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              897,
+              911
             ]
           }
         ]
@@ -40,24 +103,115 @@
         "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              586,
-              588
+              388,
+              461
             ]
           },
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              629,
-              634
+              426,
+              460
             ]
           },
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              1131,
-              1136
+              514,
+              564
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              579,
+              597
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              619,
+              636
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              748,
+              1028
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              767,
+              1027
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              849,
+              909
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              871,
+              902
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              929,
+              943
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              954,
+              983
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              990,
+              1023
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1085,
+              1122
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1124,
+              1138
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1140,
+              1216
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1201,
+              1215
             ]
           }
         ]
@@ -71,5 +225,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Timeouts are ambiguous; retrying non-idempotent requests duplicates side effects. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": false,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

@@ -133,7 +133,7 @@ def write(directory, rows):
     temporary.replace(target)
 
 
-def merge(inputs, layers, shard=None, language=None):
+def merge(inputs, layers, shard=None, language=None, selected_file=None):
     from smoke import corpus_files, relative
     indexed = {}
     for source in inputs:
@@ -142,11 +142,15 @@ def merge(inputs, layers, shard=None, language=None):
             raise ValueError(f"Unsupported report schema: {source}")
         for item in payload["rows"]:
             validate(item)
+            if selected_file and item["file"] != selected_file:
+                continue
             key = item["layer"], item["file"]
             if key in indexed:
                 raise ValueError(f"Duplicate smoke row: {key}")
             indexed[key] = finish(item)
     for file in map(relative, corpus_files()):
+        if selected_file and file != selected_file:
+            continue
         if language and Path(file).parent.name != language:
             continue
         if shard and not file.startswith(shard + "/"):
@@ -166,10 +170,11 @@ def main():
     parser.add_argument("--layers", nargs="+", choices=LAYERS, default=list(LAYERS))
     parser.add_argument("--shard")
     parser.add_argument("--language")
+    parser.add_argument("--file")
     parser.add_argument("--strict-gaps", action="store_true")
     parser.add_argument("--summary", action="store_true")
     args = parser.parse_args()
-    rows = merge(args.inputs, args.layers, args.shard, args.language)
+    rows = merge(args.inputs, args.layers, args.shard, args.language, args.file)
     write(args.report, rows)
     if args.summary and os.environ.get("GITHUB_STEP_SUMMARY"):
         with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as summary:

@@ -1,7 +1,3 @@
-(call_expression
-  function: [
-    (identifier) @callee
-    (field_expression field: (field_identifier) @callee)
-    (scoped_identifier name: (identifier) @callee)
-  ]
-  (#any-of? @callee "lock" "load" "store" "fetch_add"))
+(call_expression) @synchronization_call
+(assignment_expression) @shared_write
+(compound_assignment_expr) @shared_write

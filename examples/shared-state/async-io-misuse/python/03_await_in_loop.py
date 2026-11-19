@@ -1,21 +1,26 @@
 import asyncio
 
-
-async def step(name, log):
-    log.append(name)
-    await asyncio.sleep(0)
-    log.append(name)
+PEERS = ("billing", "shipping")
 
 
 async def run():
-    log = []
-    for name in ("a", "b"):
-        await step(name, log)
-    print(",".join(log))
+    started = set()
+    released = asyncio.Event()
+
+    async def register(peer):
+        started.add(peer)
+        await released.wait()
+
+    async def coordinate():
+        for peer in PEERS:
+            await register(peer)
+
+    work = asyncio.create_task(coordinate())
+    for _ in range(len(PEERS) + 1):
+        await asyncio.sleep(0)
+    print("all peers registered:", len(started) == len(PEERS))
+    released.set()
+    await work
 
 
-def main():
-    asyncio.run(run())
-
-
-main()
+asyncio.run(run())

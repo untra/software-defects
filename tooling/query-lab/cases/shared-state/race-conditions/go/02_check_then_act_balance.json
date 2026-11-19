@@ -3,44 +3,128 @@
   "status": "syntax-candidate",
   "rationale": "Keep the balance check and debit in one critical section.",
   "original": {
-    "source_hash": "8bd94ec35c1cb8e97a009e030aedeaa20ff2c420c57b36c7f9a26b7fdc0698d3",
+    "source_hash": "c8f33e80a8c0873aafb1bc26f4e3546dea1fe5e596947c4941307bbea9e11e1e",
     "queries": [
       {
         "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              271,
-              275
+              213,
+              224
             ]
           },
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              290,
-              296
+              232,
+              245
             ]
           },
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              363,
-              367
+              305,
+              316
             ]
           },
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              382,
-              388
+              324,
+              337
             ]
           },
           {
-            "name": "callee",
+            "name": "shared_write",
             "range": [
-              687,
-              690
+              339,
+              358
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              435,
+              446
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              461,
+              475
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              478,
+              492
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              495,
+              510
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              656,
+              687
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              722,
+              731
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              737,
+              812
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              755,
+              764
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              768,
+              806
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              817,
+              826
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              828,
+              875
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              858,
+              874
             ]
           }
         ]
@@ -48,58 +132,135 @@
     ]
   },
   "fixed": {
-    "source_hash": "ee228aa21aa4b60f823fde1d498252aaa3b56e0a9b60ed55c07a0d82828fe226",
+    "source_hash": "1bab3c9ac8fde192a56a3abbb330bdc3e460bf6598363924f66c614b9397fd97",
     "queries": [
       {
         "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              271,
-              275
+              213,
+              224
             ]
           },
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              290,
-              296
+              232,
+              245
             ]
           },
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              363,
-              367
+              305,
+              316
             ]
           },
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              382,
-              388
+              324,
+              337
             ]
           },
           {
-            "name": "callee",
+            "name": "shared_write",
             "range": [
-              465,
-              469
+              339,
+              358
             ]
           },
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              484,
-              490
+              432,
+              446
             ]
           },
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              738,
-              741
+              448,
+              462
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              464,
+              475
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              483,
+              496
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              540,
+              559
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              705,
+              736
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              771,
+              780
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              786,
+              861
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              804,
+              813
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              817,
+              855
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              866,
+              875
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              877,
+              924
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              907,
+              923
             ]
           }
         ]
@@ -113,5 +274,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Check-then-act across two critical sections (TOCTOU, CWE-367). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

@@ -9,10 +9,129 @@
         "query": "tooling/query-lab/queries/typescript/shared-state/async-io-misuse/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "async_keyword",
             "range": [
-              502,
-              506
+              96,
+              101
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              159,
+              230
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              190,
+              229
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              361,
+              411
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              378,
+              406
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              417,
+              422
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              494,
+              549
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              508,
+              526
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              528,
+              547
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              554,
+              559
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              590,
+              617
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              596,
+              617
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              635,
+              655
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              641,
+              655
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              663,
+              725
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              694,
+              724
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              729,
+              778
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              783,
+              789
             ]
           }
         ]
@@ -24,7 +143,155 @@
     "queries": [
       {
         "query": "tooling/query-lab/queries/typescript/shared-state/async-io-misuse/signals.scm",
-        "captures": []
+        "captures": [
+          {
+            "name": "async_keyword",
+            "range": [
+              157,
+              162
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              242,
+              296
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              248,
+              296
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              300,
+              324
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              455,
+              505
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              472,
+              500
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              511,
+              516
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              639,
+              707
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              656,
+              694
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              724,
+              767
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              730,
+              767
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              783,
+              802
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              809,
+              814
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              845,
+              872
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              851,
+              872
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              890,
+              910
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              896,
+              910
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              918,
+              980
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              949,
+              979
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              984,
+              1033
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              1038,
+              1044
+            ]
+          }
+        ]
       }
     ]
   },
@@ -35,5 +302,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. race does not cancel the losing promise (use AbortSignal). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

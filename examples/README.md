@@ -15,7 +15,7 @@ examples/
         └── python/NN_scenario.py
 ```
 
-The number of files in a `<defect>/<language>/` folder equals that cell's score in `ASSESSMENT.md`.
+Susceptibility scores describe language characteristics. Audited shared-state inventories track example counts separately, including Rust standard-library and Tokio variants.
 
 ## Conventions
 
@@ -73,3 +73,8 @@ The Rust examples assume a debug build (plain `rustc`), where integer overflow p
 | [shared-state](shared-state/ASSESSMENT.md) | Go · Rust · TypeScript · Python, 141 examples (see its harness conventions) |
 | [compound-defects](compound-defects/ASSESSMENT.md) | four flagship programs, one language each; scores are 0–2 and are not file counts |
 | common-defects | planned |
+
+Shared-state examples marked `"runtime": "tokio"` use the pinned Cargo manifest and lockfile
+under `tooling/query-lab/runtimes/tokio`. Run their mirrored fixes with Query Lab
+`verify-fixes --case ...`, or explicitly compare both variants with `verify-pairs --case ...`.
+Other Rust examples remain standalone `rustc` programs.

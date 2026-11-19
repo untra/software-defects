@@ -20,20 +20,20 @@
       "observed_output": "recorded 2112319 of 8000000 views",
       "exit_code": 0,
       "deterministic": false,
-      "expected_behavior": "recorded 800000 of 800000 views"
+      "expected_behavior": "recorded 8000000 of 8000000 views"
     },
     {
       "file": "go/02_check_then_act_balance.go",
       "language": "go",
       "bug_lines": [
-        32,
-        34
+        30,
+        33
       ],
       "summary": "Balance check and debit are each locked but not atomic together; five withdrawals pass the check.",
       "mechanism": "Check-then-act across two critical sections (TOCTOU, CWE-367).",
       "observed_output": "final balance: -400",
       "exit_code": 0,
-      "deterministic": false,
+      "deterministic": true,
       "expected_behavior": "final balance: 0"
     },
     {
@@ -80,14 +80,14 @@
       "file": "rust/01_lock_per_step_check_then_act.rs",
       "language": "rust",
       "bug_lines": [
-        10,
-        13
+        8,
+        11
       ],
       "summary": "Stock is read under one lock and written under another; every buyer sees 1 available.",
       "mechanism": "The guard is dropped between check and act, so the invariant is not held across both (CWE-367).",
       "observed_output": "sold 5 units with 1 in stock",
       "exit_code": 0,
-      "deterministic": false,
+      "deterministic": true,
       "expected_behavior": "sold 1 units with 1 in stock"
     },
     {
@@ -95,14 +95,14 @@
       "language": "rust",
       "bug_lines": [
         9,
-        10
+        11
       ],
       "summary": "An atomic load followed by an atomic store is not an atomic increment; updates are lost.",
       "mechanism": "Each operation is atomic alone; the read-modify-write is not. Use fetch_add.",
-      "observed_output": "recorded 2159428 of 8000000 hits",
+      "observed_output": "recorded 100 of 800 hits",
       "exit_code": 0,
-      "deterministic": false,
-      "expected_behavior": "recorded 800000 of 800000 hits"
+      "deterministic": true,
+      "expected_behavior": "recorded 800 of 800 hits"
     },
     {
       "file": "typescript/01_read_await_write.ts",

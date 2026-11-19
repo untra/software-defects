@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Shared state finding evidence",
+  "type": "object",
+  "properties": {
+    "source_uri": {
+      "type": "string"
+    },
+    "source_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "evidence_level": {
+      "enum": [
+        "syntax-candidate",
+        "relationship-candidate"
+      ]
+    },
+    "relationship": {
+      "type": "string"
+    },
+    "resource": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "end": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "start",
+              "end"
+            ],
+            "additionalProperties": false
+          },
+          "resource": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "owner": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "start": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "end": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "start",
+                  "end"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "range",
+          "resource",
+          "owner"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "sites": {
+      "type": "object",
+      "properties": {
+        "declarations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "launches": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "suspensions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dynamic_fan_out": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "declarations",
+        "launches",
+        "suspensions",
+        "dynamic_fan_out"
+      ],
+      "additionalProperties": false
+    },
+    "contenders": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "source_uri",
+    "source_hash",
+    "evidence_level",
+    "relationship",
+    "resource",
+    "events",
+    "sites",
+    "contenders",
+    "assumptions"
+  ]
+}

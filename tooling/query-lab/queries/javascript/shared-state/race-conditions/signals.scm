@@ -1,6 +1,4 @@
-(call_expression
-  function: [
-    (identifier) @callee
-    (member_expression property: (property_identifier) @callee)
-  ]
-  (#any-of? @callee "some" "push" "search"))
+(call_expression) @synchronization_call
+(assignment_expression) @shared_write
+(augmented_assignment_expression) @shared_write
+(update_expression) @shared_write

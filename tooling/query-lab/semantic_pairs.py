@@ -18,6 +18,27 @@ def extract(path, lab, analyzer):
     return json.loads(out)
 
 
+VERIFIED_APPLICABILITY = {"auto", "advisory"}
+
+
+def production_repair(path, source, lab, analyzer):
+    """Use the analyzer's repair-check: postcondition-verified edits from the shared graph."""
+    code, out, err = lab.execute([analyzer.resolve(), "repair-check", path, "--hash", lab.digest(source)])
+    if code or err:
+        raise ValueError(err or "repair-check failed")
+    result = json.loads(out)
+    if result["applicability"] not in VERIFIED_APPLICABILITY:
+        raise ValueError(f"repair-check {result['applicability']}: {result['reason']}")
+    verified = [c for c in result["candidates"] if c["status"] == "verified"]
+    edits = sorted(verified[0]["edits"], key=lambda e: e["start"], reverse=True)
+    candidate = source
+    for edit in edits:
+        candidate = candidate[:edit["start"]] + edit["replacement"].encode() + candidate[edit["end"]:]
+    if lab.digest(candidate) != verified[0]["result_hash"]:
+        raise ValueError("repair-check result hash mismatch")
+    return candidate
+
+
 def witness(facts, spec):
     events = facts["events"]
     if facts["unsupported"]:
@@ -94,18 +115,9 @@ def preview(case, lab, analyzer, run_behavior=False):
         if statement.count(b":=") != 1:
             raise ValueError("repair requires a short declaration")
         replacement = statement.replace(b":=", b"=", 1)
+        candidate = source[:start] + replacement + source[end:]
     else:
-        target, field, _ = spec["contract"]["write"].split(".")
-        origin, source_field, _ = spec["contract"]["read"].split(".")
-        candidates = [e for e in before["facts"]["events"] if e["kind"] == "object_binding" and e["name"] == target]
-        if len(candidates) != 1:
-            raise ValueError("repair target is ambiguous")
-        start, end = candidates[0]["range"]["start"], candidates[0]["range"]["end"]
-        expression = source[start:end].decode()
-        if not expression.startswith("{") or not expression.endswith("}"):
-            raise ValueError("repair target must be an object literal")
-        replacement = (expression[:-1].rstrip().rstrip(",") + f", {field}: {{ ...{origin}.{source_field} }}" + " }").encode()
-    candidate = source[:start] + replacement + source[end:]
+        candidate = production_repair(lab.ROOT / case["original"], source, lab, analyzer)
     with tempfile.TemporaryDirectory(prefix="semantic-repair-") as directory:
         path = Path(directory) / ("main" + lab.LANGUAGES[case["language"]][0])
         path.write_bytes(candidate)

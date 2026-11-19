@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "roles": {
+    "failing": {
+      "findings": [
+        {
+          "trigger": "publicHeaders.Authorization",
+          "origins": [
+            "{ Authorization: \"Bearer secret\" }",
+            "return headers;"
+          ],
+          "affected_uses": [
+            "session.headers.Authorization"
+          ],
+          "evidence_level": "feasible_under_model",
+          "requirement": "frozen"
+        }
+      ],
+      "repair": {
+        "applicability": "auto"
+      }
+    },
+    "fixed": {
+      "findings": []
+    },
+    "intentional": {
+      "findings": [
+        {
+          "trigger": "configure(settings).debug",
+          "origins": [
+            "{ debug: false }",
+            "return options;"
+          ],
+          "affected_uses": [
+            "settings.debug"
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ],
+      "repair": {
+        "applicability": "advisory"
+      }
+    },
+    "independent": {
+      "findings": []
+    },
+    "breaker": {
+      "findings": []
+    }
+  }
+}

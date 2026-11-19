@@ -37,6 +37,13 @@ class SmokeAuditTests(unittest.TestCase):
         self.assertEqual(len(rows), len(expected))
         self.assertEqual({row['language'] for row in rows}, {'javascript'})
 
+    def test_single_file_merge_does_not_invent_other_missing_results(self):
+        import smoke_report as audit
+        selected = 'examples/shared-state/race-conditions/typescript/01_read_await_write.ts'
+        rows = audit.merge([], ['editor'], selected_file=selected)
+        self.assertEqual([row['file'] for row in rows], [selected])
+        self.assertEqual(rows[0]['status'], 'fail')
+
     def test_row_schema_and_status(self):
         import smoke_report as audit
         row = audit.row('protocol', 'examples/mutated-state/var-let-mut/go/01_shadowed_err_in_if.go')

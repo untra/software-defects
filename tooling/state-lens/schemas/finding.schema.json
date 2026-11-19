@@ -133,6 +133,7 @@
         "invalidation_status": {
           "enum": [
             "invalidated",
+            "potentially_invalidated",
             "never_established",
             "unknown"
           ]

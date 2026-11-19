@@ -423,17 +423,21 @@
         {
           "from": 0,
           "to": 1,
-          "relationship": "reaching_assignment"
+          "relationship": "reaching_assignment",
+          "certainty": null
         },
         {
           "from": 1,
           "to": 2,
-          "relationship": "value_dependency"
+          "relationship": "value_dependency",
+          "certainty": null
         }
       ],
       "limitations": [
         "Candidate dependencies only: branch polarity, exceptional control flow, closures, aliases and scheduling feasibility are not established."
-      ]
+      ],
+      "sharing": [],
+      "boundaries": []
     }
   ],
   "traces": [
@@ -538,12 +542,14 @@
         {
           "from": 0,
           "to": 1,
-          "relationship": "reaching_assignment"
+          "relationship": "reaching_assignment",
+          "certainty": null
         }
       ],
       "assumptions": [
         "Candidate dependencies only: branch polarity, exceptional control flow, closures, aliases and scheduling feasibility are not established."
-      ]
+      ],
+      "requirement": null
     },
     {
       "contract_version": 2,
@@ -645,12 +651,14 @@
         {
           "from": 0,
           "to": 1,
-          "relationship": "reaching_assignment"
+          "relationship": "reaching_assignment",
+          "certainty": null
         }
       ],
       "assumptions": [
         "Candidate dependencies only: branch polarity, exceptional control flow, closures, aliases and scheduling feasibility are not established."
-      ]
+      ],
+      "requirement": null
     }
   ]
 }

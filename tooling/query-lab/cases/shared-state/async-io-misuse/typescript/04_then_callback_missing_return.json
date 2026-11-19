@@ -9,17 +9,52 @@
         "query": "tooling/query-lab/queries/typescript/shared-state/async-io-misuse/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "task_call",
             "range": [
-              211,
-              215
+              88,
+              129
             ]
           },
           {
-            "name": "callee",
+            "name": "task_call",
             "range": [
-              283,
-              287
+              197,
+              210
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              197,
+              266
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              244,
+              260
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              271,
+              282
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              271,
+              327
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              298,
+              326
             ]
           }
         ]
@@ -33,17 +68,52 @@
         "query": "tooling/query-lab/queries/typescript/shared-state/async-io-misuse/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "task_call",
             "range": [
-              204,
-              208
+              88,
+              129
             ]
           },
           {
-            "name": "callee",
+            "name": "task_call",
             "range": [
-              293,
-              297
+              190,
+              203
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              190,
+              276
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              237,
+              253
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              281,
+              292
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              281,
+              337
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              308,
+              336
             ]
           }
         ]
@@ -57,5 +127,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Promise chains propagate the callback's return value. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

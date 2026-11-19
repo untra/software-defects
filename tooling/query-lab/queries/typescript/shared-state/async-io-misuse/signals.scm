@@ -1,6 +1,3 @@
-(call_expression
-  function: [
-    (identifier) @callee
-    (member_expression property: (property_identifier) @callee)
-  ]
-  (#any-of? @callee "then" "catch" "race" "all" "persistBio"))
+(call_expression) @task_call
+"async" @async_keyword
+(await_expression) @suspension

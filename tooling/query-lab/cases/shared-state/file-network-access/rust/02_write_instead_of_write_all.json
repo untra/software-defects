@@ -9,10 +9,73 @@
         "query": "tooling/query-lab/queries/rust/shared-state/file-network-access/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              449,
-              454
+              201,
+              210
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              201,
+              227
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              237,
+              279
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              289,
+              294
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              353,
+              359
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              442,
+              463
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              470,
+              476
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              532,
+              542
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              588,
+              614
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              588,
+              623
             ]
           }
         ]
@@ -26,10 +89,73 @@
         "query": "tooling/query-lab/queries/rust/shared-state/file-network-access/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              449,
-              458
+              201,
+              210
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              201,
+              227
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              237,
+              279
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              289,
+              294
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              353,
+              359
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              442,
+              467
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              474,
+              480
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              544,
+              554
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              605,
+              631
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              605,
+              640
             ]
           }
         ]
@@ -43,5 +169,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Partial writes are normal for sockets; use write_all. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

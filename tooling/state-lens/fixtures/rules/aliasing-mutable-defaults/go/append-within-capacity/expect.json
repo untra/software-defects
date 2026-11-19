@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "roles": {
+    "failing": {
+      "findings": [
+        {
+          "trigger": "append(batch, \"retry\")",
+          "origins": [
+            "[]string{\"resize\", \"encode\", \"upload\", \"notify\"}",
+            "jobs[:2]"
+          ],
+          "affected_uses": [
+            {
+              "text": "jobs",
+              "occurrence": 3
+            }
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ],
+      "repair": {
+        "applicability": "advisory"
+      }
+    },
+    "fixed": {
+      "findings": []
+    },
+    "intentional": {
+      "findings": [
+        {
+          "trigger": "append(view, 7)",
+          "origins": [
+            "make([]int, 0, 4)",
+            "data[:0]"
+          ],
+          "affected_uses": [
+            "data[:1]"
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ],
+      "repair": {
+        "applicability": "advisory"
+      }
+    },
+    "independent": {
+      "findings": []
+    },
+    "breaker": {
+      "findings": []
+    }
+  }
+}

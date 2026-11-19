@@ -9,17 +9,122 @@
         "query": "tooling/query-lab/queries/javascript/shared-state/file-network-access/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
               254,
-              258
+              269
             ]
           },
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              300,
-              305
+              295,
+              331
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              306,
+              330
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              367,
+              379
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              429,
+              469
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              441,
+              468
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              446,
+              454
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              488,
+              514
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              520,
+              592
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              540,
+              591
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              618,
+              678
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              710,
+              748
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              760,
+              840
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              797,
+              839
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              812,
+              838
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              846,
+              878
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              882,
+              888
             ]
           }
         ]
@@ -33,17 +138,171 @@
         "query": "tooling/query-lab/queries/javascript/shared-state/file-network-access/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              472,
-              476
+              281,
+              305
             ]
           },
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              532,
-              541
+              335,
+              377
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              343,
+              376
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              348,
+              361
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              401,
+              433
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              472,
+              493
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              527,
+              550
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              570,
+              581
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              629,
+              641
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              667,
+              690
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              726,
+              773
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              823,
+              863
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              835,
+              862
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              840,
+              848
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              882,
+              908
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              914,
+              986
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              934,
+              985
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1012,
+              1072
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1104,
+              1142
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1154,
+              1234
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1191,
+              1233
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1206,
+              1232
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1240,
+              1272
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1276,
+              1282
             ]
           }
         ]
@@ -57,5 +316,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Non-atomic in-place write; serialize first, write to temp, rename. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

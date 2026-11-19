@@ -16,7 +16,7 @@ fn rule_metadata() -> &'static serde_json::Value {
             .expect("rule metadata")
     })
 }
-fn related_cwes(rule_id: &str) -> Vec<String> {
+pub(crate) fn related_cwes(rule_id: &str) -> Vec<String> {
     rule_metadata()["rules"]
         .as_array()
         .unwrap()
@@ -427,9 +427,13 @@ impl Engine {
             crate::annotations::analyze(parsed.tree.root_node(), &f.source, &mut f.report, &imports, |name, at| binding(&f.bindings, name, at).is_some());
             f.report.findings.retain(|finding| !self.disabled_checks.contains(&finding.defect));
             crate::annotations::resolve_regions(parsed.tree.root_node(), &mut f.report);
-            let mut graph = crate::state::extract(parsed.tree.root_node(), &f.report.uri, &f.source, |name, at| binding(&f.bindings, name, at).map(|b| b.range));
+            let mut graph = crate::state::extract_for(&f.report.language, parsed.tree.root_node(), &f.report.uri, &f.source, |name, at| binding(&f.bindings, name, at).map(|b| b.range));
             graph.qualify_snapshot(self.generation, documents.clone(), snapshot_id.clone());
             graph.explain(&mut f.report);
+            if !self.disabled_checks.contains(crate::aliasing::DEFECT) {
+                crate::aliasing::detect(&mut graph, &mut f.report);
+                f.report.findings.sort_by_key(|x| (x.trigger.start, x.rule_id.clone(), x.origin.clone()));
+            }
             f.report.state_graph = Some(graph);
             crate::annotations::build_annotations(&crate::annotations::nodes(parsed.tree.root_node()), &f.source, &mut f.report);
             f.report
@@ -557,12 +561,14 @@ fn add(
         }
     }
     facts.report.findings.push(Finding {
+        shared_state: None,
         state_trace: None,
         division_risk: None,
         rule_id: rule_id.clone(),
         family: family.into(),
         compound: None,
         blast_radius: vec![],
+        mechanism: None,
         defect: defect.into(),
         trigger,
         function: owner(&facts.report.functions, trigger).map(|i| facts.report.functions[i].range),
@@ -906,7 +912,7 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
         .filter(|(_, capture, _)| *capture == "division")
         .map(|(_, _, node)| *node)
         .collect::<Vec<_>>();
-    for (path, capture, node) in captures {
+    for (path, capture, node) in captures.iter().copied() {
         if node.has_error() || node.is_missing() {
             continue;
         }
@@ -963,6 +969,8 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
             _=>{}
         }
     }
+    let imports: Vec<_> = facts.imports.iter().map(|i| (i.local.clone(), i.module.clone(), i.symbol.clone())).collect();
+    crate::shared::analyze(&captures, root, source, &mut facts.report, &imports, |name, at| binding(&facts.bindings, name, at).map(|b| b.range));
     crate::division::analyze(&divisions, source, &mut facts.report);
     if root.has_error() {
         facts.report.unresolved.push(Unresolved {
@@ -1457,6 +1465,7 @@ fn propagate(facts: &mut [Facts]) {
                 }
                 let mut propagated = finding.clone();
                 propagated.trigger = call.range;
+                if propagated.shared_state.is_some() { propagated.blast_radius = vec![call.range]; }
                 propagated.function = call.owner.map(|i| local.report.functions[i].range);
                 propagated.effect = effect;
                 propagated.origin = "propagated".into();

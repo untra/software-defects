@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "roles": {
+    "failing": {
+      "findings": [
+        {
+          "trigger": "authed.headers[\"Authorization\"]",
+          "origins": [
+            "{ Accept: \"application/json\" }",
+            {
+              "text": "DEFAULTS.headers",
+              "occurrence": 1
+            }
+          ],
+          "affected_uses": [
+            "anon.headers"
+          ],
+          "evidence_level": "feasible_under_model",
+          "requirement": "frozen"
+        }
+      ],
+      "repair": {
+        "applicability": "auto"
+      }
+    },
+    "fixed": {
+      "findings": []
+    },
+    "intentional": {
+      "findings": [],
+      "boundaries": [
+        "dynamic-key"
+      ]
+    },
+    "independent": {
+      "findings": []
+    },
+    "breaker": {
+      "findings": []
+    }
+  }
+}

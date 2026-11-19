@@ -4,8 +4,8 @@
   "name": "Async IO Misuse",
   "essence": "Fire-and-forget work drops results and failures no one notices are gone.",
   "cwes": [
-    "CWE-362",
-    "CWE-662",
+    "CWE-252",
+    "CWE-664",
     "CWE-696"
   ],
   "examples": [
@@ -53,14 +53,15 @@
       "file": "rust/01_future_never_awaited.rs",
       "language": "rust",
       "bug_lines": [
-        8
+        7
       ],
       "summary": "`async fn` is called but the future is discarded with `let _`, so the receipt is never sent.",
       "mechanism": "Rust futures are lazy; nothing runs until polled.",
       "observed_output": "order placed\nreceipts sent: 0",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "receipts sent: 1"
+      "expected_behavior": "receipts sent: 1",
+      "runtime": "tokio"
     },
     {
       "file": "rust/02_dropped_join_handle.rs",
@@ -107,12 +108,12 @@
       "bug_lines": [
         12
       ],
-      "summary": "Independent widget fetches are awaited one by one, so latency adds up.",
-      "mechanism": "Sequential await in a loop serializes concurrent-safe work.",
-      "observed_output": "homepage took longer than 4 round trips: true",
+      "summary": "Serial registration waits for release before registering the second peer; the coordinator requires all peers registered before release.",
+      "mechanism": "A protocol dependency, not sequential await alone, makes serialization incorrect.",
+      "observed_output": "all peers registered: false",
       "exit_code": 0,
-      "deterministic": false,
-      "expected_behavior": "homepage took longer than 4 round trips: false"
+      "deterministic": true,
+      "expected_behavior": "all peers registered: true"
     },
     {
       "file": "typescript/04_then_callback_missing_return.ts",
@@ -170,14 +171,14 @@
       "file": "python/03_await_in_loop.py",
       "language": "python",
       "bug_lines": [
-        13
+        16
       ],
-      "summary": "The steps run a, a, b, b because each name is awaited before the next starts.",
-      "mechanism": "await inside the loop runs that coroutine to completion before the next iteration.",
-      "observed_output": "a,a,b,b",
+      "summary": "Serial registration waits for release before registering the second peer; the coordinator requires all peers registered before release.",
+      "mechanism": "A protocol dependency, not sequential await alone, makes serialization incorrect.",
+      "observed_output": "all peers registered: False",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "a,b,a,b"
+      "expected_behavior": "all peers registered: True"
     },
     {
       "file": "python/04_race_loser_writes.py",
@@ -222,14 +223,14 @@
       "file": "javascript/03_await_in_loop.js",
       "language": "javascript",
       "bug_lines": [
-        10
+        12
       ],
-      "summary": "Independent widget fetches are awaited one by one, so latency adds up.",
-      "mechanism": "Sequential await in a loop serializes concurrent-safe work.",
-      "observed_output": "homepage took longer than 4 round trips: true",
+      "summary": "Serial registration waits for release before registering the second peer; the coordinator requires all peers registered before release.",
+      "mechanism": "A protocol dependency, not sequential await alone, makes serialization incorrect.",
+      "observed_output": "all peers registered: false",
       "exit_code": 0,
-      "deterministic": false,
-      "expected_behavior": "homepage took longer than 4 round trips: false"
+      "deterministic": true,
+      "expected_behavior": "all peers registered: true"
     },
     {
       "file": "javascript/04_then_callback_missing_return.js",
@@ -256,6 +257,48 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "customer charged 1 times"
+    },
+    {
+      "file": "rust/03_tokio_dropped_handle.rs",
+      "language": "rust",
+      "bug_lines": [
+        3
+      ],
+      "summary": "Detached persistence task reports success without observing its failure.",
+      "mechanism": "Task completion and resource ownership must be coordinated.",
+      "observed_output": "saved",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "save failed: disk full",
+      "runtime": "tokio"
+    },
+    {
+      "file": "rust/04_tokio_loser_writes.rs",
+      "language": "rust",
+      "bug_lines": [
+        11
+      ],
+      "summary": "Abandoned work writes after the caller has selected another result.",
+      "mechanism": "Task completion and resource ownership must be coordinated.",
+      "observed_output": "late writes: 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "late writes: 0",
+      "runtime": "tokio"
+    },
+    {
+      "file": "rust/05_tokio_resource_lifetime.rs",
+      "language": "rust",
+      "bug_lines": [
+        7
+      ],
+      "summary": "The receiving resource is dropped before pending output completes.",
+      "mechanism": "Task completion and resource ownership must be coordinated.",
+      "observed_output": "receipt delivered: false",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "receipt delivered: true",
+      "runtime": "tokio"
     }
   ]
 }

@@ -1,0 +1,393 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout": "all peers registered: True\n"
+  },
+  "rationale": "all peers registered: True; preserve the workload while correcting completion, atomicity or resource ordering.",
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "original": {
+    "source_hash": "d33628d4e6fb220b78e59d19fb385729ca98d37f21353a49d73f4f349fd8863b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "async_keyword",
+            "range": [
+              50,
+              55
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              81,
+              86
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              102,
+              117
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              123,
+              128
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              157,
+              174
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              183,
+              204
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              189,
+              204
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              210,
+              215
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              273,
+              293
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              279,
+              293
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              306,
+              339
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              326,
+              338
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              353,
+              374
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              359,
+              369
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              384,
+              406
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              390,
+              406
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              411,
+              469
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              442,
+              454
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              458,
+              468
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              474,
+              488
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              493,
+              503
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              506,
+              524
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              518,
+              523
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "acfa3fdf127f0c5345bb72e1f53709a38b3b97f378d12d81c4ba3bc8ed2be0e8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "async_keyword",
+            "range": [
+              50,
+              55
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              81,
+              86
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              102,
+              117
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              123,
+              128
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              157,
+              174
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              183,
+              204
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              189,
+              204
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              210,
+              215
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              251,
+              286
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              271,
+              285
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              331,
+              359
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              337,
+              359
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              424,
+              437
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              450,
+              502
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              456,
+              502
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              515,
+              548
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              535,
+              547
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              562,
+              583
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              568,
+              578
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              593,
+              615
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              599,
+              615
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              620,
+              678
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              651,
+              663
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              667,
+              677
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              683,
+              697
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              702,
+              712
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              715,
+              733
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              727,
+              732
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

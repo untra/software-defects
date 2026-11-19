@@ -7,7 +7,64 @@
     "queries": [
       {
         "query": "tooling/query-lab/queries/javascript/shared-state/race-conditions/signals.scm",
-        "captures": []
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              108,
+              137
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              223,
+              243
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              249,
+              287
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              325,
+              356
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              338,
+              345
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              347,
+              354
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              362,
+              409
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              413,
+              419
+            ]
+          }
+        ]
       }
     ]
   },
@@ -16,7 +73,71 @@
     "queries": [
       {
         "query": "tooling/query-lab/queries/javascript/shared-state/race-conditions/signals.scm",
-        "captures": []
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              108,
+              137
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              283,
+              312
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              338,
+              358
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              394,
+              423
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              488,
+              519
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              501,
+              508
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              510,
+              517
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              525,
+              572
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              576,
+              582
+            ]
+          }
+        ]
       }
     ]
   },
@@ -27,5 +148,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Single-threaded JS still interleaves at every await point (CWE-362). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

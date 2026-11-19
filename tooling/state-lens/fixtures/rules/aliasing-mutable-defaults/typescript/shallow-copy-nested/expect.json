@@ -1,0 +1,182 @@
+{
+  "schema_version": 1,
+  "roles": {
+    "failing": {
+      "findings": [
+        {
+          "trigger": "testConfig.db.host",
+          "origins": [
+            "{ host: \"db.internal\", pool: 10 }",
+            {
+              "text": "prodConfig",
+              "occurrence": 2
+            }
+          ],
+          "affected_uses": [
+            "prodConfig.db.host"
+          ],
+          "evidence_level": "feasible_under_model",
+          "requirement": "declared-readonly"
+        }
+      ],
+      "repair": {
+        "applicability": "auto"
+      }
+    },
+    "fixed": {
+      "findings": []
+    },
+    "intentional": {
+      "findings": [
+        {
+          "trigger": "tenant.pool.size",
+          "origins": [
+            "{ size: 10 }",
+            {
+              "text": "shared",
+              "occurrence": 2
+            }
+          ],
+          "affected_uses": [
+            "shared.pool.size"
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ],
+      "repair": {
+        "applicability": "advisory"
+      }
+    },
+    "independent": {
+      "findings": []
+    },
+    "breaker": {
+      "findings": []
+    }
+  },
+  "variants": {
+    "deeper-shared": {
+      "findings": [
+        {
+          "trigger": "testConfig.db.tls.verify",
+          "origins": [
+            "{ verify: true }",
+            {
+              "text": "prodConfig.db",
+              "occurrence": 1
+            }
+          ],
+          "affected_uses": [
+            "prodConfig.db.tls.verify"
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ]
+    },
+    "spread-order": {
+      "findings": [
+        {
+          "trigger": "testConfig.db.host",
+          "origins": [
+            "{ host: \"db.internal\" }",
+            {
+              "text": "prodConfig",
+              "occurrence": 3
+            }
+          ],
+          "affected_uses": [
+            "prodConfig.db.host"
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ]
+    },
+    "top-level-write": {
+      "findings": []
+    },
+    "rebinding": {
+      "findings": []
+    },
+    "early-return": {
+      "findings": []
+    },
+    "unknown-call": {
+      "findings": [
+        {
+          "trigger": "testConfig.db.host",
+          "origins": [
+            "{ host: \"db.internal\" }",
+            {
+              "text": "prodConfig",
+              "occurrence": 2
+            }
+          ],
+          "affected_uses": [
+            "prodConfig.db.host"
+          ],
+          "evidence_level": "candidate_relationship"
+        }
+      ],
+      "boundaries": [
+        "unknown-call"
+      ]
+    },
+    "nested-scope": {
+      "findings": [
+        {
+          "trigger": "testConfig.db.host",
+          "origins": [
+            "{ host: \"db.internal\" }",
+            {
+              "text": "prodConfig",
+              "occurrence": 2
+            }
+          ],
+          "affected_uses": [
+            "prodConfig.db.host"
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ]
+    },
+    "exception": {
+      "findings": [
+        {
+          "trigger": "testConfig.db.host",
+          "origins": [
+            "{ host: \"db.internal\" }",
+            {
+              "text": "prodConfig",
+              "occurrence": 2
+            }
+          ],
+          "affected_uses": [
+            "prodConfig.db.host"
+          ],
+          "evidence_level": "candidate_relationship"
+        }
+      ]
+    },
+    "cross-file": {
+      "findings": [
+        {
+          "trigger": "testConfig.db.host",
+          "origins": [
+            "{ host: \"db.internal\" }",
+            {
+              "text": "prodConfig",
+              "occurrence": 2
+            }
+          ],
+          "affected_uses": [
+            "prodConfig.db.host"
+          ],
+          "evidence_level": "candidate_relationship"
+        }
+      ],
+      "boundaries": [
+        "unknown-call"
+      ]
+    }
+  }
+}

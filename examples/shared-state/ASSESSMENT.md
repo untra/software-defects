@@ -1,27 +1,27 @@
 # Bugs of Shared State — language susceptibility
 
-Score **1–5**: how likely the defect is to show up in everyday code in that language, and how many distinct, demonstrable forms it takes. Each cell has exactly that many example files. Pointer mismanagement is C-centric and is included as a tenth defect, using the closest memory-safe analogues.
+Score **1–5**: how likely the defect is to show up in everyday code in that language, and how many distinct, demonstrable forms it takes. Scores are qualitative susceptibility estimates, not example counts. The audited inventory below is independent of these scores. Pointer mismanagement is C-centric and is included as a tenth defect, using the closest memory-safe analogues.
 
-| Defect | Go | Rust | TypeScript | Python |
-|---|:-:|:-:|:-:|:-:|
-| [race-conditions](race-conditions/) | 5 | 2 | 4 | 4 |
-| [cross-boundary-state-exposure](cross-boundary-state-exposure/) | 4 | 2 | 5 | 5 |
-| [resource-contention](resource-contention/) | 4 | 3 | 4 | 4 |
-| [stack-overflow](stack-overflow/) | 2 | 3 | 4 | 3 |
-| [async-io-misuse](async-io-misuse/) | 3 | 2 | 5 | 4 |
-| [pointer-mismanagement](pointer-mismanagement/) | 3 | 2 | 2 | 2 |
-| [cache-invalidation](cache-invalidation/) | 4 | 3 | 5 | 5 |
-| [threading-mutexes](threading-mutexes/) | 5 | 3 | 2 | 4 |
-| [file-network-access](file-network-access/) | 4 | 3 | 4 | 4 |
-| [resource-leaks](resource-leaks/) | 4 | 2 | 4 | 4 |
-| **Total** | **38** | **25** | **39** | **39** |
+| Defect | Go | Rust | JavaScript | TypeScript | Python |
+|---|:-:|:-:|:-:|:-:|:-:|
+| [race-conditions](race-conditions/) | 5 | 2 | 4 | 4 | 4 |
+| [cross-boundary-state-exposure](cross-boundary-state-exposure/) | 4 | 2 | 5 | 5 | 5 |
+| [resource-contention](resource-contention/) | 4 | 3 | 4 | 4 | 4 |
+| [stack-overflow](stack-overflow/) | 2 | 3 | 4 | 4 | 3 |
+| [async-io-misuse](async-io-misuse/) | 3 | 2 | 5 | 5 | 4 |
+| [pointer-mismanagement](pointer-mismanagement/) | 3 | 2 | 2 | 2 | 2 |
+| [cache-invalidation](cache-invalidation/) | 4 | 3 | 5 | 5 | 5 |
+| [threading-mutexes](threading-mutexes/) | 5 | 3 | 2 | 2 | 4 |
+| [file-network-access](file-network-access/) | 4 | 3 | 4 | 4 | 4 |
+| [resource-leaks](resource-leaks/) | 4 | 2 | 4 | 4 | 4 |
+| **Total** | **38** | **25** | **39** | **39** | **39** |
 
 ## Rationale
 
 **race-conditions**
 - Go 5: goroutines share memory freely. Lost `++`, check-then-act across two critical sections, concurrent map writes, lazy init without `sync.Once`, and racy `append`.
-- Rust 2: data races are a compile error. Logical races remain: dropping the guard between check and act, and an atomic load followed by a store.
-- TS 4: one thread, but every `await` is an interleaving point. Read-await-write, check-then-insert, whole-document saves, and out-of-order responses.
+- Rust 2: safe Rust prevents data races; unsafe code can violate this guarantee. Logical races remain: dropping the guard between check and act, and an atomic load followed by a store.
+- TS 4: event-loop tasks can interleave across `await`; worker threads add explicit parallelism. Read-await-write, check-then-insert, whole-document saves, and out-of-order responses.
 - Python 4: the GIL does not make check-then-act safe. A lost `+=` across threads, a balance check then subtract, an asyncio read then `await` then write, and lazy init without a lock.
 
 **cross-boundary-state-exposure**
@@ -43,6 +43,7 @@ Score **1–5**: how likely the defect is to show up in everyday code in that la
 - Python 3: `sys.setrecursionlimit` is harness. A cyclic graph, mutual recursion, and a recursive retry each raise `RecursionError` immediately.
 
 **async-io-misuse**
+- Sequential awaits are not inherently defective. The registration examples demonstrate a protocol requiring both peers to register before either is released. Rust covers both standard-library threads and pinned Tokio tasks.
 - Go 3: a goroutine's error dropped, `main` exiting before workers, and senders leaked on an unbuffered result channel.
 - Rust 2: lazy futures that are never awaited, and a dropped `JoinHandle` that hides a panic.
 - TS 5: floating promises, unhandled rejections, `await` in a loop, `.then` without `return`, and `Promise.race` that doesn't cancel the loser.
@@ -86,3 +87,47 @@ Shared-state bugs depend on timing and on running out of real resources, so the 
 - Races are made reproducible with short sleeps or many iterations. Their manifests say `deterministic: false`, and each was verified to show the bug in at least 9 of 10 runs.
 - All network traffic stays on loopback (`httptest`, `node:http` on port 0, `TcpListener` on `127.0.0.1:0`). Files go under the OS temp directory.
 - Python caps recursion with `sys.setrecursionlimit`. That call is harness, not a bug line. A blocked `Lock` uses `acquire(timeout=...)` and prints `blocked`. The lost-update counter yields with `time.sleep(0)` between the read and the write and is marked `deterministic: false`. The other Python races use a `Barrier` or an `Event` and are deterministic. Python examples open temp files only, never sockets, and count a wrapper's opens instead of exhausting file descriptors.
+
+## Shared state audit
+
+The three audited classes have runnable original/fixed pairs in all five languages.
+[Per-example audit records](audit.json) link each contract, repair, source hash, CWE reference,
+and Query Lab expectation. JavaScript susceptibility uses the same event-loop model as
+TypeScript; static types do not remove asynchronous interleavings.
+
+| Defect | Go | Rust | JavaScript | TypeScript | Python |
+|---|---:|---:|---:|---:|---:|
+| async-io-misuse | 3 | 5 | 5 | 5 | 4 |
+| race-conditions | 5 | 2 | 4 | 4 | 4 |
+| file-network-access | 4 | 3 | 4 | 4 | 4 |
+
+Effect-bearing code remains labeled after a repair. Queries capture structural operations;
+the analyzer resolves known APIs and bounded binding relationships before emitting findings.
+A static launch/suspension count is not a count of simultaneously running tasks. Dynamic
+fan-out, unknown receiver types, escaping ownership, and incomplete control flow remain
+explicit limitations. Synchronization-shaped methods are candidates even in correct code.
+
+The repaired Python TOCTOU example invalidates an absence check before exclusive creation.
+The serialization example performs real failing JSON serialization, and the fixed version
+preserves the previous file. Tokio examples retain asynchronous execution and distinguish
+requesting cancellation from awaiting completion. Rust standard-library examples continue
+to demonstrate detached threads, split lock scopes, and split atomic updates.
+
+`verify-pairs` explicitly executes deterministic originals and checks that they violate the
+fixed behavioral contract. Nondeterministic originals are reported separately; a successful
+fixed run is not a proof of race freedom. Numeric Python outcomes use exact output checks.
+
+Research boundaries:
+
+- [CWE-362](https://cwe.mitre.org/data/definitions/362.html) concerns improper synchronization
+  of concurrently accessed resources; an async keyword alone does not establish it.
+- [CWE-367](https://cwe.mitre.org/data/definitions/367.html) requires a checked resource state
+  that can change before use. [Node filesystem guidance](https://nodejs.org/api/fs.html)
+  warns against access-before-open checks; [Rust exclusive creation](https://doc.rust-lang.org/std/fs/struct.OpenOptions.html#method.create_new)
+  provides an atomic create-if-absent operation.
+- [Rust race guidance](https://doc.rust-lang.org/nomicon/races.html) separates memory data
+  races from logical races. [Go's race detector](https://go.dev/doc/articles/race_detector)
+  supplies execution evidence for data races, not every logical ordering defect.
+- [Tokio task cancellation](https://docs.rs/tokio/latest/tokio/task/) distinguishes requesting
+  cancellation from observing completion. [Python task documentation](https://docs.python.org/3/library/asyncio-task.html)
+  describes structured task ownership and cancellation propagation.

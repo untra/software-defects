@@ -9,10 +9,52 @@
         "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "shared_write",
             "range": [
-              260,
-              263
+              163,
+              172
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              257,
+              266
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              272,
+              359
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              290,
+              299
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              334,
+              348
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              364,
+              373
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              375,
+              451
             ]
           }
         ]
@@ -26,24 +68,66 @@
         "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              186,
-              190
+              181,
+              192
             ]
           },
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              205,
-              211
+              200,
+              213
             ]
           },
           {
-            "name": "callee",
+            "name": "shared_write",
             "range": [
-              312,
-              315
+              215,
+              224
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              309,
+              318
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              324,
+              411
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              342,
+              351
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              386,
+              400
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              416,
+              425
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              427,
+              503
             ]
           }
         ]
@@ -57,5 +141,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. `++` compiles to load, add, store; interleaved goroutines overwrite each other (CWE-362). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": false,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

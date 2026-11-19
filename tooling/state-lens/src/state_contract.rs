@@ -79,14 +79,45 @@ pub struct Obligation {
     pub evidence: Vec<String>,
     pub outcome: Outcome,
 }
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct SharingIntroduction {
+    pub id: String,
+    pub operation: String,
+    pub allocation: String,
+    pub mechanism: String,
+    pub qualifier: Option<u64>,
+}
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct UncertaintyBoundary {
+    pub id: String,
+    pub operation: String,
+    pub kind: String,
+    pub reason: String,
+}
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct RequirementRef {
+    pub condition: String,
+    pub kind: String,
+    pub declarations: Vec<Location>,
+}
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "snake_case")]
 pub enum InvalidationStatus {
     Invalidated,
+    PotentiallyInvalidated,
     NeverEstablished,
     Unknown,
 }
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+#[serde(rename_all = "snake_case")]
+pub enum Certainty {
+    Definite,
+    Possible,
+}
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "snake_case")]
 pub enum Outcome {
     Established,
@@ -94,7 +125,7 @@ pub enum Outcome {
     PotentialViolation,
     Unknown,
 }
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "snake_case")]
 pub enum Branch {
     Unconditional,
@@ -102,7 +133,7 @@ pub enum Branch {
     False,
     Exceptional,
 }
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 #[serde(rename_all = "snake_case")]
 pub enum Comparison {
     Equal,
@@ -117,6 +148,7 @@ pub enum Comparison {
 pub enum PathSegment {
     Field { name: String },
     Index { value: String },
+    Element { index: Option<u64> },
     Dereference {},
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -49,7 +49,7 @@ def validate(value, kind=None):
             source=sources.get((loc['uri'],loc['source_hash']))
             if source is None or loc['end']>source['byte_length']: raise ValueError('stale or invalid graph span')
     if kind == 'finding':
-        if payload['invalidation_status']!='invalidated' and payload['invalidations']: raise ValueError('invented invalidation range')
+        if payload['invalidation_status'] not in ('invalidated','potentially_invalidated') and payload['invalidations']: raise ValueError('invented invalidation range')
         if payload['evidence_level']!='candidate_relationship':
             if payload['witness'] is None or any(p['result']=='unknown' for p in payload['predicates']): raise ValueError('unsupported evidence promotion')
     if kind == 'contract' and payload['review_status']=='reviewed' and not payload['reviewer']:
@@ -74,7 +74,7 @@ def validate_graphs(payload):
     manifest = [first['generation'], first['documents']]
     expected = digest(canonical(manifest))
     if snapshot != expected: raise ValueError('snapshot identity mismatch')
-    tables = {k:{} for k in ('operations','bindings','allocations','blocks','conditions','access_paths','call_contexts','evidence','obligations')}
+    tables = {k:{} for k in ('operations','bindings','allocations','blocks','conditions','access_paths','call_contexts','evidence','obligations','sharing','boundaries')}
     all_ids = set()
     for graph in graphs:
         if graph['snapshot_id'] != snapshot or graph['generation'] != first['generation'] or graph['documents'] != first['documents']:
@@ -139,6 +139,9 @@ def validate_graphs(payload):
         else:
             for key in ('value','index','collection','resource','owner','location','left','right'):
                 if key in predicate: ref(predicate[key],'operations','access_paths','bindings','allocations')
+    for item in tables['sharing'].values():
+        ref(item['operation'],'operations'); ref(item['allocation'],'allocations')
+    for item in tables['boundaries'].values(): ref(item['operation'],'operations')
     for item in tables['obligations'].values():
         ref(item['operation'],'operations'); ref(item['condition'],'conditions'); refs(item['evidence'],'evidence')
         if item['outcome']=='violated_on_demonstrated_path' and not item['evidence']: raise ValueError('demonstrated violation requires evidence')
@@ -146,8 +149,11 @@ def validate_graphs(payload):
         if trace['snapshot_id'] != snapshot or trace['source_hash'] not in {g['source_hash'] for g in graphs}: raise ValueError('mixed trace snapshot')
         for field in ('origin_operations','invalidating_operations','affected_operations'): refs(trace[field],'operations')
         refs(trace['supporting_evidence'],'evidence'); refs(trace['required_conditions'],'conditions')
-        if trace['invalidation_status'] != 'invalidated' and (trace['invalidating_operations'] or trace['invalidations']): raise ValueError('invented invalidation')
+        if trace['invalidation_status'] not in ('invalidated', 'potentially_invalidated') and (trace['invalidating_operations'] or trace['invalidations']): raise ValueError('invented invalidation')
         local_edges(trace)
+        if trace['requirement'] is not None:
+            ref(trace['requirement']['condition'],'conditions')
+            for loc in trace['requirement']['declarations']: location(loc)
         for op in trace['operations']:
             if tables['operations'].get(op['identity']) != op: raise ValueError('inconsistent trace operation')
         for edge in trace['edges']:

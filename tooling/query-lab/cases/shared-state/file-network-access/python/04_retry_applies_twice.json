@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout": "60\n"
+  },
+  "rationale": "60; preserve the workload while correcting completion, atomicity or resource ordering.",
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "original": {
+    "source_hash": "7fca6324fe009f7f983eb9d519cfdcd2e23188a98f2fd0fca07e5c054ed8fb2f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "io_call",
+            "range": [
+              186,
+              200
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              219,
+              249
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              291,
+              305
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              334,
+              348
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              340,
+              347
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              351,
+              357
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "411284ffa1ac2898cc9fa6bcfb8ca6c6568167ac3044231eb04c7976ca5caa3b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "io_call",
+            "range": [
+              343,
+              370
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              389,
+              419
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              461,
+              488
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              517,
+              531
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              523,
+              530
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              534,
+              540
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

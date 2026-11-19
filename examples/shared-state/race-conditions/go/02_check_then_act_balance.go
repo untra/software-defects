@@ -3,13 +3,11 @@ package main
 import (
 	"fmt"
 	"sync"
-	"time"
 )
 
 const startingBalance = 100
 const withdrawal = 100
 const concurrentRequests = 5
-const paymentLatency = 10 * time.Millisecond
 
 type Wallet struct {
 	mu      sync.Mutex
@@ -28,9 +26,10 @@ func (w *Wallet) Debit(amount int) {
 	w.balance -= amount
 }
 
-func withdraw(w *Wallet, amount int) bool {
+func withdraw(w *Wallet, amount int, checked *sync.WaitGroup) bool {
 	if w.Balance() >= amount {
-		time.Sleep(paymentLatency)
+		checked.Done()
+		checked.Wait()
 		w.Debit(amount)
 		return true
 	}
@@ -40,11 +39,13 @@ func withdraw(w *Wallet, amount int) bool {
 func main() {
 	wallet := &Wallet{balance: startingBalance}
 	var wg sync.WaitGroup
+	var checked sync.WaitGroup
+	checked.Add(concurrentRequests)
 	for range concurrentRequests {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			withdraw(wallet, withdrawal)
+			withdraw(wallet, withdrawal, &checked)
 		}()
 	}
 	wg.Wait()

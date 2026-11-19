@@ -9,17 +9,66 @@
         "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              179,
-              182
+              176,
+              185
             ]
           },
           {
-            "name": "callee",
+            "name": "synchronization_call",
+            "range": [
+              191,
+              304
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              209,
+              218
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              256,
+              293
+            ]
+          },
+          {
+            "name": "synchronization_call",
             "range": [
               263,
-              269
+              293
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              309,
+              318
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              350,
+              426
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              390,
+              404
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              394,
+              403
             ]
           }
         ]
@@ -33,31 +82,80 @@
         "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              198,
-              201
+              195,
+              204
             ]
           },
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              278,
-              282
+              210,
+              353
             ]
           },
           {
-            "name": "callee",
+            "name": "synchronization_call",
+            "range": [
+              228,
+              237
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              275,
+              284
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              289,
+              326
+            ]
+          },
+          {
+            "name": "synchronization_call",
             "range": [
               296,
-              302
+              326
             ]
           },
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              334,
-              340
+              331,
+              342
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              358,
+              367
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              399,
+              475
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              439,
+              453
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              443,
+              452
             ]
           }
         ]
@@ -71,5 +169,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. append reads len/cap/pointer and writes back a new header; concurrent appends clobber each other. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": false,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

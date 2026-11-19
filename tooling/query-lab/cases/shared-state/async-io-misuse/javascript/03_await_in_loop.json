@@ -1,27 +1,196 @@
 {
   "schema_version": 1,
   "status": "syntax-candidate",
-  "rationale": "Run the bounded set of independent service calls concurrently. Timing-based execution remains environment-sensitive.",
+  "rationale": "all peers registered: true; preserve the workload while correcting completion, atomicity or resource ordering.",
   "original": {
-    "source_hash": "8aa93b69216546f7e7c56c4952294b768dd3f67924ba10c276e67fa25bd29ea5",
-    "queries": [
-      {
-        "query": "tooling/query-lab/queries/javascript/shared-state/async-io-misuse/signals.scm",
-        "captures": []
-      }
-    ]
-  },
-  "fixed": {
-    "source_hash": "4c9d83a12aed78861283734597608e56328a5197866da6ef131d0d96f484aea1",
+    "source_hash": "f19d30c1827b9ef19a36e9c7388226baf7e377acf3fefec06626977917075cbb",
     "queries": [
       {
         "query": "tooling/query-lab/queries/javascript/shared-state/async-io-misuse/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "async_keyword",
             "range": [
-              318,
-              321
+              147,
+              152
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              181,
+              198
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              202,
+              216
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              221,
+              226
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              279,
+              299
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              285,
+              299
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              304,
+              309
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              343,
+              355
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              359,
+              426
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              430,
+              439
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              443,
+              453
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              457,
+              463
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "d0a4be7069d826b3b0f2ae53a2642c625ac2cdf12feb78c1c8f02be157d434dd",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "async_keyword",
+            "range": [
+              147,
+              152
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              181,
+              198
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              202,
+              216
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              221,
+              226
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              253,
+              291
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              259,
+              291
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              271,
+              290
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              296,
+              301
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              335,
+              347
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              351,
+              418
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              422,
+              431
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              435,
+              445
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              449,
+              455
             ]
           }
         ]
@@ -30,10 +199,15 @@
   },
   "runtime": {
     "status": "supported",
+    "exit_code": 0,
     "stdout_contains": [
-      "round trips: false"
-    ],
-    "exit_code": 0
+      "all peers registered: true"
+    ]
   },
-  "analysis_limit": "These are syntax candidates only. Sequential await in a loop serializes concurrent-safe work. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

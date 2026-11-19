@@ -9,17 +9,73 @@
         "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              269,
-              272
+              237,
+              260
             ]
           },
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              404,
-              407
+              263,
+              275
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              278,
+              317
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              401,
+              410
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              416,
+              466
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              434,
+              443
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              447,
+              460
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              471,
+              480
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              482,
+              535
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              513,
+              525
             ]
           }
         ]
@@ -33,24 +89,80 @@
         "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              254,
-              256
+              241,
+              352
             ]
           },
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              300,
-              303
+              268,
+              291
             ]
           },
           {
-            "name": "callee",
+            "name": "synchronization_call",
             "range": [
-              436,
-              439
+              294,
+              306
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              309,
+              348
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              433,
+              442
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              448,
+              498
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              466,
+              475
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              479,
+              492
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              503,
+              512
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              514,
+              567
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              545,
+              557
             ]
           }
         ]
@@ -64,5 +176,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Unsynchronized check-then-set on a shared global; use sync.Once. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": false,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

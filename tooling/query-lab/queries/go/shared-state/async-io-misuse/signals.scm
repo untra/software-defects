@@ -1,6 +1,2 @@
-(call_expression
-  function: [
-    (identifier) @callee
-    (selector_expression field: (field_identifier) @callee)
-  ]
-  (#any-of? @callee "save" "make"))
+(call_expression) @task_call
+(go_statement "go" @launch_keyword)

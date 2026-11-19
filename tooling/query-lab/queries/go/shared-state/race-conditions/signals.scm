@@ -1,6 +1,4 @@
-(call_expression
-  function: [
-    (identifier) @callee
-    (selector_expression field: (field_identifier) @callee)
-  ]
-  (#any-of? @callee "Lock" "Unlock" "Add" "Do" "append"))
+(call_expression) @synchronization_call
+(assignment_statement) @shared_write
+(inc_statement) @shared_write
+(dec_statement) @shared_write

@@ -2,6 +2,7 @@ const assert = require('node:assert/strict');
 const path = require('node:path');
 const vscode = require('vscode');
 const registry = require('../../languages.json');
+const ruleCatalog = require('../../../../queries/catalog.json');
 const TIMEOUT_MS = 15000;
 const POLL_MS = 50;
 const ACTIVATION_SETTLE_MS = 500;
@@ -34,8 +35,13 @@ exports.run = async () => {
     const editor = await vscode.window.showTextDocument(document, { preview: false, viewColumn: vscode.ViewColumn.Beside });
     await until(() => api.serverRunning() && api.applied(document.uri.toString()));
     const snapshot = (await api.snapshot(document.uri.toString())).audit;
+    const catalog = await api.rules();
+    assert.deepEqual(catalog.languages, [language]);
+    const expectedCells = ruleCatalog.rules.reduce((total, rule) => total + rule.mechanisms.length, 0);
+    assert.equal(catalog.rules.length, expectedCells, `${language}: every rule mechanism needs a bundled cell`);
+    assert.ok(catalog.rules.every(cell => cell.language === language && cell.status && (cell.status === 'supported' || cell.reason)));
     const labels = new Set(snapshot.annotations.map(annotation => annotation.label));
-    for (const label of ['Impure', 'Mutacious', 'Volatile', 'Unstructured', 'Async', 'Shared', 'Untyped']) {
+    for (const label of ['Impure', 'Mutacious', 'Volatile', 'Unstructured', 'Async', 'Shared', 'Lifecycle', 'Untyped']) {
       assert.ok(labels.has(label), `${language}: missing ${label}`);
     }
     if (['typescript', 'javascript', 'python'].includes(language)) {
@@ -46,7 +52,7 @@ exports.run = async () => {
     const applied = api.applied(document.uri.toString());
     assert.ok(applied.triggers > 0);
     assert.ok(applied.labels.length > 0);
-    const keys = applied.labels.map(a => `${a.category}:${a.position.line}`);
+    const keys = applied.labels.map(a => `${a.category}:${a.position.line}:${['shared-state', 'compound-defects'].includes(a.category) ? a.label : ''}`);
     assert.equal(new Set(keys).size, keys.length);
     for (const annotation of applied.labels) assert.ok(annotation.findings.every(index => index < snapshot.findings.length));
     const configuration = vscode.workspace.getConfiguration(`stateLens.${language}`);

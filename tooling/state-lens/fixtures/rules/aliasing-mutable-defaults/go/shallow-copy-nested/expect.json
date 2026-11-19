@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "roles": {
+    "failing": {
+      "findings": [
+        {
+          "trigger": "admin.Settings[\"darkMode\"]",
+          "origins": [
+            "map[string]bool{\"darkMode\": false}",
+            {
+              "text": "base",
+              "occurrence": 3
+            }
+          ],
+          "affected_uses": [
+            "base.Settings[\"darkMode\"]"
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ],
+      "repair": {
+        "applicability": "advisory"
+      }
+    },
+    "fixed": {
+      "findings": []
+    },
+    "intentional": {
+      "findings": [
+        {
+          "trigger": "replica.Metrics[\"hits\"]",
+          "origins": [
+            "map[string]int{\"hits\": 0}",
+            {
+              "text": "primary",
+              "occurrence": 3
+            }
+          ],
+          "affected_uses": [
+            "primary.Metrics[\"hits\"]"
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ],
+      "repair": {
+        "applicability": "advisory"
+      }
+    },
+    "independent": {
+      "findings": []
+    },
+    "breaker": {
+      "findings": []
+    }
+  }
+}

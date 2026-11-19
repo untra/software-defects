@@ -51,6 +51,7 @@ impl Server {
             result["result"]["capabilities"]["experimental"]["stateLens"]["stateAnnotations"],
             2
         );
+        assert_eq!(result["result"]["capabilities"]["experimental"]["stateLens"]["sharedState"], 1);
         server.notify("initialized", json!({}));
         server
     }
@@ -394,4 +395,168 @@ fn check_configuration_removes_and_restores_findings() {
         );
     }
     server.stop();
+}
+
+const ALIAS_FIXTURE: &str =
+    "fixtures/rules/aliasing-mutable-defaults/typescript/shallow-copy-nested/failing.ts";
+const ALIAS_CODE: &str = "typescript.mutated-state.aliasing-mutable-defaults";
+
+fn alias_fixture() -> (String, String) {
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(ALIAS_FIXTURE);
+    (
+        url::Url::from_file_path(&path).unwrap().to_string(),
+        std::fs::read_to_string(path).unwrap(),
+    )
+}
+
+#[test]
+fn alias_diagnostic_carries_sharing_write_and_observed_read_roles() {
+    let (uri, source) = alias_fixture();
+    let mut server = Server::start();
+    server.notify(
+        "textDocument/didOpen",
+        json!({"textDocument":{"uri":uri,"languageId":"typescript","version":1,"text":source}}),
+    );
+    let published = server.published(&uri);
+    let diagnostic = published["diagnostics"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|d| d["code"] == ALIAS_CODE && d["data"]["mechanism"] == "shallow-copy-nested")
+        .expect("alias diagnostic");
+    assert_eq!(
+        diagnostic["severity"], 2,
+        "declared readonly requirement promotes to Warning"
+    );
+    let roles: Vec<&str> = diagnostic["relatedInformation"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|r| r["message"].as_str().unwrap().split(':').next().unwrap())
+        .collect();
+    for role in ["sharing origin", "write", "observed read"] {
+        assert!(roles.contains(&role), "{role} missing from {roles:?}");
+    }
+    let trace = &diagnostic["data"]["state_trace"];
+    assert_eq!(trace["invalidation_status"], "invalidated");
+    assert_eq!(trace["requirement"]["kind"], "declared-readonly");
+    let start = position(&source, source.find("testConfig.db.host").unwrap());
+    let hover = server.request(
+        "textDocument/hover",
+        json!({"textDocument":{"uri":uri},"position":start}),
+    );
+    let text = hover["result"]["contents"]["value"].as_str().unwrap();
+    assert!(text.contains("Object-identity path"), "{text}");
+    let fixed = source.replace(
+        "{ ...prodConfig, name: \"test\" }",
+        "{ ...prodConfig, name: \"test\", db: { ...prodConfig.db } }",
+    );
+    server.notify(
+        "textDocument/didChange",
+        json!({"textDocument":{"uri":uri,"version":2},"contentChanges":[{"text":fixed}]}),
+    );
+    let published = server.published(&uri);
+    assert_eq!(published["version"], 2);
+    assert!(published["diagnostics"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .all(|d| d["data"]["mechanism"] != "shallow-copy-nested"));
+    server.stop();
+}
+
+#[test]
+fn ranges_expose_discontinuous_alias_blast_radius_matching_cli() {
+    let (uri, source) = alias_fixture();
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(ALIAS_FIXTURE);
+    let output = Command::new(env!("CARGO_BIN_EXE_state-lens"))
+        .args(["scan", path.to_str().unwrap()])
+        .output()
+        .unwrap();
+    let cli: Value = serde_json::from_slice(&output.stdout).unwrap();
+    let mut server = Server::start();
+    server.notify(
+        "textDocument/didOpen",
+        json!({"textDocument":{"uri":uri,"languageId":"typescript","version":1,"text":source}}),
+    );
+    let report = server.request("stateLens/ranges", json!({"textDocument":{"uri":uri}}));
+    let entry = report["result"]["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|f| f["finding"]["resolution"] == "object-identity")
+        .unwrap();
+    let blast = entry["blastRadius"].as_array().unwrap();
+    assert!(
+        blast.len() >= 3,
+        "origin, write and affected use stay separate: {blast:?}"
+    );
+    let cli_finding = cli["documents"][0]["findings"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|f| f["resolution"] == "object-identity")
+        .unwrap();
+    let normalize = |f: &Value| {
+        let snapshot = f["state_trace"]["snapshot_id"]
+            .as_str()
+            .unwrap()
+            .to_string();
+        serde_json::to_string(f)
+            .unwrap()
+            .replace(&snapshot, "SNAPSHOT")
+    };
+    assert_eq!(normalize(cli_finding), normalize(&entry["finding"]));
+    server.stop();
+}
+
+#[test]
+fn rule_catalog_lists_every_language_cell_with_reasons() {
+    let mut server = Server::start();
+    let response = server.request("stateLens/rules", json!({}));
+    let rows = response["result"]["rules"].as_array().unwrap();
+    let rust_borrow = rows
+        .iter()
+        .find(|r| {
+            r["defect"] == "aliasing-mutable-defaults"
+                && r["mechanism"] == "repeated-element"
+                && r["language"] == "rust"
+        })
+        .expect("rust cell is defined even though the language prevents the defect");
+    assert_eq!(rust_borrow["status"], "not-applicable");
+    assert!(rust_borrow["guarantee"]
+        .as_str()
+        .unwrap()
+        .contains("Borrow checker"));
+    let typescript_types = rows
+        .iter()
+        .find(|r| {
+            r["defect"] == "type-errors"
+                && r["mechanism"] == "undeclared-member-access"
+                && r["language"] == "typescript"
+        })
+        .unwrap();
+    assert_eq!(typescript_types["status"], "not-applicable");
+    let javascript_types = rows
+        .iter()
+        .find(|r| {
+            r["defect"] == "type-errors"
+                && r["mechanism"] == "undeclared-member-access"
+                && r["language"] == "javascript"
+        })
+        .unwrap();
+    assert_ne!(javascript_types["status"], "not-applicable");
+    server.stop();
+}
+
+#[test]
+fn shared_state_capability_and_diagnostic_evidence_are_additive() {
+    let mut server = Server::start();
+    let uri = "file:///state-lens-tests/shared.ts";
+    server.notify("textDocument/didOpen", json!({"textDocument":{"uri":uri,"languageId":"typescript","version":1,"text":"const state = { count: 2 }; async function buy() { const saved = state.count; await persist(); state.count = saved - 1; }"}}));
+    let diagnostics = server.published(uri);
+    let finding = diagnostics["diagnostics"].as_array().unwrap().iter().find(|f| f["data"]["shared_state"]["relationship"] == "read-suspend-write").unwrap();
+    assert_eq!(finding["severity"], 3);
+    assert_eq!(finding["data"]["shared_state"]["source_uri"], uri);
+    assert!(finding["relatedInformation"].as_array().unwrap().len() >= 3);
 }

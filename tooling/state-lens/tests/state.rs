@@ -280,3 +280,69 @@ fn dependency_edits_invalidate_snapshot_qualified_evidence() {
         serde_json::to_value(engine.analyze()).unwrap()
     );
 }
+
+fn alias_report() -> state_lens::model::DocumentReport {
+    let mut engine = Engine::new().unwrap();
+    engine
+        .set(
+            "file:///alias.ts".into(),
+            "typescript",
+            "const prod = { db: { host: 'a' } }; const test = { ...prod }; test.db.host = 'b'; console.log(prod.db.host);".into(),
+            Some(1),
+        )
+        .unwrap();
+    engine.analyze().documents.into_iter().next().unwrap()
+}
+
+#[test]
+fn object_identity_collections_are_snapshot_qualified_and_validated() {
+    let report = alias_report();
+    let graph = report.state_graph.as_ref().unwrap();
+    graph.validate().unwrap();
+    assert!(!graph.sharing.is_empty());
+    assert!(!graph.access_paths.is_empty());
+    let finding = report
+        .findings
+        .iter()
+        .find(|f| f.resolution == "object-identity")
+        .unwrap();
+    let trace = finding.state_trace.as_ref().unwrap();
+    trace.validate(graph).unwrap();
+    assert_eq!(
+        trace.invalidation_status,
+        state_lens::state::InvalidationStatus::PotentiallyInvalidated
+    );
+    assert!(trace.requirement.is_none());
+    assert!(graph
+        .edges
+        .iter()
+        .any(|e| e.relationship == Relationship::HeapDependency
+            && e.certainty == Some(state_lens::state::Certainty::Definite)));
+
+    let mut dangling = graph.clone();
+    dangling.sharing[0].allocation = format!("{}:missing", graph.snapshot_id);
+    assert!(dangling.validate().unwrap_err().contains("dangling"));
+
+    let mut foreign = graph.clone();
+    foreign
+        .boundaries
+        .push(state_lens::state::UncertaintyBoundary {
+            id: "other-snapshot:boundary".into(),
+            operation: graph.operations[0].identity.clone(),
+            kind: "unknown-call".into(),
+            reason: "test".into(),
+        });
+    assert!(foreign.validate().is_err());
+
+    let mut invented = trace.clone();
+    invented.invalidation_status = state_lens::state::InvalidationStatus::Unknown;
+    assert!(invented.validate(graph).is_err());
+
+    let mut requirement = trace.clone();
+    requirement.requirement = Some(state_lens::state::RequirementRef {
+        condition: "missing".into(),
+        kind: "declared-readonly".into(),
+        declarations: vec![],
+    });
+    assert!(requirement.validate(graph).is_err());
+}

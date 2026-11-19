@@ -9,24 +9,80 @@
         "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              239,
-              245
+              236,
+              251
             ]
           },
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              294,
-              299
+              292,
+              301
             ]
           },
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              465,
-              474
+              310,
+              328
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              310,
+              340
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              369,
+              395
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              403,
+              420
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              430,
+              460
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              462,
+              525
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              534,
+              599
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              612,
+              629
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              631,
+              696
             ]
           }
         ]
@@ -40,45 +96,150 @@
         "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              304,
-              314
+              239,
+              256
             ]
           },
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              457,
-              462
+              301,
+              347
             ]
           },
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              527,
-              532
+              315,
+              333
             ]
           },
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              589,
-              594
+              388,
+              407
             ]
           },
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              626,
-              631
+              398,
+              406
             ]
           },
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              822,
-              831
+              419,
+              438
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              455,
+              464
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              495,
+              508
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              525,
+              534
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              562,
+              570
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              587,
+              596
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              624,
+              633
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              672,
+              697
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              682,
+              690
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              726,
+              752
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              760,
+              777
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              787,
+              817
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              819,
+              882
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              891,
+              956
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              969,
+              986
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              988,
+              1053
             ]
           }
         ]
@@ -92,5 +253,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Non-atomic in-place write; write to temp and rename. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

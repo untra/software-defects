@@ -151,6 +151,8 @@ class NativeTests(unittest.TestCase):
                 with self.subTest(rule=rule['id']):
                     lang = rule['language']
                     query = lab.ROOT / rule['query']
+                    if rule['family'] == 'shared-state' and rule['defect'] in ('async-io-misuse', 'race-conditions', 'file-network-access'):
+                        continue  # Cross-language structural controls live in test_shared_state.py.
                     if rule['defect'] == 'volatile-properties':
                         continue  # Dedicated controls also assert receiver captures.
                     if rule['defect'] == 'divide-by-zero':

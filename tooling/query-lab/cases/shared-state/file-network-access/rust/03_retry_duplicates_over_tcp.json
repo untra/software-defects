@@ -9,24 +9,241 @@
         "query": "tooling/query-lab/queries/rust/shared-state/file-network-access/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              537,
-              544
+              210,
+              235
             ]
           },
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              622,
-              631
+              272,
+              298
             ]
           },
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              1610,
-              1619
+              356,
+              382
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              526,
+              550
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              561,
+              604
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              585,
+              603
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              615,
+              649
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              700,
+              729
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              761,
+              809
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              764,
+              795
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              764,
+              808
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              844,
+              851
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              873,
+              895
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              877,
+              894
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              930,
+              962
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              930,
+              971
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              988,
+              1009
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              988,
+              1018
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              988,
+              1030
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1049,
+              1078
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1058,
+              1077
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1098,
+              1117
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1123,
+              1678
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1169,
+              1188
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1220,
+              1235
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1263,
+              1283
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1297,
+              1660
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1385,
+              1416
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1385,
+              1424
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1450,
+              1488
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1520,
+              1551
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1603,
+              1626
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1697,
+              1715
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1721,
+              1742
             ]
           }
         ]
@@ -40,24 +257,311 @@
         "query": "tooling/query-lab/queries/rust/shared-state/file-network-access/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              630,
-              637
+              283,
+              308
             ]
           },
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              715,
-              724
+              345,
+              371
             ]
           },
           {
-            "name": "callee",
+            "name": "io_call",
             "range": [
-              1955,
-              1964
+              429,
+              455
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              619,
+              643
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              654,
+              697
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              678,
+              696
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              708,
+              776
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              725,
+              775
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              827,
+              856
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              888,
+              936
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              891,
+              922
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              891,
+              935
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              971,
+              978
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1000,
+              1022
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1004,
+              1021
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1057,
+              1089
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1057,
+              1098
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1115,
+              1136
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1115,
+              1145
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1115,
+              1157
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1176,
+              1205
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1185,
+              1204
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1225,
+              1244
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1266,
+              1302
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1275,
+              1301
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1286,
+              1300
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1308,
+              2023
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1354,
+              1373
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1405,
+              1420
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1448,
+              1468
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1498,
+              1520
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1534,
+              2005
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1592,
+              1605
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1626,
+              1653
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1626,
+              1677
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1626,
+              1685
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1720,
+              1736
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1720,
+              1745
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1720,
+              1761
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1795,
+              1833
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1865,
+              1896
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1948,
+              1971
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              2042,
+              2071
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              2077,
+              2098
             ]
           }
         ]
@@ -71,5 +575,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Retry without idempotency over an ambiguous failure. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": false,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

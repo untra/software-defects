@@ -925,6 +925,285 @@
         "denominator",
         "division"
       ]
+    },
+    {
+      "id": "go.shared-state.async-io-misuse",
+      "language": "go",
+      "family": "shared-state",
+      "defect": "async-io-misuse",
+      "query": "go/shared-state/async-io-misuse/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Captures are structural inputs. Binding and API analysis filters operations; unknown receivers and escaping lifetimes remain unresolved. Static sites are not runtime concurrency counts.",
+      "related_cwes": [
+        "CWE-664",
+        "CWE-252"
+      ],
+      "cwe_relationship": "Taxonomy reference, not a diagnosed vulnerability.",
+      "captures": [
+        "task_call",
+        "launch_keyword"
+      ]
+    },
+    {
+      "id": "go.shared-state.race-conditions",
+      "language": "go",
+      "family": "shared-state",
+      "defect": "race-conditions",
+      "query": "go/shared-state/race-conditions/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Captures are structural inputs. Binding and API analysis filters operations; unknown receivers and escaping lifetimes remain unresolved. Static sites are not runtime concurrency counts.",
+      "related_cwes": [
+        "CWE-362"
+      ],
+      "cwe_relationship": "Taxonomy reference, not a diagnosed vulnerability.",
+      "captures": [
+        "synchronization_call",
+        "shared_write"
+      ]
+    },
+    {
+      "id": "go.shared-state.file-network-access",
+      "language": "go",
+      "family": "shared-state",
+      "defect": "file-network-access",
+      "query": "go/shared-state/file-network-access/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Captures are structural inputs. Binding and API analysis filters operations; unknown receivers and escaping lifetimes remain unresolved. Static sites are not runtime concurrency counts.",
+      "related_cwes": [
+        "CWE-367",
+        "CWE-252"
+      ],
+      "cwe_relationship": "Taxonomy reference, not a diagnosed vulnerability.",
+      "captures": [
+        "io_call"
+      ]
+    },
+    {
+      "id": "rust.shared-state.async-io-misuse",
+      "language": "rust",
+      "family": "shared-state",
+      "defect": "async-io-misuse",
+      "query": "rust/shared-state/async-io-misuse/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Captures are structural inputs. Binding and API analysis filters operations; unknown receivers and escaping lifetimes remain unresolved. Static sites are not runtime concurrency counts.",
+      "related_cwes": [
+        "CWE-664",
+        "CWE-252"
+      ],
+      "cwe_relationship": "Taxonomy reference, not a diagnosed vulnerability.",
+      "captures": [
+        "task_call",
+        "async_keyword",
+        "suspension"
+      ]
+    },
+    {
+      "id": "rust.shared-state.race-conditions",
+      "language": "rust",
+      "family": "shared-state",
+      "defect": "race-conditions",
+      "query": "rust/shared-state/race-conditions/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Captures are structural inputs. Binding and API analysis filters operations; unknown receivers and escaping lifetimes remain unresolved. Static sites are not runtime concurrency counts.",
+      "related_cwes": [
+        "CWE-362"
+      ],
+      "cwe_relationship": "Taxonomy reference, not a diagnosed vulnerability.",
+      "captures": [
+        "synchronization_call",
+        "shared_write"
+      ]
+    },
+    {
+      "id": "rust.shared-state.file-network-access",
+      "language": "rust",
+      "family": "shared-state",
+      "defect": "file-network-access",
+      "query": "rust/shared-state/file-network-access/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Captures are structural inputs. Binding and API analysis filters operations; unknown receivers and escaping lifetimes remain unresolved. Static sites are not runtime concurrency counts.",
+      "related_cwes": [
+        "CWE-367",
+        "CWE-252"
+      ],
+      "cwe_relationship": "Taxonomy reference, not a diagnosed vulnerability.",
+      "captures": [
+        "io_call"
+      ]
+    },
+    {
+      "id": "javascript.shared-state.async-io-misuse",
+      "language": "javascript",
+      "family": "shared-state",
+      "defect": "async-io-misuse",
+      "query": "javascript/shared-state/async-io-misuse/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Captures are structural inputs. Binding and API analysis filters operations; unknown receivers and escaping lifetimes remain unresolved. Static sites are not runtime concurrency counts.",
+      "related_cwes": [
+        "CWE-664",
+        "CWE-252"
+      ],
+      "cwe_relationship": "Taxonomy reference, not a diagnosed vulnerability.",
+      "captures": [
+        "task_call",
+        "async_keyword",
+        "suspension"
+      ]
+    },
+    {
+      "id": "javascript.shared-state.race-conditions",
+      "language": "javascript",
+      "family": "shared-state",
+      "defect": "race-conditions",
+      "query": "javascript/shared-state/race-conditions/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Captures are structural inputs. Binding and API analysis filters operations; unknown receivers and escaping lifetimes remain unresolved. Static sites are not runtime concurrency counts.",
+      "related_cwes": [
+        "CWE-362"
+      ],
+      "cwe_relationship": "Taxonomy reference, not a diagnosed vulnerability.",
+      "captures": [
+        "synchronization_call",
+        "shared_write"
+      ]
+    },
+    {
+      "id": "javascript.shared-state.file-network-access",
+      "language": "javascript",
+      "family": "shared-state",
+      "defect": "file-network-access",
+      "query": "javascript/shared-state/file-network-access/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Captures are structural inputs. Binding and API analysis filters operations; unknown receivers and escaping lifetimes remain unresolved. Static sites are not runtime concurrency counts.",
+      "related_cwes": [
+        "CWE-367",
+        "CWE-252"
+      ],
+      "cwe_relationship": "Taxonomy reference, not a diagnosed vulnerability.",
+      "captures": [
+        "io_call"
+      ]
+    },
+    {
+      "id": "typescript.shared-state.async-io-misuse",
+      "language": "typescript",
+      "family": "shared-state",
+      "defect": "async-io-misuse",
+      "query": "typescript/shared-state/async-io-misuse/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Captures are structural inputs. Binding and API analysis filters operations; unknown receivers and escaping lifetimes remain unresolved. Static sites are not runtime concurrency counts.",
+      "related_cwes": [
+        "CWE-664",
+        "CWE-252"
+      ],
+      "cwe_relationship": "Taxonomy reference, not a diagnosed vulnerability.",
+      "captures": [
+        "task_call",
+        "async_keyword",
+        "suspension"
+      ]
+    },
+    {
+      "id": "typescript.shared-state.race-conditions",
+      "language": "typescript",
+      "family": "shared-state",
+      "defect": "race-conditions",
+      "query": "typescript/shared-state/race-conditions/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Captures are structural inputs. Binding and API analysis filters operations; unknown receivers and escaping lifetimes remain unresolved. Static sites are not runtime concurrency counts.",
+      "related_cwes": [
+        "CWE-362"
+      ],
+      "cwe_relationship": "Taxonomy reference, not a diagnosed vulnerability.",
+      "captures": [
+        "synchronization_call",
+        "shared_write"
+      ]
+    },
+    {
+      "id": "typescript.shared-state.file-network-access",
+      "language": "typescript",
+      "family": "shared-state",
+      "defect": "file-network-access",
+      "query": "typescript/shared-state/file-network-access/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Captures are structural inputs. Binding and API analysis filters operations; unknown receivers and escaping lifetimes remain unresolved. Static sites are not runtime concurrency counts.",
+      "related_cwes": [
+        "CWE-367",
+        "CWE-252"
+      ],
+      "cwe_relationship": "Taxonomy reference, not a diagnosed vulnerability.",
+      "captures": [
+        "io_call"
+      ]
+    },
+    {
+      "id": "python.shared-state.async-io-misuse",
+      "language": "python",
+      "family": "shared-state",
+      "defect": "async-io-misuse",
+      "query": "python/shared-state/async-io-misuse/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Captures are structural inputs. Binding and API analysis filters operations; unknown receivers and escaping lifetimes remain unresolved. Static sites are not runtime concurrency counts.",
+      "related_cwes": [
+        "CWE-664",
+        "CWE-252"
+      ],
+      "cwe_relationship": "Taxonomy reference, not a diagnosed vulnerability.",
+      "captures": [
+        "task_call",
+        "async_keyword",
+        "suspension"
+      ]
+    },
+    {
+      "id": "python.shared-state.race-conditions",
+      "language": "python",
+      "family": "shared-state",
+      "defect": "race-conditions",
+      "query": "python/shared-state/race-conditions/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Captures are structural inputs. Binding and API analysis filters operations; unknown receivers and escaping lifetimes remain unresolved. Static sites are not runtime concurrency counts.",
+      "related_cwes": [
+        "CWE-362"
+      ],
+      "cwe_relationship": "Taxonomy reference, not a diagnosed vulnerability.",
+      "captures": [
+        "synchronization_call",
+        "shared_write"
+      ]
+    },
+    {
+      "id": "python.shared-state.file-network-access",
+      "language": "python",
+      "family": "shared-state",
+      "defect": "file-network-access",
+      "query": "python/shared-state/file-network-access/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Captures are structural inputs. Binding and API analysis filters operations; unknown receivers and escaping lifetimes remain unresolved. Static sites are not runtime concurrency counts.",
+      "related_cwes": [
+        "CWE-367",
+        "CWE-252"
+      ],
+      "cwe_relationship": "Taxonomy reference, not a diagnosed vulnerability.",
+      "captures": [
+        "io_call"
+      ]
     }
   ]
 }

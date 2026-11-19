@@ -65,3 +65,17 @@ smoke-audit: smoke
 
 smoke-update: server
 	python3 $(SERVER_DIR)/scripts/smoke.py --update
+
+QUERY_LAB_DIR := tooling/query-lab
+
+.PHONY: smoke-check query-lab-test ci
+
+smoke-check: server
+	python3 $(SERVER_DIR)/scripts/smoke.py --report $(SMOKE_REPORT)/protocol
+
+query-lab-test:
+	python3 -m pip install -r $(QUERY_LAB_DIR)/requirements.txt
+	python3 $(QUERY_LAB_DIR)/query_lab.py setup
+	python3 -m unittest discover -s $(QUERY_LAB_DIR) -p 'test_*.py'
+
+ci: test smoke-check query-lab-test

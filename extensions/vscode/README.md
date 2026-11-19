@@ -32,6 +32,10 @@ Open a `.go`, `.rs`, `.ts`, `.js`, or `.py` file. Sources use dotted borders and
 
 Hover a source for its colored defect title, short explanation, **Guide**, and **Evidence**. Evidence opens the selected finding in the Explorer with origin, effect, resolution, taxonomy, and navigable source locations and call paths. File paths and byte offsets appear in Evidence rather than the hover.
 
+Aliasing findings (`object-identity` resolution) add **Mechanism** and **Requirement** rows. Their Origin, Invalidation, Affected use and Requirement locations are navigable. Their decorations stay discontinuous: sharing origin, write and each observed read are separate spans. Without a declared requirement in the source (TS `Readonly` or `as const`, `Object.freeze`, Python read-only annotations), the finding is an Information-level relationship, not a confirmed defect.
+
+**State Lens: Show Rule Coverage** lists every bundled rule and mechanism for this language. Each entry shows its status (`supported`, `candidate-only`, `syntax-candidate`, `planned`, `not-applicable`) and the reason, including the language guarantee when the language itself prevents a defect.
+
 Function declaration markers use the category color. A function can have more than one category. Inlay hints use the server's annotations:
 
 | Category | Function | Property or binding | Code segment |
@@ -151,3 +155,16 @@ do not establish a compound. Standard LSP clients still receive textual inlay hi
 Each language package exposes `stateLens.<language>.disabledChecks` (default `[]`).
 Use base defect IDs such as `var-let-mut` or `divide-by-zero`. Disabling a check also
 removes compounds that require it. No restart is required.
+
+### Shared state evidence
+
+The shared-state lens preserves separate `Async`, `Shared`, and `Lifecycle` annotations,
+including multiple labels on the same line. Hovers report static declaration, launch and
+suspension sites, related execution scopes, lifecycle events and unresolved assumptions.
+Dynamic fan-out is not presented as a runtime task bound. Correctly synchronized code can
+retain effect labels. Only connected mutation/shared-state evidence produces a compound
+candidate; visual overlap alone does not prove a defect.
+
+The additive `sharedState: 1` server capability identifies the optional `shared_state`
+finding payload. Event evidence retains its originating URI and source hash through call
+propagation. Existing document-version and request-epoch guards still reject stale snapshots.

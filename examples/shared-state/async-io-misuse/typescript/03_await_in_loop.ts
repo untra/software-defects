@@ -1,24 +1,21 @@
-const SERVICE_LATENCY_MS = 30;
-const SERVICES = ["billing", "shipping", "inventory", "reviews", "recommendations"];
+const PEERS = ["billing", "shipping"];
+const started = new Set<string>();
+let release: () => void = () => {};
+const released = new Promise<void>((resolve) => { release = resolve; });
 
-async function fetchWidget(service: string): Promise<string> {
-  await new Promise((resolve) => setTimeout(resolve, SERVICE_LATENCY_MS));
-  return `${service} widget`;
+async function register(peer: string) {
+  started.add(peer);
+  await released;
 }
 
-async function renderHomepage(): Promise<string[]> {
-  const widgets: string[] = [];
-  for (const service of SERVICES) {
-    widgets.push(await fetchWidget(service));
-  }
-  return widgets;
+async function coordinate() {
+  for (const peer of PEERS) await register(peer);
 }
 
 async function main() {
-  const start = Date.now();
-  await renderHomepage();
-  const elapsed = Date.now() - start;
-  console.log("homepage took longer than", SERVICES.length - 1, "round trips:", elapsed >= SERVICE_LATENCY_MS * (SERVICES.length - 1));
+  const work = coordinate();
+  console.log("all peers registered:", started.size === PEERS.length);
+  release();
+  await work;
 }
-
 main();

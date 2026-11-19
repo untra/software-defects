@@ -40,6 +40,35 @@ fn main() -> Result<()> {
             println!("{}", serde_json::to_string_pretty(&engine.analyze())?);
             Ok(())
         }
+        Some("repair-check") => {
+            let path = Path::new(
+                args.get(2)
+                    .ok_or_else(|| anyhow::anyhow!("expected source path"))?,
+            );
+            let language = state_lens::analysis::language_name(path)
+                .ok_or_else(|| anyhow::anyhow!("unsupported language"))?;
+            let source = std::fs::read_to_string(path)?;
+            let option = |name: &str| {
+                args.iter()
+                    .position(|a| a == name)
+                    .and_then(|i| args.get(i + 1))
+                    .cloned()
+            };
+            let finding = match option("--finding") {
+                Some(index) => index.parse()?,
+                None => state_lens::repair::first_finding(&source, language)
+                    .ok_or_else(|| anyhow::anyhow!("no object-identity finding"))?,
+            };
+            let result = state_lens::repair::check(
+                &source,
+                language,
+                &path.display().to_string(),
+                finding,
+                option("--hash").as_deref(),
+            );
+            println!("{}", serde_json::to_string_pretty(&result)?);
+            Ok(())
+        }
         Some("score") => {
             let scores = corpus::score(Path::new(
                 args.get(2)
@@ -56,7 +85,7 @@ fn main() -> Result<()> {
         }
         _ => {
             eprintln!(
-                "Usage: state-lens scan [PATH] | semantic-facts PATH | check-queries | score EXPECTATIONS.json | serve"
+                "Usage: state-lens scan [PATH] | semantic-facts PATH | repair-check PATH [--finding N] [--hash SHA256] | check-queries | score EXPECTATIONS.json | serve"
             );
             Ok(())
         }

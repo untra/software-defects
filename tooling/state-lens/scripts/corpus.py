@@ -12,7 +12,9 @@ ROOT = Path(__file__).resolve().parents[3]
 EXAMPLES = ROOT / "examples"
 CURRENT_FAMILY = "mutated-state"
 DEFAULT_BINARY = ROOT / "tooling/state-lens/target/debug/state-lens"
-EXTENSIONS = {"go": ".go", "rust": ".rs", "javascript": ".js", "typescript": ".ts"}
+EXTENSIONS = {"go": ".go", "rust": ".rs", "javascript": ".js", "typescript": ".ts", "python": ".py"}
+ANALYSIS_RESOLUTIONS = {"binding-analysis", "modeled-api", "resolved-call"}
+OBJECT_IDENTITY = "object-identity"
 
 
 def cases():
@@ -32,8 +34,13 @@ def inventory(binary):
         document = report["documents"][0]
         signals = [f for f in document["findings"] if f["defect"] == manifest["defect"]]
         status = "unsupported"
+        rationale = "No category-specific signal currently matches; requires additional queries or semantic/domain analysis."
         if signals:
-            status = "query-plus-analysis" if any(f["resolution"] in {"binding-analysis", "modeled-api", "resolved-call"} for f in signals) else "query-only"
+            status = "query-plus-analysis" if any(f["resolution"] in ANALYSIS_RESOLUTIONS for f in signals) else "query-only"
+            rationale = "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario."
+        if any(f["resolution"] == OBJECT_IDENTITY for f in signals):
+            status = "semantic-relationship"
+            rationale = "Object-identity relationship (sharing origin, write, observed read) established from the shared graph; isolation intent is not known, so bug detection remains unsupported."
         rows.append({
             "file": str(source.relative_to(ROOT)),
             "family": manifest["family"], "defect": manifest["defect"], "language": example["language"],
@@ -42,7 +49,8 @@ def inventory(binary):
             "observed_rule_ids": sorted({f["rule_id"] for f in signals}),
             "trigger_count": len(signals),
             "bug_detection": "unsupported",
-            "rationale": "Observed mechanism candidates only; no validated bug-pattern rule exists for this scenario." if signals else "No category-specific signal currently matches; requires additional queries or semantic/domain analysis.",
+            "mechanisms": sorted({f["mechanism"] for f in signals if f.get("mechanism")}),
+            "rationale": rationale,
             "parse_errors": document["parse_errors"],
             "split": "development",
         })

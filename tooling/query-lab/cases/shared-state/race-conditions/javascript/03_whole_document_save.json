@@ -7,7 +7,113 @@
     "queries": [
       {
         "query": "tooling/query-lab/queries/javascript/shared-state/race-conditions/signals.scm",
-        "captures": []
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              100,
+              122
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              159,
+              165
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              238,
+              244
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              250,
+              268
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              323,
+              329
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              335,
+              354
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              366,
+              375
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              429,
+              435
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              441,
+              459
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              471,
+              480
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              518,
+              556
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              531,
+              542
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              544,
+              554
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              562,
+              587
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              591,
+              597
+            ]
+          }
+        ]
       }
     ]
   },
@@ -16,7 +122,113 @@
     "queries": [
       {
         "query": "tooling/query-lab/queries/javascript/shared-state/race-conditions/signals.scm",
-        "captures": []
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              100,
+              122
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              159,
+              165
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              238,
+              244
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              250,
+              292
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              347,
+              353
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              359,
+              378
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              390,
+              416
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              470,
+              476
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              482,
+              500
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              512,
+              536
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              574,
+              612
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              587,
+              598
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              600,
+              610
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              618,
+              643
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              647,
+              653
+            ]
+          }
+        ]
       }
     ]
   },
@@ -27,5 +239,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Last-write-wins without a version check or field-level patch (lost update). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

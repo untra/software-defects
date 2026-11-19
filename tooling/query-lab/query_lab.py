@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import collections
+import copy
 import fcntl
 import hashlib
 import io
@@ -35,6 +36,7 @@ COMMAND_TIMEOUT = 30
 BUILD_TIMEOUT = 600
 RUNTIME_TIMEOUT = 15
 SIDECARS = HERE / "cases"
+TOKIO_RUNTIME = HERE / "runtimes/tokio"
 EXIT_MISMATCH = 1
 EXIT_ERROR = 2
 
@@ -140,6 +142,7 @@ def config():
 
 
 def setup_unlocked():
+    checked(["cargo", "fetch", "--locked", "--manifest-path", TOKIO_RUNTIME / "Cargo.toml"], timeout=BUILD_TIMEOUT)
     CACHE.mkdir(parents=True, exist_ok=True)
     try:
         binary = cli()
@@ -412,11 +415,30 @@ def coverage(cases):
                                             for (f, d, l), counts in sorted(cells.items())]}
 
 
+def verify_pair(case):
+    fixed = verify_fix(case)
+    baseline = case.get("expectations", {}).get("baseline", {})
+    if not baseline.get("deterministic"):
+        return {"id": case["id"], "status": fixed["status"], "fixed": fixed,
+                "original": {"status": "unsupported", "reason": "Nondeterministic original; use a targeted race-detector or scheduling harness."}}
+    original = copy.deepcopy(case)
+    original["fixed"] = case["original"]
+    original["expectations"]["fixed"] = case["expectations"]["original"]
+    result = verify_fix(original)
+    expected_exit = baseline.get("exit_code", 0)
+    reproduced = result["exit_code"] == expected_exit and result["status"] == "failed"
+    result["status"] = "reproduced" if reproduced else "not-reproduced"
+    return {"id": case["id"], "status": "passed" if fixed["status"] == "passed" and reproduced else "failed", "fixed": fixed, "original": result}
+
+
 def verify_fix(case):
     expectation = case.get("expectations", {})
     runtime = expectation.get("runtime", {})
     if runtime.get("status") != "supported":
         return {"id": case["id"], "status": "unsupported", "reason": runtime.get("reason", "no reviewed runtime check")}
+    runner = runtime.get("runner")
+    if runner not in (None, "tokio") or runner == "tokio" and case["language"] != "rust":
+        raise LabError("unsupported runtime runner for language")
     path = ROOT / case["fixed"]
     source = read_source(path)
     if digest(source) != expectation["fixed"]["source_hash"]:
@@ -429,6 +451,11 @@ def verify_fix(case):
             shutil.copyfile(ROOT / "examples/go.mod", work / "go.mod")
             checked(["go", "build", "-o", work / "program", copied], cwd=work, timeout=BUILD_TIMEOUT)
             command = [work / "program"]
+        elif case["language"] == "rust" and runtime.get("runner") == "tokio":
+            for name in ("Cargo.toml", "Cargo.lock"):
+                shutil.copyfile(TOKIO_RUNTIME / name, work / name)
+            checked(["cargo", "build", "--locked", "--offline", "--manifest-path", work / "Cargo.toml"], cwd=work, timeout=BUILD_TIMEOUT)
+            command = [work / "target/debug/fixture"]
         elif case["language"] == "rust":
             checked(["rustc", "--edition", "2021", copied, "-o", work / "program"], cwd=work, timeout=BUILD_TIMEOUT)
             command = [work / "program"]
@@ -470,12 +497,14 @@ def arguments():
     run.add_argument("--query", type=Path, required=True)
     run.add_argument("--source", type=Path, required=True)
     run.add_argument("--language", choices=LANGUAGES)
-    for name in ("list", "test", "compare", "coverage", "verify-fixes", "repair-preview", "semantic-compare", "semantic-preview", "semantic-inventory"):
+    for name in ("list", "test", "compare", "coverage", "relationships", "verify-fixes", "verify-pairs", "repair-preview", "semantic-compare", "semantic-preview", "semantic-inventory"):
         command = commands.add_parser(name)
         command.add_argument("--language", choices=LANGUAGES)
         command.add_argument("--family")
         command.add_argument("--defect")
         command.add_argument("--case", required=name in {"compare", "repair-preview", "semantic-compare", "semantic-preview"})
+        if name == "relationships":
+            command.add_argument("--analyzer", type=Path, required=True)
         if name in {"repair-preview", "semantic-compare", "semantic-preview"}:
             command.add_argument("--analyzer", type=Path, required=True)
             command.add_argument("--run-behavior", action="store_true")
@@ -519,13 +548,30 @@ def dispatch(args):
         selected = {(c["language"], c["family"], c["defect"]) for c in cases}
         return {"cases": [{k: v for k, v in c.items() if k != "expectations"} for c in cases],
                 "rules": [r for r in rules if (r["language"], r["family"], r["defect"]) in selected]}, 0
+    if args.command == "relationships":
+        results = []
+        for case in cases:
+            variants = {}
+            try:
+                for variant in ("original", "fixed"):
+                    source = read_source(ROOT / case[variant])
+                    if digest(source) != case["expectations"][variant]["source_hash"]:
+                        raise LabError(f"stale expectations: {case['id']}/{variant}")
+                    report = json.loads(checked([args.analyzer.resolve(), "scan", (ROOT / case[variant]).resolve()]))
+                    variants[variant] = [{"mechanism": f.get("mechanism"), "origin": f["origin"], "evidence": f["shared_state"], "blast_radius": f.get("blast_radius", [])}
+                        for document in report["documents"] for f in document["findings"] if f.get("shared_state")]
+                results.append({"id": case["id"], "status": "analyzed", "variants": variants})
+            except (LabError, OSError, ValueError) as error:
+                results.append({"id": case["id"], "status": "error", "error": str(error)})
+        failed = any(r["status"] == "error" for r in results)
+        return {"cases": results, "complete": not failed, "interpretation": "Candidate relationships and retained effects, not detector accuracy or execution proof."}, EXIT_ERROR if failed else 0
     if args.command == "coverage":
         return coverage(cases), 0
-    if args.command == "verify-fixes":
+    if args.command in {"verify-fixes", "verify-pairs"}:
         results = []
         for case in cases:
             try:
-                results.append(verify_fix(case))
+                results.append(verify_pair(case) if args.command == "verify-pairs" else verify_fix(case))
             except (LabError, OSError) as error:
                 results.append({"id": case["id"], "status": "error", "error": str(error)})
         code = EXIT_ERROR if any(r["status"] == "error" for r in results) else EXIT_MISMATCH if any(r["status"] == "failed" for r in results) else 0

@@ -92,21 +92,6 @@
             "kind": "local_mutation"
           },
           "origin": "direct"
-        },
-        {
-          "defect": "aliasing-mutable-defaults",
-          "trigger": {
-            "start": 54,
-            "end": 69
-          },
-          "function": {
-            "start": 7,
-            "end": 99
-          },
-          "effect": {
-            "kind": "structural_signal"
-          },
-          "origin": "direct"
         }
       ]
     },

@@ -1,9 +1,8 @@
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, rmSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const CLAIM_LATENCY_MS = 10;
 
 async function claimLeadership(lockPath: string, node: string): Promise<boolean> {
   try {

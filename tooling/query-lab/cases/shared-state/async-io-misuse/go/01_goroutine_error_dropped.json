@@ -9,10 +9,87 @@
         "query": "tooling/query-lab/queries/go/shared-state/async-io-misuse/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "task_call",
+            "range": [
+              151,
+              177
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              182,
+              194
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              303,
+              312
+            ]
+          },
+          {
+            "name": "launch_keyword",
+            "range": [
+              315,
+              317
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              318,
+              362
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              336,
+              345
+            ]
+          },
+          {
+            "name": "task_call",
             "range": [
               349,
-              353
+              356
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              367,
+              376
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              461,
+              477
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              479,
+              553
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              521,
+              533
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              535,
+              547
             ]
           }
         ]
@@ -26,17 +103,122 @@
         "query": "tooling/query-lab/queries/go/shared-state/async-io-misuse/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "task_call",
             "range": [
-              262,
-              266
+              151,
+              177
             ]
           },
           {
-            "name": "callee",
+            "name": "task_call",
+            "range": [
+              182,
+              194
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              262,
+              292
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              279,
+              291
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              347,
+              356
+            ]
+          },
+          {
+            "name": "launch_keyword",
+            "range": [
+              359,
+              361
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              362,
+              455
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              380,
+              389
+            ]
+          },
+          {
+            "name": "task_call",
             "range": [
               403,
-              407
+              410
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              460,
+              469
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              471,
+              486
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              541,
+              557
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              569,
+              588
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              661,
+              677
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              679,
+              753
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              721,
+              733
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              735,
+              747
             ]
           }
         ]
@@ -50,5 +232,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Fire-and-forget goroutines have no channel for failures (use errgroup). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

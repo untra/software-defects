@@ -7,12 +7,25 @@ export type StateTrace = Pick<import('./state-contract').StateTrace,
   'source_hash' | 'evidence_level' | 'origins' | 'invalidations' | 'affected_uses' | 'required_condition' | 'assumptions'>
   & Partial<import('./state-contract').StateTrace>;
 
+export interface SharedState {
+  source_uri: string;
+  source_hash: string;
+  evidence_level: 'syntax-candidate' | 'relationship-candidate';
+  relationship: string;
+  resource?: string | null;
+  events: { kind: string; range: { start: number; end: number }; resource?: string | null; owner?: { start: number; end: number } | null }[];
+  sites: { declarations: number; launches: number; suspensions: number; dynamic_fan_out: boolean };
+  contenders: number;
+  assumptions: string[];
+}
 export interface Finding {
+  shared_state?: SharedState;
   state_trace?: StateTrace;
   division_risk?: { confidence: string; outcome: string; mutated: boolean };
   rule_id: string;
   trigger?: { start: number; end: number };
   defect: string;
+  mechanism?: string;
   family: string;
   compound?: { class: string; category: string; ingredients: [Evidence, Evidence] };
   effect: { kind: string; parameter?: number };
@@ -39,14 +52,14 @@ export function annotations(snapshot: Snapshot, directOnly: boolean): StateAnnot
   for (const annotation of snapshot.annotations ?? []) {
     const findings = annotation.findings.filter(index => snapshot.findings[index] && (!directOnly || snapshot.findings[index].finding.origin === 'direct'));
     if (!findings.length) continue;
-    const key = `${annotation.category}:${annotation.position.line}:${annotation.category === 'compound-defects' ? annotation.label : ''}`;
+    const key = `${annotation.category}:${annotation.position.line}:${['compound-defects', 'shared-state'].includes(annotation.category) ? annotation.label : ''}`;
     groups.set(key, [...(groups.get(key) ?? []), { ...annotation, findings }]);
   }
   return [...groups.values()].map(group => {
     group.sort((a, b) => (b.depth ?? 0) - (a.depth ?? 0) || (a.range.end.line - a.range.start.line) - (b.range.end.line - b.range.start.line) ||
       (a.range.end.character - a.range.start.character) - (b.range.end.character - b.range.start.character) || compare(b.position, a.position));
     const selected = { ...group[0], findings: [...new Set(group.flatMap(a => a.findings))] };
-    if (group.length > 1 && selected.category !== 'compound-defects') {
+    if (group.length > 1 && !['compound-defects', 'shared-state'].includes(selected.category)) {
       selected.target = 'segment';
       selected.label = selected.category === 'mutated-state' ? 'Mutacious' : selected.category === 'unstructured-state' ? 'Unstructured' : 'Shared';
     }
@@ -173,11 +186,38 @@ export function divisionCompatible(capabilities: { experimental?: unknown } | un
 
 export function findingEvidence(finding: Finding): Evidence[] {
   const result = [...finding.call_path, ...finding.evidence, ...(finding.compound?.ingredients ?? [])];
+  if (finding.shared_state) {
+    const shared = finding.shared_state;
+    result.push(...shared.events.map(event => ({ uri: shared.source_uri, range: event.range, rule_id: finding.rule_id, role: event.kind, source_hash: shared.source_hash })));
+  }
   const trace = finding.state_trace;
   if (trace) {
-    for (const [role, locations] of [['Origin', trace.origins], ['Invalidation', trace.invalidations], ['Affected use', trace.affected_uses]] as const) {
+    for (const [role, locations] of [['Origin', trace.origins], ['Invalidation', trace.invalidations], ['Affected use', trace.affected_uses], ['Requirement', trace.requirement?.declarations ?? []]] as const) {
       result.push(...locations.map(location => ({ ...location, rule_id: finding.rule_id, role, source_hash: trace.source_hash })));
     }
   }
   return result;
+}
+
+export interface RuleCell {
+  family: string;
+  defect: string;
+  mechanism: string;
+  summary: string;
+  language: string;
+  status: 'supported' | 'candidate-only' | 'syntax-candidate' | 'planned' | 'not-applicable';
+  reason?: string | null;
+  guarantee?: string | null;
+  escapeHatch?: string | null;
+}
+export interface RuleCatalog { schemaVersion: number; languages: string[]; rules: RuleCell[] }
+
+function cellText(value: string): string { return value.replace(/[|\\`*_<>[\]]/g, character => `\\${character}`).replace(/\r?\n/g, ' '); }
+export function ruleCoverageMarkdown(catalog: RuleCatalog): string {
+  const lines = [`# State Lens rule coverage (${catalog.languages.join(', ')})`, '', '| Defect | Mechanism | Language | Status | Why |', '|---|---|---|---|---|'];
+  for (const cell of catalog.rules) {
+    const why = [cell.reason, cell.guarantee && `Guarantee: ${cell.guarantee}`, cell.escapeHatch && `Reappears as: ${cell.escapeHatch}`].filter(Boolean).join(' ');
+    lines.push(`| ${cellText(cell.defect)} | ${cellText(cell.mechanism)} | ${cellText(cell.language)} | ${cellText(cell.status)} | ${cellText(why || 'Supported with role fixtures.')} |`);
+  }
+  return lines.join('\n') + '\n';
 }

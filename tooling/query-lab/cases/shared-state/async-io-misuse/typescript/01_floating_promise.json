@@ -9,10 +9,66 @@
         "query": "tooling/query-lab/queries/typescript/shared-state/async-io-misuse/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "async_keyword",
+            "range": [
+              95,
+              100
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              167,
+              236
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              198,
+              235
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              240,
+              263
+            ]
+          },
+          {
+            "name": "task_call",
             "range": [
               326,
-              336
+              347
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              370,
+              410
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              382,
+              409
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              412,
+              467
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              447,
+              466
             ]
           }
         ]
@@ -26,17 +82,87 @@
         "query": "tooling/query-lab/queries/typescript/shared-state/async-io-misuse/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "async_keyword",
             "range": [
-              347,
-              357
+              95,
+              100
             ]
           },
           {
-            "name": "callee",
+            "name": "suspension",
             "range": [
-              419,
-              423
+              167,
+              236
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              198,
+              235
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              240,
+              263
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              268,
+              273
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              341,
+              368
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              347,
+              368
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              391,
+              418
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              391,
+              520
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              438,
+              457
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              461,
+              516
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              496,
+              515
             ]
           }
         ]
@@ -50,5 +176,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Floating promise: ordering of the write is lost (CWE-662). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }

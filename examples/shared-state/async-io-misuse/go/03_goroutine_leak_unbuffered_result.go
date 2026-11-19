@@ -9,7 +9,7 @@ import (
 const searches = 10
 const settle = 50 * time.Millisecond
 
-var replicas = []string{"us-east", "us-west", "eu", "changes"}
+var replicas = []string{"us-east", "us-west", "eu"}
 
 func query(replica, term string) string {
 	return replica + ":" + term

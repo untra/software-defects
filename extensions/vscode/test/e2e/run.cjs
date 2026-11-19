@@ -106,6 +106,7 @@ async function main() {
     console.error(error.message || error);
   } finally {
     const mergeArgs = [MERGER, ...inputs, '--report', report, '--layers', 'editor'];
+    if (file) mergeArgs.push('--file', file);
     if (selected) mergeArgs.push('--shard', selected);
     mergeArgs.push('--language', language);
     if (strict) mergeArgs.push('--strict-gaps');

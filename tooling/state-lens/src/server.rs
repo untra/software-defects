@@ -122,9 +122,52 @@ fn short_explanation(finding: &Finding) -> &str {
         explanation => explanation,
     }
 }
+fn object_identity(finding: &Finding) -> bool {
+    finding.resolution == crate::aliasing::RESOLUTION
+}
+fn warning(finding: &Finding) -> bool {
+    if object_identity(finding) {
+        return finding.state_trace.as_ref().is_some_and(|t| {
+            t.requirement.is_some()
+                && t.evidence_level == crate::state::EvidenceLevel::FeasibleUnderModel
+        });
+    }
+    finding
+        .division_risk
+        .as_ref()
+        .is_some_and(|r| r.confidence != "candidate")
+}
+fn alias_summary(finding: &Finding, trace: &crate::state::StateTrace) -> String {
+    let mechanism = finding.mechanism.as_deref().unwrap_or_default();
+    let level = serde_json::to_value(trace.evidence_level)
+        .ok()
+        .and_then(|v| v.as_str().map(str::to_owned))
+        .unwrap_or_default();
+    let requirement = match &trace.requirement {
+        Some(r) => format!("Declared requirement ({}) is violated by this write.", r.kind),
+        None => "No declared isolation requirement: this is a state relationship, not a confirmed defect.".into(),
+    };
+    format!(
+        "\n\nObject-identity path ({mechanism}, {level}): {} sharing origin(s) → write → {} affected use(s). {requirement}",
+        trace.origins.len(),
+        trace.affected_uses.len()
+    )
+}
 fn hover_description(finding: &Finding, markdown: bool) -> String {
     let mut description = format!("{}: {}", finding.defect, short_explanation(finding));
-    if let Some(trace) = &finding.state_trace {
+    if let Some(shared) = &finding.shared_state {
+        description.push_str(&format!("\n\nShared-state evidence: {}. Static sites: {} declarations, {} launches/compositions, {} suspensions. Runtime fan-out: {}. Events: {}. {}",
+            shared.evidence_level, shared.sites.declarations, shared.sites.launches, shared.sites.suspensions,
+            if shared.sites.dynamic_fan_out { "unknown" } else { "not inferred" },
+            shared.events.iter().map(|e| e.kind.as_str()).collect::<Vec<_>>().join(" → "), shared.assumptions.join(" ")));
+    }
+    if let Some(trace) = finding
+        .state_trace
+        .as_ref()
+        .filter(|_| object_identity(finding))
+    {
+        description.push_str(&alias_summary(finding, trace));
+    } else if let Some(trace) = &finding.state_trace {
         if !trace.origins.is_empty() {
             description.push_str("\n\nCandidate state path: reaching assignment → affected read. Path feasibility is unresolved.");
         }
@@ -167,18 +210,24 @@ fn diagnostics(engine: &Engine, report: &Report, uri: &str) -> Option<Value> {
                 )
                 .chain(f.state_trace.iter().flat_map(|trace| trace.origins.iter()).filter_map(|location| {
                     let evidence = Evidence { uri: location.uri.clone(), range: location.range, rule_id: f.rule_id.clone() };
-                    evidence_location(engine, &evidence, "candidate reaching assignment")
+                    evidence_location(engine, &evidence, if object_identity(f) { "sharing origin" } else { "candidate reaching assignment" })
+                }))
+                .chain(f.state_trace.iter().filter(|_| object_identity(f)).flat_map(|trace| {
+                    trace.invalidations.iter().map(|l| (l, "write")).chain(trace.affected_uses.iter().map(|l| (l, "observed read")))
+                }).filter_map(|(location, label)| {
+                    let evidence = Evidence { uri: location.uri.clone(), range: location.range, rule_id: f.rule_id.clone() };
+                    evidence_location(engine, &evidence, label)
                 }))
                 .collect();
             json!({
                 "range":lsp_range(source,f.trigger),
-                "severity":if f.division_risk.as_ref().is_some_and(|r| r.confidence != "candidate") { SEVERITY_WARNING } else { SEVERITY_INFORMATION },
+                "severity":if warning(f) { SEVERITY_WARNING } else { SEVERITY_INFORMATION },
                 "source":SOURCE,
                 "code":f.rule_id,
                 "codeDescription":{"href":finding_guide_url(f)},
                 "message":format!("{}: {}", f.defect, short_explanation(f)),
                 "relatedInformation":related,
-                "data":{"state_trace":f.state_trace,"division_risk":f.division_risk,"family":f.family,"origin":f.origin,"effect":f.effect,"compound":f.compound}
+                "data":{"shared_state":f.shared_state,"state_trace":f.state_trace,"division_risk":f.division_risk,"family":f.family,"origin":f.origin,"effect":f.effect,"compound":f.compound,"mechanism":f.mechanism}
             })
         })
         .collect();
@@ -338,7 +387,7 @@ pub fn serve() -> Result<()> {
                 publish_diagnostics =
                     diagnostics_setting(&p["initializationOptions"]).unwrap_or(true);
                 Ok(
-                    json!({"capabilities":{"experimental":{"stateLens":{"divisionAnalysis":1,"stateTraces":2,"conditionContract":1,"stateAnnotations":2,"languages":crate::analysis::SUPPORTED_LANGUAGES}},"positionEncoding":"utf-16","textDocumentSync":{"openClose":true,"change":2,"save":{"includeText":false}},"hoverProvider":true,"inlayHintProvider":true},"serverInfo":{"name":SOURCE,"version":env!("CARGO_PKG_VERSION")}}),
+                    json!({"capabilities":{"experimental":{"stateLens":{"sharedState":1,"divisionAnalysis":1,"stateTraces":2,"conditionContract":1,"stateAnnotations":2,"aliasAnalysis":1,"ruleCatalog":1,"languages":crate::analysis::SUPPORTED_LANGUAGES}},"positionEncoding":"utf-16","textDocumentSync":{"openClose":true,"change":2,"save":{"includeText":false}},"hoverProvider":true,"inlayHintProvider":true},"serverInfo":{"name":SOURCE,"version":env!("CARGO_PKG_VERSION")}}),
                 )
             }
             "initialized" => {
@@ -450,6 +499,7 @@ pub fn serve() -> Result<()> {
                 }
                 Ok(Value::Null)
             }
+            "stateLens/rules" => Ok(crate::catalog::cells(crate::analysis::SUPPORTED_LANGUAGES)),
             "stateLens/ranges" | "textDocument/hover" | "textDocument/inlayHint" => {
                 let before = incoming.load(Ordering::SeqCst);
                 let report = engine.report();

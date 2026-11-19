@@ -2,7 +2,6 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-const CLAIM_LATENCY_MS = 10;
 async function claimLeadership(lockPath, node) {
     try {
         await writeFile(lockPath, node, { flag: "wx" });

@@ -1,0 +1,312 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "runtime": {
+    "status": "supported",
+    "runner": "tokio",
+    "exit_code": 0,
+    "stdout_contains": [
+      "late writes: 0"
+    ]
+  },
+  "rationale": "late writes: 0; preserve the workload while correcting completion, atomicity or resource ordering.",
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "original": {
+    "source_hash": "87dc63d766ea9f2653e38670027e1a31ea79276db13483ecfddf0087f120efa1",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "async_keyword",
+            "range": [
+              55,
+              60
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              94,
+              123
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              103,
+              122
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              151,
+              188
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              208,
+              227
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              245,
+              353
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              258,
+              263
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              287,
+              297
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              307,
+              345
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              359,
+              383
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              359,
+              389
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              403,
+              419
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              425,
+              436
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              425,
+              462
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              546,
+              591
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              546,
+              604
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              546,
+              612
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              546,
+              621
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              546,
+              642
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              631,
+              641
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "9de2bdb3662cf8451586c7e52c49cbc9b6c5a8b27e62358014a3801518afb299",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "async_keyword",
+            "range": [
+              55,
+              60
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              94,
+              123
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              103,
+              122
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              151,
+              188
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              208,
+              227
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              245,
+              353
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              258,
+              263
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              287,
+              297
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              307,
+              345
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              359,
+              383
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              359,
+              389
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              395,
+              408
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              476,
+              492
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              576,
+              621
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              576,
+              634
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              576,
+              642
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              576,
+              651
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              576,
+              672
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              661,
+              671
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "roles": {
+    "failing": {
+      "findings": [
+        {
+          "trigger": "public[\"Authorization\"]",
+          "origins": [
+            "{\"Authorization\": \"Bearer secret\"}",
+            "return headers"
+          ],
+          "affected_uses": [
+            {
+              "text": "signed",
+              "occurrence": 3
+            }
+          ],
+          "evidence_level": "feasible_under_model",
+          "requirement": "declared-readonly"
+        }
+      ],
+      "repair": {
+        "applicability": "auto"
+      }
+    },
+    "fixed": {
+      "findings": []
+    },
+    "intentional": {
+      "findings": [
+        {
+          "trigger": "configure(settings)[\"debug\"]",
+          "origins": [
+            "{\"debug\": False}",
+            "return options"
+          ],
+          "affected_uses": [
+            {
+              "text": "settings",
+              "occurrence": 3
+            }
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ],
+      "repair": {
+        "applicability": "advisory"
+      }
+    },
+    "independent": {
+      "findings": []
+    },
+    "breaker": {
+      "findings": []
+    }
+  }
+}

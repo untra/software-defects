@@ -1,7 +1,3 @@
-(call_expression
-  function: [
-    (identifier) @callee
-    (field_expression field: (field_identifier) @callee)
-    (scoped_identifier name: (identifier) @callee)
-  ]
-  (#any-of? @callee "spawn" "join"))
+(call_expression) @task_call
+"async" @async_keyword
+(await_expression) @suspension

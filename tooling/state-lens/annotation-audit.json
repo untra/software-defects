@@ -20,8 +20,8 @@
         "go/mutated-state/aliasing-mutable-defaults/signals.scm"
       ],
       "coverage_statuses": {
-        "query-only": 2,
-        "unsupported": 3
+        "semantic-relationship": 4,
+        "unsupported": 1
       },
       "bug_detection_statuses": {
         "unsupported": 5
@@ -57,8 +57,8 @@
         "typescript/mutated-state/aliasing-mutable-defaults/signals.scm"
       ],
       "coverage_statuses": {
-        "unsupported": 3,
-        "query-only": 2
+        "semantic-relationship": 3,
+        "unsupported": 2
       },
       "bug_detection_statuses": {
         "unsupported": 5
@@ -76,8 +76,8 @@
         "javascript/mutated-state/aliasing-mutable-defaults/signals.scm"
       ],
       "coverage_statuses": {
-        "unsupported": 3,
-        "query-only": 2
+        "semantic-relationship": 3,
+        "unsupported": 2
       },
       "bug_detection_statuses": {
         "unsupported": 5
@@ -89,19 +89,21 @@
       "defect": "aliasing-mutable-defaults",
       "language": "python",
       "examples": 5,
-      "fixed_counterparts": 0,
+      "fixed_counterparts": 3,
       "missing_fixes": [
-        "python/01_mutable_default_list.py",
-        "python/02_repeated_inner_list.py",
         "python/03_class_body_list.py",
-        "python/04_shallow_copy.py",
         "python/05_return_internal_list.py"
       ],
       "queries": [
         "python/mutated-state/aliasing-mutable-defaults/signals.scm"
       ],
-      "coverage_statuses": {},
-      "bug_detection_statuses": {},
+      "coverage_statuses": {
+        "semantic-relationship": 3,
+        "unsupported": 2
+      },
+      "bug_detection_statuses": {
+        "unsupported": 5
+      },
       "range_support": "source only unless linked by mutable-denominator resolver"
     },
     {
@@ -194,8 +196,13 @@
       "queries": [
         "python/mutated-state/for-loop-control-flow/signals.scm"
       ],
-      "coverage_statuses": {},
-      "bug_detection_statuses": {},
+      "coverage_statuses": {
+        "unsupported": 3,
+        "query-only": 1
+      },
+      "bug_detection_statuses": {
+        "unsupported": 4
+      },
       "range_support": "source only unless linked by mutable-denominator resolver"
     },
     {
@@ -286,8 +293,12 @@
         "python/04_optional_stays_none.py"
       ],
       "queries": [],
-      "coverage_statuses": {},
-      "bug_detection_statuses": {},
+      "coverage_statuses": {
+        "unsupported": 4
+      },
+      "bug_detection_statuses": {
+        "unsupported": 4
+      },
       "range_support": "source only unless linked by mutable-denominator resolver"
     },
     {
@@ -382,8 +393,13 @@
       "queries": [
         "python/mutated-state/impure-functions/signals.scm"
       ],
-      "coverage_statuses": {},
-      "bug_detection_statuses": {},
+      "coverage_statuses": {
+        "unsupported": 3,
+        "query-plus-analysis": 2
+      },
+      "bug_detection_statuses": {
+        "unsupported": 5
+      },
       "range_support": "source only unless linked by mutable-denominator resolver"
     },
     {
@@ -472,8 +488,12 @@
       "queries": [
         "python/mutated-state/increment-decrement-operators/signals.scm"
       ],
-      "coverage_statuses": {},
-      "bug_detection_statuses": {},
+      "coverage_statuses": {
+        "unsupported": 2
+      },
+      "bug_detection_statuses": {
+        "unsupported": 2
+      },
       "range_support": "source only unless linked by mutable-denominator resolver"
     },
     {
@@ -562,8 +582,12 @@
         "python/03_decorator_calls_twice.py"
       ],
       "queries": [],
-      "coverage_statuses": {},
-      "bug_detection_statuses": {},
+      "coverage_statuses": {
+        "unsupported": 3
+      },
+      "bug_detection_statuses": {
+        "unsupported": 3
+      },
       "range_support": "source only unless linked by mutable-denominator resolver"
     },
     {
@@ -648,8 +672,12 @@
       "fixed_counterparts": 4,
       "missing_fixes": [],
       "queries": [],
-      "coverage_statuses": {},
-      "bug_detection_statuses": {},
+      "coverage_statuses": {
+        "unsupported": 4
+      },
+      "bug_detection_statuses": {
+        "unsupported": 4
+      },
       "range_support": "source only unless linked by mutable-denominator resolver"
     },
     {
@@ -742,8 +770,12 @@
         "python/05_thirty_day_month.py"
       ],
       "queries": [],
-      "coverage_statuses": {},
-      "bug_detection_statuses": {},
+      "coverage_statuses": {
+        "unsupported": 5
+      },
+      "bug_detection_statuses": {
+        "unsupported": 5
+      },
       "range_support": "source only unless linked by mutable-denominator resolver"
     },
     {
@@ -831,8 +863,14 @@
       "queries": [
         "python/mutated-state/var-let-mut/signals.scm"
       ],
-      "coverage_statuses": {},
-      "bug_detection_statuses": {},
+      "coverage_statuses": {
+        "query-only": 1,
+        "unsupported": 1,
+        "query-plus-analysis": 3
+      },
+      "bug_detection_statuses": {
+        "unsupported": 5
+      },
       "range_support": "source only unless linked by mutable-denominator resolver"
     },
     {
@@ -907,8 +945,12 @@
       "fixed_counterparts": 30,
       "missing_fixes": [],
       "queries": [],
-      "coverage_statuses": {},
-      "bug_detection_statuses": {},
+      "coverage_statuses": {
+        "unsupported": 30
+      },
+      "bug_detection_statuses": {
+        "unsupported": 30
+      },
       "range_support": "source only unless linked by mutable-denominator resolver"
     },
     {
@@ -4023,8 +4065,13 @@
             "for index in range(len(slots)):",
             "total += slots[index]"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 3,
+            "query-only": 1
+          },
+          "bug_detection_statuses": {
+            "unsupported": 4
+          }
         },
         {
           "family": "shared-state",
@@ -4189,8 +4236,12 @@
             "self.user = user",
             "return self.user"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 4
+          },
+          "bug_detection_statuses": {
+            "unsupported": 4
+          }
         },
         {
           "family": "shared-state",
@@ -4356,8 +4407,12 @@
             "{ROUTE: lambda: STANDARD}",
             "{ROUTE: lambda: EXPRESS}"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 3
+          },
+          "bug_detection_statuses": {
+            "unsupported": 3
+          }
         },
         {
           "family": "shared-state",
@@ -4484,8 +4539,13 @@
             "return \",\".join(set(tags))",
             "PYTHONHASHSEED=str(seed)"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 3,
+            "query-plus-analysis": 2
+          },
+          "bug_detection_statuses": {
+            "unsupported": 5
+          }
         },
         {
           "family": "shared-state",
@@ -4694,8 +4754,12 @@
             "current = parcels",
             "current += 1"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 2
+          },
+          "bug_detection_statuses": {
+            "unsupported": 2
+          }
         }
       ],
       "readiness": "requires recipe-specific relationship and range validation"
@@ -4848,8 +4912,14 @@
             "global shown",
             "shown = name"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "query-only": 1,
+            "unsupported": 1,
+            "query-plus-analysis": 3
+          },
+          "bug_detection_statuses": {
+            "unsupported": 5
+          }
         },
         {
           "family": "shared-state",
@@ -5027,8 +5097,12 @@
             "await ready.wait()",
             "tick = FINISH_TICK"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 5
+          },
+          "bug_detection_statuses": {
+            "unsupported": 5
+          }
         }
       ],
       "readiness": "requires recipe-specific relationship and range validation"
@@ -5183,8 +5257,13 @@
           "evidence": [
             "connection[\"tenant\"] = tenant"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 3,
+            "query-plus-analysis": 2
+          },
+          "bug_detection_statuses": {
+            "unsupported": 5
+          }
         },
         {
           "family": "shared-state",
@@ -5345,8 +5424,12 @@
           "evidence": [
             "identifier = PREFIX + str(clock[\"millis\"])"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 5
+          },
+          "bug_detection_statuses": {
+            "unsupported": 5
+          }
         },
         {
           "family": "shared-state",
@@ -5523,8 +5606,13 @@
             "rate = INITIAL_RATE",
             "return weight * rate"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 3,
+            "query-plus-analysis": 2
+          },
+          "bug_detection_statuses": {
+            "unsupported": 5
+          }
         }
       ],
       "readiness": "requires recipe-specific relationship and range validation"
@@ -5677,8 +5765,14 @@
             "primary = INITIAL_STATUS",
             "replica = primary"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "query-only": 1,
+            "unsupported": 1,
+            "query-plus-analysis": 3
+          },
+          "bug_detection_statuses": {
+            "unsupported": 5
+          }
         },
         {
           "family": "shared-state",
@@ -5853,8 +5947,12 @@
             "STAMP = 1700000000000",
             "PREFIX + str(STAMP)"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 5
+          },
+          "bug_detection_statuses": {
+            "unsupported": 5
+          }
         }
       ],
       "readiness": "requires recipe-specific relationship and range validation"
@@ -6020,8 +6118,12 @@
             "async def initialize(path, ready):",
             "path.mkdir()"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 4
+          },
+          "bug_detection_statuses": {
+            "unsupported": 4
+          }
         }
       ],
       "readiness": "requires recipe-specific relationship and range validation"
@@ -6140,8 +6242,8 @@
             "const playback = frame;"
           ],
           "coverage_statuses": {
-            "unsupported": 3,
-            "query-only": 2
+            "semantic-relationship": 3,
+            "unsupported": 2
           },
           "bug_detection_statuses": {
             "unsupported": 5
@@ -6172,8 +6274,13 @@
           "evidence": [
             "ctypes.c_ubyte.from_address(address)"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "semantic-relationship": 3,
+            "unsupported": 2
+          },
+          "bug_detection_statuses": {
+            "unsupported": 5
+          }
         },
         {
           "family": "shared-state",
@@ -6201,8 +6308,8 @@
             "playback := (*byte)(unsafe.Pointer(&page[0]))"
           ],
           "coverage_statuses": {
-            "query-only": 2,
-            "unsupported": 3
+            "semantic-relationship": 4,
+            "unsupported": 1
           },
           "bug_detection_statuses": {
             "unsupported": 5
@@ -6266,8 +6373,8 @@
             "const playback = frame;"
           ],
           "coverage_statuses": {
-            "unsupported": 3,
-            "query-only": 2
+            "semantic-relationship": 3,
+            "unsupported": 2
           },
           "bug_detection_statuses": {
             "unsupported": 5
@@ -6299,8 +6406,13 @@
             "def stash(note, bag=[]):",
             "bag.append(note)"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "semantic-relationship": 3,
+            "unsupported": 2
+          },
+          "bug_detection_statuses": {
+            "unsupported": 5
+          }
         },
         {
           "family": "unstructured-state",
@@ -6330,8 +6442,8 @@
             "bag.push(note);"
           ],
           "coverage_statuses": {
-            "unsupported": 3,
-            "query-only": 2
+            "semantic-relationship": 3,
+            "unsupported": 2
           },
           "bug_detection_statuses": {
             "unsupported": 5
@@ -6365,8 +6477,8 @@
             "*bag = append(*bag, note)"
           ],
           "coverage_statuses": {
-            "query-only": 2,
-            "unsupported": 3
+            "semantic-relationship": 4,
+            "unsupported": 1
           },
           "bug_detection_statuses": {
             "unsupported": 5
@@ -6433,8 +6545,8 @@
             "bag.push(note);"
           ],
           "coverage_statuses": {
-            "unsupported": 3,
-            "query-only": 2
+            "semantic-relationship": 3,
+            "unsupported": 2
           },
           "bug_detection_statuses": {
             "unsupported": 5
@@ -6499,8 +6611,13 @@
           "evidence": [
             "os.environ[\"DB_URL\"] = DATABASE_ADDRESS"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 3,
+            "query-plus-analysis": 2
+          },
+          "bug_detection_statuses": {
+            "unsupported": 5
+          }
         },
         {
           "family": "unstructured-state",
@@ -6673,8 +6790,12 @@
             "self.reading = INITIAL_READING",
             "self.reading = record[\"reading\"]"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 4
+          },
+          "bug_detection_statuses": {
+            "unsupported": 4
+          }
         }
       ],
       "readiness": "requires recipe-specific relationship and range validation"
@@ -6826,8 +6947,14 @@
             "total = 0",
             "total += sample"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "query-only": 1,
+            "unsupported": 1,
+            "query-plus-analysis": 3
+          },
+          "bug_detection_statuses": {
+            "unsupported": 5
+          }
         },
         {
           "family": "unstructured-state",
@@ -6956,8 +7083,12 @@
             "count = ctypes.c_uint8(LAST_COUNT)",
             "count.value += 1"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 2
+          },
+          "bug_detection_statuses": {
+            "unsupported": 2
+          }
         },
         {
           "family": "unstructured-state",
@@ -7085,8 +7216,13 @@
           "evidence": [
             "cart[\"qty\"] = payload.get(\"qty\")"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 3,
+            "query-plus-analysis": 2
+          },
+          "bug_detection_statuses": {
+            "unsupported": 5
+          }
         },
         {
           "family": "unstructured-state",
@@ -7250,8 +7386,12 @@
             "rate = float(raw)",
             "round(rate)"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 5
+          },
+          "bug_detection_statuses": {
+            "unsupported": 5
+          }
         },
         {
           "family": "unstructured-state",
@@ -7413,8 +7553,12 @@
           "evidence": [
             "selected = lookup(REQUESTED_SKU)"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 4
+          },
+          "bug_detection_statuses": {
+            "unsupported": 4
+          }
         },
         {
           "family": "unstructured-state",
@@ -7572,8 +7716,12 @@
             "while index <= len(items):",
             "index += 1"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 2
+          },
+          "bug_detection_statuses": {
+            "unsupported": 2
+          }
         },
         {
           "family": "unstructured-state",
@@ -7735,8 +7883,13 @@
             "for earlier in accepted:",
             "accepted.append(name)"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 3,
+            "query-only": 1
+          },
+          "bug_detection_statuses": {
+            "unsupported": 4
+          }
         },
         {
           "family": "unstructured-state",
@@ -7900,8 +8053,12 @@
             "class Paint(RecordLoader):",
             "setattr(self, key, value)"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 3
+          },
+          "bug_detection_statuses": {
+            "unsupported": 3
+          }
         },
         {
           "family": "unstructured-state",
@@ -8060,8 +8217,12 @@
           "evidence": [
             "if kind == RESERVED_KIND:\n            self.seat = ASSIGNED_SEAT"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 4
+          },
+          "bug_detection_statuses": {
+            "unsupported": 4
+          }
         },
         {
           "family": "unstructured-state",
@@ -8218,8 +8379,12 @@
             "class Invoice(ReceiptHelper, Billing):",
             "return self.amount()"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 3
+          },
+          "bug_detection_statuses": {
+            "unsupported": 3
+          }
         },
         {
           "family": "unstructured-state",
@@ -8379,8 +8544,12 @@
           "evidence": [
             "self.cents = form[\"cents\"]"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 4
+          },
+          "bug_detection_statuses": {
+            "unsupported": 4
+          }
         },
         {
           "family": "unstructured-state",
@@ -8544,8 +8713,12 @@
             "lines = [line]",
             "line.edit(FORM_CENTS)"
           ],
-          "coverage_statuses": {},
-          "bug_detection_statuses": {}
+          "coverage_statuses": {
+            "unsupported": 4
+          },
+          "bug_detection_statuses": {
+            "unsupported": 4
+          }
         },
         {
           "family": "unstructured-state",

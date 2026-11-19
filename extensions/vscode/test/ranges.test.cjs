@@ -146,3 +146,47 @@ test('trace evidence retains distinct roles and source hashes without inventing 
   assert.ok(evidence.every(e => e.source_hash === 'snapshot'));
   assert.deepEqual(evidence.map(e => e.range), [origin.range, use.range]);
 });
+
+test('alias blast radius stays discontinuous: separated affected uses do not fill the lines between', () => {
+  const { decorations } = require('../dist/ranges');
+  const origin = r(1, 2), write = r(4, 5), firstUse = r(7, 8), secondUse = r(11, 12);
+  const entry = { triggerRange: write, blastRadius: [origin, write, firstUse, secondUse], functionRange: null, finding: {
+    rule_id: 'typescript.mutated-state.aliasing-mutable-defaults', family: 'mutated-state', origin: 'direct', resolution: 'object-identity', mechanism: 'shallow-copy-nested'
+  } };
+  const painted = decorations({ functions: [], findings: [entry] }, false).map(d => d.range);
+  assert.deepEqual(painted, [origin, write, firstUse, secondUse]);
+  assert.ok(!painted.some(range => range.start.line <= 9 && range.end.line >= 10));
+});
+
+test('requirement declarations are a distinct evidence role', () => {
+  const { findingEvidence } = require('../dist/ranges');
+  const location = start => ({ uri: 'file:///a.ts', range: { start, end: start + 1 } });
+  const evidence = findingEvidence({ rule_id: 'rule', call_path: [], evidence: [], state_trace: {
+    source_hash: 'snapshot', origins: [location(0)], invalidations: [location(10)], affected_uses: [location(20)],
+    requirement: { condition: 'c', kind: 'declared-readonly', declarations: [location(5)] }
+  } });
+  assert.deepEqual(evidence.map(e => e.role), ['Origin', 'Invalidation', 'Affected use', 'Requirement']);
+});
+
+test('rule coverage lists every cell, including language guarantees, with escaped text', () => {
+  const { ruleCoverageMarkdown } = require('../dist/ranges');
+  const markdown = ruleCoverageMarkdown({ schemaVersion: 1, languages: ['rust', 'go'], rules: [
+    { family: 'mutated-state', defect: 'aliasing-mutable-defaults', mechanism: 'repeated-element', summary: '', language: 'rust', status: 'not-applicable', reason: 'No | aliasing', guarantee: 'Borrow checker', escapeHatch: 'rc-refcell-clone' },
+    { family: 'mutated-state', defect: 'aliasing-mutable-defaults', mechanism: 'append-within-capacity', summary: '', language: 'go', status: 'supported' }
+  ] });
+  const rows = markdown.trim().split('\n').slice(4);
+  assert.equal(rows.length, 2);
+  assert.match(rows[0], /not-applicable \| No \\\| aliasing Guarantee: Borrow checker Reappears as: rc-refcell-clone \|$/);
+  assert.match(rows[1], /supported \| Supported with role fixtures\. \|$/);
+});
+test('same-line shared labels remain distinct and duplicate labels coalesce', () => {
+  const { annotations } = require('../dist/ranges');
+  const snapshot = { findings: [finding(r(0, 2)), finding(r(0, 2)), finding(r(0, 2))], annotations:
+    ['Async', 'Shared', 'Lifecycle', 'Lifecycle'].map((label, i) => ({ category: 'shared-state', target: 'segment', range: r(0, 1), position: {line:0,character:i}, label, findings: [i % 3] })) };
+  assert.deepEqual(annotations(snapshot, false).map(a => a.label).sort(), ['Async', 'Lifecycle', 'Shared']);
+});
+test('shared lifecycle evidence keeps originating snapshot identity after propagation', () => {
+  const { findingEvidence } = require('../dist/ranges');
+  const evidence = findingEvidence({ rule_id: 'rule', call_path: [], evidence: [], shared_state: { source_uri:'file:///worker.ts', source_hash:'original', events:[{kind:'join',range:{start:4,end:8}}] } });
+  assert.deepEqual(evidence, [{uri:'file:///worker.ts',source_hash:'original',range:{start:4,end:8},role:'join',rule_id:'rule'}]);
+});

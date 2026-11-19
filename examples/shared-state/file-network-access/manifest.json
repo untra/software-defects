@@ -161,24 +161,25 @@
       "file": "python/01_exists_then_write.py",
       "language": "python",
       "bug_lines": [
-        22,
-        26
+        13,
+        15
       ],
-      "summary": "The first writer checks that the file exists, then overwrites the second writer's ben with ada.",
-      "mechanism": "exists and the later write are separate. Another writer replaces the file in between.",
-      "observed_output": "ada",
+      "summary": "Both nodes observe an absent leadership file and both claim leadership.",
+      "mechanism": "The absence precondition becomes false before creation (CWE-367).",
+      "observed_output": "leaders: 2",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "ben"
+      "expected_behavior": "leaders: 1"
     },
     {
       "file": "python/02_truncate_then_serialize.py",
       "language": "python",
       "bug_lines": [
-        13
+        14,
+        15
       ],
       "summary": "Opening the file for write truncates ana,ben before the serialize step raises.",
-      "mechanism": "Mode w truncates at open time. The exception happens before the new body is written, and the old body is already gone.",
+      "mechanism": "Opening with write mode truncates the live file before JSON serialization rejects an unsupported object.",
       "observed_output": "''",
       "exit_code": 0,
       "deterministic": true,

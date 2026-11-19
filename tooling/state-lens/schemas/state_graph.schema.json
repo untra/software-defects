@@ -406,11 +406,101 @@
       ],
       "additionalProperties": false
     },
+    "SharingIntroduction": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "operation": {
+          "type": "string"
+        },
+        "allocation": {
+          "type": "string"
+        },
+        "mechanism": {
+          "type": "string"
+        },
+        "qualifier": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "operation",
+        "allocation",
+        "mechanism",
+        "qualifier"
+      ],
+      "additionalProperties": false
+    },
+    "UncertaintyBoundary": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "operation": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "operation",
+        "kind",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "RequirementRef": {
+      "type": "object",
+      "properties": {
+        "condition": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "declarations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Location"
+          }
+        }
+      },
+      "required": [
+        "condition",
+        "kind",
+        "declarations"
+      ],
+      "additionalProperties": false
+    },
     "InvalidationStatus": {
       "enum": [
         "invalidated",
+        "potentially_invalidated",
         "never_established",
         "unknown"
+      ]
+    },
+    "Certainty": {
+      "enum": [
+        "definite",
+        "possible"
       ]
     },
     "Outcome": {
@@ -470,6 +560,30 @@
           "required": [
             "kind",
             "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "element"
+            },
+            "index": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "index"
           ],
           "additionalProperties": false
         },
@@ -825,12 +939,23 @@
         },
         "relationship": {
           "$ref": "#/$defs/Relationship"
+        },
+        "certainty": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Certainty"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
         "from",
         "to",
-        "relationship"
+        "relationship",
+        "certainty"
       ],
       "additionalProperties": false
     },
@@ -907,6 +1032,18 @@
             "$ref": "#/$defs/Obligation"
           }
         },
+        "sharing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SharingIntroduction"
+          }
+        },
+        "boundaries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/UncertaintyBoundary"
+          }
+        },
         "source_hash": {
           "type": "string",
           "pattern": "^[0-9a-f]{64}$"
@@ -944,6 +1081,8 @@
         "evidence",
         "control_flow",
         "obligations",
+        "sharing",
+        "boundaries",
         "source_hash",
         "operations",
         "edges",
@@ -1045,6 +1184,16 @@
           "items": {
             "type": "string"
           }
+        },
+        "requirement": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RequirementRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
@@ -1064,7 +1213,8 @@
         "required_condition",
         "operations",
         "edges",
-        "assumptions"
+        "assumptions",
+        "requirement"
       ],
       "additionalProperties": false
     },
@@ -1084,7 +1234,9 @@
       "enum": [
         "reaching_assignment",
         "value_dependency",
-        "governed_by"
+        "governed_by",
+        "points_to",
+        "heap_dependency"
       ]
     },
     "EvidenceLevel": {

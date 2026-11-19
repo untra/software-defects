@@ -3,16 +3,72 @@
   "status": "syntax-candidate",
   "rationale": "Reserve one result slot per worker so losing senders can finish.",
   "original": {
-    "source_hash": "32718aae94d77e5eaf084756bda8de16c7825d79695d2f8d015c93858e3b2463",
+    "source_hash": "3cc1568219d177ff6d6078b85f866a3f77df1dd0da696919ea1b9734bf92377d",
     "queries": [
       {
         "query": "tooling/query-lab/queries/go/shared-state/async-io-misuse/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "task_call",
             "range": [
-              299,
-              303
+              288,
+              305
+            ]
+          },
+          {
+            "name": "launch_keyword",
+            "range": [
+              338,
+              340
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              341,
+              379
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              361,
+              375
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              429,
+              451
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              476,
+              496
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              501,
+              519
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              521,
+              585
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              555,
+              577
             ]
           }
         ]
@@ -26,10 +82,73 @@
         "query": "tooling/query-lab/queries/go/shared-state/async-io-misuse/signals.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "task_call",
             "range": [
               288,
-              292
+              320
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              306,
+              319
+            ]
+          },
+          {
+            "name": "launch_keyword",
+            "range": [
+              353,
+              355
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              356,
+              394
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              376,
+              390
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              444,
+              466
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              491,
+              511
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              516,
+              534
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              536,
+              600
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              570,
+              592
             ]
           }
         ]
@@ -43,5 +162,10 @@
     ],
     "exit_code": 0
   },
-  "analysis_limit": "These are syntax candidates only. Goroutines blocked on send are never collected (leak per call). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": false,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
 }
