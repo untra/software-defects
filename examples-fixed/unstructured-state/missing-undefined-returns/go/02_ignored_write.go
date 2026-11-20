@@ -2,14 +2,11 @@ package main
 
 import "fmt"
 
+func writeInvoice(path string) error { return fmt.Errorf("disk full: %s", path) }
 func save(path string) error {
-	return fmt.Errorf("disk full: %s", path)
-}
-
-func main() {
-	if err := save("invoice.txt"); err != nil {
-		fmt.Println("save failed:", err)
-		return
+	if err := writeInvoice(path); err != nil {
+		return err
 	}
-	fmt.Println("saved invoice.txt")
+	return nil
 }
+func main() { fmt.Printf("save error=%v\n", save("invoice.txt")) }

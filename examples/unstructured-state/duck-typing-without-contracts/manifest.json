@@ -15,11 +15,12 @@
         19
       ],
       "summary": "An invoice's dollar amount is charged as if it were cents.",
-      "mechanism": "Charger only requires Amount() int, so dollars and cents both satisfy it (CWE-843).",
+      "mechanism": "Charger only requires Amount() int, so dollars and cents both satisfy it.",
       "observed_output": "charged 250\ncharged 250",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "charged 250, then charged 25000"
+      "expected_behavior": "charged 250, then charged 25000",
+      "analysis_limit": "Domain units and identifier roles require explicit contract evidence; ordinary structural types alone do not prove a violation."
     },
     {
       "file": "go/02_switch_default.go",
@@ -41,11 +42,12 @@
         21
       ],
       "summary": "An invoice's dollar amount is charged as if it were cents.",
-      "mechanism": "The trait method is an i32 with no unit, so both impls type-check (CWE-843).",
+      "mechanism": "The trait method is an i32 with no unit, so both impls type-check.",
       "observed_output": "charged 250\ncharged 250",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "charged 250, then charged 25000"
+      "expected_behavior": "charged 250, then charged 25000",
+      "analysis_limit": "Domain units and identifier roles require explicit contract evidence; ordinary structural types alone do not prove a violation."
     },
     {
       "file": "rust/02_default_must.rs",
@@ -67,11 +69,12 @@
         13
       ],
       "summary": "An invoice's dollar amount is charged as if it were cents.",
-      "mechanism": "Charger is structural, so a dollars method and a cents method are the same type (CWE-843).",
+      "mechanism": "Charger is structural, so a dollars method and a cents method are the same type.",
       "observed_output": "charged 250\ncharged 250",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "charged 250, then charged 25000"
+      "expected_behavior": "charged 250, then charged 25000",
+      "analysis_limit": "Domain units and identifier roles require explicit contract evidence; ordinary structural types alone do not prove a violation."
     },
     {
       "file": "typescript/02_arraylike_titles.ts",
@@ -92,12 +95,12 @@
       "bug_lines": [
         4
       ],
-      "summary": "persist calls save on a document that has no save.",
-      "mechanism": "The method is optional in the type and still invoked (CWE-476).",
+      "summary": "An assertion hides the absent save method.",
+      "mechanism": "The non-null assertion bypasses the optional capability contract and adds no runtime check.",
       "observed_output": "TypeError: doc.save is not a function",
       "exit_code": 1,
       "deterministic": true,
-      "expected_behavior": "the document rejected"
+      "expected_behavior": "document cannot be saved"
     },
     {
       "file": "typescript/04_swapped_ids.ts",
@@ -106,11 +109,12 @@
         7
       ],
       "summary": "An order id and a user id are swapped at the call.",
-      "mechanism": "Both parameters are string, so the arguments type-check in either order (CWE-843).",
+      "mechanism": "Both parameters are string, so the arguments type-check in either order.",
       "observed_output": "ship order u-9 to user o-4",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "ship order o-4 to user u-9"
+      "expected_behavior": "ship order o-4 to user u-9",
+      "analysis_limit": "Domain units and identifier roles require explicit contract evidence; ordinary structural types alone do not prove a violation."
     },
     {
       "file": "typescript/05_widened_reading.ts",
@@ -119,11 +123,12 @@
         7
       ],
       "summary": "A kelvin reading is converted with the celsius formula.",
-      "mechanism": "Reading only requires value, so the unit field is invisible to the function (CWE-843).",
+      "mechanism": "Reading only requires value, so the unit field is invisible to the function.",
       "observed_output": "room 212\nlab 212",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "lab -279.67"
+      "expected_behavior": "lab -279.67",
+      "analysis_limit": "Domain units and identifier roles require explicit contract evidence; ordinary structural types alone do not prove a violation."
     },
     {
       "file": "python/01_amount_units.py",
@@ -136,7 +141,8 @@
       "observed_output": "250\n250",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "250 cents and 25000 cents"
+      "expected_behavior": "250 cents and 25000 cents",
+      "analysis_limit": "Domain units and identifier roles require explicit contract evidence; ordinary structural types alone do not prove a violation."
     },
     {
       "file": "python/02_string_as_titles.py",
@@ -175,7 +181,8 @@
       "observed_output": "o-9->u-1",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "u-1->o-9"
+      "expected_behavior": "u-1->o-9",
+      "analysis_limit": "Domain units and identifier roles require explicit contract evidence; ordinary structural types alone do not prove a violation."
     },
     {
       "file": "python/05_widened_reading.py",
@@ -188,7 +195,8 @@
       "observed_output": "572.0",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "80.33, Fahrenheit from 300 K"
+      "expected_behavior": "80.33, Fahrenheit from 300 K",
+      "analysis_limit": "Domain units and identifier roles require explicit contract evidence; ordinary structural types alone do not prove a violation."
     },
     {
       "file": "javascript/01_amount_units.js",
@@ -197,11 +205,12 @@
         10
       ],
       "summary": "An invoice's dollar amount is charged as if it were cents.",
-      "mechanism": "Charger is structural, so a dollars method and a cents method are the same type (CWE-843).",
+      "mechanism": "Both providers expose amount(), but the result carries no explicit unit contract.",
       "observed_output": "charged 250\ncharged 250",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "charged 250, then charged 25000"
+      "expected_behavior": "charged 250, then charged 25000",
+      "analysis_limit": "Domain units and identifier roles require explicit contract evidence; ordinary structural types alone do not prove a violation."
     },
     {
       "file": "javascript/02_arraylike_titles.js",
@@ -210,7 +219,7 @@
         4
       ],
       "summary": "A string is passed where a list with map is required, and the call throws.",
-      "mechanism": "The cast erases the missing method; at runtime the string has no map (CWE-843).",
+      "mechanism": "The dynamic receiver is used as if it supplies map; a string does not.",
       "observed_output": "TypeError: items.map is not a function",
       "exit_code": 1,
       "deterministic": true,
@@ -223,7 +232,7 @@
         2
       ],
       "summary": "persist calls save on a document that has no save.",
-      "mechanism": "The method is optional in the type and still invoked (CWE-476).",
+      "mechanism": "The dynamic receiver is used as if its save property is callable.",
       "observed_output": "TypeError: doc.save is not a function",
       "exit_code": 1,
       "deterministic": true,
@@ -236,11 +245,12 @@
         6
       ],
       "summary": "An order id and a user id are swapped at the call.",
-      "mechanism": "Both parameters are string, so the arguments type-check in either order (CWE-843).",
+      "mechanism": "Two string arguments carry different domain roles with no contract at the call boundary.",
       "observed_output": "ship order u-9 to user o-4",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "ship order o-4 to user u-9"
+      "expected_behavior": "ship order o-4 to user u-9",
+      "analysis_limit": "Domain units and identifier roles require explicit contract evidence; ordinary structural types alone do not prove a violation."
     },
     {
       "file": "javascript/05_widened_reading.js",
@@ -249,11 +259,77 @@
         4
       ],
       "summary": "A kelvin reading is converted with the celsius formula.",
-      "mechanism": "Reading only requires value, so the unit field is invisible to the function (CWE-843).",
+      "mechanism": "The function assumes Celsius from the value property without checking the unit.",
       "observed_output": "room 212\nlab 212",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "lab -279.67"
+      "expected_behavior": "lab -279.67",
+      "analysis_limit": "Domain units and identifier roles require explicit contract evidence; ordinary structural types alone do not prove a violation."
+    },
+    {
+      "file": "go/03_unchecked_handler.go",
+      "language": "go",
+      "deterministic": true,
+      "summary": "Plugin metadata is asserted to implement a handler it does not provide.",
+      "mechanism": "A single-result interface assertion assumes an unestablished capability and panics.",
+      "observed_output": "panic: interface conversion",
+      "expected_behavior": "plugin cannot handle requests",
+      "bug_lines": [
+        8
+      ],
+      "exit_code": 1
+    },
+    {
+      "file": "rust/03_unchecked_downcast.rs",
+      "language": "rust",
+      "deterministic": true,
+      "summary": "Registry value is assumed to contain Settings.",
+      "mechanism": "Safe downcast checks the dynamic type, but unwrap discards its failed-contract outcome.",
+      "observed_output": "called `Option::unwrap()` on a `None` value",
+      "expected_behavior": "retries None",
+      "bug_lines": [
+        6
+      ],
+      "exit_code": 101
+    },
+    {
+      "file": "javascript/06_unchecked_payload.js",
+      "language": "javascript",
+      "deterministic": true,
+      "summary": "Integration treats a decoded object as a list of titled records.",
+      "mechanism": "The receiver shape is assumed before map; parsing JSON does not establish an array or element contract.",
+      "observed_output": "TypeError: records.map is not a function",
+      "expected_behavior": "[ 'invalid records' ]",
+      "bug_lines": [
+        3
+      ],
+      "exit_code": 1
+    },
+    {
+      "file": "typescript/06_unchecked_payload.ts",
+      "language": "typescript",
+      "deterministic": true,
+      "summary": "Integration treats a decoded object as a list of titled records.",
+      "mechanism": "The receiver shape is assumed before map; the type assertion performs no runtime validation.",
+      "observed_output": "TypeError: records.map is not a function",
+      "expected_behavior": "[ 'invalid records' ]",
+      "bug_lines": [
+        2
+      ],
+      "exit_code": 1
+    },
+    {
+      "file": "python/06_unchecked_payload.py",
+      "language": "python",
+      "deterministic": true,
+      "summary": "A typing.cast treats a decoded mapping as a list of records.",
+      "mechanism": "typing.cast leaves the runtime value unchanged; iteration yields keys rather than record mappings.",
+      "observed_output": "TypeError: string indices must be integers, not 'str'",
+      "expected_behavior": "['invalid records']",
+      "bug_lines": [
+        8
+      ],
+      "exit_code": 1
     }
   ]
 }

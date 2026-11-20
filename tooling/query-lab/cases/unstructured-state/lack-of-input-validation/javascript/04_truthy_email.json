@@ -12,7 +12,7 @@
     ]
   },
   "fixed": {
-    "source_hash": "4f02d596b94a8b4575dc5cd4967f8a9ed38cf5ed202eba1e03855d4349e548ac",
+    "source_hash": "caccfd55dbd2e0b93bccdaa646281ec77ba175e07a51f23e7862a4e061066956",
     "queries": [
       {
         "query": "tooling/query-lab/queries/javascript/unstructured-state/lack-of-input-validation/signals.scm",

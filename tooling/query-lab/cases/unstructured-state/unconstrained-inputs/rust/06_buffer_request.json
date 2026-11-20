@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject the invalid boundary input or make the producer contract explicit before use.",
+  "analysis_limit": "Syntax candidates remain in guarded correct code; captures do not establish a domain violation or missing control-flow guard.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "buffer rejected"
+    ]
+  },
+  "original": {
+    "source_hash": "a6675ff2b05f1a068a48a9cb3637475f525177e8fa33fe458126be04cbf96f39",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/unconstrained-inputs/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              48,
+              64
+            ]
+          },
+          {
+            "name": "unstructured_resource",
+            "range": [
+              108,
+              126
+            ]
+          },
+          {
+            "name": "_callee",
+            "range": [
+              108,
+              111
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "3eca2196a8097b14a48d8f4662d5fc9f2504d1ac945fc64b367a4f6be7812754",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/unconstrained-inputs/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              48,
+              64
+            ]
+          },
+          {
+            "name": "unstructured_resource",
+            "range": [
+              191,
+              209
+            ]
+          },
+          {
+            "name": "_callee",
+            "range": [
+              191,
+              194
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

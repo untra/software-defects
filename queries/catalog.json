@@ -1332,28 +1332,28 @@
       "defect": "duck-typing-without-contracts",
       "mechanisms": [
         {
-          "id": "query-signals",
-          "summary": "Structural signals from the defect's query pack.",
+          "id": "unchecked-contract",
+          "summary": "Assertions and dynamic capability access require runtime contracts.",
           "cells": {
             "go": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
-            },
-            "javascript": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
-            },
-            "python": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
             },
             "rust": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
             },
             "typescript": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "python": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
             }
           }
         }
@@ -1428,28 +1428,54 @@
       "defect": "lack-of-input-validation",
       "mechanisms": [
         {
-          "id": "query-signals",
-          "summary": "Structural signals from the defect's query pack.",
+          "id": "boundary-input",
+          "summary": "Function inputs and parsing boundaries require a domain contract.",
           "cells": {
             "go": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
-            },
-            "javascript": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
-            },
-            "python": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
             },
             "rust": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
             },
             "typescript": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "python": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            }
+          }
+        },
+        {
+          "id": "boundary-output",
+          "summary": "A producer returns its input value directly; resolved callers retain the original boundary evidence.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Direct binding passthrough and resolved calls are modeled; arbitrary transformations, validation contracts, and dynamic dispatch remain unresolved."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Direct binding passthrough and resolved calls are modeled; arbitrary transformations, validation contracts, and dynamic dispatch remain unresolved."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Direct binding passthrough and resolved calls are modeled; arbitrary transformations, validation contracts, and dynamic dispatch remain unresolved."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Direct binding passthrough and resolved calls are modeled; arbitrary transformations, validation contracts, and dynamic dispatch remain unresolved."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Direct binding passthrough and resolved calls are modeled; arbitrary transformations, validation contracts, and dynamic dispatch remain unresolved."
             }
           }
         }
@@ -1460,28 +1486,28 @@
       "defect": "missing-undefined-returns",
       "mechanisms": [
         {
-          "id": "query-signals",
-          "summary": "Structural signals from the defect's query pack.",
+          "id": "producer-output",
+          "summary": "Callable outputs and explicit returns require caller-compatible presence contracts.",
           "cells": {
             "go": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
-            },
-            "javascript": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
-            },
-            "python": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
             },
             "rust": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
             },
             "typescript": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "python": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
             }
           }
         }
@@ -1582,28 +1608,28 @@
       "defect": "unconstrained-inputs",
       "mechanisms": [
         {
-          "id": "query-signals",
-          "summary": "Structural signals from the defect's query pack.",
+          "id": "resource-input",
+          "summary": "Variable-length inputs and resource operations require applicable budgets.",
           "cells": {
             "go": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
-            },
-            "javascript": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
-            },
-            "python": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
             },
             "rust": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
             },
             "typescript": {
-              "status": "planned",
-              "reason": "No production query pack or semantic model exists for this language yet."
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "python": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
             }
           }
         }

@@ -20,19 +20,11 @@
     ]
   },
   "fixed": {
-    "source_hash": "a804d36ba5f68a3034662f3307a05144852e2cbbe155d6e135d91307acbb3326",
+    "source_hash": "3ac3e11ff064b202ff4899bf262afac912432d173e01111ce6bddc4126e1de49",
     "queries": [
       {
         "query": "tooling/query-lab/queries/go/unstructured-state/duck-typing-without-contracts/signals.scm",
-        "captures": [
-          {
-            "name": "callee",
-            "range": [
-              333,
-              339
-            ]
-          }
-        ]
+        "captures": []
       }
     ]
   },

@@ -5,17 +5,110 @@
     {
       "file": "typescript/pure.ts",
       "source_hash": "6a4b4638bbecf5607940f616a1153473476b1316075fa409869c16dcbefd68a5",
-      "expected": []
+      "expected": [
+        {
+          "defect": "lack-of-input-validation",
+          "trigger": {
+            "start": 22,
+            "end": 35
+          },
+          "function": {
+            "start": 7,
+            "end": 93
+          },
+          "effect": {
+            "kind": "structural_signal"
+          },
+          "origin": "direct"
+        },
+        {
+          "defect": "lack-of-input-validation",
+          "trigger": {
+            "start": 37,
+            "end": 53
+          },
+          "function": {
+            "start": 7,
+            "end": 93
+          },
+          "effect": {
+            "kind": "structural_signal"
+          },
+          "origin": "direct"
+        }
+      ]
     },
     {
       "file": "go/pure.go",
       "source_hash": "30e1f4946b1a97668149b1dcdabd68e8c13efa1efd6119c80a2627e9e6878dd9",
-      "expected": []
+      "expected": [
+        {
+          "defect": "lack-of-input-validation",
+          "trigger": {
+            "start": 28,
+            "end": 37
+          },
+          "function": {
+            "start": 17,
+            "end": 85
+          },
+          "effect": {
+            "kind": "structural_signal"
+          },
+          "origin": "direct"
+        },
+        {
+          "defect": "lack-of-input-validation",
+          "trigger": {
+            "start": 39,
+            "end": 51
+          },
+          "function": {
+            "start": 17,
+            "end": 85
+          },
+          "effect": {
+            "kind": "structural_signal"
+          },
+          "origin": "direct"
+        }
+      ]
     },
     {
       "file": "rust/pure.rs",
       "source_hash": "b9ebac9612a14a69caa56ac6263f8aed28f393d16d903b89497a8d7d2e9bf745",
-      "expected": []
+      "expected": [
+        {
+          "defect": "lack-of-input-validation",
+          "trigger": {
+            "start": 13,
+            "end": 23
+          },
+          "function": {
+            "start": 0,
+            "end": 71
+          },
+          "effect": {
+            "kind": "structural_signal"
+          },
+          "origin": "direct"
+        },
+        {
+          "defect": "lack-of-input-validation",
+          "trigger": {
+            "start": 25,
+            "end": 38
+          },
+          "function": {
+            "start": 0,
+            "end": 71
+          },
+          "effect": {
+            "kind": "structural_signal"
+          },
+          "origin": "direct"
+        }
+      ]
     },
     {
       "file": "typescript/clock.ts",
@@ -92,6 +185,21 @@
             "kind": "local_mutation"
           },
           "origin": "direct"
+        },
+        {
+          "defect": "lack-of-input-validation",
+          "trigger": {
+            "start": 21,
+            "end": 36
+          },
+          "function": {
+            "start": 7,
+            "end": 99
+          },
+          "effect": {
+            "kind": "structural_signal"
+          },
+          "origin": "direct"
         }
       ]
     },
@@ -112,6 +220,21 @@
           "effect": {
             "kind": "argument_mutation",
             "parameter": 0
+          },
+          "origin": "direct"
+        },
+        {
+          "defect": "lack-of-input-validation",
+          "trigger": {
+            "start": 22,
+            "end": 38
+          },
+          "function": {
+            "start": 7,
+            "end": 66
+          },
+          "effect": {
+            "kind": "structural_signal"
           },
           "origin": "direct"
         }

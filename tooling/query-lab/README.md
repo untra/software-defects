@@ -51,6 +51,12 @@ The experimental API-name queries intentionally do not infer receiver types or r
 
 All experimental packs live under this tool, **outside production `queries/`**, because State Lens embeds every `.scm` in that directory. Promotion requires supported semantic handlers, production metadata, independent analyzer expectations, and State Lens validation. Division/remainder queries are also embedded in production, where denominator and guard analysis determine diagnostic severity. Other experimental packs remain separate.
 
+## Unstructured input/output boundaries
+
+The four input/output defects have production `signals.scm` packs mirrored as experimental `boundaries.scm` packs for Go, Rust, JavaScript, TypeScript, and Python. These capture parameters, parsing boundaries, assertions, resource operations, callable producers, and returns. Captures remain in correctly guarded code; they identify review areas and do not diagnose a CWE. `test_unstructured_boundaries.py` checks independent source-token expectations, renaming, literal negatives, and production/lab parity.
+
+Older experimental `signals.scm` packs for these four defects are retained only for historical capture comparisons. Their application-name matches are not promoted to production. New examples use `boundaries.scm`; Python expectations use Python AST source spans independently of Tree-sitter query results. Guard effectiveness, propagation, stale bounds, and compound relationships belong to State Lens analysis, not query predicates. Catalog status remains `syntax-candidate` for this structural coverage.
+
 ## Behavioral checks and tests
 
 ```sh

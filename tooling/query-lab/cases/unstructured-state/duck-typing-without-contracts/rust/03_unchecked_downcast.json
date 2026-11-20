@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject the invalid boundary input or make the producer contract explicit before use.",
+  "analysis_limit": "Syntax candidates remain in guarded correct code; captures do not establish a domain violation or missing control-flow guard.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "retries None"
+    ]
+  },
+  "original": {
+    "source_hash": "d98ba3def5995b4b51a908be803a1733c5a3bfd359682ab21c715142860db466",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/duck-typing-without-contracts/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_assertion",
+            "range": [
+              129,
+              161
+            ]
+          },
+          {
+            "name": "_callee",
+            "range": [
+              135,
+              147
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "620e43e5fe54b909c01b2fb96ea6865be7325ac743398627cf4701712abba01c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/duck-typing-without-contracts/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_assertion",
+            "range": [
+              129,
+              161
+            ]
+          },
+          {
+            "name": "_callee",
+            "range": [
+              135,
+              147
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

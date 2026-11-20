@@ -1,6 +1,6 @@
 # State Lens
 
-State Lens identifies mechanisms associated with mutated-state defects in Go, Rust, TypeScript, and Python. It produces source ranges, executable-scope summaries, and evidence paths for a VS Code background lens. A highlighted mechanism can be completely intentional and correct.
+State Lens identifies state-related mechanisms in Go, Rust, JavaScript, TypeScript, and Python. It produces source ranges, executable-scope summaries, and evidence paths for a VS Code background lens. A highlighted mechanism can be completely intentional and correct.
 
 The engine also analyzes division/remainder denominators in all four supported languages. Known-zero and supported possibly-zero denominators produce Warning diagnostics; unsupported expressions remain Information candidates. Guarded fixed examples suppress these division findings. It preserves the distinction between mechanism coverage, susceptibility, and demonstrated incorrect behavior.
 
@@ -430,3 +430,40 @@ The optional `shared_state` payload is specified by `schemas/shared_state.schema
 inventory and query expectations distinguish effect coverage, relationship evidence and
 behavioral reproduction. Compound mutation candidates require a connected saved-value
 write after suspension, rather than only sharing an enclosing function.
+
+### Input and output contracts
+
+Production queries cover input boundaries, resource-consuming operations, unchecked
+contract assumptions, and producer outputs in all five languages. These mechanisms
+remain `syntax-candidate` in the catalog: API-shaped syntax does not prove a defect.
+Typed parameters can still require domain validation; untyped inputs and variable-size
+collections can be intentional. Static shape, runtime validation, and resource budgets
+are separate requirements.
+
+The bounded input/output handler tracks local binding identities and direct assignment
+aliases. Reassignment stops a value's trace. Conditional rebinding retains uncertainty
+and does not establish a compound relationship. A checked property followed by a related
+mutation and later use produces a `guard-invalidated` candidate; unrelated fields and
+suspension without a connected write do not. An identical rejecting check in the same
+block after the mutation breaks that relationship. This is not general guard proving,
+heap alias analysis, or a whole-program concurrency proof.
+
+Missing-return findings belong to producers. Simple JS/TS/Python branch and sequential
+exit analysis distinguishes normal value returns, absent values, and thrown failures.
+Explicit built-in nonoptional TS/Python result annotations can support Warning diagnostics;
+unsupported control flow remains informational. Void/unit functions, declared optional
+outputs, and generators are excluded. Go/Rust empty-success and default-output mechanisms
+remain candidates requiring an application contract; ordinary non-unit fallthrough is
+compiler-prevented. Resolved calls preserve producer evidence and decorate the call site.
+Direct input passthroughs also propagate their boundary evidence through resolved calls;
+ordinary parameter signals do not propagate by themselves. Local receiving bindings and
+their uses receive discontinuous ranges up to a reassignment. Cross-document traces retain
+the producer's source identity rather than attaching caller ranges to the producer hash.
+
+Function summaries and binding markers remain distinct even on one source line. Evidence
+contains source hashes, origins, affected uses, and connected invalidations. Input/output
+signals do not make a pure function observably impure. No CWE is inferred solely from a
+parameter, cast, resource operation, or return token.
+
+See the [audited examples](../../examples/unstructured-state/REVIEW.md) and
+[query-lab workflow](../query-lab/README.md) for behavioral checks and capture limitations.

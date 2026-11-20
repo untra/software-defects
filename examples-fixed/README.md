@@ -1,6 +1,6 @@
 # Fixed counterparts
 
-This tree mirrors the 284 Go/Rust/TypeScript examples present when Query Lab was introduced, with independently repaired, standalone programs. Examples added in other languages are reported as unsupported by Query Lab. The original corpus and its manifests retain their original meaning and are not rewritten by this tool.
+This tree contains independently repaired, standalone counterparts of the supported example corpus. The four audited input/output defects have complete Go, Rust, JavaScript, TypeScript, and Python pairs. Other categories may still have unsupported cases; Query Lab reports these explicitly. Original manifests describe failing behavior, while sidecars describe both variants.
 
 Repair rationales, source hashes, syntax-capture expectations, and runtime assertions live in [Query Lab sidecars](../tooling/query-lab/cases/). Query Lab analyzes each source independently; these files are not a single Go/Rust/TypeScript package. Go checks copy the original corpus `go.mod` into an isolated working directory.
 

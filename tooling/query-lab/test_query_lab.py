@@ -153,6 +153,8 @@ class NativeTests(unittest.TestCase):
                     query = lab.ROOT / rule['query']
                     if rule['family'] == 'shared-state' and rule['defect'] in ('async-io-misuse', 'race-conditions', 'file-network-access'):
                         continue  # Cross-language structural controls live in test_shared_state.py.
+                    if query.name == 'boundaries.scm':
+                        continue  # Structural boundary controls live in test_unstructured_boundaries.py.
                     if rule['defect'] == 'volatile-properties':
                         continue  # Dedicated controls also assert receiver captures.
                     if rule['defect'] == 'divide-by-zero':

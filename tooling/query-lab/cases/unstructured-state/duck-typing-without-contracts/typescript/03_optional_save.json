@@ -3,19 +3,11 @@
   "status": "syntax-candidate",
   "rationale": "Reject documents lacking the required operation.",
   "original": {
-    "source_hash": "779e45031f6bd154f0f978b8afa94b0cc0794f1761795554d17fe7dc886d861d",
+    "source_hash": "362591966893419ca2e1ca01001025383ed9c2387a6b6bcca61509c39f1cc06b",
     "queries": [
       {
         "query": "tooling/query-lab/queries/typescript/unstructured-state/duck-typing-without-contracts/signals.scm",
-        "captures": [
-          {
-            "name": "callee",
-            "range": [
-              87,
-              91
-            ]
-          }
-        ]
+        "captures": []
       }
     ]
   },

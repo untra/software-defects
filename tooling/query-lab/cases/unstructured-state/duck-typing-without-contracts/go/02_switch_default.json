@@ -12,7 +12,7 @@
     ]
   },
   "fixed": {
-    "source_hash": "8b055a4411d8bd7182c288c9782f3584c219280095018cd0a35ee31b2db13705",
+    "source_hash": "c9cf8f7c31bc2c7da95939fb9276ec3218784195037271bd94a1ded6869dd313",
     "queries": [
       {
         "query": "tooling/query-lab/queries/go/unstructured-state/duck-typing-without-contracts/signals.scm",

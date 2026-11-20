@@ -3,7 +3,7 @@
   "status": "syntax-candidate",
   "rationale": "Normalize both implementations to cents and retain their concrete property types.",
   "original": {
-    "source_hash": "6ade976bca09cbde8e6f1a51bf4a746533c55fb63bca372fa895b9ac427d58e4",
+    "source_hash": "b3bd0a2fe521ae4a43023051f3ab2e75f1c12ad8b990d7d2f276e95084c650f0",
     "queries": [
       {
         "query": "tooling/query-lab/queries/typescript/unstructured-state/duck-typing-without-contracts/signals.scm",
@@ -11,8 +11,8 @@
           {
             "name": "callee",
             "range": [
-              270,
-              276
+              252,
+              258
             ]
           }
         ]
@@ -20,19 +20,11 @@
     ]
   },
   "fixed": {
-    "source_hash": "c0158467befac9a50091b237b096d1f269be518583f22edae7348775be6c365c",
+    "source_hash": "27b8e23ca8039be292abf242cffd0c08465a9bb0fb2a20e16e8e35d0b545749e",
     "queries": [
       {
         "query": "tooling/query-lab/queries/typescript/unstructured-state/duck-typing-without-contracts/signals.scm",
-        "captures": [
-          {
-            "name": "callee",
-            "range": [
-              302,
-              308
-            ]
-          }
-        ]
+        "captures": []
       }
     ]
   },

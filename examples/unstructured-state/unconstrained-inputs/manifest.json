@@ -2,7 +2,7 @@
   "family": "unstructured-state",
   "defect": "unconstrained-inputs",
   "name": "Unconstrained Inputs",
-  "essence": "Nothing limits how big, how long, or how extreme an input can be — so something downstream pays for it.",
+  "essence": "Nothing limits how big, how long, or how extreme an input can be \u2014 so something downstream pays for it.",
   "cwes": [
     "CWE-1333",
     "CWE-400",
@@ -255,6 +255,201 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "the tree rejected past the depth cap"
+    },
+    {
+      "file": "go/05_batch_cardinality.go",
+      "language": "go",
+      "bug_lines": [
+        9
+      ],
+      "summary": "An import processes every supplied row despite the batch limit.",
+      "mechanism": "Check collection cardinality before any per-row work.",
+      "observed_output": "processed 4",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "batch rejected"
+    },
+    {
+      "file": "rust/05_batch_cardinality.rs",
+      "language": "rust",
+      "bug_lines": [
+        5
+      ],
+      "summary": "An import processes every supplied row despite the batch limit.",
+      "mechanism": "Check collection cardinality before any per-row work.",
+      "observed_output": "processed 4",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "batch rejected"
+    },
+    {
+      "file": "javascript/05_batch_cardinality.js",
+      "language": "javascript",
+      "bug_lines": [
+        5
+      ],
+      "summary": "An import processes every supplied row despite the batch limit.",
+      "mechanism": "Check collection cardinality before any per-row work.",
+      "observed_output": "processed 4",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "batch rejected"
+    },
+    {
+      "file": "typescript/05_batch_cardinality.ts",
+      "language": "typescript",
+      "bug_lines": [
+        5
+      ],
+      "summary": "An import processes every supplied row despite the batch limit.",
+      "mechanism": "Check collection cardinality before any per-row work.",
+      "observed_output": "processed 4",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "batch rejected"
+    },
+    {
+      "file": "python/05_batch_cardinality.py",
+      "language": "python",
+      "bug_lines": [
+        6
+      ],
+      "summary": "An import processes every supplied row despite the batch limit.",
+      "mechanism": "Check collection cardinality before any per-row work.",
+      "observed_output": "processed 4",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "batch rejected"
+    },
+    {
+      "file": "go/06_buffer_request.go",
+      "language": "go",
+      "bug_lines": [
+        8
+      ],
+      "summary": "A requested buffer exceeds the service allocation limit.",
+      "mechanism": "A function allocates directly from a caller-supplied size without establishing the named byte limit. Small fixture sizes demonstrate the policy violation without exhausting memory.",
+      "observed_output": "bytes 9",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "buffer rejected"
+    },
+    {
+      "file": "rust/06_buffer_request.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "A requested buffer exceeds the service allocation limit.",
+      "mechanism": "A function allocates directly from a caller-supplied size without establishing the named byte limit. Small fixture sizes demonstrate the policy violation without exhausting memory.",
+      "observed_output": "bytes 9",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "buffer rejected"
+    },
+    {
+      "file": "javascript/06_buffer_request.js",
+      "language": "javascript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "A requested buffer exceeds the service allocation limit.",
+      "mechanism": "A function allocates directly from a caller-supplied size without establishing the named byte limit. Small fixture sizes demonstrate the policy violation without exhausting memory.",
+      "observed_output": "bytes 9",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "buffer rejected"
+    },
+    {
+      "file": "typescript/06_buffer_request.ts",
+      "language": "typescript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "A requested buffer exceeds the service allocation limit.",
+      "mechanism": "A function allocates directly from a caller-supplied size without establishing the named byte limit. Small fixture sizes demonstrate the policy violation without exhausting memory.",
+      "observed_output": "bytes 9",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "buffer rejected"
+    },
+    {
+      "file": "python/06_buffer_request.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "A requested buffer exceeds the service allocation limit.",
+      "mechanism": "A function allocates directly from a caller-supplied size without establishing the named byte limit. Small fixture sizes demonstrate the policy violation without exhausting memory.",
+      "observed_output": "bytes 9",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "buffer rejected"
+    },
+    {
+      "file": "go/07_multiplicative_expansion.go",
+      "language": "go",
+      "bug_lines": [
+        15
+      ],
+      "summary": "Individually bounded items and copies produce too many output entries.",
+      "mechanism": "The two input limits permit a product above MAX_OUTPUT_ITEMS. The repair checks the combined budget with division before expansion, avoiding multiplication overflow and handling zero copies.",
+      "observed_output": "expanded 9",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "expansion rejected"
+    },
+    {
+      "file": "rust/07_multiplicative_expansion.rs",
+      "language": "rust",
+      "bug_lines": [
+        11
+      ],
+      "summary": "Individually bounded items and copies produce too many output entries.",
+      "mechanism": "The two input limits permit a product above MAX_OUTPUT_ITEMS. The repair checks the combined budget with division before expansion, avoiding multiplication overflow and handling zero copies.",
+      "observed_output": "expanded 9",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "expansion rejected"
+    },
+    {
+      "file": "javascript/07_multiplicative_expansion.js",
+      "language": "javascript",
+      "bug_lines": [
+        11
+      ],
+      "summary": "Individually bounded items and copies produce too many output entries.",
+      "mechanism": "The two input limits permit a product above MAX_OUTPUT_ITEMS. The repair checks the combined budget with division before expansion, avoiding multiplication overflow and handling zero copies.",
+      "observed_output": "expanded 9",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "expansion rejected"
+    },
+    {
+      "file": "typescript/07_multiplicative_expansion.ts",
+      "language": "typescript",
+      "bug_lines": [
+        11
+      ],
+      "summary": "Individually bounded items and copies produce too many output entries.",
+      "mechanism": "The two input limits permit a product above MAX_OUTPUT_ITEMS. The repair checks the combined budget with division before expansion, avoiding multiplication overflow and handling zero copies.",
+      "observed_output": "expanded 9",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "expansion rejected"
+    },
+    {
+      "file": "python/07_multiplicative_expansion.py",
+      "language": "python",
+      "bug_lines": [
+        11
+      ],
+      "summary": "Individually bounded items and copies produce too many output entries.",
+      "mechanism": "The two input limits permit a product above MAX_OUTPUT_ITEMS. The repair checks the combined budget with division before expansion, avoiding multiplication overflow and handling zero copies.",
+      "observed_output": "expanded 9",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "expansion rejected"
     }
   ]
 }

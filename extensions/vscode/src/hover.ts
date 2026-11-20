@@ -38,6 +38,10 @@ export function explanation(entry: Entry, uri?: string, version?: number): vscod
     text.appendText(`\n\nEvidence: ${trace.evidence_level.replaceAll('_', ' ')}`);
     if (trace.required_condition) text.appendText(`\nRequired condition: ${trace.required_condition}`);
     text.appendText(`\nOrigin locations: ${trace.origins.length}; invalidations: ${trace.invalidations.length}; affected uses: ${trace.affected_uses.length}.`);
+    if (entry.finding.family === 'unstructured-state' && entry.finding.mechanism) {
+      text.appendText(`\nMechanism: ${entry.finding.mechanism}.`);
+      if (trace.requirement?.kind === 'producer-result') text.appendText('\nA normal exit does not supply the declared nonoptional result.');
+    }
     if (entry.finding.resolution === OBJECT_IDENTITY) {
       text.appendText(`\nMechanism: ${entry.finding.mechanism ?? 'unknown'}. `);
       text.appendText(trace.requirement

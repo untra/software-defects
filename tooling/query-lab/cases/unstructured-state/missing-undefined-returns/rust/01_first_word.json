@@ -3,24 +3,16 @@
   "status": "syntax-candidate",
   "rationale": "Represent an absent first word explicitly.",
   "original": {
-    "source_hash": "bffe4fa829770f98c983b5d4815071342846d6c01ccd434ced8e560ce82f9a62",
+    "source_hash": "a68de17880505e534d4e6461f3ec28d08c4ba8837ad3e73bbeb55a54f05200d2",
     "queries": [
       {
         "query": "tooling/query-lab/queries/rust/unstructured-state/missing-undefined-returns/signals.scm",
-        "captures": [
-          {
-            "name": "callee",
-            "range": [
-              71,
-              77
-            ]
-          }
-        ]
+        "captures": []
       }
     ]
   },
   "fixed": {
-    "source_hash": "9504fe47f719a0ed5cc4e5ed284d619fae0d1600fa15a53e664d32e165ce7853",
+    "source_hash": "7b6bdb0574a2c21d394298ecb74a00f04a3cb8168880fb001a99e20256472966",
     "queries": [
       {
         "query": "tooling/query-lab/queries/rust/unstructured-state/missing-undefined-returns/signals.scm",
@@ -30,10 +22,10 @@
   },
   "runtime": {
     "status": "supported",
+    "exit_code": 0,
     "stdout_contains": [
-      "None"
-    ],
-    "exit_code": 0
+      "first Some(\"invoice\")"
+    ]
   },
   "analysis_limit": "These are syntax candidates only. split yields None and unwrap discards the missing case (CWE-476). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
 }

@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject the invalid boundary input or make the producer contract explicit before use.",
+  "analysis_limit": "Syntax candidates remain in guarded correct code; captures do not establish a domain violation or missing control-flow guard.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "expansion rejected"
+    ]
+  },
+  "original": {
+    "source_hash": "718108d6af94627de066583adb62ad972dc588ba72dff792d7a7b00f0d6c8ed0",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/unconstrained-inputs/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              110,
+              124
+            ]
+          },
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              126,
+              136
+            ]
+          },
+          {
+            "name": "unstructured_resource",
+            "range": [
+              303,
+              380
+            ]
+          },
+          {
+            "name": "unstructured_resource",
+            "range": [
+              284,
+              301
+            ]
+          },
+          {
+            "name": "unstructured_resource",
+            "range": [
+              353,
+              377
+            ]
+          },
+          {
+            "name": "_callee",
+            "range": [
+              284,
+              288
+            ]
+          },
+          {
+            "name": "_callee",
+            "range": [
+              353,
+              359
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "cc4385e7c3360cecd57e63894a0edb9b2539568f1de07af8e9ffa39807f0b679",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/unconstrained-inputs/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              110,
+              124
+            ]
+          },
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              126,
+              136
+            ]
+          },
+          {
+            "name": "unstructured_resource",
+            "range": [
+              409,
+              486
+            ]
+          },
+          {
+            "name": "unstructured_resource",
+            "range": [
+              390,
+              407
+            ]
+          },
+          {
+            "name": "unstructured_resource",
+            "range": [
+              459,
+              483
+            ]
+          },
+          {
+            "name": "_callee",
+            "range": [
+              390,
+              394
+            ]
+          },
+          {
+            "name": "_callee",
+            "range": [
+              459,
+              465
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

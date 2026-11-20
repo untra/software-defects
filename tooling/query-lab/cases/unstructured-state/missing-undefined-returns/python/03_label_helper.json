@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject the invalid boundary input or make the producer contract explicit before use.",
+  "analysis_limit": "Syntax candidates remain in guarded correct code; captures do not establish a domain violation or missing control-flow guard.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "['ada', 'ben']"
+    ]
+  },
+  "original": {
+    "source_hash": "2d5ac0e4ceffb42fe1bfc93baa5c505cce2f980929d1bca55c58f23e706d3c0e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/unstructured-state/missing-undefined-returns/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_function",
+            "range": [
+              0,
+              32
+            ]
+          },
+          {
+            "name": "unstructured_function",
+            "range": [
+              35,
+              98
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "1d0801340a98dc5312f0cc7ddad0fcb4b8bb5d035746f8bff26f52927b8f9600",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/unstructured-state/missing-undefined-returns/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_function",
+            "range": [
+              0,
+              32
+            ]
+          },
+          {
+            "name": "unstructured_function",
+            "range": [
+              35,
+              98
+            ]
+          },
+          {
+            "name": "unstructured_return",
+            "range": [
+              21,
+              32
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

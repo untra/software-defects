@@ -126,6 +126,9 @@ fn object_identity(finding: &Finding) -> bool {
     finding.resolution == crate::aliasing::RESOLUTION
 }
 fn warning(finding: &Finding) -> bool {
+    if finding.family == "unstructured-state" && finding.defect == "missing-undefined-returns" {
+        return finding.state_trace.as_ref().is_some_and(|trace| trace.evidence_level == crate::state::EvidenceLevel::FeasibleUnderModel && trace.requirement.as_ref().is_some_and(|r| r.kind == "producer-result"));
+    }
     if object_identity(finding) {
         return finding.state_trace.as_ref().is_some_and(|t| {
             t.requirement.is_some()
@@ -169,7 +172,7 @@ fn hover_description(finding: &Finding, markdown: bool) -> String {
         description.push_str(&alias_summary(finding, trace));
     } else if let Some(trace) = &finding.state_trace {
         if !trace.origins.is_empty() {
-            description.push_str("\n\nCandidate state path: reaching assignment → affected read. Path feasibility is unresolved.");
+            description.push_str(if finding.resolution == crate::unstructured::RESOLUTION || finding.defect == "missing-undefined-returns" { "\n\nInput/output evidence: origin → affected use. See the requirement and analysis assumptions." } else { "\n\nCandidate state path: reaching assignment → affected read. Path feasibility is unresolved." });
         }
         if let Some(condition) = &trace.required_condition {
             description.push_str("\n\nRequired condition: ");

@@ -1,5 +1,5 @@
-function acceptEmail(email: string): string {
-  if (!email.trim()) {
+function acceptEmail(email: unknown) {
+  if (typeof email !== "string" || !email.trim()) {
     return "missing";
   }
   return "accepted " + email;

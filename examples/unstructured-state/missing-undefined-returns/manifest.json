@@ -2,52 +2,50 @@
   "family": "unstructured-state",
   "defect": "missing-undefined-returns",
   "name": "Missing & Undefined Returns",
-  "essence": "A code path falls off the end, and 'nothing' silently becomes a value.",
+  "essence": "A producer fails to deliver the value or failure signal required by its output contract.",
   "cwes": [
-    "CWE-252",
-    "CWE-394",
-    "CWE-476"
+    "CWE-393",
+    "CWE-394"
   ],
   "examples": [
     {
       "file": "go/01_find_admin.go",
       "language": "go",
       "bug_lines": [
-        16,
-        22
+        13
       ],
-      "summary": "No admin is a nil pointer, and the caller reads Name.",
-      "mechanism": "The not-found path returns nil with no error; the dereference panics (CWE-476).",
-      "observed_output": "panic: runtime error: invalid memory address or nil pointer dereference",
-      "exit_code": 1,
+      "summary": "Required lookup returns neither administrator nor error.",
+      "mechanism": "The producer emits success with no required result; callers are allowed to rely on its success contract.",
+      "observed_output": "admin=<nil> error=<nil>",
+      "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "no admin"
+      "expected_behavior": "admin=<nil> error=administrator required"
     },
     {
       "file": "go/02_ignored_write.go",
       "language": "go",
       "bug_lines": [
-        10
+        8
       ],
-      "summary": "save fails and the caller still reports the invoice saved.",
-      "mechanism": "The error return is assigned to blank and never checked (CWE-252).",
-      "observed_output": "saved invoice.txt",
+      "summary": "Save reports success after its write operation fails.",
+      "mechanism": "The producer recognizes a failure but returns a success error value.",
+      "observed_output": "save error=<nil>",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "disk full: invoice.txt"
+      "expected_behavior": "save error=disk full: invoice.txt"
     },
     {
       "file": "go/03_discarded_ok.go",
       "language": "go",
       "bug_lines": [
-        7
+        8
       ],
-      "summary": "A missing eur rate reads as 0 cents.",
-      "mechanism": "The comma-ok result is discarded, so absence and a real zero look the same (CWE-252).",
-      "observed_output": "eur 0",
+      "summary": "Required rate lookup fabricates a successful zero rate.",
+      "mechanism": "The wrapper detects absence but fails its value-or-error output contract.",
+      "observed_output": "rate=0 error=<nil>",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "eur missing"
+      "expected_behavior": "rate=0 error=rate unavailable: eur"
     },
     {
       "file": "go/04_naked_balance.go",
@@ -66,27 +64,27 @@
       "file": "rust/01_first_word.rs",
       "language": "rust",
       "bug_lines": [
-        2
+        3
       ],
-      "summary": "The first word of an empty string is unwrapped and panics.",
-      "mechanism": "split yields None and unwrap discards the missing case (CWE-476).",
-      "observed_output": "called `Option::unwrap()` on a `None` value",
-      "exit_code": 101,
+      "summary": "First-word producer drops the found value and reports absence.",
+      "mechanism": "The return type is valid, but the producer fails to return a result it found; this is not caller misuse of Option.",
+      "observed_output": "first None",
+      "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "no first word"
+      "expected_behavior": "first Some(\"invoice\")"
     },
     {
       "file": "rust/02_dropped_parse.rs",
       "language": "rust",
       "bug_lines": [
-        3
+        4
       ],
-      "summary": "A failed parse is dropped and the quantity is 0.",
-      "mechanism": "The Result is bound and then ignored, so the caller cannot tell failure from zero (CWE-252).",
-      "observed_output": "qty 0",
+      "summary": "Quantity parser reports success on malformed input.",
+      "mechanism": "The Result producer erases the failure arm and fabricates a value instead of returning the promised parse error.",
+      "observed_output": "qty Ok(0)",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "the token rejected"
+      "expected_behavior": "qty Err(ParseIntError { kind: InvalidDigit })"
     },
     {
       "file": "typescript/01_member_discount.ts",
@@ -99,20 +97,22 @@
       "observed_output": "price NaN",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "price 100"
+      "expected_behavior": "price 100",
+      "analysis_limit": "The annotated original is rejected by TypeScript checking; Node type stripping reproduces the runtime consequence without type checking."
     },
     {
       "file": "typescript/02_find_admin.ts",
       "language": "typescript",
       "bug_lines": [
-        10
+        1
       ],
-      "summary": "findAdmin returns undefined and the caller reads name.",
-      "mechanism": "The loop can finish without returning; the property read then throws (CWE-476).",
-      "observed_output": "TypeError: Cannot read properties of undefined (reading 'name')",
-      "exit_code": 1,
+      "summary": "Required lookup silently returns no administrator.",
+      "mechanism": "The producer omits its failure path instead of returning an administrator or raising. TypeScript strict checking rejects the annotated original.",
+      "observed_output": "admin undefined",
+      "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "no admin"
+      "expected_behavior": "administrator required",
+      "analysis_limit": "The annotated original is rejected by TypeScript checking; Node type stripping reproduces the runtime consequence without type checking."
     },
     {
       "file": "typescript/03_map_prices.ts",
@@ -131,14 +131,15 @@
       "file": "typescript/04_optional_age.ts",
       "language": "typescript",
       "bug_lines": [
-        2
+        3
       ],
-      "summary": "birthday adds 1 to an age that was never set.",
-      "mechanism": "The optional property is undefined on this object, and the sum is NaN (CWE-476).",
-      "observed_output": "age NaN",
+      "summary": "Birthday calculator computes the next age but omits its return.",
+      "mechanism": "The input supplies a valid age; the producer fails to return its computed output. TypeScript rejects the annotated original.",
+      "observed_output": "age undefined",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "a missing age"
+      "expected_behavior": "age 31",
+      "analysis_limit": "The annotated original is rejected by TypeScript checking; Node type stripping reproduces the runtime consequence without type checking."
     },
     {
       "file": "typescript/05_async_quote.ts",
@@ -151,20 +152,21 @@
       "observed_output": "price NaN",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "a rejected sku"
+      "expected_behavior": "a rejected sku",
+      "analysis_limit": "The annotated original is rejected by TypeScript checking; Node type stripping reproduces the runtime consequence without type checking."
     },
     {
       "file": "python/01_find_admin.py",
       "language": "python",
       "bug_lines": [
-        9
+        4
       ],
-      "summary": "No admin is found, the function returns None, and the name lookup raises TypeError.",
-      "mechanism": "A function with no trailing return yields None. The caller indexes that result.",
-      "observed_output": "TypeError: 'NoneType' object is not subscriptable",
-      "exit_code": 1,
+      "summary": "Required lookup silently returns None.",
+      "mechanism": "The producer omits its explicit failure path.",
+      "observed_output": "admin None",
+      "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "no admin, without indexing None"
+      "expected_behavior": "administrator required"
     },
     {
       "file": "python/02_member_discount.py",
@@ -196,14 +198,14 @@
       "file": "python/04_get_as_value.py",
       "language": "python",
       "bug_lines": [
-        3
+        2
       ],
-      "summary": "The missing pencil stock is None, and adding 1 raises TypeError.",
-      "mechanism": "dict.get without a default returns None. The caller adds that result as if it were a count.",
-      "observed_output": "TypeError: unsupported operand type(s) for +: 'int' and 'NoneType'",
-      "exit_code": 1,
+      "summary": "Stock helper drops an available count instead of returning it.",
+      "mechanism": "The producer computes a concrete result but omits return; the dictionary lookup itself is valid.",
+      "observed_output": "stock None",
+      "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "1, treating a missing sku as zero"
+      "expected_behavior": "stock 4"
     },
     {
       "file": "python/05_async_quote.py",
@@ -211,12 +213,12 @@
       "bug_lines": [
         6
       ],
-      "summary": "The guest path of the coroutine returns None.",
-      "mechanism": "An async function that does not return still resolves to None.",
+      "summary": "Guest quote falls through without its required numeric price.",
+      "mechanism": "An async producer omits the guest branch result, so awaiting it yields None.",
       "observed_output": "None",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "a guest quote, not None"
+      "expected_behavior": "10"
     },
     {
       "file": "javascript/01_member_discount.js",
@@ -235,14 +237,14 @@
       "file": "javascript/02_find_admin.js",
       "language": "javascript",
       "bug_lines": [
-        9
+        4
       ],
-      "summary": "findAdmin returns undefined and the caller reads name.",
-      "mechanism": "The loop can finish without returning; the property read then throws (CWE-476).",
-      "observed_output": "TypeError: Cannot read properties of undefined (reading 'name')",
-      "exit_code": 1,
+      "summary": "Required lookup silently returns no administrator.",
+      "mechanism": "The producer omits its failure path instead of returning an administrator or raising. TypeScript strict checking rejects the annotated original.",
+      "observed_output": "admin undefined",
+      "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "no admin"
+      "expected_behavior": "administrator required"
     },
     {
       "file": "javascript/03_map_prices.js",
@@ -261,14 +263,14 @@
       "file": "javascript/04_optional_age.js",
       "language": "javascript",
       "bug_lines": [
-        2
+        3
       ],
-      "summary": "birthday adds 1 to an age that was never set.",
-      "mechanism": "The optional property is undefined on this object, and the sum is NaN (CWE-476).",
-      "observed_output": "age NaN",
+      "summary": "Birthday calculator computes the next age but omits its return.",
+      "mechanism": "The input supplies a valid age; the producer fails to return its computed output. TypeScript rejects the annotated original.",
+      "observed_output": "age undefined",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "a missing age"
+      "expected_behavior": "age 31"
     },
     {
       "file": "javascript/05_async_quote.js",

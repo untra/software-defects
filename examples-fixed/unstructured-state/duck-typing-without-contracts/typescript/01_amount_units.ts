@@ -1,23 +1,23 @@
 const CENTS_PER_DOLLAR = 100;
 
-type Charger = { amount(): number };
+type Charger = { amountCents(): number };
 
 const card = {
   cents: 250,
-  amount() {
+  amountCents() {
     return this.cents;
   },
 };
 
 const invoice = {
   dollars: 250,
-  amount() {
+  amountCents() {
     return this.dollars * CENTS_PER_DOLLAR;
   },
 };
 
 function charge(source: Charger): number {
-  return source.amount();
+  return source.amountCents();
 }
 
 console.log("charged", charge(card));

@@ -1,0 +1,1 @@
+(type_assertion_expression) @unstructured_assertion

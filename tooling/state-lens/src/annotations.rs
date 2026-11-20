@@ -578,7 +578,9 @@ pub(crate) fn build_annotations(all: &[Node<'_>], source: &str, report: &mut Doc
                 C::MutatedState if finding.effect != Effect::StructuralSignal => Some(L::Impure),
                 C::MutatedState => None,
                 C::UnstructuredState => {
-                    (finding.resolution == "runtime-type-dispatch").then_some(L::Polymorphic)
+                    if finding.resolution == "runtime-type-dispatch" { Some(L::Polymorphic) }
+                    else if finding.resolution == crate::unstructured::RESOLUTION || crate::unstructured::propagates(finding) { Some(L::Unstructured) }
+                    else { None }
                 }
                 C::SharedState => Some(if matches!(finding.resolution.as_str(), "resource-lifecycle" | "task-lifecycle") {
                     L::Lifecycle
@@ -602,6 +604,8 @@ pub(crate) fn build_annotations(all: &[Node<'_>], source: &str, report: &mut Doc
         }
         if let Some(node) = all.iter().rev().find(|n| Span::of(**n) == finding.trigger) {
             let target = match node.kind() {
+                "required_parameter" | "optional_parameter" | "parameter" | "parameter_declaration" | "variadic_parameter_declaration" => node.child_by_field_name("name").or_else(|| node.child_by_field_name("pattern")),
+                "typed_parameter" | "default_parameter" | "typed_default_parameter" => node.named_child(0).filter(|n| n.kind() == "identifier"),
                 "let_declaration" => node.child_by_field_name("pattern"),
                 "variable_declarator" => node.child_by_field_name("name"),
                 "lexical_declaration" | "variable_declaration" => nodes(*node)
@@ -643,7 +647,11 @@ pub(crate) fn build_annotations(all: &[Node<'_>], source: &str, report: &mut Doc
                 let label = match category {
                     C::CompoundDefects => unreachable!(),
                     C::MutatedState => L::Volatile,
-                    C::UnstructuredState => L::Untyped,
+                    C::UnstructuredState if matches!(finding.resolution.as_str(), "external-input" | "external-input-binding") || finding.mechanism.as_deref() == Some("boundary-input") && (
+                        matches!(report.language.as_str(), "javascript" | "python") && node.kind() == "identifier"
+                        || node.child_by_field_name("type").is_some_and(|t| matches!(source[t.byte_range()].trim().trim_start_matches(':').trim(), "any" | "unknown" | "Any"))
+                    ) => L::Untyped,
+                    C::UnstructuredState => L::Unstructured,
                     C::SharedState => L::Shared,
                 };
                 targets.push((T::Property, Span::of(target), target.end_byte(), label));
@@ -714,6 +722,7 @@ pub(crate) fn coalesce(report: &DocumentReport, source: &str) -> Vec<StateAnnota
             .entry((
                 annotation.category,
                 line,
+                (annotation.category == StateCategory::UnstructuredState).then_some(annotation.target),
                 if matches!(annotation.category, StateCategory::CompoundDefects | StateCategory::SharedState) {
                     Some(annotation.label)
                 } else {
@@ -736,7 +745,9 @@ pub(crate) fn coalesce(report: &DocumentReport, source: &str) -> Vec<StateAnnota
             });
             let mut selected = group[0].clone();
             if group.len() > 1 {
-                selected.target = AnnotationTarget::Segment;
+                if selected.category != StateCategory::UnstructuredState {
+                    selected.target = AnnotationTarget::Segment;
+                }
                 selected.label = match selected.category {
                     StateCategory::CompoundDefects => selected.label,
                     StateCategory::MutatedState => AnnotationLabel::Mutacious,

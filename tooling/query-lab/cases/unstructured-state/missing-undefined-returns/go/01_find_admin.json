@@ -3,45 +3,29 @@
   "status": "syntax-candidate",
   "rationale": "Handle the explicit no-match return.",
   "original": {
-    "source_hash": "cb16a8e5fee0632b11c4c91c08731805c7fc24f4b00542a1979d82a1483fd91e",
+    "source_hash": "1daa552ba3c2f4f5254779c89cdc2198dd3f278abaacaa1b0ba1e08fd3255455",
     "queries": [
       {
         "query": "tooling/query-lab/queries/go/unstructured-state/missing-undefined-returns/signals.scm",
-        "captures": [
-          {
-            "name": "callee",
-            "range": [
-              282,
-              291
-            ]
-          }
-        ]
+        "captures": []
       }
     ]
   },
   "fixed": {
-    "source_hash": "b1fd1e90ca6aec7abfc9c235871889bbe572d4164692698852938c35ff9e576e",
+    "source_hash": "e448597c4b28aead51898c85fb505613a8c49171bb16155eaa543e38cc717757",
     "queries": [
       {
         "query": "tooling/query-lab/queries/go/unstructured-state/missing-undefined-returns/signals.scm",
-        "captures": [
-          {
-            "name": "callee",
-            "range": [
-              282,
-              291
-            ]
-          }
-        ]
+        "captures": []
       }
     ]
   },
   "runtime": {
     "status": "supported",
+    "exit_code": 0,
     "stdout_contains": [
-      "no administrator"
-    ],
-    "exit_code": 0
+      "administrator required"
+    ]
   },
   "analysis_limit": "These are syntax candidates only. The not-found path returns nil with no error; the dereference panics (CWE-476). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
 }

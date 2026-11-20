@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject the invalid boundary input or make the producer contract explicit before use.",
+  "analysis_limit": "Syntax candidates remain in guarded correct code; captures do not establish a domain violation or missing control-flow guard.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "invalid records"
+    ]
+  },
+  "original": {
+    "source_hash": "d4ec59bf6f8f9a62d4c96422d1ed1fdc91edc89d112cee30c42c1fa93e7537d6",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/duck-typing-without-contracts/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_assertion",
+            "range": [
+              67,
+              118
+            ]
+          },
+          {
+            "name": "unstructured_assertion",
+            "range": [
+              91,
+              117
+            ]
+          },
+          {
+            "name": "unstructured_assertion",
+            "range": [
+              122,
+              176
+            ]
+          },
+          {
+            "name": "unstructured_assertion",
+            "range": [
+              141,
+              174
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "7503139a33b2d7866840c28d4c1051d33bd4c9bcb894e43e3dd838f37fdae9ba",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/duck-typing-without-contracts/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_assertion",
+            "range": [
+              36,
+              58
+            ]
+          },
+          {
+            "name": "unstructured_assertion",
+            "range": [
+              63,
+              177
+            ]
+          },
+          {
+            "name": "unstructured_assertion",
+            "range": [
+              234,
+              283
+            ]
+          },
+          {
+            "name": "unstructured_assertion",
+            "range": [
+              256,
+              282
+            ]
+          },
+          {
+            "name": "unstructured_assertion",
+            "range": [
+              287,
+              341
+            ]
+          },
+          {
+            "name": "unstructured_assertion",
+            "range": [
+              306,
+              339
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

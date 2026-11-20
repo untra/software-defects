@@ -25,24 +25,46 @@ fn all_queries_compile() {
     Engine::new().unwrap();
 }
 #[test]
-fn pure_functions_remain_uncolored() {
-    for (language, source) in [
+fn pure_functions_have_only_informational_input_boundaries() {
+    for (language, source, parameters) in [
         (
             "typescript",
             "function add(a: number, b: number) { return a + b; }",
+            ["a: number", "b: number"],
         ),
         (
             "go",
             "package main\nfunc add(a int,b int) int { return a+b }",
+            ["a int", "b int"],
         ),
-        ("rust", "fn add(a: i32,b:i32)->i32 { a+b }"),
+        (
+            "rust",
+            "fn add(a: i32,b:i32)->i32 { a+b }",
+            ["a: i32", "b:i32"],
+        ),
     ] {
         let report = engine(language, source).analyze();
+        let findings = &report.documents[0].findings;
         assert!(
-            report.documents[0].findings.is_empty(),
-            "{language}: {:?}",
-            report.documents[0].findings
+            findings.iter().all(|finding| {
+                finding.family != "mutated-state" && !finding.effect.observable()
+            }),
+            "{language}: {findings:?}"
         );
+        assert_eq!(findings.len(), parameters.len(), "{language}: {findings:?}");
+        for parameter in parameters {
+            let start = source.find(parameter).unwrap();
+            let finding = findings
+                .iter()
+                .find(|finding| {
+                    finding.trigger.start == start && finding.trigger.end == start + parameter.len()
+                })
+                .unwrap_or_else(|| panic!("{language}: missing parameter {parameter}"));
+            assert_eq!(finding.defect, "lack-of-input-validation");
+            assert_eq!(finding.mechanism.as_deref(), Some("boundary-input"));
+            assert_eq!(finding.effect, Effect::StructuralSignal);
+            assert_eq!(finding.origin, "direct");
+        }
     }
 }
 #[test]

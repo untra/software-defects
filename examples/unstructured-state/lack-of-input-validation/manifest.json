@@ -2,7 +2,7 @@
   "family": "unstructured-state",
   "defect": "lack-of-input-validation",
   "name": "Lack of Input Validation",
-  "essence": "Read values are assumed correct, written values assumed safe, executed values assumed benign — until proven otherwise.",
+  "essence": "Read values are assumed correct, written values assumed safe, executed values assumed benign \u2014 until proven otherwise.",
   "cwes": [
     "CWE-20",
     "CWE-89",
@@ -29,7 +29,7 @@
         7
       ],
       "summary": "A name containing a quote is interpolated into a SQL string.",
-      "mechanism": "Sprintf puts the name in the query text, so the quote ends the literal early (CWE-89).",
+      "mechanism": "Sprintf puts the name in the query text, so the quote ends the literal early (CWE-89). This standalone program demonstrates query construction susceptibility; it does not execute a database operation.",
       "observed_output": "SELECT id FROM users WHERE name = 'O'Brien'",
       "exit_code": 0,
       "deterministic": true,
@@ -81,7 +81,7 @@
         3
       ],
       "summary": "A name containing a quote is interpolated into a SQL string.",
-      "mechanism": "The format string puts the name in the query text (CWE-89).",
+      "mechanism": "The format string puts the name in the query text (CWE-89). This standalone program demonstrates query construction susceptibility; it does not execute a database operation.",
       "observed_output": "SELECT id FROM users WHERE name = 'O'Brien'",
       "exit_code": 0,
       "deterministic": true,
@@ -133,7 +133,7 @@
         2
       ],
       "summary": "A name containing a quote is interpolated into a SQL string.",
-      "mechanism": "The template literal puts the name in the query text (CWE-89).",
+      "mechanism": "The template literal puts the name in the query text (CWE-89). This standalone program demonstrates query construction susceptibility; it does not execute a database operation.",
       "observed_output": "SELECT id FROM users WHERE name = 'O'Brien'",
       "exit_code": 0,
       "deterministic": true,
@@ -145,8 +145,8 @@
       "bug_lines": [
         2
       ],
-      "summary": "A whitespace email is accepted because it is truthy.",
-      "mechanism": "`if (!email)` rejects only empty strings, not blank or malformed ones (CWE-20).",
+      "summary": "A required nonblank contact field accepts whitespace because it is truthy.",
+      "mechanism": "A truthiness test does not establish that a string contains non-whitespace text; this fixture does not claim full email-address validation.",
       "observed_output": "accepted  ",
       "exit_code": 0,
       "deterministic": true,
@@ -185,7 +185,7 @@
         2
       ],
       "summary": "The name O'Brien closes the quote in the query string early.",
-      "mechanism": "The name is interpolated into a quoted SQL fragment with no escaping.",
+      "mechanism": "The name is interpolated into a quoted SQL fragment with no escaping. This standalone program demonstrates query construction susceptibility; it does not execute a database operation.",
       "observed_output": "select id from people where name = 'O'Brien'",
       "exit_code": 0,
       "deterministic": true,
@@ -236,8 +236,8 @@
       "bug_lines": [
         2
       ],
-      "summary": "An empty JSON object is cast to User and email is read.",
-      "mechanism": "`as User` erases at runtime, so a missing email throws on toLowerCase (CWE-20).",
+      "summary": "Parsed JSON is assumed to have an email string without checking its shape.",
+      "mechanism": "JSON.parse validates JSON syntax, not the required email field; reading the missing field throws.",
       "observed_output": "TypeError: Cannot read properties of undefined (reading 'toLowerCase')",
       "exit_code": 1,
       "deterministic": true,
@@ -263,7 +263,7 @@
         2
       ],
       "summary": "A name containing a quote is interpolated into a SQL string.",
-      "mechanism": "The template literal puts the name in the query text (CWE-89).",
+      "mechanism": "The template literal puts the name in the query text (CWE-89). This standalone program demonstrates query construction susceptibility; it does not execute a database operation.",
       "observed_output": "SELECT id FROM users WHERE name = 'O'Brien'",
       "exit_code": 0,
       "deterministic": true,
@@ -275,8 +275,8 @@
       "bug_lines": [
         2
       ],
-      "summary": "A whitespace email is accepted because it is truthy.",
-      "mechanism": "`if (!email)` rejects only empty strings, not blank or malformed ones (CWE-20).",
+      "summary": "A required nonblank contact field accepts whitespace because it is truthy.",
+      "mechanism": "A truthiness test does not establish that a string contains non-whitespace text; this fixture does not claim full email-address validation.",
       "observed_output": "accepted  ",
       "exit_code": 0,
       "deterministic": true,
@@ -294,6 +294,71 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "allowed false"
+    },
+    {
+      "file": "go/06_quantity_boundary.go",
+      "language": "go",
+      "bug_lines": [
+        8
+      ],
+      "summary": "A typed quantity crosses a function boundary without a domain check.",
+      "mechanism": "Nonnegative quantity must be established before charging.",
+      "observed_output": "charge -30",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "quantity rejected"
+    },
+    {
+      "file": "rust/06_quantity_boundary.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "A typed quantity crosses a function boundary without a domain check.",
+      "mechanism": "Nonnegative quantity must be established before charging.",
+      "observed_output": "charge -30",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "quantity rejected"
+    },
+    {
+      "file": "javascript/06_quantity_boundary.js",
+      "language": "javascript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "A typed quantity crosses a function boundary without a domain check.",
+      "mechanism": "Nonnegative quantity must be established before charging.",
+      "observed_output": "charge -30",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "quantity rejected"
+    },
+    {
+      "file": "typescript/06_quantity_boundary.ts",
+      "language": "typescript",
+      "bug_lines": [
+        4
+      ],
+      "summary": "A typed quantity crosses a function boundary without a domain check.",
+      "mechanism": "Nonnegative quantity must be established before charging.",
+      "observed_output": "charge -30",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "quantity rejected"
+    },
+    {
+      "file": "python/06_quantity_boundary.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "A typed quantity crosses a function boundary without a domain check.",
+      "mechanism": "Nonnegative quantity must be established before charging.",
+      "observed_output": "charge -30",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "quantity rejected"
     }
   ]
 }

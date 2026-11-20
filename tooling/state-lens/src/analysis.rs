@@ -397,7 +397,7 @@ impl Engine {
         for f in &mut facts {
             f.report
                 .findings
-                .retain(|finding| !self.disabled_checks.contains(&finding.defect));
+                .retain(|finding| !self.disabled_checks.contains(&finding.defect) && finding.compound.as_ref().is_none_or(|c| c.ingredients.iter().all(|e| !self.disabled_checks.contains(e.rule_id.rsplit('.').next().unwrap_or_default()))));
         }
         propagate(&mut facts);
         let mut documents = facts
@@ -423,12 +423,14 @@ impl Engine {
             }
             f.report.findings.sort_by_key(|x| (x.trigger.start,x.rule_id.clone(),x.origin.clone()));
             let parsed = &self.parsed[&f.report.uri];
+            crate::unstructured::returned_bindings(parsed.tree.root_node(), &f.source, &mut f.report, |name, at| binding(&f.bindings, name, at).map(|b| b.range));
             let imports: Vec<_> = f.imports.iter().map(|i| (i.local.clone(), i.module.clone(), i.symbol.clone())).collect();
             crate::annotations::analyze(parsed.tree.root_node(), &f.source, &mut f.report, &imports, |name, at| binding(&f.bindings, name, at).is_some());
-            f.report.findings.retain(|finding| !self.disabled_checks.contains(&finding.defect));
+            f.report.findings.retain(|finding| !self.disabled_checks.contains(&finding.defect) && finding.compound.as_ref().is_none_or(|c| c.ingredients.iter().all(|e| !self.disabled_checks.contains(e.rule_id.rsplit('.').next().unwrap_or_default()))));
             crate::annotations::resolve_regions(parsed.tree.root_node(), &mut f.report);
             let mut graph = crate::state::extract_for(&f.report.language, parsed.tree.root_node(), &f.report.uri, &f.source, |name, at| binding(&f.bindings, name, at).map(|b| b.range));
             graph.qualify_snapshot(self.generation, documents.clone(), snapshot_id.clone());
+            crate::unstructured::qualify(&mut f.report, &mut graph);
             graph.explain(&mut f.report);
             if !self.disabled_checks.contains(crate::aliasing::DEFECT) {
                 crate::aliasing::detect(&mut graph, &mut f.report);
@@ -654,7 +656,7 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
     for function in &facts.report.functions {
         let node = all
             .iter()
-            .find(|n| Span::of(**n) == function.range)
+            .find(|n| Span::of(**n) == function.range && n.child_by_field_name("body").is_some())
             .unwrap();
         facts.resolvable.push(
             !(matches!(node.kind(), "method_declaration" | "method_definition")
@@ -668,7 +670,7 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
         for (index, function) in facts.report.functions.iter_mut().enumerate() {
             let node = all
                 .iter()
-                .find(|n| Span::of(**n) == function.range)
+                .find(|n| Span::of(**n) == function.range && n.child_by_field_name("body").is_some())
                 .unwrap();
             if let Some(parameters) = node
                 .child_by_field_name("parameters")
@@ -681,7 +683,7 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
                     parameters.named_children(&mut cursor).collect()
                 };
                 for parameter in parameters {
-                    let name = if parameter.kind() == "identifier" {
+                    let name = if matches!(parameter.kind(), "identifier" | "undefined") {
                         Some(parameter)
                     } else {
                         parameter
@@ -737,7 +739,7 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
                     .collect()
             };
             for name in names.into_iter().filter_map(|n| {
-                if n.kind() == "identifier" {
+                if matches!(n.kind(), "identifier" | "undefined") {
                     Some(n)
                 } else if n.kind() == "mut_pattern" {
                     nodes(n)
@@ -792,7 +794,7 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
                 } else {
                     vec![name]
                 };
-                for name in names.into_iter().filter(|n| n.kind() == "identifier") {
+                for name in names.into_iter().filter(|n| matches!(n.kind(), "identifier" | "undefined")) {
                     if parsed.language == "python" {
                         let function = owner(&facts.report.functions, span);
                         let declared_outer = all.iter().any(|declaration| {
@@ -972,6 +974,7 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
     let imports: Vec<_> = facts.imports.iter().map(|i| (i.local.clone(), i.module.clone(), i.symbol.clone())).collect();
     crate::shared::analyze(&captures, root, source, &mut facts.report, &imports, |name, at| binding(&facts.bindings, name, at).map(|b| b.range));
     crate::division::analyze(&divisions, source, &mut facts.report);
+    crate::unstructured::analyze(&captures, root, source, &mut facts.report, &imports, |name, at| binding(&facts.bindings, name, at).map(|b| b.range));
     if root.has_error() {
         facts.report.unresolved.push(Unresolved {
             range: Span::of(root),
@@ -1428,7 +1431,7 @@ fn propagate(facts: &mut [Facts]) {
         for (d, call, (target_doc, target_func)) in &edges {
             let target = &facts[*target_doc].report.functions[*target_func];
             for finding in &facts[*target_doc].report.findings {
-                if finding.function != Some(target.range) || !finding.effect.observable() {
+                if finding.function != Some(target.range) || (!finding.effect.observable() && !crate::unstructured::propagates(finding)) {
                     continue;
                 }
                 let local = &facts[*d];
@@ -1460,12 +1463,12 @@ fn propagate(facts: &mut [Facts]) {
                 } else {
                     finding.effect.clone()
                 };
-                if effect == Effect::StructuralSignal {
+                if effect == Effect::StructuralSignal && !crate::unstructured::propagates(finding) {
                     continue;
                 }
                 let mut propagated = finding.clone();
                 propagated.trigger = call.range;
-                if propagated.shared_state.is_some() { propagated.blast_radius = vec![call.range]; }
+                if propagated.shared_state.is_some() || crate::unstructured::propagates(finding) { propagated.blast_radius = vec![call.range]; }
                 propagated.function = call.owner.map(|i| local.report.functions[i].range);
                 propagated.effect = effect;
                 propagated.origin = "propagated".into();

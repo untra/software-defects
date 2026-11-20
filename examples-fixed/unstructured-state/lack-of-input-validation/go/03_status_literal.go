@@ -5,11 +5,13 @@ import (
 	"strings"
 )
 
+const allowedStatus = "active"
+
 func main() {
 	status := "BLOCKED"
-	if strings.EqualFold(status, "blocked") {
-		fmt.Println("denied")
-	} else {
+	if strings.EqualFold(status, allowedStatus) {
 		fmt.Println("allowed")
+	} else {
+		fmt.Println("denied")
 	}
 }

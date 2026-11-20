@@ -69,10 +69,7 @@ fn external_inputs_require_supported_unshadowed_sources() {
         "typescript",
         "function f(fetch){ const data=fetch(); return data; }",
     );
-    assert!(!shadow
-        .annotations
-        .iter()
-        .any(|a| a.label == L::Unstructured));
+    assert!(!shadow.findings.iter().any(|f| matches!(f.resolution.as_str(), "external-input" | "external-input-binding")));
 }
 #[test]
 fn only_supported_pairs_receive_lifecycle_evidence() {

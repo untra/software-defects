@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject the invalid boundary input or make the producer contract explicit before use.",
+  "analysis_limit": "Syntax candidates remain in guarded correct code; captures do not establish a domain violation or missing control-flow guard.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "False"
+    ]
+  },
+  "original": {
+    "source_hash": "50af621defa224ab9b9f7eb723ed9f15020d88d5b86ddfafa831a5427ea1ea24",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/unstructured-state/lack-of-input-validation/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              39,
+              43
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "d46014e42f5e70ed242c14e2f3ed1fc5ca1fbe8451abc38faf91d3567fc37099",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/unstructured-state/lack-of-input-validation/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              39,
+              43
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

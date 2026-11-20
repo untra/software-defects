@@ -1,13 +1,13 @@
 type Charger = { amount(): number };
 
-const card: Charger = {
+const card = {
   cents: 250,
   amount() {
     return this.cents;
   },
 };
 
-const invoice: Charger = {
+const invoice = {
   dollars: 250,
   amount() {
     return this.dollars;

@@ -1,6 +1,5 @@
-def main():
-    stock = {"pen": 4}
-    print(1 + stock.get("pencil"))
+def stock_count(stock, item):
+    count = stock.get(item, 0)
+    count
 
-
-main()
+print("stock", stock_count({"pen": 4}, "pen"))

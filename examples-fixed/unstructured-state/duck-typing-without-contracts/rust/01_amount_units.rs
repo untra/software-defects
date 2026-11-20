@@ -1,7 +1,7 @@
 const CENTS_PER_DOLLAR: i32 = 100;
 
 trait Charger {
-    fn amount(&self) -> i32;
+    fn amount_cents(&self) -> i32;
 }
 
 struct Card {
@@ -9,7 +9,7 @@ struct Card {
 }
 
 impl Charger for Card {
-    fn amount(&self) -> i32 {
+    fn amount_cents(&self) -> i32 {
         self.cents
     }
 }
@@ -19,13 +19,13 @@ struct Invoice {
 }
 
 impl Charger for Invoice {
-    fn amount(&self) -> i32 {
+    fn amount_cents(&self) -> i32 {
         self.dollars * CENTS_PER_DOLLAR
     }
 }
 
 fn charge(source: &dyn Charger) -> i32 {
-    source.amount()
+    source.amount_cents()
 }
 
 fn main() {

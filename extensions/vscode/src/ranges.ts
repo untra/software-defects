@@ -52,7 +52,7 @@ export function annotations(snapshot: Snapshot, directOnly: boolean): StateAnnot
   for (const annotation of snapshot.annotations ?? []) {
     const findings = annotation.findings.filter(index => snapshot.findings[index] && (!directOnly || snapshot.findings[index].finding.origin === 'direct'));
     if (!findings.length) continue;
-    const key = `${annotation.category}:${annotation.position.line}:${['compound-defects', 'shared-state'].includes(annotation.category) ? annotation.label : ''}`;
+    const key = `${annotation.category}:${annotation.category === 'unstructured-state' ? annotation.target : ''}:${annotation.position.line}:${['compound-defects', 'shared-state'].includes(annotation.category) ? annotation.label : ''}`;
     groups.set(key, [...(groups.get(key) ?? []), { ...annotation, findings }]);
   }
   return [...groups.values()].map(group => {
@@ -60,7 +60,7 @@ export function annotations(snapshot: Snapshot, directOnly: boolean): StateAnnot
       (a.range.end.character - a.range.start.character) - (b.range.end.character - b.range.start.character) || compare(b.position, a.position));
     const selected = { ...group[0], findings: [...new Set(group.flatMap(a => a.findings))] };
     if (group.length > 1 && !['compound-defects', 'shared-state'].includes(selected.category)) {
-      selected.target = 'segment';
+      if (selected.category !== 'unstructured-state') selected.target = 'segment';
       selected.label = selected.category === 'mutated-state' ? 'Mutacious' : selected.category === 'unstructured-state' ? 'Unstructured' : 'Shared';
     }
     return selected;

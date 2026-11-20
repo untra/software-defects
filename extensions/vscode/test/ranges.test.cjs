@@ -135,6 +135,25 @@ test('unsupported blast radius does not invent a function highlight', () => {
   assert.deepEqual(decorations({functions:[],findings:[{...finding(r(0,10)),blastRadius:[],finding:{family:'mutated-state',origin:'direct'}}]},false),[]);
 });
 
+test('unstructured function and input markers survive on the same line', () => {
+  const { annotations, functionMarkers } = require('../dist/ranges');
+  const snapshot = { findings: [finding(r(0, 1)), finding(r(0, 1))], annotations: [
+    { category: 'unstructured-state', target: 'function', label: 'Unstructured', range: r(0, 1), position: { line: 0, character: 0 }, findings: [0] },
+    { category: 'unstructured-state', target: 'property', label: 'Untyped', range: r(0, 1), position: { line: 0, character: 12 }, findings: [1] }
+  ] };
+  assert.deepEqual(annotations(snapshot, false).map(a => a.target), ['function', 'property']);
+  assert.equal(functionMarkers(snapshot, false).length, 1);
+  assert.deepEqual(snapshot.annotations.map(a => a.findings), [[0], [1]]);
+});
+
+test('merging input markers does not turn them into duplicate segment labels', () => {
+  const { annotations } = require('../dist/ranges');
+  const snapshot = { findings: [finding(r(0, 1))], annotations: ['property', 'property', 'segment'].map((target, index) => ({
+    category: 'unstructured-state', target, label: 'Unstructured', range: r(0, 1), position: { line: 0, character: index }, findings: [0]
+  })) };
+  assert.deepEqual(annotations(snapshot, false).map(a => a.target), ['property', 'segment']);
+});
+
 test('trace evidence retains distinct roles and source hashes without inventing omissions', () => {
   const { findingEvidence } = require('../dist/ranges');
   const origin = { uri: 'file:///a.ts', range: { start: 0, end: 1 } };

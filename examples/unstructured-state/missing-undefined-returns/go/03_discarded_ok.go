@@ -2,8 +2,14 @@ package main
 
 import "fmt"
 
+func requiredRate(rates map[string]int, currency string) (int, error) {
+	rate, ok := rates[currency]
+	if !ok {
+		return 0, nil
+	}
+	return rate, nil
+}
 func main() {
-	rates := map[string]int{"usd": 100}
-	cents, _ := rates["eur"]
-	fmt.Printf("eur %d\n", cents)
+	rate, err := requiredRate(map[string]int{"usd": 100}, "eur")
+	fmt.Printf("rate=%d error=%v\n", rate, err)
 }

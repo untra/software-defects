@@ -1204,6 +1204,371 @@
       "captures": [
         "io_call"
       ]
+    },
+    {
+      "id": "go.unstructured-state.lack-of-input-validation",
+      "language": "go",
+      "family": "unstructured-state",
+      "defect": "lack-of-input-validation",
+      "grammar_version": "0.25.0",
+      "query": "go/unstructured-state/lack-of-input-validation/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-20"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_boundary",
+        "unstructured_parameter"
+      ]
+    },
+    {
+      "id": "rust.unstructured-state.lack-of-input-validation",
+      "language": "rust",
+      "family": "unstructured-state",
+      "defect": "lack-of-input-validation",
+      "grammar_version": "0.24.0",
+      "query": "rust/unstructured-state/lack-of-input-validation/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-20"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_boundary",
+        "unstructured_parameter"
+      ]
+    },
+    {
+      "id": "typescript.unstructured-state.lack-of-input-validation",
+      "language": "typescript",
+      "family": "unstructured-state",
+      "defect": "lack-of-input-validation",
+      "grammar_version": "0.23.2",
+      "query": "typescript/unstructured-state/lack-of-input-validation/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-20"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_boundary",
+        "unstructured_parameter"
+      ]
+    },
+    {
+      "id": "javascript.unstructured-state.lack-of-input-validation",
+      "language": "javascript",
+      "family": "unstructured-state",
+      "defect": "lack-of-input-validation",
+      "grammar_version": "0.25.0",
+      "query": "javascript/unstructured-state/lack-of-input-validation/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-20"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_boundary",
+        "unstructured_parameter"
+      ]
+    },
+    {
+      "id": "python.unstructured-state.lack-of-input-validation",
+      "language": "python",
+      "family": "unstructured-state",
+      "defect": "lack-of-input-validation",
+      "grammar_version": "0.25.0",
+      "query": "python/unstructured-state/lack-of-input-validation/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-20"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_boundary",
+        "unstructured_parameter"
+      ]
+    },
+    {
+      "id": "go.unstructured-state.unconstrained-inputs",
+      "language": "go",
+      "family": "unstructured-state",
+      "defect": "unconstrained-inputs",
+      "grammar_version": "0.25.0",
+      "query": "go/unstructured-state/unconstrained-inputs/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-770",
+        "CWE-789"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_parameter",
+        "unstructured_resource"
+      ]
+    },
+    {
+      "id": "rust.unstructured-state.unconstrained-inputs",
+      "language": "rust",
+      "family": "unstructured-state",
+      "defect": "unconstrained-inputs",
+      "grammar_version": "0.24.0",
+      "query": "rust/unstructured-state/unconstrained-inputs/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-770",
+        "CWE-789"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_parameter",
+        "unstructured_resource"
+      ]
+    },
+    {
+      "id": "typescript.unstructured-state.unconstrained-inputs",
+      "language": "typescript",
+      "family": "unstructured-state",
+      "defect": "unconstrained-inputs",
+      "grammar_version": "0.23.2",
+      "query": "typescript/unstructured-state/unconstrained-inputs/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-770",
+        "CWE-789"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_parameter",
+        "unstructured_resource"
+      ]
+    },
+    {
+      "id": "javascript.unstructured-state.unconstrained-inputs",
+      "language": "javascript",
+      "family": "unstructured-state",
+      "defect": "unconstrained-inputs",
+      "grammar_version": "0.25.0",
+      "query": "javascript/unstructured-state/unconstrained-inputs/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-770",
+        "CWE-789"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_parameter",
+        "unstructured_resource"
+      ]
+    },
+    {
+      "id": "python.unstructured-state.unconstrained-inputs",
+      "language": "python",
+      "family": "unstructured-state",
+      "defect": "unconstrained-inputs",
+      "grammar_version": "0.25.0",
+      "query": "python/unstructured-state/unconstrained-inputs/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-770",
+        "CWE-789"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_parameter",
+        "unstructured_resource"
+      ]
+    },
+    {
+      "id": "go.unstructured-state.duck-typing-without-contracts",
+      "language": "go",
+      "family": "unstructured-state",
+      "defect": "duck-typing-without-contracts",
+      "grammar_version": "0.25.0",
+      "query": "go/unstructured-state/duck-typing-without-contracts/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-704"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_assertion"
+      ]
+    },
+    {
+      "id": "rust.unstructured-state.duck-typing-without-contracts",
+      "language": "rust",
+      "family": "unstructured-state",
+      "defect": "duck-typing-without-contracts",
+      "grammar_version": "0.24.0",
+      "query": "rust/unstructured-state/duck-typing-without-contracts/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-704"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_assertion"
+      ]
+    },
+    {
+      "id": "typescript.unstructured-state.duck-typing-without-contracts",
+      "language": "typescript",
+      "family": "unstructured-state",
+      "defect": "duck-typing-without-contracts",
+      "grammar_version": "0.23.2",
+      "query": "typescript/unstructured-state/duck-typing-without-contracts/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-704"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_assertion"
+      ]
+    },
+    {
+      "id": "javascript.unstructured-state.duck-typing-without-contracts",
+      "language": "javascript",
+      "family": "unstructured-state",
+      "defect": "duck-typing-without-contracts",
+      "grammar_version": "0.25.0",
+      "query": "javascript/unstructured-state/duck-typing-without-contracts/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-704"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_assertion"
+      ]
+    },
+    {
+      "id": "python.unstructured-state.duck-typing-without-contracts",
+      "language": "python",
+      "family": "unstructured-state",
+      "defect": "duck-typing-without-contracts",
+      "grammar_version": "0.25.0",
+      "query": "python/unstructured-state/duck-typing-without-contracts/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-704"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_assertion"
+      ]
+    },
+    {
+      "id": "go.unstructured-state.missing-undefined-returns",
+      "language": "go",
+      "family": "unstructured-state",
+      "defect": "missing-undefined-returns",
+      "grammar_version": "0.25.0",
+      "query": "go/unstructured-state/missing-undefined-returns/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-252",
+        "CWE-476"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_function",
+        "unstructured_return"
+      ]
+    },
+    {
+      "id": "rust.unstructured-state.missing-undefined-returns",
+      "language": "rust",
+      "family": "unstructured-state",
+      "defect": "missing-undefined-returns",
+      "grammar_version": "0.24.0",
+      "query": "rust/unstructured-state/missing-undefined-returns/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-252",
+        "CWE-476"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_function",
+        "unstructured_return"
+      ]
+    },
+    {
+      "id": "typescript.unstructured-state.missing-undefined-returns",
+      "language": "typescript",
+      "family": "unstructured-state",
+      "defect": "missing-undefined-returns",
+      "grammar_version": "0.23.2",
+      "query": "typescript/unstructured-state/missing-undefined-returns/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-252",
+        "CWE-476"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_function",
+        "unstructured_return"
+      ]
+    },
+    {
+      "id": "javascript.unstructured-state.missing-undefined-returns",
+      "language": "javascript",
+      "family": "unstructured-state",
+      "defect": "missing-undefined-returns",
+      "grammar_version": "0.25.0",
+      "query": "javascript/unstructured-state/missing-undefined-returns/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-252",
+        "CWE-476"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_function",
+        "unstructured_return"
+      ]
+    },
+    {
+      "id": "python.unstructured-state.missing-undefined-returns",
+      "language": "python",
+      "family": "unstructured-state",
+      "defect": "missing-undefined-returns",
+      "grammar_version": "0.25.0",
+      "query": "python/unstructured-state/missing-undefined-returns/signals.scm",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Syntax marks a potential contract boundary; it does not establish missing validation, a violated budget, an invalid cast, or a missing return. Types, guards, dispatch and value flow require analysis.",
+      "related_cwes": [
+        "CWE-252",
+        "CWE-476"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability.",
+      "captures": [
+        "unstructured_function",
+        "unstructured_return"
+      ]
     }
   ]
 }

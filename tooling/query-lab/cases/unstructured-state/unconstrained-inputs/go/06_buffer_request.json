@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject the invalid boundary input or make the producer contract explicit before use.",
+  "analysis_limit": "Syntax candidates remain in guarded correct code; captures do not establish a domain violation or missing control-flow guard.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "buffer rejected"
+    ]
+  },
+  "original": {
+    "source_hash": "d6b0fbce715d5466b86de5e02219f5898f09ff6dbe4fad4229a3a87ec3294aae",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/unconstrained-inputs/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              68,
+              81
+            ]
+          },
+          {
+            "name": "unstructured_resource",
+            "range": [
+              109,
+              132
+            ]
+          },
+          {
+            "name": "_callee",
+            "range": [
+              109,
+              113
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "da7ebb44e978b081457d04f5dacb47cf871b15bcd355c76825d0a6dceaf76be1",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/unconstrained-inputs/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              68,
+              81
+            ]
+          },
+          {
+            "name": "unstructured_resource",
+            "range": [
+              206,
+              229
+            ]
+          },
+          {
+            "name": "_callee",
+            "range": [
+              206,
+              210
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,4 +1,5 @@
 function birthday(user) {
-    return user.age === undefined ? null : user.age + 1;
+    const nextAge = user.age + 1;
+    return nextAge;
 }
-console.log("age", birthday({}));
+console.log("age", birthday({ age: 30 }));

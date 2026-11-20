@@ -1,75 +1,53 @@
-# Bugs of Unstructured State — language susceptibility
+# Unstructured state: susceptibility and corpus coverage
 
-Score **1–5**: how likely the defect is to show up in everyday code in that language, and how many distinct, demonstrable forms it takes. Each cell has exactly that many example files.
+Susceptibility scores are qualitative editorial judgments from 1 (fewer common mechanisms) to 5 (many common mechanisms). They are not measured prevalence, detector accuracy, or example quotas. JavaScript is assessed separately from TypeScript even where the scores coincide.
 
-| Defect | Go | Rust | TypeScript | Python |
-|---|:-:|:-:|:-:|:-:|
-| [divide-by-zero](divide-by-zero/) | 4 | 3 | 5 | 4 |
-| [type-errors](type-errors/) | 2 | 1 | 5 | 5 |
-| [index-out-of-bounds](index-out-of-bounds/) | 4 | 3 | 5 | 4 |
-| [lack-of-input-validation](lack-of-input-validation/) | 4 | 3 | 5 | 5 |
-| [unconstrained-inputs](unconstrained-inputs/) | 4 | 3 | 4 | 4 |
-| [duck-typing-without-contracts](duck-typing-without-contracts/) | 2 | 2 | 5 | 5 |
-| [missing-undefined-returns](missing-undefined-returns/) | 4 | 2 | 5 | 5 |
-| [version-library-mismanagement](version-library-mismanagement/) | 2 | 3 | 4 | 3 |
-| [insecure-deserialization](insecure-deserialization/) | 3 | 2 | 4 | 4 |
-| **Total** | **29** | **22** | **42** | **39** |
+## Susceptibility
 
-## Rationale
+| Defect | Go | Rust | JavaScript | TypeScript | Python |
+|---|---:|---:|---:|---:|---:|
+| [divide-by-zero](divide-by-zero/) | 4 | 3 | 5 | 5 | 4 |
+| [type-errors](type-errors/) | 2 | 1 | 5 | 5 | 5 |
+| [index-out-of-bounds](index-out-of-bounds/) | 4 | 3 | 5 | 5 | 4 |
+| [lack-of-input-validation](lack-of-input-validation/) | 4 | 3 | 5 | 5 | 5 |
+| [unconstrained-inputs](unconstrained-inputs/) | 4 | 3 | 4 | 4 | 4 |
+| [duck-typing-without-contracts](duck-typing-without-contracts/) | 2 | 2 | 5 | 5 | 5 |
+| [missing-undefined-returns](missing-undefined-returns/) | 3 | 2 | 5 | 5 | 5 |
+| [version-library-mismanagement](version-library-mismanagement/) | 2 | 3 | 4 | 4 | 3 |
+| [insecure-deserialization](insecure-deserialization/) | 3 | 2 | 4 | 4 | 4 |
 
-**divide-by-zero**
+## Example counts
 
-[Detection and minimal-fix review](divide-by-zero/REVIEW.md) covers all 16 original/fixed pairs.
+Counts below are original standalone source files, independent of susceptibility scores. Fixed coverage is audited separately; a source file does not establish production detector support.
 
-- Go 4: integer `/` and `%` panic; float64 yields `+Inf`; an empty average divides by `len`.
-- Rust 3: integer division, floating-point division, and integer remainder. Integer zero division and remainder panic in debug and release. Nothing in the type system tracks a non-zero divisor.
-- TS 5: `/ 0` is `Infinity`, `0/0` and `% 0` are `NaN`, an empty mean is `NaN`, and a `bigint` divisor throws.
-- Python 4: `/`, `//`, and `%` all raise, including a float dividend. There is no silent `Infinity` from division. The fourth case is an empty mean.
+| Defect | Go | Rust | JavaScript | TypeScript | Python |
+|---|---:|---:|---:|---:|---:|
+| divide-by-zero | 4 | 3 | 5 | 5 | 4 |
+| type-errors | 2 | 1 | 5 | 5 | 5 |
+| index-out-of-bounds | 4 | 3 | 5 | 5 | 4 |
+| lack-of-input-validation | 5 | 4 | 6 | 6 | 6 |
+| unconstrained-inputs | 7 | 6 | 7 | 7 | 7 |
+| duck-typing-without-contracts | 3 | 3 | 6 | 6 | 6 |
+| missing-undefined-returns | 4 | 2 | 5 | 5 | 5 |
+| version-library-mismanagement | 2 | 3 | 4 | 4 | 3 |
+| insecure-deserialization | 3 | 2 | 4 | 4 | 4 |
+| **Total** | 34 | 27 | 47 | 47 | 44 |
 
-**type-errors**
-- Go 2: static types stop coercion. A JSON number stored in `any` is `float64`, and a `fmt` verb can disagree with the dynamic type.
-- Rust 1: types are enforced. The leftover is an `Any` downcast to the wrong width, then a default.
-- TS 5: `+` concatenates, `==` coerces, a falsy `0` is replaced, numeric strings sort lexicographically, and `parseInt` keeps a trailing unit.
-- Python 5: a string repeats instead of multiplying, `n or 50` replaces `0`, `True` overwrites the key `1`, `sorted` refuses mixed types, and `int("10px")` raises.
+## Audited input and output contracts
 
-**index-out-of-bounds**
-- Go 4: a computed index panics (including `len-1` on empty), a missing map key is the zero value, a slice can split a rune, and a short split is still indexed.
-- Rust 3: indexing panics, a slice off a char boundary panics, and `last().unwrap()` panics on empty.
-- TS 5: a bare index does not throw. Empty `[0].field` throws later, arithmetic becomes `NaN`, a missing key is `undefined`, `arr[-1]` does not wrap, and a code unit splits an emoji.
-- Python 4: an empty `[0]`, a missing key, `.get` followed by arithmetic on `None`, and `split` of a header that has no field. A string index is a code point, so there is no surrogate-pair example.
+- **lack-of-input-validation:** a boundary value reaches an operation without establishing its required shape or domain. Typed parameters can still accept invalid quantities. Dynamic JSON requires runtime checks; annotations alone do not establish them. All five languages now include a function-boundary quantity pair.
+- **unconstrained-inputs:** accepted values exceed a size, work, depth, or representable-value budget. All five languages include batch cardinality, requested allocation, and multiplicative expansion pairs. Independent limits on two inputs do not establish a combined output limit.
+- **duck-typing-without-contracts:** a value is asserted, downcast, or consumed as a shape/capability/unit that has not been established. Go interfaces and Rust traits prevent many structural errors, but unchecked dynamic conversions and semantic units remain relevant. JavaScript, TypeScript, and Python have additional runtime shape gaps.
+- **missing-undefined-returns:** the producer omits the required output or returns a success-shaped value without the promised payload. A caller failing to check a legitimate optional result is a separate consumer defect. Intentional optional returns and command functions returning no value are not failures. Go and Rust reject ordinary missing typed returns; their examples instead model false success or omitted failure signaling.
 
-**lack-of-input-validation**
-- Go 4: an ignored `Atoi` error, a query built with `Sprintf`, a status checked against one literal, and a negative quantity.
-- Rust 3: `unwrap_or(0)` on a bad parse, the same query build, and a negative quantity. Safe Rust has no `eval`.
-- TS 5: a cast the runtime erases, `eval` of a formula, a template-built query, a truthy check used as validation, and a prefix host check.
-- Python 5: a failed `int` becomes `0`, a query string keeps `O'Brien` inside quotes, a negative quantity is charged, `eval` of a formula sees a local name, and `startswith` accepts a longer host. There is no comma operator.
+Function labels describe boundary requirements or producer obligations. Variable labels describe values and aliases carrying those unresolved requirements. Neither label alone proves a defect or a CWE. A fixed example can retain the same syntax signal.
 
-**unconstrained-inputs**
-- Go 4: no ReDoS (`regexp` is linear). Input still wraps an `int64` product, panics `make` on a negative length, repeats past a domain max, and overflows a `time.Duration`.
-- Rust 3: a debug-mode product panics, a repeat ignores the max, and `as u32` truncates a scaled duration.
-- TS 4: `slice` treats a negative end as an offset, repeat ignores the max, a product becomes `Infinity`, and nested groups have no depth cap. A nested-quantifier hang is not a stable case.
-- Python 4: a slice limit of `-1` drops the last row, a repeated label has no max, a float product becomes `inf`, and nested groups have no depth cap. A regular-expression hang is not a stable case.
+The four audited groups have mirrored fixes in all five languages. Production coverage must be read from the rule catalog and query tests rather than inferred from this table. See [the review](REVIEW.md) for audit findings, research, and analysis limits.
 
-**duck-typing-without-contracts**
-- Go 2: interfaces are checked at compile time. A method can still omit its unit, and a type-switch default can assume a map.
-- Rust 2: traits are the contract. The holes are a unit-less `amount`, and a default method that unwraps a promise the implementor never made.
-- TS 5: structural typing. Cents and dollars share a shape, an array-like value has no `.map`, an optional method is missing, two string ids swap, and a widened reading carries the wrong unit.
-- Python 5: `amount()` hides cents versus dollars, a string iterates as titles, a missing `save` raises at the call, two string ids swap, and a reading that only has `.value` is converted with the Celsius formula.
+## Other mechanisms
 
-**missing-undefined-returns**
-- Go 4: every path must return, so the bug is a success value for failure: `(nil, nil)`, an ignored `error`, a discarded comma-ok, and a naked return of the zero result.
-- Rust 2: `Option` and `Result` must be handled unless the code unwraps or drops the error.
-- TS 5: a branch falls off the end (`NaN`), `find` is `undefined`, a `map` callback returns nothing, an optional field is added, and an async function resolves to `undefined`.
-- Python 5: `find` falls off the end and the caller indexes `None`, a discount branch makes `1 - None` raise, a helper that prints returns `None`, `.get` is used as a number, and an async function returns `None`.
-
-**version-library-mismanagement**
-- Go 2: modules are usually exact. A copied helper still disagrees with its twin, and a highest-version pick still changes behavior. No network.
-- Rust 3: the same copy, a caret range (`^1.2.0` accepts a later 1.x), and a feature flag unified on by another crate.
-- TS 4: copy, caret, an unpinned "latest" resolve, and two majors of one helper in the same process.
-- Python 3: a copied February helper, an unpinned "last published" pick of a later release, and two majors in one process. No install and no network.
-
-**insecure-deserialization**
-- Go 3: `encoding/json` sets an exported `Admin` field, a wrong JSON type becomes a zero with the error ignored, and a nested object sets a flag while unknown fields are skipped.
-- Rust 2: no serde in these examples. A hand-rolled assigner copies `admin`, and a length prefix consumes the next field.
-- TS 4: `Object.assign` of the body, a merge that assigns `__proto__`, a reviver that keeps a caller-supplied flag, and a `constructor` property taken from parsed data.
-- Python 4: `setattr` from the body, `User(**data)`, a nested flags dict, and `dict.update`. These examples only show the program's own `admin` flag flipping. No `pickle`.
+- **divide-by-zero:** integer division and remainder can fail; JavaScript/TypeScript and floating-point operations can instead produce non-finite values. See the [division review](divide-by-zero/REVIEW.md) for the established analysis.
+- **type-errors:** static types reduce ordinary mismatches in Go/Rust; dynamic values, formatting, coercion, and semantic units remain relevant. Python and JavaScript have more implicit runtime behavior; TypeScript inherits JavaScript runtime behavior.
+- **index-out-of-bounds:** language differences include panics/exceptions, undefined elements, missing-map defaults, and string byte/code-unit boundaries.
+- **version-library-mismanagement:** examples demonstrate incompatible copies, version selection, or features without network installation.
+- **insecure-deserialization:** examples demonstrate untrusted fields modifying application state; presence of a parser alone does not prove unsafe deserialization.

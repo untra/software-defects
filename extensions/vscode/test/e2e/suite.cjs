@@ -135,7 +135,8 @@ async function check(api, document, row, expected, state) {
     const entry = snapshot.findings.find(e => e.finding.rule_id === code && diagnostic.range.isEqual(new vscode.Range(e.triggerRange.start.line, e.triggerRange.start.character, e.triggerRange.end.line, e.triggerRange.end.character)));
     const trace = entry?.finding.state_trace;
     const declaredAlias = entry?.finding.resolution === 'object-identity' && Boolean(trace?.requirement) && trace?.evidence_level === 'feasible_under_model';
-    const warning = ['known-zero', 'possible-zero'].includes(entry?.finding.division_risk?.confidence) || declaredAlias;
+    const requiredOutput = entry?.finding.defect === 'missing-undefined-returns' && trace?.requirement?.kind === 'producer-result' && trace?.evidence_level === 'feasible_under_model';
+    const warning = ['known-zero', 'possible-zero'].includes(entry?.finding.division_risk?.confidence) || declaredAlias || requiredOutput;
     if (diagnostic.severity !== (warning ? vscode.DiagnosticSeverity.Warning : vscode.DiagnosticSeverity.Information)) row.problems.push(issue('count-mismatch', 'Unexpected diagnostic severity'));
   }
   const expectedFindings = expected && Object.values(expected.rule_ids).reduce((a, b) => a + b, 0);
@@ -147,7 +148,7 @@ async function check(api, document, row, expected, state) {
   if (state.expired) return;
   if (hints.length) row.problems.push(issue('count-mismatch', 'Native hints duplicate colored decorations'));
   const appliedLabels = api.applied(uri.toString())?.labels ?? [];
-  const labelKeys = appliedLabels.map(a => `${a.category}:${a.position.line}:${['compound-defects', 'shared-state'].includes(a.category) ? a.label : ''}`);
+  const labelKeys = appliedLabels.map(a => `${a.category}:${a.category === 'unstructured-state' ? a.target : ''}:${a.position.line}:${['compound-defects', 'shared-state'].includes(a.category) ? a.label : ''}`);
   if (new Set(labelKeys).size !== labelKeys.length) row.problems.push(issue('count-mismatch', 'Duplicate line labels'));
   const target = diagnostics.find(d => !d.range.isEmpty);
   if (target) {

@@ -1,9 +1,10 @@
-function findAdmin(users) {
+function requireAdmin(users) {
     for (const user of users) {
-        if (user.role === "admin") {
-            return user;
-        }
+        if (user.role === "admin") return user;
     }
 }
-const admin = findAdmin([{ name: "pam", role: "guest" }]);
-console.log(admin.name);
+try {
+    console.log("admin", requireAdmin([{ name: "pam", role: "guest" }]));
+} catch (error) {
+    console.log(error instanceof Error ? error.message : "lookup failed");
+}

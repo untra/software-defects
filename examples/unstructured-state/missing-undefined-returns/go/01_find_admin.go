@@ -2,22 +2,17 @@ package main
 
 import "fmt"
 
-type User struct {
-	Name string
-	Role string
-}
+type User struct{ Name, Role string }
 
-func findAdmin(users []User) *User {
+func requireAdmin(users []User) (*User, error) {
 	for i := range users {
 		if users[i].Role == "admin" {
-			return &users[i]
+			return &users[i], nil
 		}
 	}
-	return nil
+	return nil, nil
 }
-
 func main() {
-	users := []User{{Name: "pam", Role: "guest"}}
-	admin := findAdmin(users)
-	fmt.Println(admin.Name)
+	admin, err := requireAdmin([]User{{Name: "pam", Role: "guest"}})
+	fmt.Printf("admin=%v error=%v\n", admin, err)
 }

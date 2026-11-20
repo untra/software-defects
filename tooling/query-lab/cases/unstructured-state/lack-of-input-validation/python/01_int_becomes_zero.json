@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject the invalid boundary input or make the producer contract explicit before use.",
+  "analysis_limit": "Syntax candidates remain in guarded correct code; captures do not establish a domain violation or missing control-flow guard.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "quantity rejected"
+    ]
+  },
+  "original": {
+    "source_hash": "cd8a06f412c434964ae088dee393a4f764b808fc71d12c49ce8c61f50476a583",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/unstructured-state/lack-of-input-validation/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              14,
+              17
+            ]
+          },
+          {
+            "name": "_callee",
+            "range": [
+              44,
+              47
+            ]
+          },
+          {
+            "name": "unstructured_boundary",
+            "range": [
+              44,
+              52
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "baf0c86a876957c2a1314062cbdc79466f30f705909a42941132748f3639b647",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/unstructured-state/lack-of-input-validation/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              14,
+              17
+            ]
+          },
+          {
+            "name": "_callee",
+            "range": [
+              31,
+              34
+            ]
+          },
+          {
+            "name": "unstructured_boundary",
+            "range": [
+              31,
+              39
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

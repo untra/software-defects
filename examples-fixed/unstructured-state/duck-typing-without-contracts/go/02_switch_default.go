@@ -13,7 +13,10 @@ func cityOf(row any) string {
 	case Row:
 		return row.(Row).City
 	case map[string]any:
-		city, _ := row.(map[string]any)["city"].(string)
+		city, ok := row.(map[string]any)["city"].(string)
+		if !ok {
+			return "unsupported city"
+		}
 		return city
 	default:
 		return "unsupported row"

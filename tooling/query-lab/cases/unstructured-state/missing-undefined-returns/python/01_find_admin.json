@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject the invalid boundary input or make the producer contract explicit before use.",
+  "analysis_limit": "Syntax candidates remain in guarded correct code; captures do not establish a domain violation or missing control-flow guard.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "administrator required"
+    ]
+  },
+  "original": {
+    "source_hash": "a68e6ea0211b6bbc1273a502bfbbd30d7187b58d5f31427bfa096b4bd0f1e521",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/unstructured-state/missing-undefined-returns/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_function",
+            "range": [
+              0,
+              116
+            ]
+          },
+          {
+            "name": "unstructured_return",
+            "range": [
+              103,
+              116
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "61f9a18a5afe94b40e714af3a6e53beb5fe3ba77b056aab1bc1f2ac038d02704",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/unstructured-state/missing-undefined-returns/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_function",
+            "range": [
+              0,
+              164
+            ]
+          },
+          {
+            "name": "unstructured_return",
+            "range": [
+              103,
+              116
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

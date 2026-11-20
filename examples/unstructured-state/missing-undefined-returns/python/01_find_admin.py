@@ -1,12 +1,9 @@
-def find_admin(people):
+def require_admin(people):
     for person in people:
         if person["role"] == "admin":
             return person
 
-
-def main():
-    found = find_admin([{"name": "ada", "role": "staff"}])
-    print(found["name"])
-
-
-main()
+try:
+    print("admin", require_admin([{"name": "ada", "role": "staff"}]))
+except LookupError as error:
+    print(error)

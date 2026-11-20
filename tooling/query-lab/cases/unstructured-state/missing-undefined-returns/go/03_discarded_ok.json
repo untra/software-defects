@@ -3,7 +3,7 @@
   "status": "syntax-candidate",
   "rationale": "Check the map presence result.",
   "original": {
-    "source_hash": "a689d6382b8ecd1c7727e2422314a588a4d9ff4a6b4930723cf5f85662487105",
+    "source_hash": "1f1c8519c2958e5dfc5747580d759531ffc5db2dc226cba8b93b8aaecc5aafa5",
     "queries": [
       {
         "query": "tooling/query-lab/queries/go/unstructured-state/missing-undefined-returns/signals.scm",
@@ -12,7 +12,7 @@
     ]
   },
   "fixed": {
-    "source_hash": "0d81184c064a733b877d7cafd8b1a8f06ae8f28ac6a5955c50ed70a097249675",
+    "source_hash": "a37afef302386c044e6d61d07cb645e8cc8fc27896e9226bfa9eadac12502df5",
     "queries": [
       {
         "query": "tooling/query-lab/queries/go/unstructured-state/missing-undefined-returns/signals.scm",
@@ -22,10 +22,10 @@
   },
   "runtime": {
     "status": "supported",
+    "exit_code": 0,
     "stdout_contains": [
-      "rate unavailable"
-    ],
-    "exit_code": 0
+      "rate unavailable: eur"
+    ]
   },
   "analysis_limit": "These are syntax candidates only. The comma-ok result is discarded, so absence and a real zero look the same (CWE-252). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
 }
