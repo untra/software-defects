@@ -228,6 +228,167 @@
       "exit_code": 0,
       "deterministic": true,
       "expected_behavior": "both completed"
+    },
+    {
+      "file": "go/06_unchecked_try_lock.go",
+      "language": "go",
+      "bug_lines": [
+        8
+      ],
+      "summary": "A failed TryLock is ignored and the caller treats the critical section as acquired.",
+      "mechanism": "Conditional acquisition must succeed before protected work.",
+      "observed_output": "entered: true",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "entered: false"
+    },
+    {
+      "file": "go/07_per_call_lock.go",
+      "language": "go",
+      "bug_lines": [
+        12
+      ],
+      "summary": "Each invocation locks a different mutex while updating the same counter.",
+      "mechanism": "Per-call locks do not protect a shared resource.",
+      "observed_output": "count: 1",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "count: 2"
+    },
+    {
+      "file": "python/05_cancelled_owner.py",
+      "language": "python",
+      "bug_lines": [
+        11
+      ],
+      "summary": "Cancellation skips the explicit release and leaves an asyncio lock held.",
+      "mechanism": "Cancellation needs context-managed release.",
+      "observed_output": "locked: True",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "locked: False"
+    },
+    {
+      "file": "python/06_thread_lock_in_tasks.py",
+      "language": "python",
+      "bug_lines": [
+        12
+      ],
+      "summary": "Coroutines on one thread re-enter RLock and overwrite each other.",
+      "mechanism": "Thread ownership does not provide coroutine exclusion.",
+      "observed_output": "count: 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "count: 2"
+    },
+    {
+      "file": "python/07_per_call_lock.py",
+      "language": "python",
+      "bug_lines": [
+        9
+      ],
+      "summary": "Each coroutine creates a private lock around a shared counter.",
+      "mechanism": "The lock must be shared by all contenders.",
+      "observed_output": "count: 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "count: 2"
+    },
+    {
+      "file": "javascript/03_per_call_lock.js",
+      "language": "javascript",
+      "bug_lines": [
+        13
+      ],
+      "summary": "Each request creates its own lock for the same module counter.",
+      "mechanism": "Private mutexes cannot serialize shared writes.",
+      "observed_output": "count: 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "count: 2"
+    },
+    {
+      "file": "javascript/04_callback_outlives_lock.js",
+      "language": "javascript",
+      "bug_lines": [
+        6
+      ],
+      "summary": "The Web Locks callback returns before its asynchronous write completes.",
+      "mechanism": "Lock lifetime follows callback completion.",
+      "observed_output": "entries: 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "entries: 1",
+      "runtime": "browser"
+    },
+    {
+      "file": "javascript/05_nested_web_lock.js",
+      "language": "javascript",
+      "bug_lines": [
+        6
+      ],
+      "summary": "An exclusive Web Lock callback waits for the same lock again.",
+      "mechanism": "Non-reentrant exclusive lock request.",
+      "observed_output": "completed: false",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "completed: true",
+      "runtime": "browser"
+    },
+    {
+      "file": "typescript/03_per_call_lock.ts",
+      "language": "typescript",
+      "bug_lines": [
+        14
+      ],
+      "summary": "Each request creates its own lock for the same module counter.",
+      "mechanism": "Private mutexes cannot serialize shared writes.",
+      "observed_output": "count: 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "count: 2"
+    },
+    {
+      "file": "typescript/04_callback_outlives_lock.ts",
+      "language": "typescript",
+      "bug_lines": [
+        6
+      ],
+      "summary": "The Web Locks callback returns before its asynchronous write completes.",
+      "mechanism": "Lock lifetime follows callback completion.",
+      "observed_output": "entries: 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "entries: 1",
+      "runtime": "browser"
+    },
+    {
+      "file": "typescript/05_nested_web_lock.ts",
+      "language": "typescript",
+      "bug_lines": [
+        6
+      ],
+      "summary": "An exclusive Web Lock callback waits for the same lock again.",
+      "mechanism": "Non-reentrant exclusive lock request.",
+      "observed_output": "completed: false",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "completed: true",
+      "runtime": "browser"
+    },
+    {
+      "file": "rust/04_blocking_guard_across_await.rs",
+      "language": "rust",
+      "bug_lines": [
+        12
+      ],
+      "summary": "A blocking lock prevents the current-thread executor from resuming its holder.",
+      "mechanism": "Blocking lock acquisition across suspension.",
+      "observed_output": "blocked",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "count: 2",
+      "runtime": "tokio"
     }
   ]
 }

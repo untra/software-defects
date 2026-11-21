@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Lock lifetime follows callback completion. The fixed version preserves the intended operation while enforcing its synchronization contract.",
+  "analysis_limit": "Captures are independent source-token expectations. API identity, guard lifetime, scheduling and control flow require bounded analyzer evidence.",
+  "runtime": {
+    "status": "unsupported",
+    "reason": "Browser Web Locks fixture; Node 22 has no navigator.locks. Parse and analyzer checks remain supported."
+  },
+  "original": {
+    "source_hash": "ec3f3cc1eb5b1ead2e93d82db9bd6bc1d1e3608aec779d3b85c1cee3a2dc1893",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              226,
+              284
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              242,
+              249
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "f4bde6e0e3ea08e2381c6567ec0f9988d2e1722e2e3be8e2aecdc4a17000bcd9",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              226,
+              321
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              242,
+              249
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

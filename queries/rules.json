@@ -1569,6 +1569,106 @@
         "unstructured_function",
         "unstructured_return"
       ]
+    },
+    {
+      "id": "go.shared-state.threading-mutexes",
+      "language": "go",
+      "family": "shared-state",
+      "defect": "threading-mutexes",
+      "query": "go/shared-state/threading-mutexes/boundaries.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Structural lock candidates require binding, API, lifetime and control-flow analysis. Unresolved resources and scheduling remain candidates.",
+      "related_cwes": [
+        "CWE-667",
+        "CWE-833",
+        "CWE-820"
+      ],
+      "cwe_relationship": "Taxonomy reference; syntax alone is not a diagnosed vulnerability.",
+      "captures": [
+        "mutex_method",
+        "mutex_call"
+      ]
+    },
+    {
+      "id": "rust.shared-state.threading-mutexes",
+      "language": "rust",
+      "family": "shared-state",
+      "defect": "threading-mutexes",
+      "query": "rust/shared-state/threading-mutexes/boundaries.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Structural lock candidates require binding, API, lifetime and control-flow analysis. Unresolved resources and scheduling remain candidates.",
+      "related_cwes": [
+        "CWE-667",
+        "CWE-833",
+        "CWE-820"
+      ],
+      "cwe_relationship": "Taxonomy reference; syntax alone is not a diagnosed vulnerability.",
+      "captures": [
+        "mutex_method",
+        "mutex_call"
+      ]
+    },
+    {
+      "id": "typescript.shared-state.threading-mutexes",
+      "language": "typescript",
+      "family": "shared-state",
+      "defect": "threading-mutexes",
+      "query": "typescript/shared-state/threading-mutexes/boundaries.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Structural lock candidates require binding, API, lifetime and control-flow analysis. Unresolved resources and scheduling remain candidates.",
+      "related_cwes": [
+        "CWE-667",
+        "CWE-833",
+        "CWE-820"
+      ],
+      "cwe_relationship": "Taxonomy reference; syntax alone is not a diagnosed vulnerability.",
+      "captures": [
+        "mutex_method",
+        "mutex_call"
+      ]
+    },
+    {
+      "id": "javascript.shared-state.threading-mutexes",
+      "language": "javascript",
+      "family": "shared-state",
+      "defect": "threading-mutexes",
+      "query": "javascript/shared-state/threading-mutexes/boundaries.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Structural lock candidates require binding, API, lifetime and control-flow analysis. Unresolved resources and scheduling remain candidates.",
+      "related_cwes": [
+        "CWE-667",
+        "CWE-833",
+        "CWE-820"
+      ],
+      "cwe_relationship": "Taxonomy reference; syntax alone is not a diagnosed vulnerability.",
+      "captures": [
+        "mutex_method",
+        "mutex_call"
+      ]
+    },
+    {
+      "id": "python.shared-state.threading-mutexes",
+      "language": "python",
+      "family": "shared-state",
+      "defect": "threading-mutexes",
+      "query": "python/shared-state/threading-mutexes/boundaries.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-and-bounded-relationships",
+      "limitation": "Structural lock candidates require binding, API, lifetime and control-flow analysis. Unresolved resources and scheduling remain candidates.",
+      "related_cwes": [
+        "CWE-667",
+        "CWE-833",
+        "CWE-820"
+      ],
+      "cwe_relationship": "Taxonomy reference; syntax alone is not a diagnosed vulnerability.",
+      "captures": [
+        "mutex_method",
+        "mutex_call"
+      ]
     }
   ]
 }

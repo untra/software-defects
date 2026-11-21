@@ -73,6 +73,7 @@ class EvidenceView implements vscode.TreeDataProvider<vscode.TreeItem> {
         ['Resolution', entry.finding.resolution, resolutionMeaning(entry.finding.resolution)],
         ...(entry.finding.mechanism ? [['Mechanism', entry.finding.mechanism, 'Catalog mechanism that introduced the shared identity.']] : []),
         ...(entry.finding.resolution === 'object-identity' ? [['Requirement', entry.finding.state_trace?.requirement?.kind ?? 'none declared', entry.finding.state_trace?.requirement ? 'An in-source declaration requires the written state to stay independent.' : 'Without a declared requirement this is a candidate relationship, not a confirmed defect.']] : []),
+        ...(entry.finding.shared_state?.synchronization ? [['Synchronization', entry.finding.shared_state.synchronization.assessment, entry.finding.shared_state.synchronization.api]] : []),
         ['Taxonomy', entry.finding.related_cwes?.join(', ') || 'None', 'Related taxonomy references; these are not diagnoses.']
       ];
       item.children = metadata.map(([label, value, tooltip]) => {
@@ -99,6 +100,7 @@ function effectMeaning(kind: string): string {
     argument_mutation: 'Changes a value supplied by a caller.', receiver_mutation: 'Changes receiver state.',
     global_mutation: 'Changes state outside this function.', external_read: 'Reads mutable state outside this function.',
     nondeterminism: 'Depends on time, randomness, or another modeled nondeterministic source.',
+    synchronization: 'Uses a recognized synchronization API. Propagated usage does not imply caller lock ownership.',
     structural_signal: 'A code structure requiring review; alone it does not establish impurity.'
   };
   return meanings[kind] ?? kind;

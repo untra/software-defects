@@ -23,6 +23,8 @@ pub struct Event {
 }
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct SharedState {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub synchronization: Option<crate::mutex::Synchronization>,
     pub source_uri: String,
     pub source_hash: String,
     pub evidence_level: String,
@@ -169,6 +171,7 @@ fn emit(
     }
     report.findings.push(Finding {
         shared_state: Some(SharedState {
+            synchronization: None,
             source_uri: report.uri.clone(),
             source_hash: report.source_hash.clone(),
             evidence_level: if candidate {

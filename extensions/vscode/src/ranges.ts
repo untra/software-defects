@@ -7,7 +7,16 @@ export type StateTrace = Pick<import('./state-contract').StateTrace,
   'source_hash' | 'evidence_level' | 'origins' | 'invalidations' | 'affected_uses' | 'required_condition' | 'assumptions'>
   & Partial<import('./state-contract').StateTrace>;
 
+export interface Synchronization {
+  api: string;
+  lock: string;
+  assessment: 'usage' | 'candidate' | 'misuse';
+  acquisitions: { start: number; end: number }[];
+  releases: { start: number; end: number }[];
+  protected_regions: { start: number; end: number }[];
+}
 export interface SharedState {
+  synchronization?: Synchronization;
   source_uri: string;
   source_hash: string;
   evidence_level: 'syntax-candidate' | 'relationship-candidate';

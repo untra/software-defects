@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Private mutexes cannot serialize shared writes. The fixed version preserves the intended operation while enforcing its synchronization contract.",
+  "analysis_limit": "Captures are independent source-token expectations. API identity, guard lifetime, scheduling and control flow require bounded analyzer evidence.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "count: 2"
+    ]
+  },
+  "original": {
+    "source_hash": "20e66539b7e106bd3371a8869cd3f526c80a07a85084e1cb480e50ca9fb08986",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              389,
+              403
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              394,
+              401
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              520,
+              527
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              520,
+              529
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "64cc3c50f57e9fc5290d6f0facdfe91c461d072b1c55bdd0cba4783e4b6e9e25",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              385,
+              399
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              390,
+              397
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              516,
+              523
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              516,
+              525
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

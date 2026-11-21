@@ -973,6 +973,7 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
     }
     let imports: Vec<_> = facts.imports.iter().map(|i| (i.local.clone(), i.module.clone(), i.symbol.clone())).collect();
     crate::shared::analyze(&captures, root, source, &mut facts.report, &imports, |name, at| binding(&facts.bindings, name, at).map(|b| b.range));
+    crate::mutex::analyze(&captures, root, source, &mut facts.report, &imports, |name, at| binding(&facts.bindings, name, at).map(|b| b.range));
     crate::division::analyze(&divisions, source, &mut facts.report);
     crate::unstructured::analyze(&captures, root, source, &mut facts.report, &imports, |name, at| binding(&facts.bindings, name, at).map(|b| b.range));
     if root.has_error() {

@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "One thread acquires a then b. The other acquires b then a. Neither can take its second lock. The fixed version preserves the intended operation while enforcing its synchronization contract.",
+  "analysis_limit": "Captures are independent source-token expectations. API identity, guard lifetime, scheduling and control flow require bounded analyzer evidence.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "a entered\nb entered"
+    ]
+  },
+  "original": {
+    "source_hash": "9588c038e1eba805a2d4666d0e42abb9f47eb7889488ec8b37b9087123572f0d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              44,
+              60
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              54,
+              58
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              74,
+              90
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              84,
+              88
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              259,
+              274
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              265,
+              272
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              340,
+              368
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              347,
+              354
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              457,
+              473
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              464,
+              471
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              506,
+              521
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              512,
+              519
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "8dc3321a2ce838467d752f193bc49f1753c1638777573083baf1af79a73c486d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              44,
+              60
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              54,
+              58
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              74,
+              90
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              84,
+              88
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

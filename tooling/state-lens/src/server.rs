@@ -126,6 +126,7 @@ fn object_identity(finding: &Finding) -> bool {
     finding.resolution == crate::aliasing::RESOLUTION
 }
 fn warning(finding: &Finding) -> bool {
+    if finding.origin == "direct" && finding.shared_state.as_ref().and_then(|s| s.synchronization.as_ref()).is_some_and(|s| s.assessment == crate::mutex::Assessment::Misuse) { return true; }
     if finding.family == "unstructured-state" && finding.defect == "missing-undefined-returns" {
         return finding.state_trace.as_ref().is_some_and(|trace| trace.evidence_level == crate::state::EvidenceLevel::FeasibleUnderModel && trace.requirement.as_ref().is_some_and(|r| r.kind == "producer-result"));
     }

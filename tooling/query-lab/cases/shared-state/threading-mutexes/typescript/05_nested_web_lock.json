@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Non-reentrant exclusive lock request. The fixed version preserves the intended operation while enforcing its synchronization contract.",
+  "analysis_limit": "Captures are independent source-token expectations. API identity, guard lifetime, scheduling and control flow require bounded analyzer evidence.",
+  "runtime": {
+    "status": "unsupported",
+    "reason": "Browser Web Locks fixture; Node 22 has no navigator.locks. Parse and analyzer checks remain supported."
+  },
+  "original": {
+    "source_hash": "78454434def6168ccfa50d4f375b90ee954f6b904f1d2ddfecc9bc1e8ab926af",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              144,
+              268
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              160,
+              167
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              202,
+              264
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              218,
+              225
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "31c7a774ecfc62cacb4ad6496fa8262a4bf9cbc37640e2bf7c8c8c8efbbd826c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              144,
+              216
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              160,
+              167
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

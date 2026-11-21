@@ -2,21 +2,43 @@
   "schema_version": 1,
   "status": "syntax-candidate",
   "rationale": "Inspect the existing guard rather than relock the same mutex.",
+  "analysis_limit": "Captures are independent source-token expectations. API identity, guard lifetime, scheduling and control flow require bounded analyzer evidence.",
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "taken: true"
+    ],
+    "exit_code": 0
+  },
   "original": {
     "source_hash": "8444c7aa5fde776c2a87897316d9892aa67c297089e22a558eb86911fb89d2e7",
     "queries": [
       {
-        "query": "tooling/query-lab/queries/rust/shared-state/threading-mutexes/signals.scm",
+        "query": "tooling/query-lab/queries/rust/shared-state/threading-mutexes/boundaries.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "mutex_call",
+            "range": [
+              238,
+              255
+            ]
+          },
+          {
+            "name": "mutex_method",
             "range": [
               249,
               253
             ]
           },
           {
-            "name": "callee",
+            "name": "mutex_call",
+            "range": [
+              333,
+              350
+            ]
+          },
+          {
+            "name": "mutex_method",
             "range": [
               344,
               348
@@ -30,17 +52,31 @@
     "source_hash": "6522f1c5958a232c4c5de2eba087249eb2358913c024fa6ef0bf5cc419fef667",
     "queries": [
       {
-        "query": "tooling/query-lab/queries/rust/shared-state/threading-mutexes/signals.scm",
+        "query": "tooling/query-lab/queries/rust/shared-state/threading-mutexes/boundaries.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "mutex_call",
+            "range": [
+              238,
+              255
+            ]
+          },
+          {
+            "name": "mutex_method",
             "range": [
               249,
               253
             ]
           },
           {
-            "name": "callee",
+            "name": "mutex_call",
+            "range": [
+              333,
+              350
+            ]
+          },
+          {
+            "name": "mutex_method",
             "range": [
               344,
               348
@@ -49,13 +85,5 @@
         ]
       }
     ]
-  },
-  "runtime": {
-    "status": "supported",
-    "stdout_contains": [
-      "taken: true"
-    ],
-    "exit_code": 0
-  },
-  "analysis_limit": "These are syntax candidates only. std Mutex is not reentrant; relocking on the same thread deadlocks. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  }
 }

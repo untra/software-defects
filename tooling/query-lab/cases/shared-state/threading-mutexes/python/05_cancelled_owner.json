@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Cancellation needs context-managed release. The fixed version preserves the intended operation while enforcing its synchronization contract.",
+  "analysis_limit": "Captures are independent source-token expectations. API identity, guard lifetime, scheduling and control flow require bounded analyzer evidence.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "locked: False"
+    ]
+  },
+  "original": {
+    "source_hash": "c6e31a0738750eb9ca7455ec30551a94db8a60381b34a10b894d2756ff5e267e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              46,
+              60
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              54,
+              58
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              128,
+              142
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              133,
+              140
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              210,
+              224
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              215,
+              222
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "cc58afe188a49a211617e58e6a9e14116ec22454967362f9f0447db1cd2f0e92",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              46,
+              60
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              54,
+              58
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

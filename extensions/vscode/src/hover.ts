@@ -26,6 +26,12 @@ export function explanation(entry: Entry, uri?: string, version?: number): vscod
   text.appendText(`\n\n${SHORT_EXPLANATIONS[entry.finding.explanation] ?? entry.finding.explanation}`);
   const shared = entry.finding.shared_state;
   if (shared) {
+    const sync = shared.synchronization;
+    if (sync) {
+      text.appendText(`\n\nSynchronization: ${sync.assessment}. API: ${sync.api}.`);
+      text.appendText(`\nLock: ${sync.lock}. Acquisitions: ${sync.acquisitions.length}; releases: ${sync.releases.length}.`);
+      if (entry.finding.origin === 'propagated') text.appendText(' The callee uses synchronization; this does not mean the caller holds its lock.');
+    }
     const sites = shared.sites;
     text.appendText(`\n\nShared-state evidence: ${shared.evidence_level}.`);
     text.appendText(`\nStatic sites: ${sites.declarations} async declarations, ${sites.launches} launches/compositions, ${sites.suspensions} suspensions.`);

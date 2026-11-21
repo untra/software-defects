@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "The lock must be shared by all contenders. The fixed version preserves the intended operation while enforcing its synchronization contract.",
+  "analysis_limit": "Captures are independent source-token expectations. API identity, guard lifetime, scheduling and control flow require bounded analyzer evidence.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "count: 2"
+    ]
+  },
+  "original": {
+    "source_hash": "8b8e7123e40be689f21e4ac9e2b0a5fc0e0fb7f9262e1792bcfe23da8500ad64",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              112,
+              126
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              120,
+              124
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "74cbe99253af985aae9ee734385b728e89342c7e0b61a0b3a5f768af2a365aab",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              60,
+              74
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              68,
+              72
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

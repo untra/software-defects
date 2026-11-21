@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Conditional acquisition must succeed before protected work. The fixed version preserves the intended operation while enforcing its synchronization contract.",
+  "analysis_limit": "Captures are independent source-token expectations. API identity, guard lifetime, scheduling and control flow require bounded analyzer evidence.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "entered: false"
+    ]
+  },
+  "original": {
+    "source_hash": "6ac7ea82d0cc4c61abcd826de013db335824d1982cf2bdeb14b9dcf21917b3dc",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              78,
+              87
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              81,
+              85
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              92,
+              104
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              95,
+              102
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              143,
+              154
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              146,
+              152
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "877b526efea00a77309cadb3ab1cdee480150b86adac5be98408a4fb434804d3",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              78,
+              87
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              81,
+              85
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              103,
+              115
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              106,
+              113
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              157,
+              168
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              160,
+              166
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

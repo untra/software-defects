@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "release sits after the raise. The except clause swallows the error and leaves the lock held. The fixed version preserves the intended operation while enforcing its synchronization contract.",
+  "analysis_limit": "Captures are independent source-token expectations. API identity, guard lifetime, scheduling and control flow require bounded analyzer evidence.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "entered True"
+    ]
+  },
+  "original": {
+    "source_hash": "dccd5ed95a8cf1111005b408a450d368fea5dc37694c2fc9f0399d815b385349",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              42,
+              58
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              52,
+              56
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              84,
+              98
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              89,
+              96
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              147,
+              161
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              152,
+              159
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              239,
+              265
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              244,
+              251
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "639f90038d608f5e293e4043ed173efa75b1b6b9fa75842a8f81a90437427131",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              42,
+              58
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              52,
+              56
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              216,
+              242
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              221,
+              228
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              361,
+              375
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              366,
+              373
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -21,3 +21,5 @@ pub mod state_contract;
 
 pub mod shared;
 mod unstructured;
+
+pub mod mutex;

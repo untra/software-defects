@@ -128,6 +128,96 @@
       "items": {
         "type": "string"
       }
+    },
+    "synchronization": {
+      "type": "object",
+      "properties": {
+        "api": {
+          "type": "string"
+        },
+        "lock": {
+          "type": "string"
+        },
+        "assessment": {
+          "enum": [
+            "usage",
+            "candidate",
+            "misuse"
+          ]
+        },
+        "acquisitions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "end": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "start",
+              "end"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "releases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "end": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "start",
+              "end"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "protected_regions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "start": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "end": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "start",
+              "end"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "api",
+        "lock",
+        "assessment",
+        "acquisitions",
+        "releases",
+        "protected_regions"
+      ],
+      "additionalProperties": false
     }
   },
   "additionalProperties": false,

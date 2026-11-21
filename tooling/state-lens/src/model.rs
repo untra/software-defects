@@ -38,6 +38,7 @@ pub enum Effect {
     StructuralSignal,
     AsyncExecution,
     ResourceAccess,
+    Synchronization,
 }
 impl Effect {
     pub fn observable(&self) -> bool {

@@ -2,21 +2,43 @@
   "schema_version": 1,
   "status": "syntax-candidate",
   "rationale": "Use the original mutex instead of copying it with the receiver.",
+  "analysis_limit": "Captures are independent source-token expectations. API identity, guard lifetime, scheduling and control flow require bounded analyzer evidence.",
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "registered users: 80000"
+    ],
+    "exit_code": 0
+  },
   "original": {
     "source_hash": "9c822db78e6a6f068428be891aa3c26eb6acb025ed102f92bafb2bbf6c6ba7f5",
     "queries": [
       {
-        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/signals.scm",
+        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/boundaries.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "mutex_call",
+            "range": [
+              189,
+              200
+            ]
+          },
+          {
+            "name": "mutex_method",
             "range": [
               194,
               198
             ]
           },
           {
-            "name": "callee",
+            "name": "mutex_call",
+            "range": [
+              208,
+              221
+            ]
+          },
+          {
+            "name": "mutex_method",
             "range": [
               213,
               219
@@ -30,17 +52,31 @@
     "source_hash": "7094522fe425637a71fd65adc4f50a5c0785c89fe3331712cdfad4643fecdcd8",
     "queries": [
       {
-        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/signals.scm",
+        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/boundaries.scm",
         "captures": [
           {
-            "name": "callee",
+            "name": "mutex_call",
+            "range": [
+              190,
+              201
+            ]
+          },
+          {
+            "name": "mutex_method",
             "range": [
               195,
               199
             ]
           },
           {
-            "name": "callee",
+            "name": "mutex_call",
+            "range": [
+              209,
+              222
+            ]
+          },
+          {
+            "name": "mutex_method",
             "range": [
               214,
               220
@@ -49,13 +85,5 @@
         ]
       }
     ]
-  },
-  "runtime": {
-    "status": "supported",
-    "stdout_contains": [
-      "registered users: 80000"
-    ],
-    "exit_code": 0
-  },
-  "analysis_limit": "These are syntax candidates only. Copied sync.Mutex protects nothing (go vet copylocks). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+  }
 }
