@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject the invalid boundary input or make the producer contract explicit before use.",
+  "analysis_limit": "Syntax candidates remain in guarded correct code; captures do not establish a domain violation or missing control-flow guard.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "group depth exceeded"
+    ]
+  },
+  "original": {
+    "source_hash": "a98fc4bf01e194648a3bfa316c57d3d8fb750bd5a09bf31daeefb0000966f77b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/unstructured-state/unconstrained-inputs/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_resource",
+            "range": [
+              37,
+              81
+            ]
+          },
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              11,
+              16
+            ]
+          },
+          {
+            "name": "_callee",
+            "range": [
+              46,
+              51
+            ]
+          },
+          {
+            "name": "unstructured_resource",
+            "range": [
+              46,
+              58
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "737fe160ea85f4cfd408797a9a06f25a39302eb2ea182a92f142a0592164704c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/unstructured-state/unconstrained-inputs/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_resource",
+            "range": [
+              164,
+              208
+            ]
+          },
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              27,
+              32
+            ]
+          },
+          {
+            "name": "_callee",
+            "range": [
+              173,
+              178
+            ]
+          },
+          {
+            "name": "unstructured_resource",
+            "range": [
+              173,
+              185
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Protect both slice length and backing storage during append.",
+  "original": {
+    "source_hash": "2ea3ed81f65660ae176959377f0ce3616ac7bf3012cd7a113a3719f5b656345b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              176,
+              185
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              191,
+              304
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              209,
+              218
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              256,
+              293
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              263,
+              293
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              309,
+              318
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              350,
+              426
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              390,
+              404
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              394,
+              403
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "a9803293eb144ccff575f2ce60fcf6b81c7a9bdf21c6bc4a6fee635219fdf271",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              195,
+              204
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              210,
+              353
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              228,
+              237
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              275,
+              284
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              289,
+              326
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              296,
+              326
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              331,
+              342
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              358,
+              367
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              399,
+              475
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              439,
+              453
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              443,
+              452
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "collected 80000 of 80000 rows"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": false,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

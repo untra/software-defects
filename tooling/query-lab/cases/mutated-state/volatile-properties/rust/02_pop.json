@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Copy the scalar collection before transforming it; preserve the source, operation result and return value.",
+  "analysis_limit": "Syntax candidates only: names do not resolve receiver types or shadowed functions. Safe copies retain captures. Ownership, aliasing, callback effects and intended behavior require review.",
+  "runtime": {
+    "status": "supported",
+    "stdout": "ok\n",
+    "exit_code": 0
+  },
+  "original": {
+    "source_hash": "4eabe466568f357c3bb8c60bba72f1f8ecfe3dbf122e89510aab25dd8372737c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/volatile-properties/signals.scm",
+        "captures": [
+          {
+            "name": "receiver",
+            "range": [
+              100,
+              104
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              105,
+              108
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "3c56f4f9e8e5a770cf340cfd8110430818d6c2c9b138cf566dabbb772d330f03",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/volatile-properties/signals.scm",
+        "captures": [
+          {
+            "name": "receiver",
+            "range": [
+              103,
+              107
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              108,
+              111
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

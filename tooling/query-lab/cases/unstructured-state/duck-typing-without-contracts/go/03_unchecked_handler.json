@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject the invalid boundary input or make the producer contract explicit before use.",
+  "analysis_limit": "Syntax candidates remain in guarded correct code; captures do not establish a domain violation or missing control-flow guard.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "plugin cannot handle requests"
+    ]
+  },
+  "original": {
+    "source_hash": "1409fb8b4898ecc90f03851c34b20e3366762d501f0707b0aab316d92b33cf3d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/duck-typing-without-contracts/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_assertion",
+            "range": [
+              116,
+              132
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "37cd9805a89d7eb745982b6cbc975d82f600ba65630ba4dd56339b4c015abc1a",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/duck-typing-without-contracts/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_assertion",
+            "range": [
+              120,
+              136
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

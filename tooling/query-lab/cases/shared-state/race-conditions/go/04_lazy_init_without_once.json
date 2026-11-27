@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Publish initialized immutable registry state through sync.Once.",
+  "original": {
+    "source_hash": "64681e48b54f164b8c8b57844334b07032e2ce540790e4aa31a2d518f2120325",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              237,
+              260
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              263,
+              275
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              278,
+              317
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              401,
+              410
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              416,
+              466
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              434,
+              443
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              447,
+              460
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              471,
+              480
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              482,
+              535
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              513,
+              525
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "b059a657d5d0718952804e139916dd3cef8d82e3d2b01341954a9579be971616",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              241,
+              352
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              268,
+              291
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              294,
+              306
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              309,
+              348
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              433,
+              442
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              448,
+              498
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              466,
+              475
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              479,
+              492
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              503,
+              512
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              514,
+              567
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              545,
+              557
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "registry loaded 1 times"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": false,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

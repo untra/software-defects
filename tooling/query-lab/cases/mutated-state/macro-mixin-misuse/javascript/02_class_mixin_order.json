@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Check authorization outside the cache so revoked access cannot return cached data.",
+  "original": {
+    "source_hash": "f624867ba8c84537491696e37000760ba621cf135f8db362d2d0f10a702c06fc",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/macro-mixin-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              202,
+              207
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              344,
+              349
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              502,
+              507
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              564,
+              569
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "7a4cea6775d6ccdfd50a6e51071950d79079d99bb5bb06c8cbfb7d79ff999db7",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/macro-mixin-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              202,
+              207
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              344,
+              349
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              502,
+              507
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              564,
+              569
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "after revoke:  403 denied"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Mixin application order determines the super chain; caching outside auth bypasses it. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

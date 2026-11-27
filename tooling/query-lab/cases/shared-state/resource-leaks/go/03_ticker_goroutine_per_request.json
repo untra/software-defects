@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Give session refresh workers an explicit cancellation and join lifecycle.",
+  "original": {
+    "source_hash": "6af26cc399b74c583e88ebc3b5fe6321218a8cd6c77431cb6478b69698e4513e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              197,
+              201
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "af9e0598608110a74ba3911e20c70b105e9c51709c8a210f290670c12a69d9d0",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              249,
+              258
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "goroutines left running after 100 logins: 0"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Goroutines with no exit condition and unstoppable tickers accumulate (CWE-401). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

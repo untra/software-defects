@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Recheck the shifted element after removal.",
+  "original": {
+    "source_hash": "abded4d784f051447fa5cdf9a7b8e677040ae28bdb6f340b30a0614dde20b832",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/for-loop-control-flow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              159,
+              165
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "151d1f1c0cda5c848888fc2f52a351b34e1dbd2afea17e79f46e1a26d72397af",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/for-loop-control-flow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              159,
+              165
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "[5, 7]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Removal shifts elements left; the index must not advance after a removal. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

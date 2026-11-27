@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Carry the trace ID explicitly across the asynchronous boundary.",
+  "original": {
+    "source_hash": "89fc5904c4a3eb2c539f1db8d3bad5c0c03c3e3595ba7813b607a7c2adb2f088",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "6357f7d2db604df79332c96967eb849ae42b1d08f75815091e914383a0417ed8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "[req-1] refund issued",
+      "[req-2] profile viewed"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Request context kept in module state instead of AsyncLocalStorage or parameters. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

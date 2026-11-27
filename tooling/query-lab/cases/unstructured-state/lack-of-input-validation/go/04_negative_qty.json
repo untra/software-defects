@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject negative quantities at the input boundary.",
+  "original": {
+    "source_hash": "ddedc7b83e419a38eff75b58af2407b6b364d5d3ef1c4ddbab5c140ecc366775",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "3aaa816d29cfa9a7713808a1b4805f19daad0bac9f323db8fba0930879087c52",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "quantity rejected"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The number is a valid int and is never checked for sign or range (CWE-1284). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

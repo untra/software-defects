@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Render only after derived field initialization completes.",
+  "original": {
+    "source_hash": "a492a15ca1f83c8be3bf498da196ed8728ad8ae35853c622b2ccf26a42faa046",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/improper-initialization/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "94d1e33a3e3961eac4ed77dd8e157fa0333fa454bc67e7672b9bfc7f98f182ca",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/improper-initialization/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "rendering: default label"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Subclass fields are initialized after super() returns. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

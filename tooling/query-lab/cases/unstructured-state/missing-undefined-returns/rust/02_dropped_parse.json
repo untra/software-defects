@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Propagate parse failure instead of fabricating a zero quantity.",
+  "original": {
+    "source_hash": "dcc8104f4984b3ef8079793b548a2a6aace01ff65ed71caca1499645715c249f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "d21d566043ca53261b9acf14e46fe036952bc75b02e490578a50da5e1df9bb42",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "qty Err"
+    ]
+  },
+  "analysis_limit": "These are syntax candidates only. The Result is bound and then ignored, so the caller cannot tell failure from zero (CWE-252). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

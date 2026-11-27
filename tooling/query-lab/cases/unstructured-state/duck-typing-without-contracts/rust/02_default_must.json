@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Expose an absent SKU instead of panicking in the default trait method.",
+  "original": {
+    "source_hash": "cf6b3e1fa1ba5eabff2349e3758eee5435ae102ecf24e5d68d966168a8b3b3f0",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/duck-typing-without-contracts/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              127,
+              133
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "7c110de78c132d145c24501daa87897dadaf167528314a6e7f2a7cd8a45fcd24",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/unstructured-state/duck-typing-without-contracts/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "sku None"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The default method promises a value find() never guaranteed (CWE-476). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reserve capacity without creating empty logical entries.",
+  "original": {
+    "source_hash": "4c05511a88184b3bffb363a37057730b2f69004349f86a0981fa10ec35e48eac",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/improper-initialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              76,
+              80
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "196cd3ec99e8d4e8ff2de697d6bcf06a14721cf34bfca3c4c1c636f234bca24b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/improper-initialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              76,
+              80
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "2 ids: [\"id-a\" \"id-b\"]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. make with length pre-fills zero values; capacity was intended. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

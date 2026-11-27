@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use the API that implements negative indexing.",
+  "original": {
+    "source_hash": "c5874a3f58968cdbc1d280f1556c632a3241c5a6c303acfd94f6ac258f1ce21e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "44f8824837317eab26a334234786e0e6543f560c83965b2d4fb2ac757018a09c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              59,
+              61
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "last east"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. JS array index -1 does not wrap the way a negative slice does in other languages (CWE-129). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

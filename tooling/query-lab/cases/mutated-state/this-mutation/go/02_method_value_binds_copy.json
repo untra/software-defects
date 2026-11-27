@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Bind the method to the live thermostat rather than a copied value.",
+  "original": {
+    "source_hash": "4555e6af5f8f198a7017c51a4b44fd401b31ec772d7e0a86a49709064e48326c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/this-mutation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "d1f7382dcb6089553f87de22a6d929ea2bbcbd9b147990fc8cf62f13a53c3d74",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/this-mutation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "target=72"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Method values with value receivers evaluate and copy the receiver when created. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

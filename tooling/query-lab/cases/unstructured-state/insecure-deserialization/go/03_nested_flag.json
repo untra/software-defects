@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Decode an allowlisted input DTO and reject privileged or unknown fields before updating profile state.",
+  "original": {
+    "source_hash": "0cb74e2a1ef21a05b5e0fb339bfebbddd0960ddf3c533dfd32d1d35d8a09c18d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/insecure-deserialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              304,
+              313
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "40e66859f89f9563eb5125dd9d1b160c5c20ba235f8736fcdf9f25ef131168cb",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/insecure-deserialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              450,
+              456
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "unknown field \"flags\""
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Without DisallowUnknownFields, extra keys are skipped and nested exported fields are still written (CWE-915). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

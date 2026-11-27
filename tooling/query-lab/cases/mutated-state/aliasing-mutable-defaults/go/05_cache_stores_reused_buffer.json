@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Give each cache entry its own byte storage.",
+  "original": {
+    "source_hash": "52940662b997dcf0965268f3f808d2b1a3c4721ec95289f6ad6eb4288a745d2c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              220,
+              226
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "86b3638adebda79776ab0a78b4a223c351dd3cedd73ec5771f24b7f688588018",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              220,
+              226
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              272,
+              278
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "ALPHA BETA"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `buf[:0]` keeps the same backing array; `cache[\"alpha\"]` still points to it. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

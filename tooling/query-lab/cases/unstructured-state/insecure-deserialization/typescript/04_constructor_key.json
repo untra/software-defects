@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Do not accept constructor/prototype metadata from external data.",
+  "original": {
+    "source_hash": "39687fc460a0d2ff00c7e6099ddfc2c4ad26a5c372bfa3c847ea783fd4fe3122",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/insecure-deserialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              17,
+              22
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "4e3ae05f107173cd3f03c18e0e173ad053e1c5dee75fe3d77bdc00f7a3e8346f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/insecure-deserialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              17,
+              22
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "kind Object"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. An own constructor property shadows the one inherited from Object (CWE-915). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

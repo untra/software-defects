@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "roles": {
+    "failing": {
+      "findings": [
+        {
+          "trigger": "copied[\"tags\"].append(\"admin\")",
+          "origins": [
+            "[\"staff\"]",
+            "dict(original)"
+          ],
+          "affected_uses": [
+            "original[\"tags\"]"
+          ],
+          "evidence_level": "feasible_under_model",
+          "requirement": "declared-readonly"
+        }
+      ],
+      "repair": {
+        "applicability": "auto"
+      }
+    },
+    "fixed": {
+      "findings": []
+    },
+    "intentional": {
+      "findings": [
+        {
+          "trigger": "tenant[\"pool\"][\"size\"]",
+          "origins": [
+            "{\"size\": 10}",
+            "base.copy()"
+          ],
+          "affected_uses": [
+            "base[\"pool\"]"
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ],
+      "repair": {
+        "applicability": "advisory"
+      }
+    },
+    "independent": {
+      "findings": []
+    },
+    "breaker": {
+      "findings": []
+    }
+  }
+}

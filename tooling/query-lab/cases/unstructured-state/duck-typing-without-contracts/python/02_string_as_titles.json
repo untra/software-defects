@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject the invalid boundary input or make the producer contract explicit before use.",
+  "analysis_limit": "Syntax candidates remain in guarded correct code; captures do not establish a domain violation or missing control-flow guard.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "invalid titles"
+    ]
+  },
+  "original": {
+    "source_hash": "017be330ab66a74b633559afb8130baf181b639665d7f53f141242d9cfc844d2",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/unstructured-state/duck-typing-without-contracts/boundaries.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "6198a738b934e7b173a87f3eeed1af33b18a5c2dc7b4fc8f59ae3f1b84f376c1",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/unstructured-state/duck-typing-without-contracts/boundaries.scm",
+        "captures": []
+      }
+    ]
+  }
+}

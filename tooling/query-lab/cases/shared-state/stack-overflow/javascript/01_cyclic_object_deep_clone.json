@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Memoize cloned object identities to preserve cycles without infinite recursion.",
+  "original": {
+    "source_hash": "15c34d102e019e4ed5a4a63d517842c7f84bd04f7534e10c1f81e27a45de7e1f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/stack-overflow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              190,
+              199
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              319,
+              328
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "e2edf7cd099f984b663eac7e8709dde66e5cf093e6c37afda88c819e2b13bf3f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/stack-overflow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              292,
+              301
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              440,
+              449
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "cycle preserved: true"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. No seen-set for cyclic object graphs (CWE-674). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

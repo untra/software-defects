@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Thread ownership does not provide coroutine exclusion. The fixed version preserves the intended operation while enforcing its synchronization contract.",
+  "analysis_limit": "Captures are independent source-token expectations. API identity, guard lifetime, scheduling and control flow require bounded analyzer evidence.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "count: 2"
+    ]
+  },
+  "original": {
+    "source_hash": "c2d7fad44a84d217fd048796e242c2ea50a3372b43e7c11935219ce5aec203f8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              63,
+              80
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              73,
+              78
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "9bbbf942aa3d02d291346e788aa9b9a0008355bab0875a5816a8944750dc4b51",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              46,
+              60
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              54,
+              58
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "stdout_contains": [
+      "count: 1"
+    ]
+  }
+}

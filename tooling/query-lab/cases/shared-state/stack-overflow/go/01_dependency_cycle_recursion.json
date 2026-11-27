@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Track the active traversal path to reject cyclic dependencies. Deep acyclic graphs remain a separate limit.",
+  "original": {
+    "source_hash": "ddc15b70df764b171b37d9ed70477a61d899cc5576cbbb32ba37593abafdb779",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/stack-overflow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              358,
+              370
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              474,
+              486
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "53778a65d35d0af5d0d1d7815d3fec247257439db96e459e225414197038a622",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/stack-overflow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              883,
+              895
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "dependency cycle at app"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Unbounded recursion on cyclic data (CWE-674). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

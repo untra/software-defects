@@ -1,0 +1,1 @@
+const cache = new Map(); const other = new Map(); async function get(k) { if (cache.has(k)) return cache.get(k); if (other.has(k)) other.delete(k); const v = await fetch(k); cache.set(k, v); return v; }

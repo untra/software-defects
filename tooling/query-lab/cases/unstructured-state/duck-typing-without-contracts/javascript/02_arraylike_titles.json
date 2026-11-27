@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Validate the runtime list contract at the boundary.",
+  "original": {
+    "source_hash": "71f976a0b211f44535e8a59766cb9191f65711213c119d4b653f9b68681bdbad",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/duck-typing-without-contracts/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              47,
+              50
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "6104cbf02237de3ca86b5a38b3a7ed8c3bc79ddaff1cf53947a6061bdb2a4929",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/duck-typing-without-contracts/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              159,
+              162
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "invalid list"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The cast erases the missing method; at runtime the string has no map (CWE-843). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

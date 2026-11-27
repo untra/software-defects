@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Increment only when a reservation succeeds and enforce the strict capacity bound.",
+  "original": {
+    "source_hash": "f1dce487c0b5f77a57422e59d35b93b8eb4f1a514f389319ec6e522efcee1573",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/increment-decrement-operators/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "0b4f588540418f15737c3776fa0aeba6c529b80fb7acd596ba4c348aee1717e2",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/increment-decrement-operators/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "dee: waitlisted",
+      "eli: waitlisted",
+      "seats taken: 3"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Post-increment returns the pre-increment value while mutating as a side effect (CWE-193). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

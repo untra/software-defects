@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject the invalid boundary input or make the producer contract explicit before use.",
+  "analysis_limit": "Syntax candidates remain in guarded correct code; captures do not establish a domain violation or missing control-flow guard.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "expansion rejected"
+    ]
+  },
+  "original": {
+    "source_hash": "6e385a77c4967cc0773cc5f9534a17cf983df4f1bed9ae077253b301810f9c7c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/unstructured-state/unconstrained-inputs/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_resource",
+            "range": [
+              245,
+              297
+            ]
+          },
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              69,
+              74
+            ]
+          },
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              76,
+              82
+            ]
+          },
+          {
+            "name": "_callee",
+            "range": [
+              254,
+              259
+            ]
+          },
+          {
+            "name": "unstructured_resource",
+            "range": [
+              254,
+              267
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "ad754ac151f623361d6b9ade0b49ad7a63ddb06e1aa4d98d4032e52cadc218a8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/unstructured-state/unconstrained-inputs/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_resource",
+            "range": [
+              356,
+              408
+            ]
+          },
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              69,
+              74
+            ]
+          },
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              76,
+              82
+            ]
+          },
+          {
+            "name": "_callee",
+            "range": [
+              365,
+              370
+            ]
+          },
+          {
+            "name": "unstructured_resource",
+            "range": [
+              365,
+              378
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+id = "state-lens"
+name = "State Lens"
+version = "0.1.0"
+schema_version = 1
+authors = ["untra"]
+description = "State susceptibility hints, inlay summaries, and evidence hovers from the state-lens language server."
+repository = "https://github.com/untra/software-defects"
+
+[language_servers.state-lens]
+name = "State Lens"
+languages = ["Rust", "Go", "TypeScript"]

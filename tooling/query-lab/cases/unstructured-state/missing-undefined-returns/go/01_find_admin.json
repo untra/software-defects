@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Handle the explicit no-match return.",
+  "original": {
+    "source_hash": "1daa552ba3c2f4f5254779c89cdc2198dd3f278abaacaa1b0ba1e08fd3255455",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "e448597c4b28aead51898c85fb505613a8c49171bb16155eaa543e38cc717757",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "administrator required"
+    ]
+  },
+  "analysis_limit": "These are syntax candidates only. The not-found path returns nil with no error; the dereference panics (CWE-476). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

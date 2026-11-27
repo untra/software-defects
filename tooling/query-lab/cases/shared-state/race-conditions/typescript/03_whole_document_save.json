@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Apply field patches against current state after yielding instead of replacing with stale snapshots.",
+  "original": {
+    "source_hash": "add9115ada52a688963e7801dc8cdc09418cf4804128972826e3c5019650da00",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              160,
+              182
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              232,
+              238
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              328,
+              334
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              338,
+              356
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              410,
+              416
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              420,
+              439
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              449,
+              458
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              511,
+              517
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              521,
+              539
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              549,
+              558
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              595,
+              633
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              608,
+              619
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              621,
+              631
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              637,
+              662
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              667,
+              673
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "3855189d3d7826ff3472600a23dda00aff215b38a8c20748731bb220b9b2bfa2",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              160,
+              182
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              232,
+              238
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              337,
+              343
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              347,
+              389
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              443,
+              449
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              453,
+              472
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              482,
+              508
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              561,
+              567
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              571,
+              589
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              599,
+              623
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              660,
+              698
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              673,
+              684
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              686,
+              696
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              702,
+              727
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              732,
+              738
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "{ title: 'Final', body: 'Hello' }"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

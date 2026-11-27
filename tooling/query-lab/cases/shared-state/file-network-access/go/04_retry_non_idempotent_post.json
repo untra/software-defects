@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reuse a stable operation key across retries and atomically deduplicate on the simulated server.",
+  "original": {
+    "source_hash": "7a274f7ea3fc0e80e451dd233e1928817ff9439c9ed2350ca68e24d0f68a3605",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "io_call",
+            "range": [
+              349,
+              421
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              386,
+              420
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              443,
+              460
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              548,
+              735
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              567,
+              734
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              636,
+              650
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              661,
+              690
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              697,
+              730
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              792,
+              818
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              820,
+              834
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              836,
+              912
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              897,
+              911
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "4ee62ea2c52ac2f8334da5b8288976620236a065ec9f6dca3d72d45aae95eb97",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "io_call",
+            "range": [
+              388,
+              461
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              426,
+              460
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              514,
+              564
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              579,
+              597
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              619,
+              636
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              748,
+              1028
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              767,
+              1027
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              849,
+              909
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              871,
+              902
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              929,
+              943
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              954,
+              983
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              990,
+              1023
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1085,
+              1122
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1124,
+              1138
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1140,
+              1216
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              1201,
+              1215
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "card charged 1 times"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": false,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

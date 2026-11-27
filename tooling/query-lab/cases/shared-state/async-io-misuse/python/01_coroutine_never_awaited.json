@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout": "saved\ndone\n"
+  },
+  "rationale": "saved; preserve the workload while correcting completion, atomicity or resource ordering.",
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "original": {
+    "source_hash": "29c8e650866af1a78a2d47b8e43233cf0b42cdaa3e0c3615d0a0673072b5545a",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "async_keyword",
+            "range": [
+              0,
+              5
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              55,
+              61
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              66,
+              79
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              82,
+              88
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "75352edd4024cbf455fee9c3eaf6e1f9f11415431e2ad08d21914b069538e83b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "async_keyword",
+            "range": [
+              17,
+              22
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              72,
+              98
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              78,
+              97
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              90,
+              96
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              103,
+              116
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              119,
+              125
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

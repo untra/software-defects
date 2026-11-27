@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Snapshot tenant identity as a per-call parameter before awaiting.",
+  "original": {
+    "source_hash": "7d5905ea6bd611b45ba88de0555dbb9835805984889df7ca3444bb95027b3ebd",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/var-let-mut/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "1821876467014ad9ce31269f9879f2eca94af0e62eb5be1fa771b98e0edad9c9",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/var-let-mut/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "invoices for acme\ninvoices for globex"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The async function reads the binding after `await`, by which time another caller mutated it. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

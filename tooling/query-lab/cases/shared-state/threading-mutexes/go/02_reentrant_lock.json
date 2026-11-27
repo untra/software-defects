@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Read the protected field directly while already holding its mutex.",
+  "analysis_limit": "Captures are independent source-token expectations. API identity, guard lifetime, scheduling and control flow require bounded analyzer evidence.",
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "withdrawn: true"
+    ],
+    "exit_code": 0
+  },
+  "original": {
+    "source_hash": "c1b6b08dfc3da27ffb645b87cc6236335068c96fff42604f852fca806a34dda6",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              158,
+              169
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              163,
+              167
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              177,
+              190
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              182,
+              188
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              258,
+              269
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              263,
+              267
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              277,
+              290
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              282,
+              288
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "e3783dc6d1a0adf30a947a8df8cc29b75a89396ee6a6a01340c40a5541e3c5ec",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              158,
+              169
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              163,
+              167
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              177,
+              190
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              182,
+              188
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              258,
+              269
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              263,
+              267
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              277,
+              290
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              282,
+              288
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 2,
+    "stderr_contains": [
+      "fatal error: all goroutines are asleep - deadlock!"
+    ]
+  }
+}

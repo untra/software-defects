@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reserve synchronously before yielding, restoring stock on failure.",
+  "original": {
+    "source_hash": "07296934badeaceae15198d3084b34a0d5f9909fa6074952d6c59ca9c7bb3f96",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              130,
+              159
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              265,
+              285
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              289,
+              327
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              364,
+              395
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              377,
+              384
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              386,
+              393
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              399,
+              446
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              451,
+              457
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "7714c4b34fd9154e2ef7c9f67922e75d72a9c1dd81226950f4e14a91b993853c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              130,
+              159
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              317,
+              346
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              362,
+              382
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              404,
+              433
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              485,
+              516
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              498,
+              505
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              507,
+              514
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              520,
+              567
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              572,
+              578
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "widgets left: 3"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

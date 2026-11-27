@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Represent this ledger in integer cents.",
+  "original": {
+    "source_hash": "65c9c9cc002fe3dc2601f546e285a397600d77c65e6fc8e20abb2ea295ffe1b4",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/time-money-entropy/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "3409582b2ceebe7b07351ed0d4c2c693033d16ea4b5bd909fa157e7057dab852",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/time-money-entropy/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "ledger balanced"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. 0.1, 0.2, 0.3 have no exact binary representation; error accumulates (CWE-1339). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

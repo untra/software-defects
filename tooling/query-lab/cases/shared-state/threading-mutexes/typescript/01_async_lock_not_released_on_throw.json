@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Release the async lock even when validation throws.",
+  "analysis_limit": "Captures are independent source-token expectations. API identity, guard lifetime, scheduling and control flow require bounded analyzer evidence.",
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "entry posted"
+    ],
+    "exit_code": 0
+  },
+  "original": {
+    "source_hash": "356ff4abd5cbcb47196afdb95f0d336208629883842b24c1449dfa787bfaa720",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              433,
+              453
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              444,
+              451
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              511,
+              518
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              511,
+              520
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "8a655546d49974a63c1705b4101aa4af9865f915b9001e60cd27317727120bf5",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              433,
+              453
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              444,
+              451
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              529,
+              536
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              529,
+              538
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "stdout_contains": [
+      "rejected: negative amount\nnext entry still waiting for the ledger lock after 200ms"
+    ]
+  }
+}

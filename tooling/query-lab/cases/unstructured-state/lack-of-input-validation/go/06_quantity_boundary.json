@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject the invalid boundary input or make the producer contract explicit before use.",
+  "analysis_limit": "Syntax candidates remain in guarded correct code; captures do not establish a domain violation or missing control-flow guard.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "quantity rejected"
+    ]
+  },
+  "original": {
+    "source_hash": "d3834ebbcd92ae21a96532f66794026c3a85c24009f3b232c5c73de42272ced5",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/lack-of-input-validation/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              62,
+              74
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "7427792bc5fed9edbdeb94d90fd9bd06bf3d9d9e5f8ad54ef40ce0bfccaeffe9",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/lack-of-input-validation/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_parameter",
+            "range": [
+              62,
+              74
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

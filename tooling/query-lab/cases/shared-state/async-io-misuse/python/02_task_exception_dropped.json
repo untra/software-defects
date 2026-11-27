@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout": "save failed: disk full\n"
+  },
+  "rationale": "the disk full error reaches the caller; preserve the workload while correcting completion, atomicity or resource ordering.",
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "original": {
+    "source_hash": "60b31018ac2b28bc2003562a7ed1d03add785b7224c9f61740b6a37c754c9af3",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "async_keyword",
+            "range": [
+              17,
+              22
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              45,
+              70
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              73,
+              78
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              94,
+              121
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              114,
+              120
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              126,
+              148
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              132,
+              148
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              153,
+              166
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              185,
+              203
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              197,
+              202
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              206,
+              212
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "1c8841c872a9c05e9a5529cfe2527933463e07e872ee5c535971549c969956c3",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "async_keyword",
+            "range": [
+              17,
+              22
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              45,
+              70
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              73,
+              78
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              107,
+              119
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              113,
+              119
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              162,
+              192
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              211,
+              229
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              223,
+              228
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              232,
+              238
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

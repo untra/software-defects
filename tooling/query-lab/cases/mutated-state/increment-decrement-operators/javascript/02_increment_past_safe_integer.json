@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use exact integer arithmetic for identifiers beyond Number precision.",
+  "original": {
+    "source_hash": "ab868f91dd7a49ce9b976755cd0f76216f38d74c81628eb20f65b1a58ef08bc0",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/increment-decrement-operators/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              141,
+              144
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "6e0cd53c97c9701ee55cc859f3b13db93c82a318e64f61bea30ff53d5922190c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/increment-decrement-operators/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              150,
+              153
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "issued 4 ids, unique: 4"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Doubles lose integer precision above 2^53; `++` rounds back to the same value. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

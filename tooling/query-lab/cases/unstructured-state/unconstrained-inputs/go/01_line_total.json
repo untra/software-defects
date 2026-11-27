@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject products outside the nonnegative int64 monetary range.",
+  "original": {
+    "source_hash": "8133a2810213813f3e715e055b31e164357349040772f286e5ec76efd3db03a9",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "ae12d508b77336042d1199a90c3f26b0a7fe2a53dc355b31873518c6e5584198",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "line rejected"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Signed multiplication wraps instead of rejecting a magnitude the domain cannot represent (CWE-190). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

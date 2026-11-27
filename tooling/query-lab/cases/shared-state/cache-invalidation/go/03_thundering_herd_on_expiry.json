@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Serialize refreshes in this small cache; production caches can use per-key single-flight to avoid unrelated-key contention.",
+  "original": {
+    "source_hash": "08a5efacc4f784634e791c550e5315656b3d568d1bc122c9391a786e773149d2",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/cache-invalidation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              356,
+              360
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              394,
+              400
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              543,
+              547
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              624,
+              630
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "a87611109fe830bf9aa4d6deb875aae593decf619635fd921763e65cba594266",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/cache-invalidation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              356,
+              360
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              375,
+              381
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "origin loads for one key: 1"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. No single-flight or lock around the miss path. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

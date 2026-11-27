@@ -1,0 +1,283 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Keep the balance check and debit in one critical section.",
+  "original": {
+    "source_hash": "c8f33e80a8c0873aafb1bc26f4e3546dea1fe5e596947c4941307bbea9e11e1e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              213,
+              224
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              232,
+              245
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              305,
+              316
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              324,
+              337
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              339,
+              358
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              435,
+              446
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              461,
+              475
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              478,
+              492
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              495,
+              510
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              656,
+              687
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              722,
+              731
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              737,
+              812
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              755,
+              764
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              768,
+              806
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              817,
+              826
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              828,
+              875
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              858,
+              874
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "1bab3c9ac8fde192a56a3abbb330bdc3e460bf6598363924f66c614b9397fd97",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              213,
+              224
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              232,
+              245
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              305,
+              316
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              324,
+              337
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              339,
+              358
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              432,
+              446
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              448,
+              462
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              464,
+              475
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              483,
+              496
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              540,
+              559
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              705,
+              736
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              771,
+              780
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              786,
+              861
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              804,
+              813
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              817,
+              855
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              866,
+              875
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              877,
+              924
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              907,
+              923
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "final balance: 0"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

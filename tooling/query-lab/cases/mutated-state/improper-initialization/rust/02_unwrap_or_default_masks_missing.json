@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject absent or invalid port configuration instead of silently connecting to port zero.",
+  "original": {
+    "source_hash": "ea4546a5ad6a504918bc411fd13811d7f0ada51df11d632324d0c966bbb2fddd",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/improper-initialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              219,
+              236
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "9103f10b73088fa921f2826e8a0157de02504bd98482a1e6a8e5f0a84b23f549",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/improper-initialization/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "DB_PORT is required"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Defaulting hides absent configuration instead of failing (CWE-665). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

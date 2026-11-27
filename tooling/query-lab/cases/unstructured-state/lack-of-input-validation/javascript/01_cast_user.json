@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Validate the runtime shape rather than relying on an erased type assertion.",
+  "original": {
+    "source_hash": "10a165c4d9922f5029741f50f506528c553c75add54d6b1f993960c53906598d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              37,
+              42
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "5c802e0590c7c378e3fef2b4b3ba135319545f25ceca5d3aa20d757374b32181",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/lack-of-input-validation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              37,
+              42
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "body rejected"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `as User` erases at runtime, so a missing email throws on toLowerCase (CWE-20). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

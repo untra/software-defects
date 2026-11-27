@@ -1,0 +1,232 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout": "1 0\n"
+  },
+  "rationale": "1 0; preserve the workload while correcting completion, atomicity or resource ordering.",
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "original": {
+    "source_hash": "f68e243e6e1831161811a08090a8e04297d0c55e384355c419d4e1dd431c7d10",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "shared_write",
+            "range": [
+              44,
+              53
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              58,
+              67
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              126,
+              138
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              153,
+              169
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              203,
+              219
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              232,
+              249
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              261,
+              301
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              276,
+              287
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              289,
+              300
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              306,
+              329
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              312,
+              321
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              348,
+              372
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              360,
+              371
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              375,
+              381
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "9be0a8313be121327b034553ee3714a3a09eec18fb1e0e654be6128c61f32af7",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "shared_write",
+            "range": [
+              44,
+              53
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              58,
+              67
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              152,
+              162
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              202,
+              218
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              235,
+              252
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              303,
+              313
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              347,
+              387
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              362,
+              373
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              375,
+              386
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              392,
+              415
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              398,
+              407
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              434,
+              458
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              446,
+              457
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              461,
+              467
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

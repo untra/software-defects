@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Blocking lock acquisition across suspension. The fixed version preserves the intended operation while enforcing its synchronization contract.",
+  "analysis_limit": "Captures are independent source-token expectations. API identity, guard lifetime, scheduling and control flow require bounded analyzer evidence.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "count: 2"
+    ],
+    "runner": "tokio"
+  },
+  "original": {
+    "source_hash": "b0f1d63ad20fa7f13bc9e85fcbdb5128437a2b35a16d5c0c60639d99a61a8247",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              435,
+              447
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              441,
+              445
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              604,
+              616
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              610,
+              614
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              1219,
+              1231
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              1225,
+              1229
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "f20b6ea8cf1033e5d70825a2adba42e13af2e5012f393754b73c05a2a6baa41c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              503,
+              515
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              509,
+              513
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              604,
+              616
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              610,
+              614
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              1219,
+              1231
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              1225,
+              1229
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "stdout_contains": [
+      "blocked"
+    ]
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reduce iteratively instead of passing a million function arguments.",
+  "original": {
+    "source_hash": "72ea83b2ab3c073c1060bee364b48233c45affad6a29a9a8e00250b152fb3d6d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/stack-overflow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              141,
+              144
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "2ad8d08bcd76c82215d21f43c11b17cf812c91ee03343a1d8abda68bc9aeb07d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/stack-overflow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              176,
+              179
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "peak reading: 96"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Spread arguments are pushed onto the call stack. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

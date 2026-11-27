@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Include locale in the memoization key.",
+  "original": {
+    "source_hash": "b01e6fff4c6f34d14d6f241cce8dac4f40efbbe14e0ff8e183b20c89b17fc9de",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/impure-functions/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "83e8f70cc94d28b8f94e731f109a52c888ea8d5712e4454bfc30e88b1d3bcf29",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/impure-functions/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "Hello, user 7\nHola, user 7"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Global cache plus incomplete key makes the result depend on call history. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

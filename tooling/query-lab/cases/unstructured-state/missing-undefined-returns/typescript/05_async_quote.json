@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return and handle an explicit unavailable quote.",
+  "original": {
+    "source_hash": "326ff99858963f501eaada4695ff6ad715eefcf931b36ae4ec7076b842e0e5e3",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              111,
+              115
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "04593206f09abada8988c3568c434d0204cd11a2e90be9ca0c6342087d213ea6",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              133,
+              137
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "price unavailable"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The async function has no return on that path, so the promise fulfills with undefined (CWE-394). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

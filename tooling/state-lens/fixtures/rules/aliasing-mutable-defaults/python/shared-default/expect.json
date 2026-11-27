@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "roles": {
+    "failing": {
+      "findings": [
+        {
+          "trigger": "tags.append(item)",
+          "origins": [
+            "[]"
+          ],
+          "affected_uses": [
+            "add_tag(\"ben\")"
+          ],
+          "evidence_level": "feasible_under_model",
+          "requirement": "read-only-parameter"
+        }
+      ],
+      "repair": {
+        "applicability": "auto"
+      }
+    },
+    "fixed": {
+      "findings": []
+    },
+    "intentional": {
+      "findings": [],
+      "boundaries": [
+        "call-bound"
+      ]
+    },
+    "independent": {
+      "findings": []
+    },
+    "breaker": {
+      "findings": []
+    }
+  },
+  "variants": {
+    "explicit-then-omitted": {
+      "findings": [
+        {
+          "trigger": "tags.append(item)",
+          "origins": [
+            "[]"
+          ],
+          "affected_uses": [
+            "add_tag(\"cy\")"
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ]
+    },
+    "nested-mutable": {
+      "findings": [
+        {
+          "trigger": "log[\"events\"].append(event)",
+          "origins": [
+            "[]",
+            "{\"events\": []}"
+          ],
+          "affected_uses": [
+            "record(\"b\")"
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ]
+    }
+  }
+}

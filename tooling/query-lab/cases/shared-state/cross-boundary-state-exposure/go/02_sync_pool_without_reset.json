@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reset pooled buffers on acquisition and release.",
+  "original": {
+    "source_hash": "1dc7c9e08ac2452fe1f97dbb5180f5a446dcc12df6582c3f8926b0a9f46ca2ea",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              190,
+              193
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              230,
+              233
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "9569fd19935e27ff6d67d1fea210129a7f02a6af60ed9a6f95d4ec7c5e5a234a",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              190,
+              193
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              217,
+              222
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              245,
+              250
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              265,
+              268
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "receipt for bob, card ending 1881"
+    ],
+    "exit_code": 0,
+    "stdout": "receipt for bob, card ending 1881\n"
+  },
+  "analysis_limit": "These are syntax candidates only. sync.Pool returns objects with previous contents intact (CWE-488). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

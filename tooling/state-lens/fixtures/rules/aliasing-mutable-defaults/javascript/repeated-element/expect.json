@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "roles": {
+    "failing": {
+      "findings": [
+        {
+          "trigger": "seats[0].holder",
+          "origins": [
+            "{ holder: \"open\" }",
+            "new Array(SEAT_COUNT).fill(defaults.seat)"
+          ],
+          "affected_uses": [
+            "seats[1].holder"
+          ],
+          "evidence_level": "feasible_under_model",
+          "requirement": "frozen"
+        }
+      ],
+      "repair": {
+        "applicability": "auto"
+      }
+    },
+    "fixed": {
+      "findings": []
+    },
+    "intentional": {
+      "findings": [
+        {
+          "trigger": "views[0].holder",
+          "origins": [
+            "{ holder: \"open\" }",
+            "new Array(3).fill(board)"
+          ],
+          "affected_uses": [
+            "views[2].holder"
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ],
+      "repair": {
+        "applicability": "advisory"
+      }
+    },
+    "independent": {
+      "findings": []
+    },
+    "breaker": {
+      "findings": []
+    }
+  }
+}

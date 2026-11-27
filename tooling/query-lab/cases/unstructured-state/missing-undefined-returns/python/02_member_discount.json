@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject the invalid boundary input or make the producer contract explicit before use.",
+  "analysis_limit": "Syntax candidates remain in guarded correct code; captures do not establish a domain violation or missing control-flow guard.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "1"
+    ]
+  },
+  "original": {
+    "source_hash": "03b1fab523b40349ab0d0973692cb50ea2d582a3ef6a80c743e1225fce5139e4",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/unstructured-state/missing-undefined-returns/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_function",
+            "range": [
+              0,
+              63
+            ]
+          },
+          {
+            "name": "unstructured_function",
+            "range": [
+              66,
+              126
+            ]
+          },
+          {
+            "name": "unstructured_return",
+            "range": [
+              53,
+              63
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "aca36ea8d451a699df1c288767e2fa3b81bfb2b0ccabda137a5451bcf311d40d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/python/unstructured-state/missing-undefined-returns/boundaries.scm",
+        "captures": [
+          {
+            "name": "unstructured_function",
+            "range": [
+              0,
+              76
+            ]
+          },
+          {
+            "name": "unstructured_function",
+            "range": [
+              79,
+              139
+            ]
+          },
+          {
+            "name": "unstructured_return",
+            "range": [
+              68,
+              76
+            ]
+          },
+          {
+            "name": "unstructured_return",
+            "range": [
+              53,
+              63
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Keep the configured threshold fixed and remove its reassignment; retain the local result buffer. Domain intent must distinguish filtering from running maxima.",
+  "analysis_limit": "Syntax candidates do not establish incorrect behavior. Safe repair requires scope, data-flow and domain intent; legitimate mutation can remain after repair.",
+  "runtime": {
+    "status": "supported",
+    "stdout": "[40, 30, 60]\n",
+    "exit_code": 0
+  },
+  "original": {
+    "source_hash": "dc89c1a3d43066afd984e1ab13858fd7d6544ea5ce0e5f0b4fa329b5fd4dfcd8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/var-let-mut/signals.scm",
+        "captures": [
+          {
+            "name": "binding",
+            "range": [
+              104,
+              107
+            ]
+          },
+          {
+            "name": "binding",
+            "range": [
+              138,
+              141
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "3d555dad2840b843b7d9c86f218b0437c6f5d7e1947a310d16dfed2bc1fee508",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/var-let-mut/signals.scm",
+        "captures": [
+          {
+            "name": "binding",
+            "range": [
+              104,
+              107
+            ]
+          },
+          {
+            "name": "binding",
+            "range": [
+              138,
+              141
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

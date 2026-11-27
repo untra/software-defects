@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Keep the uniqueness check and insert in the same synchronous turn. A real database needs a unique constraint.",
+  "original": {
+    "source_hash": "a159ca3a796bd920d4f3686a55c139bc3c5fa86f4637fd83949e78ef5a2e2be0",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              123,
+              159
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              253,
+              292
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              339,
+              361
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              367,
+              397
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              452,
+              533
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              465,
+              497
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              499,
+              531
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              539,
+              645
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              584,
+              637
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              649,
+              655
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "4b6281186072f8b31ec839a0026e815dd44f527058ad6faf02886adbf433a93a",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              123,
+              159
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              268,
+              290
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              300,
+              339
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              367,
+              397
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              452,
+              533
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              465,
+              497
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              499,
+              531
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              539,
+              645
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              584,
+              637
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              649,
+              655
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "accounts for ana@example.com: 1"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

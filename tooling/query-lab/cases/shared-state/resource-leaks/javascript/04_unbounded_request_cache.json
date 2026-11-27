@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Cache reusable path responses with an explicit entry budget instead of retaining every request ID.",
+  "original": {
+    "source_hash": "a54651ffa60474813bb16641c2c459c1a327d70d81cad3fb4342c93bfdf6070e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              152,
+              155
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "5a20e0ec304351134c61151b360dcd12c55352c1bd764586a89ed4434ef98ff3",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              390,
+              393
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "cached responses retained: 1"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Cache key has unbounded cardinality and no TTL (CWE-401). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

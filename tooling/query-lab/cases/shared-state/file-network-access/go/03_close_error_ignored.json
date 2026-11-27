@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Propagate flush/close failure as part of backup completion.",
+  "original": {
+    "source_hash": "5bf80a9ce96474bab33e2ef46ee1c237dfb56b4a71058eee6cf43eeff1f9af17",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "io_call",
+            "range": [
+              166,
+              189
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              198,
+              204
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              262,
+              304
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              435,
+              451
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              459,
+              468
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              480,
+              493
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              531,
+              564
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              566,
+              599
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "ba034d8c74745bd871c41b1fd2748aaef0ca01697c6cf94398cb28f800fa23d3",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "io_call",
+            "range": [
+              166,
+              189
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              198,
+              204
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              262,
+              304
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              435,
+              451
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              463,
+              476
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              485,
+              512
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              502,
+              511
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              538,
+              571
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              573,
+              606
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "backup error: flush failed: quota exceeded"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Bound queue storage and return explicit admission failure to producers.",
+  "original": {
+    "source_hash": "6080018a8449f78bea5f7bb89b616749a6f9a3d4dda016f29ce4b665d83555bd",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/resource-contention/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              157,
+              161
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "881fc20b7a9a60701c8889609ae79ea68b44a8cf6d499b1372a9c1a169103477",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/resource-contention/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              230,
+              234
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "queued events in memory: 90"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. No backpressure or cap on a shared in-memory queue (CWE-400). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

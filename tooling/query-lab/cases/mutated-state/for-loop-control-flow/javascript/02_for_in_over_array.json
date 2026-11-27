@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use numeric indices from entries instead of string property keys.",
+  "original": {
+    "source_hash": "1593126d8bd8890f2ab381c40860dc5cae75f47e81839dc8bc5ff6d985486afc",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/for-loop-control-flow/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "cd2b68237faf41200dcb59901f742db75cf82769b524a14a855a53b43cd5a768",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/for-loop-control-flow/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "1. 90",
+      "2. 85",
+      "3. 77"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Array indices from for-in are strings ('0', '1', ...). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

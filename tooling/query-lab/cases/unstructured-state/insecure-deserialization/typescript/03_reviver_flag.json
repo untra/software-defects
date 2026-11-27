@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Discard the privileged property during decoding.",
+  "original": {
+    "source_hash": "4f23122eb2793d773abf783f3a31eed65d5e9e0cd6ef401d2f8dcd2808f353c8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/insecure-deserialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              63,
+              68
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "064770dc03acc6408ab8bd0391679952dca6aeca90635976a86d4bbac482659d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/insecure-deserialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              63,
+              68
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "admin undefined"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The reviver rewrites every value equal to \"true\", including a flag (CWE-502). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

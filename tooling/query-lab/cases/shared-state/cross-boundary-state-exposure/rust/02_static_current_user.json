@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Keep the viewer in request-local state rather than shared singleton state.",
+  "original": {
+    "source_hash": "755a9c37c1c4014ad9a6d9e85a16e952a1217faa2c73109595153d9849dae3d5",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              312,
+              316
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              419,
+              423
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "ec5362dfa1ed2a641e7014a58ef98765a24bb7e1923927a859ae968d8eec399d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "alice received account data of alice",
+      "bob received account data of bob"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The mutex prevents data races, not cross-request leakage (CWE-488). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Capture the session receiver lexically in the timer.",
+  "original": {
+    "source_hash": "fbb60a134173e1d67d827895d70ebe07dbadb67ef0fe29488bfca3bb7d1fec07",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/this-mutation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              80,
+              90
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              212,
+              222
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "c6363d8741a89f2b6a2121d531d2de4c936fc0bd45ab48c38fd1c89114b196d5",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/this-mutation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              80,
+              90
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              206,
+              216
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "expired: true"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Non-arrow functions rebind `this` to the caller-chosen receiver. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

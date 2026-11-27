@@ -1,0 +1,126 @@
+{
+  "family": "compound-defects",
+  "class": "data-corruption",
+  "defect": "unchecked-sentinel-corruption",
+  "name": "Unchecked Sentinel Corrupts a Shared Record",
+  "essence": "A 'not found' sentinel return used unchecked as a write offset writes past the start of a shared file -- the same unchecked-return defect that elsewhere becomes the CWE-690 null dereference.",
+  "category": "memory-corruption",
+  "scores": {
+    "python": 1,
+    "typescript": 0,
+    "go": 1,
+    "rust": 1
+  },
+  "cwes": [
+    "CWE-787"
+  ],
+  "examples": [
+    {
+      "file": "python/01_catalog_record.py",
+      "language": "python",
+      "bug_lines": [
+        26,
+        27
+      ],
+      "summary": "ctypes applies the unchecked -1 sentinel before the mapped records buffer, overwriting the preceding file header and persisting the corruption..",
+      "mechanism": "ctypes applies the unchecked -1 sentinel before the mapped records buffer, overwriting the preceding file header and persisting the corruption.",
+      "observed_output": "catalog ZABC",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Leave catalog HABC intact when Q is absent.",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "missing-undefined-returns",
+          "suggests": "The caller uses the not-found return directly as a write offset.",
+          "evidence": [
+            "return MISSING",
+            "offset = locate(RECORDS, SEARCH)",
+            "records[offset] = REPLACEMENT"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "The pointer references a shared file mapping and the write persists in its header.",
+          "evidence": [
+            "mmap.mmap(handle.fileno(), 0)",
+            "mapping.flush()",
+            "handle.read().decode()"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_shipment_index.go",
+      "language": "go",
+      "bug_lines": [
+        40,
+        41
+      ],
+      "summary": "An unchecked missing index writes before the mapped record region and permanently changes the file header.",
+      "mechanism": "unsafe pointer arithmetic applies a negative sentinel to a mapped record subregion, writing before that region into the adjacent file header; this is an actual out-of-bounds subobject write.",
+      "observed_output": "header X",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "header H",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "missing-undefined-returns",
+          "suggests": "The missing lookup sentinel is used as a pointer offset without checking it.",
+          "evidence": [
+            "return missingIndex",
+            "index := locate(records, 'Z')",
+            "unsafe.Add(unsafe.Pointer(&records[0]), index)"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "The raw write changes a shared file mapping and a later read observes it.",
+          "evidence": [
+            "syscall.MAP_SHARED",
+            "os.ReadFile(file.Name())"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_account_records.rs",
+      "language": "rust",
+      "bug_lines": [
+        14,
+        16,
+        17
+      ],
+      "summary": "An unchecked negative record index overwrites the page header and persists it.",
+      "mechanism": "unsafe pointer offset bypasses bounds and writes before the records subobject into its adjacent header. The missing-record sentinel is used directly as a record offset. The corrupted record page is written back across the persistent file boundary.",
+      "observed_output": "header PAID",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "header OPEN",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "missing-undefined-returns",
+          "suggests": "The missing-record sentinel is used directly as a record offset.",
+          "evidence": [
+            "unwrap_or(-1)",
+            "let index = find(&page.records, b\"plum\");",
+            "offset(index * RECORD_BYTES as isize)"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "file-network-access",
+          "suggests": "The corrupted record page is written back across the persistent file boundary.",
+          "evidence": [
+            "fs::read(&path).unwrap()",
+            "fs::write(&path, output).unwrap();"
+          ]
+        }
+      ]
+    }
+  ]
+}

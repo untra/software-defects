@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Track idempotent adjustments and derive totals in a defined coupon-before-tax order.",
+  "original": {
+    "source_hash": "9922c7d66634d2099db9e7e27fdd2a337f5204c9bbf39a2e493b2c21199accdc",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/this-mutation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "64de5ea4e12a42552518efb989b6ddc53ce432f896c04131db7d6d1d3aa71179",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/this-mutation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "tax then coupon: 99",
+      "coupon then tax: 99",
+      "tax retried: 110"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Each call reads state written by previous calls instead of deriving from inputs. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

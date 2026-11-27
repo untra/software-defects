@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Keep derived-total notifications from feeding back into their source subtotal.",
+  "original": {
+    "source_hash": "5b82f482b0a3be1bf6d0ec413752613de9281c43b171451606061afc3fa767f6",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/stack-overflow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              237,
+              241
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              349,
+              353
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              393,
+              397
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "701c8830bf20abb01baffd865845939b537a48ad0997cb0a6aa895b4a0c349dc",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/stack-overflow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              237,
+              241
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              354,
+              358
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "total: 110"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. EventEmitter dispatch is synchronous; feedback loops recurse on the stack. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

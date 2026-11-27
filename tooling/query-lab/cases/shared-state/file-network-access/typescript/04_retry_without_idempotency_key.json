@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Deduplicate retries using a stable identity for the logical charge.",
+  "original": {
+    "source_hash": "14087a6e24d5497036cad2526c1a323ef87476cee1b1a5a9ef296c660e7c6aac",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "io_call",
+            "range": [
+              183,
+              200
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              458,
+              480
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              583,
+              621
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              601,
+              620
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              625,
+              672
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              677,
+              683
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "675872170fc5235752ffc2cdcbab13f51c3cd926ea311663084e38b83ee46855",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "io_call",
+            "range": [
+              200,
+              244
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              270,
+              287
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              566,
+              606
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              709,
+              758
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              727,
+              757
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              762,
+              809
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              814,
+              820
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "charges recorded: 1"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Per-call locks do not protect a shared resource. The fixed version preserves the intended operation while enforcing its synchronization contract.",
+  "analysis_limit": "Captures are independent source-token expectations. API identity, guard lifetime, scheduling and control flow require bounded analyzer evidence.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "count: 2"
+    ]
+  },
+  "original": {
+    "source_hash": "2358cf8b81ebeb0a6c67ca0f7530223d479973181f52190ab5c986f32eb46bd8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              214,
+              223
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              217,
+              221
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              234,
+              245
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              237,
+              243
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "b2dc724abd2d2c205c00183f70c6a72192dfe39a5d1ec2aa6f3ed0e6decad326",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              241,
+              250
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              244,
+              248
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              261,
+              272
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              264,
+              270
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "baseline": {
+    "deterministic": false,
+    "exit_code": 0,
+    "stdout_contains": [
+      "count: 1"
+    ]
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Peeking must not advance the cursor.",
+  "original": {
+    "source_hash": "807bd0c8b52b786a393d398bea3005bd6a5eed05d985fcf8d06091a475c32b7e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/this-mutation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              189,
+              192
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              216,
+              219
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              247,
+              250
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "05423d86cdcf9841bf96da4b3cf3dd6b4f694e9b734e8a1e46325a7100a0d67d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/this-mutation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              189,
+              192
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              215,
+              218
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "first Some(\"let\"), again Some(\"let\")"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Interior mutability lets a `&self` method mutate state, hiding call-order coupling from the signature. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

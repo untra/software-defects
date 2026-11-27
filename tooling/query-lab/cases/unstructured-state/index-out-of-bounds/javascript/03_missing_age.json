@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Represent missing age rather than calculate NaN.",
+  "original": {
+    "source_hash": "f45b33fc018af008d2da30811796e9bf5d7c4d784c6e40d0c2667847b641acaa",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "5f98c09763bc8f8f9eed484ac47cb47f1e715f5e7d57e701828b08b17f3a421d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "next unavailable"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. A missing property is undefined, and arithmetic does not throw (CWE-125). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

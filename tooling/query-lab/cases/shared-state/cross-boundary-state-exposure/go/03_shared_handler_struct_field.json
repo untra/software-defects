@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use the per-request tenant argument after the wait.",
+  "original": {
+    "source_hash": "ee2f6ee26323f213a8db974d319373676bd95cb625caecdefbb2c84bb5eaa1bc",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "cffbeebd14d9d2d005690ccaf36083020de54d068292ab33f89088d2c3367189",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "acme got rows for tenant acme",
+      "globex got rows for tenant globex"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Handlers are shared across goroutines; fields act as globals (CWE-567). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

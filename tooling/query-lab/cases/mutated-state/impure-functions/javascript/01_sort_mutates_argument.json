@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Sort a copy and preserve chronological readings.",
+  "original": {
+    "source_hash": "bbf4e538660b0a5776c05c54a267169793f8de27c0b928e79b27ecdeb8aac28c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/impure-functions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              70,
+              74
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "0f5ba9da6c9ec6819acdc860831f900ccab748c36ff87d7f7d13268423a8d162",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/impure-functions/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              75,
+              79
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "latest reading: 21"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. sort is in-place; use toSorted or copy. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

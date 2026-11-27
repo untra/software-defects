@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "roles": {
+    "failing": {
+      "findings": [
+        {
+          "trigger": "testConfig.db.host",
+          "origins": [
+            "{ host: \"db.internal\" }",
+            {
+              "text": "prodConfig",
+              "occurrence": 2
+            }
+          ],
+          "affected_uses": [
+            "prodConfig.db.host"
+          ],
+          "evidence_level": "feasible_under_model",
+          "requirement": "frozen"
+        }
+      ],
+      "repair": {
+        "applicability": "auto"
+      }
+    },
+    "fixed": {
+      "findings": []
+    },
+    "intentional": {
+      "findings": [
+        {
+          "trigger": "tenant.pool.size",
+          "origins": [
+            "{ size: 10 }",
+            {
+              "text": "shared",
+              "occurrence": 2
+            }
+          ],
+          "affected_uses": [
+            "shared.pool.size"
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ],
+      "repair": {
+        "applicability": "advisory"
+      }
+    },
+    "independent": {
+      "findings": []
+    },
+    "breaker": {
+      "findings": []
+    }
+  }
+}

@@ -1,0 +1,311 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Check cancellation before committing the simulated charge. Real remote payments additionally need server-side idempotency.",
+  "original": {
+    "source_hash": "a3698415d94a632da5b37fc8c068d1d0f7a692dc49024e6004312f4e0ba58f3b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "async_keyword",
+            "range": [
+              94,
+              99
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              134,
+              205
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              165,
+              204
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              317,
+              367
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              334,
+              362
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              372,
+              377
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              426,
+              481
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              440,
+              458
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              460,
+              479
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              485,
+              490
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              527,
+              554
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              533,
+              554
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              582,
+              602
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              588,
+              602
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              614,
+              676
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              645,
+              675
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              682,
+              731
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              735,
+              741
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "4c486f369991fb2c1dcc45252ce7b8007b91957bee62cfd8858a5c7a03f0dea8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "async_keyword",
+            "range": [
+              154,
+              159
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              202,
+              256
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              208,
+              256
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              262,
+              286
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              398,
+              448
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              415,
+              443
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              453,
+              458
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              560,
+              628
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              577,
+              615
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              655,
+              698
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              661,
+              698
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              728,
+              747
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              757,
+              762
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              799,
+              826
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              805,
+              826
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              854,
+              874
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              860,
+              874
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              886,
+              948
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              917,
+              947
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              954,
+              1003
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              1007,
+              1013
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "customer charged 1 times"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

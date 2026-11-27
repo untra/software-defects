@@ -1,0 +1,1282 @@
+{
+  "schema_version": 1,
+  "scope": [
+    "async-io-misuse",
+    "race-conditions",
+    "file-network-access"
+  ],
+  "evidence": "Behavioral reproduction is distinct from syntax capture and bounded relationship candidates.",
+  "examples": [
+    {
+      "file": "examples/shared-state/async-io-misuse/go/01_goroutine_error_dropped.go",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/go/01_goroutine_error_dropped.go",
+      "contract": "error: empty record",
+      "mechanism": "Fire-and-forget goroutines have no channel for failures (use errgroup).",
+      "repair": "Collect worker failures and return them after joining all work.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/go/01_goroutine_error_dropped.json",
+      "original_hash": "2be611cae32c17cabf95e66046a070b5c49fe495cb8754ac6b4836270bbc7575",
+      "fixed_hash": "815d92c3fee03425ccf5b2528657794b1cfe7132300ebebcbb60521fcc934c25",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/go/02_main_exits_before_worker.go",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/go/02_main_exits_before_worker.go",
+      "contract": "metrics flushed / shutdown complete",
+      "mechanism": "main returning terminates all goroutines without waiting.",
+      "repair": "Wait for metric flushing before reporting shutdown completion.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/go/02_main_exits_before_worker.json",
+      "original_hash": "934fa0036f52192b4288124586e909ca2cc07679ca1ee592e7dd52ef6b2667e8",
+      "fixed_hash": "0dcd1913b2af8cedd4e513fa1882c77e00e2102867635bd094672826ff901df9",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/go/03_goroutine_leak_unbuffered_result.go",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/go/03_goroutine_leak_unbuffered_result.go",
+      "contract": "goroutines leaked: 0",
+      "mechanism": "Goroutines blocked on send are never collected (leak per call).",
+      "repair": "Reserve one result slot per worker so losing senders can finish.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/go/03_goroutine_leak_unbuffered_result.json",
+      "original_hash": "3cc1568219d177ff6d6078b85f866a3f77df1dd0da696919ea1b9734bf92377d",
+      "fixed_hash": "d5b77ef1a71e4a10353b7400237361134967b63b0c05823c0aeaf26218f62871",
+      "baseline": {
+        "deterministic": false,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/rust/01_future_never_awaited.rs",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/rust/01_future_never_awaited.rs",
+      "contract": "receipts sent: 1",
+      "mechanism": "Rust futures are lazy; nothing runs until polled.",
+      "repair": "receipts sent: 1; preserve the workload while correcting completion, atomicity or resource ordering.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/rust/01_future_never_awaited.json",
+      "original_hash": "80d2121576fa3d470581893d7fcf84f642df786bc1ea2660a9a512103ce6dfca",
+      "fixed_hash": "ed061e749188e68675d311b3cbbac1476ed86968bb8de4825431afd1ff06d6f8",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/rust/02_dropped_join_handle.rs",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/rust/02_dropped_join_handle.rs",
+      "contract": "export failure reported",
+      "mechanism": "Detached threads lose results and panics.",
+      "repair": "Join the worker and propagate both task failure and panic before declaring success.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/rust/02_dropped_join_handle.json",
+      "original_hash": "c20c548630cb078910959bcbf23c02b513cf5690dffbdf655a2bbff118f7abb7",
+      "fixed_hash": "6a374215d21afbd43fe912e40712ed602da238c4546557d78ae86252fe3e3195",
+      "baseline": {
+        "deterministic": false,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/typescript/01_floating_promise.ts",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/typescript/01_floating_promise.ts",
+      "contract": "profile page shows: new bio",
+      "mechanism": "Floating promise: ordering of the write is lost (CWE-662).",
+      "repair": "Await persistence and then let the caller observe completion.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/typescript/01_floating_promise.json",
+      "original_hash": "53d13c6063d2f10dc61f3ecc7bc5c6097a0a1e9afa204f4fe53658eaf887cd40",
+      "fixed_hash": "575c7de38fe907c3eb6e22eaa9ebd511dc45f1e99a38603628af8518ce6045d6",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/typescript/02_unhandled_rejection.ts",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/typescript/02_unhandled_rejection.ts",
+      "contract": "order completed and next order processed, webhook failure logged",
+      "mechanism": "Unhandled promise rejections terminate Node by default.",
+      "repair": "Observe the webhook rejection without terminating subsequent order processing.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/typescript/02_unhandled_rejection.json",
+      "original_hash": "f0ce7533d991591b2d230c7c45293e5f747b79073bf9aa30d8721aaa6b2e0d54",
+      "fixed_hash": "82e728335d462ff72569fd981e32f5cb29e252276086537ca85b6c1768adb942",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 1,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/typescript/03_await_in_loop.ts",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/typescript/03_await_in_loop.ts",
+      "contract": "all peers registered: true",
+      "mechanism": "A protocol dependency, not sequential await alone, makes serialization incorrect.",
+      "repair": "all peers registered: true; preserve the workload while correcting completion, atomicity or resource ordering.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/typescript/03_await_in_loop.json",
+      "original_hash": "a38f2f67f681ac9230a544cc0128d316ae3e76ee7d8914ff6b8990f90f2a27c4",
+      "fixed_hash": "31e9286d0162a7d0db6195ed0236bddfd9eed1a0114277e9726a40bcad06a9c9",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/typescript/04_then_callback_missing_return.ts",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/typescript/04_then_callback_missing_return.ts",
+      "contract": "loaded: { name: 'user-7' }",
+      "mechanism": "Promise chains propagate the callback's return value.",
+      "repair": "Return the transformed user from the promise callback.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/typescript/04_then_callback_missing_return.json",
+      "original_hash": "3623c0051bbe73ec556611b89a07110bd57a67a04cb04520f468e02a68b131a8",
+      "fixed_hash": "6794bfadd0dd8d33bfafa8a7a6f0afc5ddaa84a67a97c5bcc8c044302229f2e9",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/typescript/05_race_timeout_loser_continues.ts",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/typescript/05_race_timeout_loser_continues.ts",
+      "contract": "customer charged 1 times",
+      "mechanism": "race does not cancel the losing promise (use AbortSignal).",
+      "repair": "Check cancellation before committing the simulated charge. Real remote payments additionally need server-side idempotency.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/typescript/05_race_timeout_loser_continues.json",
+      "original_hash": "16cae934c30347fbc2cc67f490f5f22f45931cb3884d5d7b3b8ee55b55be3bcf",
+      "fixed_hash": "56711d90453122e3e03249c9e4e9ff7827ad6b697019f18fabf397fca2214232",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/python/01_coroutine_never_awaited.py",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/python/01_coroutine_never_awaited.py",
+      "contract": "saved",
+      "mechanism": "Calling an async function returns a coroutine object. Discarding it never runs the body.",
+      "repair": "saved; preserve the workload while correcting completion, atomicity or resource ordering.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/python/01_coroutine_never_awaited.json",
+      "original_hash": "29c8e650866af1a78a2d47b8e43233cf0b42cdaa3e0c3615d0a0673072b5545a",
+      "fixed_hash": "75352edd4024cbf455fee9c3eaf6e1f9f11415431e2ad08d21914b069538e83b",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/python/02_task_exception_dropped.py",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/python/02_task_exception_dropped.py",
+      "contract": "the disk full error reaches the caller",
+      "mechanism": "create_task schedules the coroutine and the caller never awaits the task, so the exception is only reported as an unretrieved task.",
+      "repair": "the disk full error reaches the caller; preserve the workload while correcting completion, atomicity or resource ordering.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/python/02_task_exception_dropped.json",
+      "original_hash": "60b31018ac2b28bc2003562a7ed1d03add785b7224c9f61740b6a37c754c9af3",
+      "fixed_hash": "1c8841c872a9c05e9a5529cfe2527933463e07e872ee5c535971549c969956c3",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/python/03_await_in_loop.py",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/python/03_await_in_loop.py",
+      "contract": "all peers registered: True",
+      "mechanism": "A protocol dependency, not sequential await alone, makes serialization incorrect.",
+      "repair": "all peers registered: True; preserve the workload while correcting completion, atomicity or resource ordering.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/python/03_await_in_loop.json",
+      "original_hash": "d33628d4e6fb220b78e59d19fb385729ca98d37f21353a49d73f4f349fd8863b",
+      "fixed_hash": "acfa3fdf127f0c5345bb72e1f53709a38b3b97f378d12d81c4ba3bc8ed2be0e8",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/python/04_race_loser_writes.py",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/python/04_race_loser_writes.py",
+      "contract": "winner, and the page still winner",
+      "mechanism": "The loser task is not cancelled when the winner finishes. Awaiting it lets the late write land.",
+      "repair": "winner, and the page still winner; preserve the workload while correcting completion, atomicity or resource ordering.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/python/04_race_loser_writes.json",
+      "original_hash": "97562ebfc4a3a723ccb597fc7e91b526b6250b28948cceaa1be825a526e42a21",
+      "fixed_hash": "9f10808d45709ec43cc3e3e2e8565c5f48719bfabc19ace18f5606378883affe",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/javascript/01_floating_promise.js",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/javascript/01_floating_promise.js",
+      "contract": "profile page shows: new bio",
+      "mechanism": "Floating promise: ordering of the write is lost (CWE-662).",
+      "repair": "Await persistence and then let the caller observe completion.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/javascript/01_floating_promise.json",
+      "original_hash": "1d67ba9a6d24e8345ab6e12afc3d0f3d828eb06b8d63cbf02869d37bae916aaa",
+      "fixed_hash": "11f9d686d41888b3442184d8eee5adf8c827232b966c559e5c68e440050a4680",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/javascript/02_unhandled_rejection.js",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/javascript/02_unhandled_rejection.js",
+      "contract": "order completed and next order processed, webhook failure logged",
+      "mechanism": "Unhandled promise rejections terminate Node by default.",
+      "repair": "Observe the webhook rejection without terminating subsequent order processing.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/javascript/02_unhandled_rejection.json",
+      "original_hash": "4ea7c01629cd12a426503cd811640492b97b37860b90014f318499105c644faa",
+      "fixed_hash": "f2acef9f7d543354e860f251c1b10b882a85f7feea5b6fb15f3345856f3981de",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 1,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/javascript/03_await_in_loop.js",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/javascript/03_await_in_loop.js",
+      "contract": "all peers registered: true",
+      "mechanism": "A protocol dependency, not sequential await alone, makes serialization incorrect.",
+      "repair": "all peers registered: true; preserve the workload while correcting completion, atomicity or resource ordering.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/javascript/03_await_in_loop.json",
+      "original_hash": "f19d30c1827b9ef19a36e9c7388226baf7e377acf3fefec06626977917075cbb",
+      "fixed_hash": "d0a4be7069d826b3b0f2ae53a2642c625ac2cdf12feb78c1c8f02be157d434dd",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/javascript/04_then_callback_missing_return.js",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/javascript/04_then_callback_missing_return.js",
+      "contract": "loaded: { name: 'user-7' }",
+      "mechanism": "Promise chains propagate the callback's return value.",
+      "repair": "Return the transformed user from the promise callback.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/javascript/04_then_callback_missing_return.json",
+      "original_hash": "b339f5ab5bcf714d19ecb45056838b7c4ba9298d7ea750778aefcdfaffc15e1c",
+      "fixed_hash": "009fb049dca76efa52448b1b9a6cbd9bb6221a0bcb0fc165952695ec748a25f5",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/javascript/05_race_timeout_loser_continues.js",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/javascript/05_race_timeout_loser_continues.js",
+      "contract": "customer charged 1 times",
+      "mechanism": "race does not cancel the losing promise (use AbortSignal).",
+      "repair": "Check cancellation before committing the simulated charge. Real remote payments additionally need server-side idempotency.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/javascript/05_race_timeout_loser_continues.json",
+      "original_hash": "a3698415d94a632da5b37fc8c068d1d0f7a692dc49024e6004312f4e0ba58f3b",
+      "fixed_hash": "4c486f369991fb2c1dcc45252ce7b8007b91957bee62cfd8858a5c7a03f0dea8",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/rust/03_tokio_dropped_handle.rs",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/rust/03_tokio_dropped_handle.rs",
+      "contract": "save failed: disk full",
+      "mechanism": "Task completion and resource ownership must be coordinated.",
+      "repair": "save failed: disk full; preserve the workload while correcting completion, atomicity or resource ordering.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/rust/03_tokio_dropped_handle.json",
+      "original_hash": "b07cfa42a741384c27012d82f057c57b31969e4cd6d05524669d5ee5a6d6c2a6",
+      "fixed_hash": "5fb96292091db5d99f3097181835ee4b3637e4e934e833902d0e33b920b48929",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/rust/04_tokio_loser_writes.rs",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/rust/04_tokio_loser_writes.rs",
+      "contract": "late writes: 0",
+      "mechanism": "Task completion and resource ownership must be coordinated.",
+      "repair": "late writes: 0; preserve the workload while correcting completion, atomicity or resource ordering.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/rust/04_tokio_loser_writes.json",
+      "original_hash": "87dc63d766ea9f2653e38670027e1a31ea79276db13483ecfddf0087f120efa1",
+      "fixed_hash": "9de2bdb3662cf8451586c7e52c49cbc9b6c5a8b27e62358014a3801518afb299",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/async-io-misuse/rust/05_tokio_resource_lifetime.rs",
+      "fixed": "examples-fixed/shared-state/async-io-misuse/rust/05_tokio_resource_lifetime.rs",
+      "contract": "receipt delivered: true",
+      "mechanism": "Task completion and resource ownership must be coordinated.",
+      "repair": "receipt delivered: true; preserve the workload while correcting completion, atomicity or resource ordering.",
+      "cwes": [
+        "CWE-252",
+        "CWE-664",
+        "CWE-696"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/async-io-misuse/rust/05_tokio_resource_lifetime.json",
+      "original_hash": "16c2864216edf7d3431103a09991dcf78600edefa2ba2a031196a886728452e9",
+      "fixed_hash": "7be0bba70424a11b594c721145db511fbc1d4e414447d6d07b58b8fd6c9eb2e8",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/race-conditions/go/01_lost_update_counter.go",
+      "fixed": "examples-fixed/shared-state/race-conditions/go/01_lost_update_counter.go",
+      "contract": "recorded 8000000 of 8000000 views",
+      "mechanism": "`++` compiles to load, add, store; interleaved goroutines overwrite each other (CWE-362).",
+      "repair": "Serialize counter updates with a mutex; reads occur after all workers join.",
+      "cwes": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/race-conditions/go/01_lost_update_counter.json",
+      "original_hash": "b8b00adf2ba141f68b27cc042fc8cad8db1712c6479d40c4608f82ed2eed2aff",
+      "fixed_hash": "47191c0d19e84b85acf8fce6c21aa41516f3e79fd1c6e5820aa9ec4d8237d8ed",
+      "baseline": {
+        "deterministic": false,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/race-conditions/go/02_check_then_act_balance.go",
+      "fixed": "examples-fixed/shared-state/race-conditions/go/02_check_then_act_balance.go",
+      "contract": "final balance: 0",
+      "mechanism": "Check-then-act across two critical sections (TOCTOU, CWE-367).",
+      "repair": "Keep the balance check and debit in one critical section.",
+      "cwes": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/race-conditions/go/02_check_then_act_balance.json",
+      "original_hash": "c8f33e80a8c0873aafb1bc26f4e3546dea1fe5e596947c4941307bbea9e11e1e",
+      "fixed_hash": "1bab3c9ac8fde192a56a3abbb330bdc3e460bf6598363924f66c614b9397fd97",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/race-conditions/go/03_concurrent_map_writes.go",
+      "fixed": "examples-fixed/shared-state/race-conditions/go/03_concurrent_map_writes.go",
+      "contract": "sessions: 800000",
+      "mechanism": "Go maps are not safe for concurrent writes; the runtime aborts the process.",
+      "repair": "Synchronize every shared map write.",
+      "cwes": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/race-conditions/go/03_concurrent_map_writes.json",
+      "original_hash": "2a53c068a3e441799dd63ecf25a9cf26c306f1cec790b7a4571da744cd2e48e2",
+      "fixed_hash": "8ce2a7c8945329a22d0b05ad3b20f525619d4dade62e6b4731791a3b42a52a68",
+      "baseline": {
+        "deterministic": false,
+        "exit_code": 1,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/race-conditions/go/04_lazy_init_without_once.go",
+      "fixed": "examples-fixed/shared-state/race-conditions/go/04_lazy_init_without_once.go",
+      "contract": "registry loaded 1 times",
+      "mechanism": "Unsynchronized check-then-set on a shared global; use sync.Once.",
+      "repair": "Publish initialized immutable registry state through sync.Once.",
+      "cwes": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/race-conditions/go/04_lazy_init_without_once.json",
+      "original_hash": "64681e48b54f164b8c8b57844334b07032e2ce540790e4aa31a2d518f2120325",
+      "fixed_hash": "b059a657d5d0718952804e139916dd3cef8d82e3d2b01341954a9579be971616",
+      "baseline": {
+        "deterministic": false,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/race-conditions/go/05_append_from_goroutines.go",
+      "fixed": "examples-fixed/shared-state/race-conditions/go/05_append_from_goroutines.go",
+      "contract": "collected 80000 of 80000 rows",
+      "mechanism": "append reads len/cap/pointer and writes back a new header; concurrent appends clobber each other.",
+      "repair": "Protect both slice length and backing storage during append.",
+      "cwes": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/race-conditions/go/05_append_from_goroutines.json",
+      "original_hash": "2ea3ed81f65660ae176959377f0ce3616ac7bf3012cd7a113a3719f5b656345b",
+      "fixed_hash": "a9803293eb144ccff575f2ce60fcf6b81c7a9bdf21c6bc4a6fee635219fdf271",
+      "baseline": {
+        "deterministic": false,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/race-conditions/rust/01_lock_per_step_check_then_act.rs",
+      "fixed": "examples-fixed/shared-state/race-conditions/rust/01_lock_per_step_check_then_act.rs",
+      "contract": "sold 1 units with 1 in stock",
+      "mechanism": "The guard is dropped between check and act, so the invariant is not held across both (CWE-367).",
+      "repair": "Hold one guard across stock validation and decrement.",
+      "cwes": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/race-conditions/rust/01_lock_per_step_check_then_act.json",
+      "original_hash": "c16ed6b936f4e27ca7eca3db504d00e5a5ac92f51d48a4af1d1dcbcbdc93f8de",
+      "fixed_hash": "97c52cd73014761882b1e41f35fe3d9ea98a55cdb05dc6a27a739120d00d5afa",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/race-conditions/rust/02_atomic_load_then_store.rs",
+      "fixed": "examples-fixed/shared-state/race-conditions/rust/02_atomic_load_then_store.rs",
+      "contract": "recorded 800 of 800 hits",
+      "mechanism": "Each operation is atomic alone; the read-modify-write is not. Use fetch_add.",
+      "repair": "Use a single atomic read-modify-write operation.",
+      "cwes": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/race-conditions/rust/02_atomic_load_then_store.json",
+      "original_hash": "db006f5a99ec7f20e8d1078cc06f2269f59cefdc703ca9617d4a9ba3e6f252b2",
+      "fixed_hash": "179a7f8c79853adcaaf11774a6be92b528ce6eabc76b10e948acc90c4c17a7a5",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/race-conditions/typescript/01_read_await_write.ts",
+      "fixed": "examples-fixed/shared-state/race-conditions/typescript/01_read_await_write.ts",
+      "contract": "widgets left: 3",
+      "mechanism": "Single-threaded JS still interleaves at every await point (CWE-362).",
+      "repair": "Reserve synchronously before yielding, restoring stock on failure.",
+      "cwes": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/race-conditions/typescript/01_read_await_write.json",
+      "original_hash": "07296934badeaceae15198d3084b34a0d5f9909fa6074952d6c59ca9c7bb3f96",
+      "fixed_hash": "7714c4b34fd9154e2ef7c9f67922e75d72a9c1dd81226950f4e14a91b993853c",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/race-conditions/typescript/02_check_then_insert_across_await.ts",
+      "fixed": "examples-fixed/shared-state/race-conditions/typescript/02_check_then_insert_across_await.ts",
+      "contract": "accounts for ana@example.com: 1",
+      "mechanism": "Check-then-act split by an await is a TOCTOU race.",
+      "repair": "Keep the uniqueness check and insert in the same synchronous turn. A real database needs a unique constraint.",
+      "cwes": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/race-conditions/typescript/02_check_then_insert_across_await.json",
+      "original_hash": "26cb00c317f501e653c983993527ce48b2fada389695d9ec908419aa472d0b6a",
+      "fixed_hash": "14b91789c7381223b73da345a07c92b2e611b987f7959ed0d25198945365e926",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/race-conditions/typescript/03_whole_document_save.ts",
+      "fixed": "examples-fixed/shared-state/race-conditions/typescript/03_whole_document_save.ts",
+      "contract": "{ title: 'Final', body: 'Hello' }",
+      "mechanism": "Last-write-wins without a version check or field-level patch (lost update).",
+      "repair": "Apply field patches against current state after yielding instead of replacing with stale snapshots.",
+      "cwes": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/race-conditions/typescript/03_whole_document_save.json",
+      "original_hash": "add9115ada52a688963e7801dc8cdc09418cf4804128972826e3c5019650da00",
+      "fixed_hash": "3855189d3d7826ff3472600a23dda00aff215b38a8c20748731bb220b9b2bfa2",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/race-conditions/typescript/04_out_of_order_responses.ts",
+      "fixed": "examples-fixed/shared-state/race-conditions/typescript/04_out_of_order_responses.ts",
+      "contract": "showing abc-result-1, abc-result-2",
+      "mechanism": "Responses complete out of order; no request token or cancellation guards the shared result.",
+      "repair": "Reject stale responses using a monotonically increasing request generation.",
+      "cwes": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/race-conditions/typescript/04_out_of_order_responses.json",
+      "original_hash": "0d62531c809c61e593e4ea6efde3ba48721dea4405b87ff70cd0db80ed942e4c",
+      "fixed_hash": "3346ba36bd1294fc6ed6b833ed504fb496b5cd1cc02e1d214abdf7e54288a15d",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/race-conditions/python/01_lost_update_counter.py",
+      "fixed": "examples-fixed/shared-state/race-conditions/python/01_lost_update_counter.py",
+      "contract": "recorded 3200 of 3200",
+      "mechanism": "The read and the later store are separate. Another thread stores in between, and one update is lost.",
+      "repair": "recorded 3200 of 3200; preserve the workload while correcting completion, atomicity or resource ordering.",
+      "cwes": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/race-conditions/python/01_lost_update_counter.json",
+      "original_hash": "3f700d7a4dd7b8620fac3afd09b5bdc0acbdbdf6405b092cb9d2146b59e12162",
+      "fixed_hash": "e7051acccbbbba24c2532008857e757f48f6a958bdbb29b358c2cda8910ae909",
+      "baseline": {
+        "deterministic": false,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/race-conditions/python/02_check_then_act_balance.py",
+      "fixed": "examples-fixed/shared-state/race-conditions/python/02_check_then_act_balance.py",
+      "contract": "0",
+      "mechanism": "The check and the subtract are not one critical section. Every waiter passes the check before any subtract.",
+      "repair": "0; preserve the workload while correcting completion, atomicity or resource ordering.",
+      "cwes": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/race-conditions/python/02_check_then_act_balance.json",
+      "original_hash": "e2cc23bdd22b483486ebfc50f9ecde13dae72479989e31b9bbcb610f2f0ba260",
+      "fixed_hash": "2bbadb698786c98d3dc350143e5342e3a20136a3d12cf7a43fb19a6120d75c63",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/race-conditions/python/03_read_await_write.py",
+      "fixed": "examples-fixed/shared-state/race-conditions/python/03_read_await_write.py",
+      "contract": "1 0",
+      "mechanism": "The await between the read and the write lets the other task read the same stock.",
+      "repair": "1 0; preserve the workload while correcting completion, atomicity or resource ordering.",
+      "cwes": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/race-conditions/python/03_read_await_write.json",
+      "original_hash": "f68e243e6e1831161811a08090a8e04297d0c55e384355c419d4e1dd431c7d10",
+      "fixed_hash": "9be0a8313be121327b034553ee3714a3a09eec18fb1e0e654be6128c61f32af7",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/race-conditions/python/04_lazy_init.py",
+      "fixed": "examples-fixed/shared-state/race-conditions/python/04_lazy_init.py",
+      "contract": "1",
+      "mechanism": "The None check and the assignment are separated. Both callers observe None.",
+      "repair": "1; preserve the workload while correcting completion, atomicity or resource ordering.",
+      "cwes": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/race-conditions/python/04_lazy_init.json",
+      "original_hash": "910fafd935b8815c0e667142070a6b843888f7357163523ba177d62be09a5ad3",
+      "fixed_hash": "96f78f493a0b9a526cc54f9c81f240f58e976b4e75ccc9f3bd55e16eaf631fee",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/race-conditions/javascript/01_read_await_write.js",
+      "fixed": "examples-fixed/shared-state/race-conditions/javascript/01_read_await_write.js",
+      "contract": "widgets left: 3",
+      "mechanism": "Single-threaded JS still interleaves at every await point (CWE-362).",
+      "repair": "Reserve synchronously before yielding, restoring stock on failure.",
+      "cwes": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/race-conditions/javascript/01_read_await_write.json",
+      "original_hash": "3c390569503e4c8b6da600ab3a15e6ab9355e312b2184d97a93bab79003d6b3b",
+      "fixed_hash": "77bb32f8345f2d016f6b7151be5ff45345565cf71acb9617c6ade9ccb96e8f6c",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/race-conditions/javascript/02_check_then_insert_across_await.js",
+      "fixed": "examples-fixed/shared-state/race-conditions/javascript/02_check_then_insert_across_await.js",
+      "contract": "accounts for ana@example.com: 1",
+      "mechanism": "Check-then-act split by an await is a TOCTOU race.",
+      "repair": "Keep the uniqueness check and insert in the same synchronous turn. A real database needs a unique constraint.",
+      "cwes": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/race-conditions/javascript/02_check_then_insert_across_await.json",
+      "original_hash": "a159ca3a796bd920d4f3686a55c139bc3c5fa86f4637fd83949e78ef5a2e2be0",
+      "fixed_hash": "4b6281186072f8b31ec839a0026e815dd44f527058ad6faf02886adbf433a93a",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/race-conditions/javascript/03_whole_document_save.js",
+      "fixed": "examples-fixed/shared-state/race-conditions/javascript/03_whole_document_save.js",
+      "contract": "{ title: 'Final', body: 'Hello' }",
+      "mechanism": "Last-write-wins without a version check or field-level patch (lost update).",
+      "repair": "Apply field patches against current state after yielding instead of replacing with stale snapshots.",
+      "cwes": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/race-conditions/javascript/03_whole_document_save.json",
+      "original_hash": "10956fc7c61e54421c59510e897c02261dd47f1b24c14426f2c12bec68737d51",
+      "fixed_hash": "c652b731a1056a3df8f666597f5b7f928da75b88b1dbb4ef1edd49efda345b5b",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/race-conditions/javascript/04_out_of_order_responses.js",
+      "fixed": "examples-fixed/shared-state/race-conditions/javascript/04_out_of_order_responses.js",
+      "contract": "showing abc-result-1, abc-result-2",
+      "mechanism": "Responses complete out of order; no request token or cancellation guards the shared result.",
+      "repair": "Reject stale responses using a monotonically increasing request generation.",
+      "cwes": [
+        "CWE-362",
+        "CWE-367",
+        "CWE-366"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/race-conditions/javascript/04_out_of_order_responses.json",
+      "original_hash": "ffaf60402b252719c05be67051d70e7b39a50b0eff821d93d0e1d72649e44e3c",
+      "fixed_hash": "91879be4cc3d5fe1785194130d59c6b05c0e67ddaaa7ee0df796a83e2da9e0cc",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/file-network-access/go/01_toctou_stat_then_write.go",
+      "fixed": "examples-fixed/shared-state/file-network-access/go/01_toctou_stat_then_write.go",
+      "contract": "nodes that believe they are leader: 1",
+      "mechanism": "Time-of-check/time-of-use on the filesystem (CWE-367). Use O_CREATE|O_EXCL.",
+      "repair": "Claim leadership with exclusive atomic creation rather than a check-then-write sequence.",
+      "cwes": [
+        "CWE-22",
+        "CWE-367",
+        "CWE-73"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/file-network-access/go/01_toctou_stat_then_write.json",
+      "original_hash": "b66972ad40732751e1b3a103a150ceee94c3427e0369b7c36670cb68d059c562",
+      "fixed_hash": "434a94debad146445a9d7a7274152189a182dd4b8eca9736da5f8c366f927d48",
+      "baseline": {
+        "deterministic": false,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/file-network-access/go/02_truncate_then_encode.go",
+      "fixed": "examples-fixed/shared-state/file-network-access/go/02_truncate_then_encode.go",
+      "contract": "config on disk still {\"Name\":\"production\"}",
+      "mechanism": "Non-atomic in-place write; write to temp and rename.",
+      "repair": "Serialize first, then write and atomically rename a temporary file to preserve existing configuration on failure.",
+      "cwes": [
+        "CWE-22",
+        "CWE-367",
+        "CWE-73"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/file-network-access/go/02_truncate_then_encode.json",
+      "original_hash": "9a7f16958ac52975398040911cf96e5de8fb1a99c84b808396a3f2554a9c7bf7",
+      "fixed_hash": "172024e1286ec59cec9bae79ed976d441897ce42944ad5f3d257b8ef575edf2f",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/file-network-access/go/03_close_error_ignored.go",
+      "fixed": "examples-fixed/shared-state/file-network-access/go/03_close_error_ignored.go",
+      "contract": "backup error: flush failed: quota exceeded",
+      "mechanism": "Buffered writers report errors on Close; deferring without checking loses them.",
+      "repair": "Propagate flush/close failure as part of backup completion.",
+      "cwes": [
+        "CWE-22",
+        "CWE-367",
+        "CWE-73"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/file-network-access/go/03_close_error_ignored.json",
+      "original_hash": "5bf80a9ce96474bab33e2ef46ee1c237dfb56b4a71058eee6cf43eeff1f9af17",
+      "fixed_hash": "ba034d8c74745bd871c41b1fd2748aaef0ca01697c6cf94398cb28f800fa23d3",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/file-network-access/go/04_retry_non_idempotent_post.go",
+      "fixed": "examples-fixed/shared-state/file-network-access/go/04_retry_non_idempotent_post.go",
+      "contract": "card charged 1 times",
+      "mechanism": "Timeouts are ambiguous; retrying non-idempotent requests duplicates side effects.",
+      "repair": "Reuse a stable operation key across retries and atomically deduplicate on the simulated server.",
+      "cwes": [
+        "CWE-22",
+        "CWE-367",
+        "CWE-73"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/file-network-access/go/04_retry_non_idempotent_post.json",
+      "original_hash": "7a274f7ea3fc0e80e451dd233e1928817ff9439c9ed2350ca68e24d0f68a3605",
+      "fixed_hash": "4ee62ea2c52ac2f8334da5b8288976620236a065ec9f6dca3d72d45aae95eb97",
+      "baseline": {
+        "deterministic": false,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/file-network-access/rust/01_toctou_exists_then_create.rs",
+      "fixed": "examples-fixed/shared-state/file-network-access/rust/01_toctou_exists_then_create.rs",
+      "contract": "nodes that believe they are leader: 1",
+      "mechanism": "TOCTOU (CWE-367); use OpenOptions::create_new.",
+      "repair": "Use atomic exclusive creation to arbitrate leadership.",
+      "cwes": [
+        "CWE-22",
+        "CWE-367",
+        "CWE-73"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/file-network-access/rust/01_toctou_exists_then_create.json",
+      "original_hash": "4e5ee6a01b133664fd34cf25814ee3a10bd18f7ddc48a27e2900d915f456cc1d",
+      "fixed_hash": "2ba6f44fe50382741eb1ebde261b9ba8c88fd6a19530eb9bcbf6fb269058a4dd",
+      "baseline": {
+        "deterministic": false,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/file-network-access/rust/02_write_instead_of_write_all.rs",
+      "fixed": "examples-fixed/shared-state/file-network-access/rust/02_write_instead_of_write_all.rs",
+      "contract": "peer received full 13 bytes",
+      "mechanism": "Partial writes are normal for sockets; use write_all.",
+      "repair": "Retry partial writes until the whole message is delivered.",
+      "cwes": [
+        "CWE-22",
+        "CWE-367",
+        "CWE-73"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/file-network-access/rust/02_write_instead_of_write_all.json",
+      "original_hash": "e31cc5a4b01471c122b0d3d78d6471c1b4637f24e63a88d6b439fd356c0c311f",
+      "fixed_hash": "92ef3688157271c74f2ef2dcc36e2b805c2e8bf24c903638d3d223741f0d0cdd",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/file-network-access/rust/03_retry_duplicates_over_tcp.rs",
+      "fixed": "examples-fixed/shared-state/file-network-access/rust/03_retry_duplicates_over_tcp.rs",
+      "contract": "orders created 1",
+      "mechanism": "Retry without idempotency over an ambiguous failure.",
+      "repair": "Carry a stable operation ID and deduplicate committed requests across reconnects.",
+      "cwes": [
+        "CWE-22",
+        "CWE-367",
+        "CWE-73"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/file-network-access/rust/03_retry_duplicates_over_tcp.json",
+      "original_hash": "86c47daa2c97454cf4cfcb16bd0c2d4891cfd584a572e507cac9987c8cf58e17",
+      "fixed_hash": "d7f44eb4b2b4f347b4372b8f2324fbb741f76a7ce587409b5519f0614dc492e6",
+      "baseline": {
+        "deterministic": false,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/file-network-access/typescript/01_exists_then_write_race.ts",
+      "fixed": "examples-fixed/shared-state/file-network-access/typescript/01_exists_then_write_race.ts",
+      "contract": "nodes that believe they are leader: 1",
+      "mechanism": "TOCTOU (CWE-367); use open with 'wx' flag.",
+      "repair": "Create the lock file exclusively instead of checking its existence before writing.",
+      "cwes": [
+        "CWE-22",
+        "CWE-367",
+        "CWE-73"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/file-network-access/typescript/01_exists_then_write_race.json",
+      "original_hash": "6c4857beec8abb4b44c0622db906e63008c5dbb29973e05de428ed46ceadff9b",
+      "fixed_hash": "56b6acafbcfea6f8ab54887fc7fd32ba82444bda7c82dc04c148bf15d94e2d83",
+      "baseline": {
+        "deterministic": false,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/file-network-access/typescript/02_truncate_then_serialize.ts",
+      "fixed": "examples-fixed/shared-state/file-network-access/typescript/02_truncate_then_serialize.ts",
+      "contract": "settings on disk unchanged",
+      "mechanism": "Non-atomic in-place write; serialize first, write to temp, rename.",
+      "repair": "Serialize before opening storage and replace via a temporary file after a complete write.",
+      "cwes": [
+        "CWE-22",
+        "CWE-367",
+        "CWE-73"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/file-network-access/typescript/02_truncate_then_serialize.json",
+      "original_hash": "c139858fe515b04b15ac9d5d40389130ecf95689164e2a43ca00a5f9fceef4a9",
+      "fixed_hash": "96820e4858cb42a82a7d38acf1a5307b9e0f22f26f127c7d065b7a55e69960cc",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/file-network-access/typescript/03_fetch_without_timeout.ts",
+      "fixed": "examples-fixed/shared-state/file-network-access/typescript/03_fetch_without_timeout.ts",
+      "contract": "timeout error after a bounded wait",
+      "mechanism": "No timeout on network I/O; callers hang.",
+      "repair": "Abort a stalled request within its deadline and clean up the local server.",
+      "cwes": [
+        "CWE-22",
+        "CWE-367",
+        "CWE-73"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/file-network-access/typescript/03_fetch_without_timeout.json",
+      "original_hash": "9aba96e9cdde22b6980ff4ca6d52e345964298a68f97950160da167623d181d8",
+      "fixed_hash": "9d0704a537d0d37e8b99f7587290c8ba5ff0deb6b4b603003c43e5c469148787",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/file-network-access/typescript/04_retry_without_idempotency_key.ts",
+      "fixed": "examples-fixed/shared-state/file-network-access/typescript/04_retry_without_idempotency_key.ts",
+      "contract": "charges recorded: 1",
+      "mechanism": "Retry without idempotency key.",
+      "repair": "Deduplicate retries using a stable identity for the logical charge.",
+      "cwes": [
+        "CWE-22",
+        "CWE-367",
+        "CWE-73"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/file-network-access/typescript/04_retry_without_idempotency_key.json",
+      "original_hash": "14087a6e24d5497036cad2526c1a323ef87476cee1b1a5a9ef296c660e7c6aac",
+      "fixed_hash": "675872170fc5235752ffc2cdcbab13f51c3cd926ea311663084e38b83ee46855",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/file-network-access/python/01_exists_then_write.py",
+      "fixed": "examples-fixed/shared-state/file-network-access/python/01_exists_then_write.py",
+      "contract": "leaders: 1",
+      "mechanism": "The absence precondition becomes false before creation (CWE-367).",
+      "repair": "leaders: 1; preserve the workload while correcting completion, atomicity or resource ordering.",
+      "cwes": [
+        "CWE-22",
+        "CWE-367",
+        "CWE-73"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/file-network-access/python/01_exists_then_write.json",
+      "original_hash": "51ffeafda67bb3e8e043c4de84483e182ee686b9ce57dc791aa0fa523c7cfc33",
+      "fixed_hash": "fd237a4a56616ef5150094ffdbeeee2777ae99329feba7dcde143e4668001cca",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/file-network-access/python/02_truncate_then_serialize.py",
+      "fixed": "examples-fixed/shared-state/file-network-access/python/02_truncate_then_serialize.py",
+      "contract": "ana,ben",
+      "mechanism": "Opening with write mode truncates the live file before JSON serialization rejects an unsupported object.",
+      "repair": "ana,ben; preserve the workload while correcting completion, atomicity or resource ordering.",
+      "cwes": [
+        "CWE-22",
+        "CWE-367",
+        "CWE-73"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/file-network-access/python/02_truncate_then_serialize.json",
+      "original_hash": "ea8ce3aa11cac0477e1ba9b307db8fdc1b3912168e81afd6ed07cffef75ac5a2",
+      "fixed_hash": "fdbecedf944bffeb7e61557a9d0c1c1389a43f2c7ec156a6e15c8eef5327b1d2",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/file-network-access/python/03_close_error_ignored.py",
+      "fixed": "examples-fixed/shared-state/file-network-access/python/03_close_error_ignored.py",
+      "contract": "True",
+      "mechanism": "The flag is set after the raise, and the caller treats the OSError as success.",
+      "repair": "True; preserve the workload while correcting completion, atomicity or resource ordering.",
+      "cwes": [
+        "CWE-22",
+        "CWE-367",
+        "CWE-73"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/file-network-access/python/03_close_error_ignored.json",
+      "original_hash": "22750b461d9366b7439cf439d50e3a2f9d9c1d511b742ba7a1654d818e86c168",
+      "fixed_hash": "53cb67d69b50337d6143845bf87bdc5de80ba53aa8e27594870acb5471a4ac83",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/file-network-access/python/04_retry_applies_twice.py",
+      "fixed": "examples-fixed/shared-state/file-network-access/python/04_retry_applies_twice.py",
+      "contract": "60",
+      "mechanism": "The first charge already changed the balance. The except path applies it again.",
+      "repair": "60; preserve the workload while correcting completion, atomicity or resource ordering.",
+      "cwes": [
+        "CWE-22",
+        "CWE-367",
+        "CWE-73"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/file-network-access/python/04_retry_applies_twice.json",
+      "original_hash": "7fca6324fe009f7f983eb9d519cfdcd2e23188a98f2fd0fca07e5c054ed8fb2f",
+      "fixed_hash": "411284ffa1ac2898cc9fa6bcfb8ca6c6568167ac3044231eb04c7976ca5caa3b",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/file-network-access/javascript/01_exists_then_write_race.js",
+      "fixed": "examples-fixed/shared-state/file-network-access/javascript/01_exists_then_write_race.js",
+      "contract": "nodes that believe they are leader: 1",
+      "mechanism": "TOCTOU (CWE-367); use open with 'wx' flag.",
+      "repair": "Create the lock file exclusively instead of checking its existence before writing.",
+      "cwes": [
+        "CWE-22",
+        "CWE-367",
+        "CWE-73"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/file-network-access/javascript/01_exists_then_write_race.json",
+      "original_hash": "8f6d4bfcb036b0e63c0bc0270f712903215222e46d12ad049bfdd761bde23393",
+      "fixed_hash": "88d4a7bf19e5c9e067d300c21eefa0a2096941bb6f3bab03b072b1983e5d7e49",
+      "baseline": {
+        "deterministic": false,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/file-network-access/javascript/02_truncate_then_serialize.js",
+      "fixed": "examples-fixed/shared-state/file-network-access/javascript/02_truncate_then_serialize.js",
+      "contract": "settings on disk unchanged",
+      "mechanism": "Non-atomic in-place write; serialize first, write to temp, rename.",
+      "repair": "Serialize before opening storage and replace via a temporary file after a complete write.",
+      "cwes": [
+        "CWE-22",
+        "CWE-367",
+        "CWE-73"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/file-network-access/javascript/02_truncate_then_serialize.json",
+      "original_hash": "8847286a886df79ad2ed2ce3212b608159405f6ad697042e3db370fd54855b4e",
+      "fixed_hash": "1b7bb572a9d81f050d4bdf19b394052e48503f87a084539468704d30787eeaf1",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/file-network-access/javascript/03_fetch_without_timeout.js",
+      "fixed": "examples-fixed/shared-state/file-network-access/javascript/03_fetch_without_timeout.js",
+      "contract": "timeout error after a bounded wait",
+      "mechanism": "No timeout on network I/O; callers hang.",
+      "repair": "Abort a stalled request within its deadline and clean up the local server.",
+      "cwes": [
+        "CWE-22",
+        "CWE-367",
+        "CWE-73"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/file-network-access/javascript/03_fetch_without_timeout.json",
+      "original_hash": "89357a16a0d2fc5451e5758db3765517d90dfffd31e6115814f5c1f40a1ed6c0",
+      "fixed_hash": "135689a458022f41f6feeeec570931f48bc94ad12a9c6c7402f2c3d365371e51",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    },
+    {
+      "file": "examples/shared-state/file-network-access/javascript/04_retry_without_idempotency_key.js",
+      "fixed": "examples-fixed/shared-state/file-network-access/javascript/04_retry_without_idempotency_key.js",
+      "contract": "charges recorded: 1",
+      "mechanism": "Retry without idempotency key.",
+      "repair": "Deduplicate retries using a stable identity for the logical charge.",
+      "cwes": [
+        "CWE-22",
+        "CWE-367",
+        "CWE-73"
+      ],
+      "expectations": "tooling/query-lab/cases/shared-state/file-network-access/javascript/04_retry_without_idempotency_key.json",
+      "original_hash": "3339221fab9b1d9e57bfb3de61ef582455df26df92929019bb7cb873e9f69ded",
+      "fixed_hash": "052cde3e68ef7559f08f42ccc51a24e378e186c0d6226f5cba8e1cfbeceb6394",
+      "baseline": {
+        "deterministic": true,
+        "exit_code": 0,
+        "contract": "The original must violate the fixed behavioral oracle."
+      },
+      "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved."
+    }
+  ],
+  "validation": {
+    "fixed_pairs_passed": 60,
+    "deterministic_originals_reproduced": 47,
+    "nondeterministic_originals_not_run_by_pair_runner": 13,
+    "go_race_detector": {
+      "original_counter": "data race reproduced",
+      "fixed_race_examples_checked": 5,
+      "fixed_races_reported": 0
+    },
+    "scope": "Fixture evidence under bounded runs, not proof of race freedom or exploitability."
+  }
+}

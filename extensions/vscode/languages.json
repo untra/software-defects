@@ -1,0 +1,7 @@
+{
+  "typescript": { "label": "TypeScript", "extensions": ["ts"] },
+  "javascript": { "label": "JavaScript", "extensions": ["js", "mjs", "cjs"] },
+  "go": { "label": "Go", "extensions": ["go"] },
+  "rust": { "label": "Rust", "extensions": ["rs"] },
+  "python": { "label": "Python", "extensions": ["py"] }
+}

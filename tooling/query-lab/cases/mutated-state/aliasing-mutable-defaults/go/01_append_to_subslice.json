@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Limit slice capacity so append allocates instead of overwriting the original jobs.",
+  "original": {
+    "source_hash": "d66af38add23f4ec809d81848f24a89ab7a3458243b1b802cb7cd673473c458f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              167,
+              173
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "9d5ce488172213e94d73a6d4d025a9d122ec3182d25a40f68f65dfe7cb254a31",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              177,
+              183
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "jobs:  [resize encode upload notify]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `jobs[:2]` has spare capacity, so `append` reuses the shared array instead of allocating. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

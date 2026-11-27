@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Transfer owned storage out of an Option exactly once; repeated close is harmless.",
+  "original": {
+    "source_hash": "623061fd9179003d507b347507aeaca8afdc09143ed84c5a1f0b9a6608ff7b7a",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/pointer-mismanagement/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              99,
+              107
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              195,
+              203
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "d9d64c63fa3481b64b58508090d6c720f11bab465a2012e9f89180b8860b5f10",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/pointer-mismanagement/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "closing session abc123"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Ownership reconstructed from a raw pointer twice (CWE-415, CWE-416). The allocator aborts. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

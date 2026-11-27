@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Compose both validators explicitly instead of overwriting one mixin method.",
+  "original": {
+    "source_hash": "0f3d9f8fa5cf94f37652a55c7951b39bf80e09ebb08477379d698b74b416d8a6",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/macro-mixin-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              194,
+              200
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "62867526a708ec364464cb53304f75aaebc00be4304f0b7423a00c4d95e739ae",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/macro-mixin-misuse/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "signup valid: false"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Object.assign is last-write-wins on key collisions. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

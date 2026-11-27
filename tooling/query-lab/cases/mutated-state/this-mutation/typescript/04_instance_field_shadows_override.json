@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use a prototype method so the derived override is dispatched.",
+  "original": {
+    "source_hash": "24aad230855efd5ff25698f32292167f092b4f3d7c30e2858be8716356f0cf5e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/this-mutation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "f91ce28e7ae76a504ad26bcb7dfbc538d013675c8366adb8f6f101c905229011",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/this-mutation/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "[HELLO]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Instance fields are set in the base constructor and take precedence over prototype methods. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

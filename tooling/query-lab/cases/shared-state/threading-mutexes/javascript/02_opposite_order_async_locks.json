@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Acquire locks in one order and release them through finally blocks.",
+  "analysis_limit": "Captures are independent source-token expectations. API identity, guard lifetime, scheduling and control flow require bounded analyzer evidence.",
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "both completed"
+    ],
+    "exit_code": 0
+  },
+  "original": {
+    "source_hash": "f2c71c1dad40f403cf88bfabd1e02745686ae867b121939ff585d580a378ad1c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              501,
+              524
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              515,
+              522
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              574,
+              594
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              585,
+              592
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              705,
+              725
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              716,
+              723
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              778,
+              801
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              792,
+              799
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "9ee5ffdc425b44ed1932e14ecedcfb68fff23254ad6bacdc612cafdc01b3f4a3",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              501,
+              524
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              515,
+              522
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              592,
+              612
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              603,
+              610
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              808,
+              831
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              822,
+              829
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              899,
+              919
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              910,
+              917
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "stdout_contains": [
+      "sale and refund still blocked after 200ms"
+    ]
+  }
+}

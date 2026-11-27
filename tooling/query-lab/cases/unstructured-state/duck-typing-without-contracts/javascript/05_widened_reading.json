@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Include the unit in the input contract and convert Kelvin before Fahrenheit.",
+  "original": {
+    "source_hash": "aaa298e20db38d7be51c84956476b7e53a0f169411ccab7e9c025f8366a6221f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/duck-typing-without-contracts/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "cef8c0ecca052ae6446fad03414c49472cf28c01ca9c52cfdbab7f9f742fabdd",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/duck-typing-without-contracts/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "lab -279.669"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Reading only requires value, so the unit field is invisible to the function (CWE-843). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

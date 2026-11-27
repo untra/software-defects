@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Clamp the billing day to the last valid day in the next month.",
+  "original": {
+    "source_hash": "3aecdcfa17c2719d50738a269e69f4dc59fa613a0d29968a3c937043d340a425",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/time-money-entropy/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              154,
+              165
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "569c6ad908be1be9034ff9a5e578cd81db66d63d67830a38073f59deccfdec12",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/time-money-entropy/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              189,
+              199
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              213,
+              224
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              362,
+              372
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "next billing: 2026-02-28"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `setUTCMonth` keeps the day-of-month and rolls excess days forward. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

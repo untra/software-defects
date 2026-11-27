@@ -1,0 +1,262 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Serialize first, then write and atomically rename a temporary file to preserve existing configuration on failure.",
+  "original": {
+    "source_hash": "9a7f16958ac52975398040911cf96e5de8fb1a99c84b808396a3f2554a9c7bf7",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "io_call",
+            "range": [
+              236,
+              251
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              292,
+              301
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              310,
+              328
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              310,
+              340
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              369,
+              395
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              403,
+              420
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              430,
+              460
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              462,
+              525
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              534,
+              599
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              612,
+              629
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              631,
+              696
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "172024e1286ec59cec9bae79ed976d441897ce42944ad5f3d257b8ef575edf2f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "io_call",
+            "range": [
+              239,
+              256
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              301,
+              347
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              315,
+              333
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              388,
+              407
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              398,
+              406
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              419,
+              438
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              455,
+              464
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              495,
+              508
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              525,
+              534
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              562,
+              570
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              587,
+              596
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              624,
+              633
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              672,
+              697
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              682,
+              690
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              726,
+              752
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              760,
+              777
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              787,
+              817
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              819,
+              882
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              891,
+              956
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              969,
+              986
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              988,
+              1053
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "config on disk now: \"{\\\"Name\\\":\\\"production\\\"}\""
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

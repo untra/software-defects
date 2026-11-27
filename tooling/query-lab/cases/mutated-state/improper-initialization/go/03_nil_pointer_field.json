@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject a missing shipping address before dereferencing it.",
+  "original": {
+    "source_hash": "a4c07d6c791a2628a588aeb1a90242505cf17e0025ca52aa38409b5179caa50f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/improper-initialization/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "5e6363ca7b96f0f340a4a2b03d3db0a57c126157855ffc618b20175103c9b628",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/improper-initialization/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "shipping address required"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Uninitialized pointer field (CWE-908). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

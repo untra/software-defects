@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Serialize transfers before acquiring either account guard.",
+  "analysis_limit": "Captures are independent source-token expectations. API identity, guard lifetime, scheduling and control flow require bounded analyzer evidence.",
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "balances 110 90"
+    ],
+    "exit_code": 0
+  },
+  "original": {
+    "source_hash": "9bd4ad78943b3a3218e3d002f11cde218ce5e2533bb2132465b0b32734360dba",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              272,
+              283
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              277,
+              281
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              344,
+              353
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              347,
+              351
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "5186d958fd250f668ae891fd737e32d4b771bad91abad20dc36e896886153fab",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              372,
+              388
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              382,
+              386
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              420,
+              431
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              425,
+              429
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              492,
+              501
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              495,
+              499
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "baseline": {
+    "deterministic": false,
+    "exit_code": 0,
+    "stdout_contains": [
+      "transfers still blocked after 500ms"
+    ]
+  }
+}

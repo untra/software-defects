@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Copy the frame when the caller must retain access.",
+  "original": {
+    "source_hash": "b42f19a4ff117b8312f949f74d65ab8d5817016db886b8ed85e39648af1c3a85",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/pointer-mismanagement/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              111,
+              126
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "f8520c7a28b85ee0db6c7be125dcfe2075617ffb0570856366d5f6310b397c01",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/pointer-mismanagement/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              111,
+              126
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "frame bytes: 1024 checksum: 7168"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Transfer moves ownership; views over the old buffer become length 0 and throw. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

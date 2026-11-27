@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return an independent inventory view.",
+  "original": {
+    "source_hash": "915350b8cb7b3b8c1b3a093fd9df14815708714c9dec2efef42f8145ffe28902",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              333,
+              339
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "59bd884d2e3db36563391ac641adb2ef994259c0275d415c3ff6acb4e205a738",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              338,
+              344
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "inventory: [ 'sku-1', 'sku-2', 'sku-3' ]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `private readonly` guards the binding, not the array's contents. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

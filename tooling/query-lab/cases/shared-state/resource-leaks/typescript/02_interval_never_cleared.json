@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Track and clear the timer on unmount and before remount.",
+  "original": {
+    "source_hash": "fe56a45ae605eb45378f146df7d9f1e6029deae41a44cd735535221761bed200",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              180,
+              191
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "1da42fe9beb25e1f2d651c8189770392d743513cce92ae2c50776a18fccb4611",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              263,
+              274
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              374,
+              387
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "ticker still polling after unmount: false"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Timer keeps running and retains the component (CWE-772). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

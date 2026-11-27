@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Capture each immutable string in a default argument at closure creation; this is not a deep copy for mutable objects.",
+  "analysis_limit": "Syntax candidates do not establish incorrect behavior. Safe repair requires scope, data-flow and domain intent; legitimate mutation can remain after repair.",
+  "runtime": {
+    "status": "supported",
+    "stdout": "welcome email to ada\nwelcome email to ben\n",
+    "exit_code": 0
+  },
+  "original": {
+    "source_hash": "2d6016d368fd47f6d410ec205dc7a1a14765fd41864cdb71502576270b1470c3",
+    "queries": [
+      {
+        "query": "queries/python/mutated-state/var-let-mut/signals.scm",
+        "captures": [
+          {
+            "name": "binding",
+            "range": [
+              16,
+              29
+            ]
+          },
+          {
+            "name": "write",
+            "range": [
+              16,
+              29
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "9bb3e96d35366e7c5498e315024bd395efbc531ffe7036d312a2a91978d482ba",
+    "queries": [
+      {
+        "query": "queries/python/mutated-state/var-let-mut/signals.scm",
+        "captures": [
+          {
+            "name": "binding",
+            "range": [
+              16,
+              29
+            ]
+          },
+          {
+            "name": "write",
+            "range": [
+              16,
+              29
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

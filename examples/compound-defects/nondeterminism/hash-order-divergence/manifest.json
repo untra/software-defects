@@ -1,0 +1,124 @@
+{
+  "family": "compound-defects",
+  "class": "nondeterminism",
+  "defect": "hash-order-divergence",
+  "name": "Hash-Seed Serialization Divergence",
+  "essence": "A cache key built by iterating an unordered set differs each process, because the hash seed is randomized -- so the cache never hits and 'it works on my machine.'",
+  "category": "entropic-divergence",
+  "scores": {
+    "python": 2,
+    "typescript": 0,
+    "go": 2,
+    "rust": 2
+  },
+  "cwes": [
+    "CWE-340"
+  ],
+  "examples": [
+    {
+      "file": "python/01_catalog_key.py",
+      "language": "python",
+      "bug_lines": [
+        14,
+        28,
+        29
+      ],
+      "summary": "Set iteration depends on the process hash seed, so equivalent tag sets generate incompatible cache keys across workers..",
+      "mechanism": "Set iteration depends on the process hash seed, so equivalent tag sets generate incompatible cache keys across workers.",
+      "observed_output": "cache hit False",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "cache hit True",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "Catalog key generation depends on process hash state through set iteration.",
+          "evidence": [
+            "return \",\".join(set(tags))",
+            "PYTHONHASHSEED=str(seed)"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "cache-invalidation",
+          "suggests": "The same tags produce different cache keys in two workers.",
+          "evidence": [
+            "cache[keys[0]] = \"catalog\"",
+            "keys[1] in cache"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_catalog_key.go",
+      "language": "go",
+      "bug_lines": [
+        15,
+        18,
+        21,
+        24
+      ],
+      "summary": "Unspecified map traversal produces a different cache key for unchanged tags.",
+      "mechanism": "Unspecified map traversal produces a different cache key for unchanged tags.",
+      "observed_output": "cache missed true",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "cache missed false",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "Key construction depends on randomized map traversal.",
+          "evidence": [
+            "for tag := range tags",
+            "strings.Join(parts, \",\")"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "cache-invalidation",
+          "suggests": "The cache indexes unchanged content by an unstable serialized key.",
+          "evidence": [
+            "cache[key()] = \"catalog\"",
+            "cache[key()]; !ok"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_catalog_key.rs",
+      "language": "rust",
+      "bug_lines": [
+        6,
+        10
+      ],
+      "summary": "Identical catalog tags fail to reuse the cache entry.",
+      "mechanism": "The key function depends on a newly randomized HashSet iteration order. Equivalent tag sets produce keys that fail to find the stored catalog entry.",
+      "observed_output": "catalog misses true",
+      "exit_code": 0,
+      "deterministic": false,
+      "expected_behavior": "catalog misses false",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "impure-functions",
+          "suggests": "The key function depends on a newly randomized HashSet iteration order.",
+          "evidence": [
+            "let tags: HashSet<_> = TAGS.into_iter().collect();",
+            "tags.into_iter().collect::<Vec<_>>().join(\",\")"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "cache-invalidation",
+          "suggests": "Equivalent tag sets produce keys that fail to find the stored catalog entry.",
+          "evidence": [
+            "cache.insert(key(), \"catalog\");",
+            "!cache.contains_key(&key())"
+          ]
+        }
+      ]
+    }
+  ]
+}

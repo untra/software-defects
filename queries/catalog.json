@@ -1,0 +1,2835 @@
+{
+  "schema_version": 1,
+  "languages": [
+    "go",
+    "javascript",
+    "python",
+    "rust",
+    "typescript"
+  ],
+  "statuses": [
+    "supported",
+    "candidate-only",
+    "syntax-candidate",
+    "planned",
+    "not-applicable"
+  ],
+  "roles": [
+    "failing",
+    "fixed",
+    "intentional",
+    "independent",
+    "breaker"
+  ],
+  "rules": [
+    {
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "mechanisms": [
+        {
+          "id": "repeated-element",
+          "summary": "One object reference stored in several collection elements (Array.fill(object), [x] * n).",
+          "cells": {
+            "javascript": {
+              "status": "supported"
+            },
+            "typescript": {
+              "status": "supported"
+            },
+            "python": {
+              "status": "supported"
+            },
+            "go": {
+              "status": "not-applicable",
+              "reason": "Slice and array literals copy element values; repeated pointers are expressed as explicit shared references.",
+              "guarantee": "Go has no fill/repeat operator that stores one reference in many elements."
+            },
+            "rust": {
+              "status": "not-applicable",
+              "reason": "Safe Rust cannot hold a mutable and another live reference to the same value.",
+              "guarantee": "Borrow checker: shared XOR mutable references are enforced at compile time.",
+              "escape_hatch": "rc-refcell-clone"
+            }
+          }
+        },
+        {
+          "id": "shallow-copy-nested",
+          "summary": "A shallow copy separates the outer object while nested objects remain shared.",
+          "cells": {
+            "javascript": {
+              "status": "supported"
+            },
+            "typescript": {
+              "status": "supported"
+            },
+            "python": {
+              "status": "supported"
+            },
+            "go": {
+              "status": "supported"
+            },
+            "rust": {
+              "status": "not-applicable",
+              "reason": "A derived Clone copies owned fields; shared nested mutation requires shared ownership.",
+              "guarantee": "Borrow checker and ownership: Clone of owned data is deep for owned fields.",
+              "escape_hatch": "rc-refcell-clone"
+            }
+          }
+        },
+        {
+          "id": "shared-default",
+          "summary": "A default value whose identity is reused across invocations is mutated.",
+          "cells": {
+            "javascript": {
+              "status": "supported"
+            },
+            "typescript": {
+              "status": "supported"
+            },
+            "python": {
+              "status": "supported"
+            },
+            "go": {
+              "status": "not-applicable",
+              "reason": "Go functions have no default parameter values.",
+              "guarantee": "Language syntax: parameters have no defaults."
+            },
+            "rust": {
+              "status": "not-applicable",
+              "reason": "Rust functions have no default parameter values.",
+              "guarantee": "Language syntax: parameters have no defaults."
+            }
+          }
+        },
+        {
+          "id": "argument-returned-alias",
+          "summary": "A callee returns a caller-owned object; the caller mutates the alias and the owner observes it.",
+          "cells": {
+            "javascript": {
+              "status": "supported"
+            },
+            "typescript": {
+              "status": "supported"
+            },
+            "python": {
+              "status": "supported"
+            },
+            "go": {
+              "status": "supported"
+            },
+            "rust": {
+              "status": "not-applicable",
+              "reason": "Safe Rust cannot hold a mutable and another live reference to the same value.",
+              "guarantee": "Borrow checker: shared XOR mutable references are enforced at compile time.",
+              "escape_hatch": "rc-refcell-clone"
+            }
+          }
+        },
+        {
+          "id": "append-within-capacity",
+          "summary": "Append within a sub-slice's spare capacity overwrites the shared backing array.",
+          "cells": {
+            "go": {
+              "status": "supported"
+            },
+            "javascript": {
+              "status": "not-applicable",
+              "reason": "Arrays have no shared backing storage between distinct array objects.",
+              "guarantee": "Array values are independent objects; slice() copies."
+            },
+            "typescript": {
+              "status": "not-applicable",
+              "reason": "Arrays have no shared backing storage between distinct array objects.",
+              "guarantee": "Array values are independent objects; slice() copies."
+            },
+            "python": {
+              "status": "not-applicable",
+              "reason": "List slicing copies; lists do not expose shared backing arrays.",
+              "guarantee": "list slicing allocates a new list."
+            },
+            "rust": {
+              "status": "not-applicable",
+              "reason": "A Vec cannot be appended while a borrowed sub-slice is alive.",
+              "guarantee": "Borrow checker rejects push while a slice borrow is live."
+            }
+          }
+        },
+        {
+          "id": "internal-state-escape",
+          "summary": "An accessor returns an internal collection that callers mutate.",
+          "cells": {
+            "go": {
+              "status": "supported"
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Class instances and method dispatch are not modeled by object-identity analysis; only syntax signals remain.",
+              "examples": [
+                "examples/mutated-state/aliasing-mutable-defaults/javascript/04_method_returns_internal_array.js"
+              ]
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Class instances and method dispatch are not modeled by object-identity analysis; only syntax signals remain.",
+              "examples": [
+                "examples/mutated-state/aliasing-mutable-defaults/typescript/04_method_returns_internal_array.ts"
+              ]
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Class instances and method dispatch are not modeled by object-identity analysis; only syntax signals remain.",
+              "examples": [
+                "examples/mutated-state/aliasing-mutable-defaults/python/05_return_internal_list.py"
+              ]
+            },
+            "rust": {
+              "status": "not-applicable",
+              "reason": "Returning &mut to internal state prevents other access while it lives.",
+              "guarantee": "Borrow checker: an outstanding &mut excludes the owner."
+            }
+          }
+        },
+        {
+          "id": "class-body-shared",
+          "summary": "A mutable collection created in a class body is shared by all instances.",
+          "cells": {
+            "python": {
+              "status": "candidate-only",
+              "reason": "Class attributes and instance attribute lookup are not modeled.",
+              "examples": [
+                "examples/mutated-state/aliasing-mutable-defaults/python/03_class_body_list.py"
+              ]
+            },
+            "javascript": {
+              "status": "not-applicable",
+              "reason": "Class field initializers run per instance.",
+              "guarantee": "Class fields are evaluated for each construction."
+            },
+            "typescript": {
+              "status": "not-applicable",
+              "reason": "Class field initializers run per instance.",
+              "guarantee": "Class fields are evaluated for each construction."
+            },
+            "go": {
+              "status": "not-applicable",
+              "reason": "Go has no class bodies; struct fields are per value.",
+              "guarantee": "Language has no class-level mutable fields."
+            },
+            "rust": {
+              "status": "not-applicable",
+              "reason": "Rust has no class bodies; statics require explicit synchronization.",
+              "guarantee": "Mutable statics are unsafe or require interior mutability."
+            }
+          }
+        },
+        {
+          "id": "reused-buffer-in-loop",
+          "summary": "A buffer reused across loop iterations is stored by reference in earlier iterations.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Loop iterations are not unrolled; a fixed-point loop model (roadmap T03) is required.",
+              "examples": [
+                "examples/mutated-state/aliasing-mutable-defaults/go/05_cache_stores_reused_buffer.go"
+              ]
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "Requires the loop fixed-point model (roadmap T03)."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "Requires the loop fixed-point model (roadmap T03)."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "Requires the loop fixed-point model (roadmap T03)."
+            },
+            "rust": {
+              "status": "not-applicable",
+              "reason": "Safe Rust cannot hold a mutable and another live reference to the same value.",
+              "guarantee": "Borrow checker: shared XOR mutable references are enforced at compile time.",
+              "escape_hatch": "rc-refcell-clone"
+            }
+          }
+        },
+        {
+          "id": "target-mutating-merge",
+          "summary": "A merge helper mutates a shared defaults object instead of a fresh target.",
+          "cells": {
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Object.assign into a shared target is recorded as writes, but the observing read carries no sharing introduction; candidate relationship requires a returned-alias model across invocations.",
+              "examples": [
+                "examples/mutated-state/aliasing-mutable-defaults/javascript/05_object_assign_mutates_defaults.js"
+              ]
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Object.assign into a shared target is recorded as writes, but the observing read carries no sharing introduction; candidate relationship requires a returned-alias model across invocations.",
+              "examples": [
+                "examples/mutated-state/aliasing-mutable-defaults/typescript/05_object_assign_mutates_defaults.ts"
+              ]
+            },
+            "python": {
+              "status": "planned",
+              "reason": "dict.update on a module-level defaults dictionary is not yet connected to cross-invocation observations."
+            },
+            "go": {
+              "status": "not-applicable",
+              "reason": "Go has no generic merge-into-target builtin; maps.Copy names its destination explicitly.",
+              "guarantee": "Destination is an explicit argument."
+            },
+            "rust": {
+              "status": "not-applicable",
+              "reason": "Safe Rust cannot hold a mutable and another live reference to the same value.",
+              "guarantee": "Borrow checker: shared XOR mutable references are enforced at compile time.",
+              "escape_hatch": "rc-refcell-clone"
+            }
+          }
+        },
+        {
+          "id": "rc-refcell-clone",
+          "summary": "Cloning an Rc<RefCell<_>> shares the inner value; borrow_mut writes are visible to every clone.",
+          "cells": {
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Rust object identity through Rc/RefCell is not modeled; the clone signal remains a syntax candidate.",
+              "examples": [
+                "examples/mutated-state/aliasing-mutable-defaults/rust/01_rc_clone_is_shallow.rs"
+              ]
+            },
+            "javascript": {
+              "status": "not-applicable",
+              "reason": "No reference-counted interior mutability distinct from ordinary references.",
+              "guarantee": "All objects are references; covered by other mechanisms."
+            },
+            "typescript": {
+              "status": "not-applicable",
+              "reason": "No reference-counted interior mutability distinct from ordinary references.",
+              "guarantee": "All objects are references; covered by other mechanisms."
+            },
+            "python": {
+              "status": "not-applicable",
+              "reason": "No reference-counted interior mutability distinct from ordinary references.",
+              "guarantee": "All objects are references; covered by other mechanisms."
+            },
+            "go": {
+              "status": "not-applicable",
+              "reason": "No reference-counted interior mutability distinct from ordinary pointers.",
+              "guarantee": "Pointers share by default; covered by other mechanisms."
+            }
+          }
+        },
+        {
+          "id": "query-signals",
+          "summary": "Structural signals from the defect's query pack.",
+          "cells": {
+            "go": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "python": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "mechanisms": [
+        {
+          "id": "query-signals",
+          "summary": "Structural signals from the defect's query pack.",
+          "cells": {
+            "go": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "python": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "mechanisms": [
+        {
+          "id": "query-signals",
+          "summary": "Structural signals from the defect's query pack.",
+          "cells": {
+            "go": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "mechanisms": [
+        {
+          "id": "query-signals",
+          "summary": "Structural signals from the defect's query pack.",
+          "cells": {
+            "go": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "python": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "mechanisms": [
+        {
+          "id": "query-signals",
+          "summary": "Structural signals from the defect's query pack.",
+          "cells": {
+            "go": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "python": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "mutated-state",
+      "defect": "macro-mixin-misuse",
+      "mechanisms": [
+        {
+          "id": "query-signals",
+          "summary": "Structural signals from the defect's query pack.",
+          "cells": {
+            "go": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "mechanisms": [
+        {
+          "id": "query-signals",
+          "summary": "Structural signals from the defect's query pack.",
+          "cells": {
+            "go": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "mechanisms": [
+        {
+          "id": "query-signals",
+          "summary": "Structural signals from the defect's query pack.",
+          "cells": {
+            "go": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "mechanisms": [
+        {
+          "id": "query-signals",
+          "summary": "Structural signals from the defect's query pack.",
+          "cells": {
+            "go": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "python": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Tree-sitter query signals only; no semantic relationship or bug evidence is established."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "mechanisms": [
+        {
+          "id": "query-signals",
+          "summary": "Structural signals from the defect's query pack.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "shared-state",
+      "defect": "async-io-misuse",
+      "mechanisms": [
+        {
+          "id": "async-function",
+          "summary": "Explicit async declaration; not a claim that work is launched.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            }
+          }
+        },
+        {
+          "id": "async-execution",
+          "summary": "Task launch or composition with static site counts.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            }
+          }
+        },
+        {
+          "id": "suspension",
+          "summary": "Potential suspension point.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Goroutine launches are captured, but channel/context/WaitGroup completion relationships are not resolved."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            }
+          }
+        },
+        {
+          "id": "unobserved-completion",
+          "summary": "Discarded locally declared async operation.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Goroutine launches are captured, but channel/context/WaitGroup completion relationships are not resolved."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            }
+          }
+        },
+        {
+          "id": "use-after-release",
+          "summary": "Lexically related use after explicit release.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            }
+          }
+        },
+        {
+          "id": "task-lifecycle",
+          "summary": "Launch, cancellation and completion observations for one task binding.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Goroutine launches are captured, but channel/context/WaitGroup completion relationships are not resolved."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded lexical evidence; ownership escape, dynamic scheduling and exception paths remain unresolved."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded lexical evidence; ownership escape, dynamic scheduling and exception paths remain unresolved."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded lexical evidence; ownership escape, dynamic scheduling and exception paths remain unresolved."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded lexical evidence; ownership escape, dynamic scheduling and exception paths remain unresolved."
+            }
+          }
+        },
+        {
+          "id": "cancellation-unobserved",
+          "summary": "Cancellation requested without local completion observation.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Goroutine launches are captured, but channel/context/WaitGroup completion relationships are not resolved."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded lexical evidence; ownership escape, dynamic scheduling and exception paths remain unresolved."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded lexical evidence; ownership escape, dynamic scheduling and exception paths remain unresolved."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded lexical evidence; ownership escape, dynamic scheduling and exception paths remain unresolved."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded lexical evidence; ownership escape, dynamic scheduling and exception paths remain unresolved."
+            }
+          }
+        },
+        {
+          "id": "release-before-completion",
+          "summary": "A recognized asynchronous resource is released before pending I/O is observed.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Goroutine launches are captured, but channel/context/WaitGroup completion relationships are not resolved."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded lexical evidence; ownership escape, dynamic scheduling and exception paths remain unresolved."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "Requires asynchronous receiver ownership/type inference beyond the reviewed Node file-handle model."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Requires asynchronous receiver ownership/type inference beyond the reviewed Node file-handle model."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded lexical evidence; ownership escape, dynamic scheduling and exception paths remain unresolved."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "shared-state",
+      "defect": "cache-invalidation",
+      "mechanisms": [
+        {
+          "id": "key-missing-dependency",
+          "summary": "Key missing dependency candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            }
+          }
+        },
+        {
+          "id": "cached-mutable-value",
+          "summary": "Cached mutable value candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            }
+          }
+        },
+        {
+          "id": "cached-rejected-promise",
+          "summary": "Cached rejected promise candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Recognized local task/future or client construction; external lifetimes, custom APIs and dynamic dispatch remain unresolved."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Recognized local task/future or client construction; external lifetimes, custom APIs and dynamic dispatch remain unresolved."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            }
+          }
+        },
+        {
+          "id": "thundering-herd",
+          "summary": "Thundering herd candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved.",
+              "role_fixtures": true
+            },
+            "python": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved.",
+              "role_fixtures": true
+            }
+          }
+        },
+        {
+          "id": "invalidate-wrong-key",
+          "summary": "Invalidate wrong key candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            }
+          }
+        },
+        {
+          "id": "stale-after-write",
+          "summary": "Stale after write candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            }
+          }
+        },
+        {
+          "id": "negative-result-without-expiry",
+          "summary": "Negative result without expiry candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved.",
+              "role_fixtures": true
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            }
+          }
+        },
+        {
+          "id": "mutable-identity-key",
+          "summary": "Mutable identity key candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            }
+          }
+        },
+        {
+          "id": "one-time-cache-stale",
+          "summary": "One time cache stale candidate from bounded local flow.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "No local model for this language and mechanism yet."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "No local model for this language and mechanism yet."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "No local model for this language and mechanism yet."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "No local model for this language and mechanism yet."
+            }
+          }
+        },
+        {
+          "id": "cache-access",
+          "summary": "A long-lived cache lookup and store mark shared reuse without asserting a freshness failure.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Usage marker only; risk findings require a separate locally supported mechanism."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Usage marker only; risk findings require a separate locally supported mechanism."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "Usage marker only; risk findings require a separate locally supported mechanism."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Usage marker only; risk findings require a separate locally supported mechanism."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Usage marker only; risk findings require a separate locally supported mechanism."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "shared-state",
+      "defect": "cross-boundary-state-exposure",
+      "mechanisms": [
+        {
+          "id": "query-signals",
+          "summary": "Structural signals from the defect's query pack.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "shared-state",
+      "defect": "file-network-access",
+      "mechanisms": [
+        {
+          "id": "resource-operation",
+          "summary": "Resolved I/O API or receiver operation candidate.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            }
+          }
+        },
+        {
+          "id": "resource-lifecycle",
+          "summary": "Acquisition and uses/releases of the same resource binding.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            }
+          }
+        },
+        {
+          "id": "check-then-use",
+          "summary": "Same lexical path checked and used in separate operations.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "shared-state",
+      "defect": "pointer-mismanagement",
+      "mechanisms": [
+        {
+          "id": "query-signals",
+          "summary": "Structural signals from the defect's query pack.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "shared-state",
+      "defect": "race-conditions",
+      "mechanisms": [
+        {
+          "id": "read-suspend-write",
+          "summary": "Saved property value feeds a write after suspension.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "No Go suspension model yet; launched scopes writing outer bindings are separate contention candidates."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded source relationships and syntax sites; no whole-program synchronization, receiver type, escape, or exception-safety proof."
+            }
+          }
+        },
+        {
+          "id": "synchronization-operation",
+          "summary": "Synchronization-shaped operations with unresolved receiver types.",
+          "cells": {
+            "go": {
+              "status": "syntax-candidate",
+              "reason": "Method-shaped syntax and lexical receiver identity only; receiver types, lock ownership and invariants are unresolved."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Method-shaped syntax and lexical receiver identity only; receiver types, lock ownership and invariants are unresolved."
+            },
+            "python": {
+              "status": "syntax-candidate",
+              "reason": "Method-shaped syntax and lexical receiver identity only; receiver types, lock ownership and invariants are unresolved."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Method-shaped syntax and lexical receiver identity only; receiver types, lock ownership and invariants are unresolved."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Method-shaped syntax and lexical receiver identity only; receiver types, lock ownership and invariants are unresolved."
+            }
+          }
+        },
+        {
+          "id": "split-atomic-update",
+          "summary": "Separate load/store on the same lexical receiver.",
+          "cells": {
+            "go": {
+              "status": "syntax-candidate",
+              "reason": "Method-shaped syntax and lexical receiver identity only; receiver types, lock ownership and invariants are unresolved."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Method-shaped syntax and lexical receiver identity only; receiver types, lock ownership and invariants are unresolved."
+            },
+            "python": {
+              "status": "syntax-candidate",
+              "reason": "Method-shaped syntax and lexical receiver identity only; receiver types, lock ownership and invariants are unresolved."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Method-shaped syntax and lexical receiver identity only; receiver types, lock ownership and invariants are unresolved."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Method-shaped syntax and lexical receiver identity only; receiver types, lock ownership and invariants are unresolved."
+            }
+          }
+        },
+        {
+          "id": "split-critical-section",
+          "summary": "Repeated acquisition on the same receiver; invariant and protection scope unresolved.",
+          "cells": {
+            "go": {
+              "status": "syntax-candidate",
+              "reason": "Method-shaped syntax and lexical receiver identity only; receiver types, lock ownership and invariants are unresolved."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Method-shaped syntax and lexical receiver identity only; receiver types, lock ownership and invariants are unresolved."
+            },
+            "python": {
+              "status": "syntax-candidate",
+              "reason": "Method-shaped syntax and lexical receiver identity only; receiver types, lock ownership and invariants are unresolved."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Method-shaped syntax and lexical receiver identity only; receiver types, lock ownership and invariants are unresolved."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Method-shaped syntax and lexical receiver identity only; receiver types, lock ownership and invariants are unresolved."
+            }
+          }
+        },
+        {
+          "id": "concurrent-shared-write",
+          "summary": "Launched execution scope writes an outer binding.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded lexical evidence; ownership escape, dynamic scheduling and exception paths remain unresolved."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded lexical evidence; ownership escape, dynamic scheduling and exception paths remain unresolved."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded lexical evidence; ownership escape, dynamic scheduling and exception paths remain unresolved."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded lexical evidence; ownership escape, dynamic scheduling and exception paths remain unresolved."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded lexical evidence; ownership escape, dynamic scheduling and exception paths remain unresolved."
+            }
+          }
+        },
+        {
+          "id": "out-of-order-response",
+          "summary": "An awaited result replaces outer state without established sequence or cancellation ownership.",
+          "cells": {
+            "go": {
+              "status": "not-applicable",
+              "reason": "Go has no await expression; launched worker writes are covered by concurrent-shared-write.",
+              "guarantee": "The Go grammar has no await construct."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "An outer assignment contains await; runtime request ordering and cancellation are not proven."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "An outer assignment contains await; runtime request ordering and cancellation are not proven."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "An outer assignment contains await; runtime request ordering and cancellation are not proven."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "An outer assignment contains await; runtime request ordering and cancellation are not proven."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "shared-state",
+      "defect": "resource-contention",
+      "mechanisms": [
+        {
+          "id": "unbounded-queue",
+          "summary": "Unbounded queue candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved.",
+              "role_fixtures": true
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            }
+          }
+        },
+        {
+          "id": "unbounded-fan-out",
+          "summary": "Unbounded fan out candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local candidate detection with positive, fixed, intentional, independent, and unrelated-guard fixtures; external contracts remain unresolved.",
+              "role_fixtures": true
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local candidate detection with positive, fixed, intentional, independent, and unrelated-guard fixtures; external contracts remain unresolved.",
+              "role_fixtures": true
+            }
+          }
+        },
+        {
+          "id": "lock-held-across-blocking",
+          "summary": "Lock held across blocking candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            }
+          }
+        },
+        {
+          "id": "acquire-without-release-on-error",
+          "summary": "Acquire without release on error candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            }
+          }
+        },
+        {
+          "id": "per-request-pool",
+          "summary": "Per request pool candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Recognized local task/future or client construction; external lifetimes, custom APIs and dynamic dispatch remain unresolved."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Recognized local task/future or client construction; external lifetimes, custom APIs and dynamic dispatch remain unresolved."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            }
+          }
+        },
+        {
+          "id": "blocking-fan-in",
+          "summary": "Blocking fan in candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            }
+          }
+        },
+        {
+          "id": "acquisition-without-deadline",
+          "summary": "Acquisition without deadline candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            }
+          }
+        },
+        {
+          "id": "event-loop-blocking",
+          "summary": "Event loop blocking candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            }
+          }
+        },
+        {
+          "id": "permit-accounting",
+          "summary": "Usage marker: a shared capacity counter is acquired, checked and released in finally.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "No equivalent source relationship is modeled for this language."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Bounded local source relationships; caller intent and domain constraints remain unresolved."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "No equivalent source relationship is modeled for this language."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "No equivalent source relationship is modeled for this language."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Bounded local source relationships; caller intent and domain constraints remain unresolved."
+            }
+          }
+        },
+        {
+          "id": "resource-usage",
+          "summary": "A scheduler or queue operation marks a resource-sharing area without asserting contention.",
+          "cells": {
+            "go": {
+              "status": "syntax-candidate",
+              "reason": "Usage marker only; risk findings require a separate locally supported mechanism."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Usage marker only; risk findings require a separate locally supported mechanism."
+            },
+            "python": {
+              "status": "syntax-candidate",
+              "reason": "Usage marker only; risk findings require a separate locally supported mechanism."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Usage marker only; risk findings require a separate locally supported mechanism."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Usage marker only; risk findings require a separate locally supported mechanism."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "shared-state",
+      "defect": "resource-leaks",
+      "mechanisms": [
+        {
+          "id": "query-signals",
+          "summary": "Structural signals from the defect's query pack.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "shared-state",
+      "defect": "stack-overflow",
+      "mechanisms": [
+        {
+          "id": "query-signals",
+          "summary": "Structural signals from the defect's query pack.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "shared-state",
+      "defect": "threading-mutexes",
+      "mechanisms": [
+        {
+          "id": "critical-section",
+          "summary": "Recognized synchronization usage and bounded protected scope.",
+          "cells": {
+            "go": {
+              "status": "supported",
+              "reason": "Five-role fixtures validate bounded API and identity models; unresolved dispatch remains a candidate."
+            },
+            "rust": {
+              "status": "supported",
+              "reason": "Five-role fixtures validate bounded API and identity models; unresolved dispatch remains a candidate."
+            },
+            "python": {
+              "status": "supported",
+              "reason": "Five-role fixtures validate bounded API and identity models; unresolved dispatch remains a candidate."
+            },
+            "javascript": {
+              "status": "supported",
+              "reason": "Five-role fixtures validate bounded API and identity models; unresolved dispatch remains a candidate."
+            },
+            "typescript": {
+              "status": "supported",
+              "reason": "Five-role fixtures validate bounded API and identity models; unresolved dispatch remains a candidate."
+            }
+          }
+        },
+        {
+          "id": "non-reentrant-acquisition",
+          "summary": "The same non-reentrant lock is reacquired while held.",
+          "cells": {
+            "go": {
+              "status": "supported",
+              "reason": "Five-role fixtures validate bounded API and identity models; unresolved dispatch remains a candidate."
+            },
+            "rust": {
+              "status": "supported",
+              "reason": "Five-role fixtures validate bounded API and identity models; unresolved dispatch remains a candidate."
+            },
+            "python": {
+              "status": "supported",
+              "reason": "Five-role fixtures validate bounded API and identity models; unresolved dispatch remains a candidate."
+            },
+            "javascript": {
+              "status": "supported",
+              "reason": "Five-role fixtures validate bounded API and identity models; unresolved dispatch remains a candidate."
+            },
+            "typescript": {
+              "status": "supported",
+              "reason": "Five-role fixtures validate bounded API and identity models; unresolved dispatch remains a candidate."
+            }
+          }
+        },
+        {
+          "id": "missing-release",
+          "summary": "An exit or cancellation can bypass explicit release.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            }
+          }
+        },
+        {
+          "id": "lock-order-cycle",
+          "summary": "Opposing acquisition orders may deadlock.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            }
+          }
+        },
+        {
+          "id": "copied-lock",
+          "summary": "A Go value receiver copies a lock-bearing struct.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "This language/API mechanism is outside the current bounded model."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "This language/API mechanism is outside the current bounded model."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "This language/API mechanism is outside the current bounded model."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "This language/API mechanism is outside the current bounded model."
+            }
+          }
+        },
+        {
+          "id": "blocking-across-suspension",
+          "summary": "Blocking/thread-owned locks cross task suspension.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "This language/API mechanism is outside the current bounded model."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "This language/API mechanism is outside the current bounded model."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "This language/API mechanism is outside the current bounded model."
+            }
+          }
+        },
+        {
+          "id": "per-call-lock",
+          "summary": "A newly created lock surrounds externally reachable writes.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            }
+          }
+        },
+        {
+          "id": "unchecked-acquisition",
+          "summary": "A conditional acquisition result is ignored.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "This language/API mechanism is outside the current bounded model."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "This language/API mechanism is outside the current bounded model."
+            }
+          }
+        },
+        {
+          "id": "callback-lifetime",
+          "summary": "A protected callback does not observe asynchronous completion.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "This language/API mechanism is outside the current bounded model."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "This language/API mechanism is outside the current bounded model."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "This language/API mechanism is outside the current bounded model."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Structural relationships identify review areas; scheduling, escaping ownership and path completeness are not proven."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "unstructured-state",
+      "defect": "divide-by-zero",
+      "mechanisms": [
+        {
+          "id": "query-signals",
+          "summary": "Structural signals from the defect's query pack.",
+          "cells": {
+            "go": {
+              "status": "syntax-candidate",
+              "reason": "Evidence-backed division models exist (fixtures/division-*.json) but are not yet migrated to the standard five-role fixture layout."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Evidence-backed division models exist (fixtures/division-*.json) but are not yet migrated to the standard five-role fixture layout."
+            },
+            "python": {
+              "status": "syntax-candidate",
+              "reason": "Evidence-backed division models exist (fixtures/division-*.json) but are not yet migrated to the standard five-role fixture layout."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Evidence-backed division models exist (fixtures/division-*.json) but are not yet migrated to the standard five-role fixture layout."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Evidence-backed division models exist (fixtures/division-*.json) but are not yet migrated to the standard five-role fixture layout."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "unstructured-state",
+      "defect": "duck-typing-without-contracts",
+      "mechanisms": [
+        {
+          "id": "unchecked-contract",
+          "summary": "Assertions and dynamic capability access require runtime contracts.",
+          "cells": {
+            "go": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "python": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "unstructured-state",
+      "defect": "index-out-of-bounds",
+      "mechanisms": [
+        {
+          "id": "unguarded-index",
+          "summary": "Unguarded index candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local candidate detection with positive, fixed, intentional, independent, and unrelated-guard fixtures; external contracts remain unresolved.",
+              "role_fixtures": true
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded local candidate detection with positive, fixed, intentional, independent, and unrelated-guard fixtures; external contracts remain unresolved.",
+              "role_fixtures": true
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local candidate detection with positive, fixed, intentional, independent, and unrelated-guard fixtures; external contracts remain unresolved.",
+              "role_fixtures": true
+            }
+          }
+        },
+        {
+          "id": "byte-vs-char-slice",
+          "summary": "Byte vs char slice candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "python": {
+              "status": "not-applicable",
+              "reason": "Python str indexing and slicing operate on Unicode code points, not encoded bytes.",
+              "guarantee": "str slicing does not expose byte or UTF-16 offsets."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            }
+          }
+        },
+        {
+          "id": "unchecked-optional-access",
+          "summary": "Unchecked optional access candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "unstructured-state",
+      "defect": "insecure-deserialization",
+      "mechanisms": [
+        {
+          "id": "decoded-to-sink",
+          "summary": "Decoded to sink candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local candidate detection with positive, fixed, intentional, independent, and unrelated-guard fixtures; external contracts remain unresolved.",
+              "role_fixtures": true
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local candidate detection with positive, fixed, intentional, independent, and unrelated-guard fixtures; external contracts remain unresolved.",
+              "role_fixtures": true
+            }
+          }
+        },
+        {
+          "id": "prototype-key",
+          "summary": "Prototype key candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            }
+          }
+        },
+        {
+          "id": "unsafe-loader",
+          "summary": "Unsafe loader candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded local candidate detection with positive, fixed, intentional, independent, and unrelated-guard fixtures; external contracts remain unresolved.",
+              "role_fixtures": true
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            }
+          }
+        },
+        {
+          "id": "untrusted-length",
+          "summary": "Untrusted length candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            }
+          }
+        },
+        {
+          "id": "unchecked-decode",
+          "summary": "Unchecked decode candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            }
+          }
+        },
+        {
+          "id": "reviver-coercion",
+          "summary": "Reviver coercion candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            }
+          }
+        },
+        {
+          "id": "decoded-field-assignment",
+          "summary": "Decoded field assignment candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            }
+          }
+        },
+        {
+          "id": "decode-boundary",
+          "summary": "Decode or flexible serde shape usage; a boundary alone is not unsafe deserialization.",
+          "cells": {
+            "go": {
+              "status": "syntax-candidate",
+              "reason": "Usage marker only; risk findings require a separate locally supported mechanism."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Usage marker only; risk findings require a separate locally supported mechanism."
+            },
+            "python": {
+              "status": "syntax-candidate",
+              "reason": "Usage marker only; risk findings require a separate locally supported mechanism."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Usage marker only; risk findings require a separate locally supported mechanism."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Usage marker only; risk findings require a separate locally supported mechanism."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "unstructured-state",
+      "defect": "lack-of-input-validation",
+      "mechanisms": [
+        {
+          "id": "boundary-input",
+          "summary": "Function inputs and parsing boundaries require a domain contract.",
+          "cells": {
+            "go": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "python": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            }
+          }
+        },
+        {
+          "id": "boundary-output",
+          "summary": "A producer returns its input value directly; resolved callers retain the original boundary evidence.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Direct binding passthrough and resolved calls are modeled; arbitrary transformations, validation contracts, and dynamic dispatch remain unresolved."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Direct binding passthrough and resolved calls are modeled; arbitrary transformations, validation contracts, and dynamic dispatch remain unresolved."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Direct binding passthrough and resolved calls are modeled; arbitrary transformations, validation contracts, and dynamic dispatch remain unresolved."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Direct binding passthrough and resolved calls are modeled; arbitrary transformations, validation contracts, and dynamic dispatch remain unresolved."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Direct binding passthrough and resolved calls are modeled; arbitrary transformations, validation contracts, and dynamic dispatch remain unresolved."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "unstructured-state",
+      "defect": "missing-undefined-returns",
+      "mechanisms": [
+        {
+          "id": "producer-output",
+          "summary": "Callable outputs and explicit returns require caller-compatible presence contracts.",
+          "cells": {
+            "go": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "python": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "unstructured-state",
+      "defect": "type-errors",
+      "mechanisms": [
+        {
+          "id": "implicit-coercion",
+          "summary": "Implicit coercion candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "not-applicable",
+              "reason": "Implicit cross-type operator coercion is rejected; dynamic assertions and downcasts have separate rows.",
+              "guarantee": "Static typing rejects implicit coercion."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local candidate detection with positive, fixed, intentional, independent, and unrelated-guard fixtures; external contracts remain unresolved.",
+              "role_fixtures": true
+            },
+            "python": {
+              "status": "not-applicable",
+              "reason": "This row models coercive string/number equality and concatenation; Python sequence repetition and bool/int collisions have separate mechanisms.",
+              "guarantee": "Python does not coerce a string to a number or a number to a string for built-in addition."
+            },
+            "rust": {
+              "status": "not-applicable",
+              "reason": "Implicit cross-type operator coercion is rejected; dynamic assertions and downcasts have separate rows.",
+              "guarantee": "Static typing rejects implicit coercion."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local candidate detection with positive, fixed, intentional, independent, and unrelated-guard fixtures; external contracts remain unresolved.",
+              "role_fixtures": true
+            }
+          }
+        },
+        {
+          "id": "falsy-default",
+          "summary": "Falsy default candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            }
+          }
+        },
+        {
+          "id": "bool-is-int",
+          "summary": "Bool is int candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded local candidate detection with positive, fixed, intentional, independent, and unrelated-guard fixtures; external contracts remain unresolved.",
+              "role_fixtures": true
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            }
+          }
+        },
+        {
+          "id": "undeclared-member-access",
+          "summary": "Undeclared member access candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "not-applicable",
+              "reason": "Selectors are resolved statically.",
+              "guarantee": "Static typing rejects unknown fields and methods."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "rust": {
+              "status": "not-applicable",
+              "reason": "Field and method resolution is static.",
+              "guarantee": "Static typing rejects unknown fields and methods."
+            },
+            "typescript": {
+              "status": "not-applicable",
+              "reason": "Under type checking, access to undeclared members is a compile error.",
+              "guarantee": "Static structural typing (tsc) rejects undeclared member access; any/unknown escape hatches remain in other mechanisms."
+            }
+          }
+        },
+        {
+          "id": "mixed-sort",
+          "summary": "Mixed sort candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            }
+          }
+        },
+        {
+          "id": "failed-conversion",
+          "summary": "Failed conversion candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            }
+          }
+        },
+        {
+          "id": "runtime-type-assertion",
+          "summary": "Runtime type assertion candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            }
+          }
+        },
+        {
+          "id": "runtime-downcast",
+          "summary": "Runtime downcast candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "rust": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            }
+          }
+        },
+        {
+          "id": "format-type-mismatch",
+          "summary": "Format type mismatch candidate from local source relationships.",
+          "cells": {
+            "go": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationship; caller intent and external guarantees are unresolved."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "Applicable runtime shape has no implemented local detector yet."
+            }
+          }
+        },
+        {
+          "id": "sequence-repetition",
+          "summary": "Sequence repetition candidate from bounded local flow.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "No local model for this language and mechanism yet."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "No local model for this language and mechanism yet."
+            },
+            "python": {
+              "status": "candidate-only",
+              "reason": "Bounded local syntax and binding relationships; dynamic dispatch, external contracts and caller intent remain unresolved."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "No local model for this language and mechanism yet."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "No local model for this language and mechanism yet."
+            }
+          }
+        },
+        {
+          "id": "lossy-numeric-coercion",
+          "summary": "Bitwise coercion truncates or reinterprets a JavaScript number as a 32-bit integer.",
+          "cells": {
+            "go": {
+              "status": "not-applicable",
+              "reason": "This mechanism models JavaScript bitwise numeric coercion, not explicit casts or integer arithmetic.",
+              "guarantee": "Built-in bitwise operations do not implicitly truncate floating-point values to JavaScript 32-bit integers."
+            },
+            "javascript": {
+              "status": "candidate-only",
+              "reason": "Bounded local source relationships; caller intent and domain constraints remain unresolved."
+            },
+            "python": {
+              "status": "not-applicable",
+              "reason": "This mechanism models JavaScript bitwise numeric coercion, not explicit casts or integer arithmetic.",
+              "guarantee": "Built-in bitwise operations do not implicitly truncate floating-point values to JavaScript 32-bit integers."
+            },
+            "rust": {
+              "status": "not-applicable",
+              "reason": "This mechanism models JavaScript bitwise numeric coercion, not explicit casts or integer arithmetic.",
+              "guarantee": "Built-in bitwise operations do not implicitly truncate floating-point values to JavaScript 32-bit integers."
+            },
+            "typescript": {
+              "status": "candidate-only",
+              "reason": "Bounded local source relationships; caller intent and domain constraints remain unresolved."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "unstructured-state",
+      "defect": "unconstrained-inputs",
+      "mechanisms": [
+        {
+          "id": "resource-input",
+          "summary": "Variable-length inputs and resource operations require applicable budgets.",
+          "cells": {
+            "go": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "rust": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "typescript": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "javascript": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            },
+            "python": {
+              "status": "syntax-candidate",
+              "reason": "Structural boundary captures only; guards, value flow and runtime contract violations are not established."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "family": "unstructured-state",
+      "defect": "version-library-mismanagement",
+      "mechanisms": [
+        {
+          "id": "query-signals",
+          "summary": "Structural signals from the defect's query pack.",
+          "cells": {
+            "go": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "javascript": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "python": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "rust": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            },
+            "typescript": {
+              "status": "planned",
+              "reason": "No production query pack or semantic model exists for this language yet."
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

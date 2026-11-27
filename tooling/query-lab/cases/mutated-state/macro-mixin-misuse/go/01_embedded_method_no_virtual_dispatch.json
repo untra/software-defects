@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Validate through the concrete User method before saving.",
+  "original": {
+    "source_hash": "4bc8663a6588a96c0bfdbca972997e76b0fc81e6f834559436ccf58cb94da65f",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/macro-mixin-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              166,
+              174
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "622a7d19d71fa7c602dcb842fe8ca17548692c7aa7c5c67fcfe25b667f1e6378",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/macro-mixin-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              166,
+              174
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              448,
+              456
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "rejected: email required"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Struct embedding is composition, not inheritance; there is no virtual dispatch through the embedded receiver. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

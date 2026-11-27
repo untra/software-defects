@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use a request-scoped logger instead of mutating global logging context.",
+  "original": {
+    "source_hash": "0cccd5cc3c7820f66cf86a4c2e7de888db1ab395291a7a81ac63ec1bd72a0b52",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              187,
+              196
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "c00d86cc1a0eccf1eff674eadc03dc60c265e581e499a08feb1ef8e8355689af",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "[req-1] card charged",
+      "[req-2] card charged"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The standard logger is process-wide state. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

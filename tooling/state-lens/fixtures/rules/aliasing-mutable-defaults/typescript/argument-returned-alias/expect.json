@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "roles": {
+    "failing": {
+      "findings": [
+        {
+          "trigger": "publicHeaders[\"Authorization\"]",
+          "origins": [
+            "{ Authorization: \"Bearer secret\" }",
+            "return headers;"
+          ],
+          "affected_uses": [
+            {
+              "text": "signed",
+              "occurrence": 3
+            }
+          ],
+          "evidence_level": "feasible_under_model",
+          "requirement": "declared-readonly"
+        }
+      ],
+      "repair": {
+        "applicability": "auto"
+      }
+    },
+    "fixed": {
+      "findings": []
+    },
+    "intentional": {
+      "findings": [
+        {
+          "trigger": "withHeader(request).headers[\"Accept\"]",
+          "origins": [
+            "{}",
+            "return target;"
+          ],
+          "affected_uses": [
+            "request.headers"
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ],
+      "repair": {
+        "applicability": "rejected"
+      }
+    },
+    "independent": {
+      "findings": []
+    },
+    "breaker": {
+      "findings": []
+    }
+  }
+}

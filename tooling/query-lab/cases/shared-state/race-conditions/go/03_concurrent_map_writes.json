@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Synchronize every shared map write.",
+  "original": {
+    "source_hash": "2a53c068a3e441799dd63ecf25a9cf26c306f1cec790b7a4571da744cd2e48e2",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "shared_write",
+            "range": [
+              151,
+              178
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              247,
+              256
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              262,
+              369
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              280,
+              289
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              330,
+              358
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              374,
+              383
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              385,
+              424
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              410,
+              423
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "8ce2a7c8945329a22d0b05ad3b20f525619d4dade62e6b4731791a3b42a52a68",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              178,
+              195
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              203,
+              222
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              224,
+              251
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              320,
+              329
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              335,
+              442
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              353,
+              362
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              403,
+              431
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              447,
+              456
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              458,
+              497
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              483,
+              496
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "sessions: 800000"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": false,
+    "exit_code": 1,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

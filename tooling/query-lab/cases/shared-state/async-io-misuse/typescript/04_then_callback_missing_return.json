@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return the transformed user from the promise callback.",
+  "original": {
+    "source_hash": "3623c0051bbe73ec556611b89a07110bd57a67a04cb04520f468e02a68b131a8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "task_call",
+            "range": [
+              88,
+              129
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              197,
+              210
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              197,
+              266
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              244,
+              260
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              271,
+              282
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              271,
+              327
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              298,
+              326
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "6794bfadd0dd8d33bfafa8a7a6f0afc5ddaa84a67a97c5bcc8c044302229f2e9",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "task_call",
+            "range": [
+              88,
+              129
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              190,
+              203
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              190,
+              276
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              237,
+              253
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              281,
+              292
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              281,
+              337
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              308,
+              336
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "loaded: { name: 'user-7' }"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

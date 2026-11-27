@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Enqueue one bounded retry per failed attempt rather than duplicating work.",
+  "original": {
+    "source_hash": "0f81fdf3340331978761a1b3064aceea8c7ff1d582a57a8a1585fb73004fd9b1",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/stack-overflow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              274,
+              278
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "a5bf2ad15b5df183c79b1986288e5ada99a161a228803bf7d0e94106331a31ab",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/stack-overflow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              350,
+              354
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "jobs queued after 20 rounds: 0"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Runaway allocation from uncapped retries (CWE-770); heap exhaustion follows. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

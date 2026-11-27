@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Copy the scalar collection before transforming it; preserve the source, operation result and return value.",
+  "analysis_limit": "Syntax candidates only: names do not resolve receiver types or shadowed functions. Safe copies retain captures. Ownership, aliasing, callback effects and intended behavior require review.",
+  "runtime": {
+    "status": "supported",
+    "stdout": "ok\n",
+    "exit_code": 0
+  },
+  "original": {
+    "source_hash": "da81082abb167e59ae7471e49d89f439a8976adf816f7d888ce0f3e1ebd14ce6",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/volatile-properties/signals.scm",
+        "captures": [
+          {
+            "name": "receiver",
+            "range": [
+              119,
+              123
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              114,
+              118
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "6bc9a80039ab0ee506766259b83636ae607b12ce8608d680654a7aa26ae53383",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/volatile-properties/signals.scm",
+        "captures": [
+          {
+            "name": "receiver",
+            "range": [
+              146,
+              150
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              141,
+              145
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

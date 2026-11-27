@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Treat this negative limit as an unbounded page rather than a negative slice endpoint.",
+  "original": {
+    "source_hash": "b1fd1a82fe58da2e3ef2476658b7fc7e20b75b7bc4b865fa14f95dd0feaaf0c7",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              79,
+              84
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "42d1c8ab0483cddf148df77de289a63b3f948d88c8008e5fbc8a7781fbb0ff4a",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/unconstrained-inputs/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              224,
+              229
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "limit rejected"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. slice treats a negative end as an offset from the length (CWE-1284). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

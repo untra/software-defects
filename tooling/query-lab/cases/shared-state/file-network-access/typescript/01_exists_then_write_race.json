@@ -1,0 +1,220 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Create the lock file exclusively instead of checking its existence before writing.",
+  "original": {
+    "source_hash": "6c4857beec8abb4b44c0622db906e63008c5dbb29973e05de428ed46ceadff9b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "io_call",
+            "range": [
+              294,
+              314
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              353,
+              390
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              403,
+              428
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              508,
+              546
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              520,
+              545
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              525,
+              533
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              567,
+              591
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              616,
+              700
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              628,
+              699
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              670,
+              698
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              704,
+              736
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              740,
+              821
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              791,
+              813
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              826,
+              832
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "56b6acafbcfea6f8ab54887fc7fd32ba82444bda7c82dc04c148bf15d94e2d83",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "io_call",
+            "range": [
+              264,
+              305
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              480,
+              518
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              492,
+              517
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              497,
+              505
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              539,
+              563
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              588,
+              672
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              600,
+              671
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              642,
+              670
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              676,
+              708
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              712,
+              793
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              763,
+              785
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              798,
+              804
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "nodes that believe they are leader: 1"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": false,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

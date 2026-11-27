@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Allocate a separate reference-counted vector for each lane.",
+  "original": {
+    "source_hash": "ef5947bca3153e41dc6ff45ee7265f555ba01bf829070629ef911c8df5a86b78",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/macro-mixin-misuse/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "3e9ef0366d052c6bf4359dc0f8048ef1e58abc593baf6873760b7dec3539ae53",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/macro-mixin-misuse/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "lane 0: [42]\nlane 1: []\nlane 2: []"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The repeat form of vec! uses Clone, which for Rc shares the allocation. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

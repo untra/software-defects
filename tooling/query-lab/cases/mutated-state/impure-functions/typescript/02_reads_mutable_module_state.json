@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Keep the promotion snapshot stable for the lifetime of the cart.",
+  "original": {
+    "source_hash": "cef717dee4b69434c326024ed8fb658782d5dfe1697633090592362b2d299c02",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/impure-functions/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "1c7ec6d3a70ac08db4b712d993ca3bad4c34a321497648960081d14902321cbb",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/mutated-state/impure-functions/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "quoted 200 charged 200"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Hidden global input (CWE-1108). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

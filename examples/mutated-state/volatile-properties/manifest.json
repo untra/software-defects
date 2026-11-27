@@ -1,0 +1,1543 @@
+{
+  "family": "mutated-state",
+  "defect": "volatile-properties",
+  "name": "Volatile Properties",
+  "essence": "Collection operations unexpectedly change a source that callers expect to preserve.",
+  "cwes": [],
+  "examples": [
+    {
+      "file": "typescript/01_push.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "push changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "typescript/02_pop.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "pop changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "typescript/03_shift.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "shift changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "typescript/04_unshift.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "unshift changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "typescript/05_splice.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "splice changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "typescript/06_sort.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "sort changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "typescript/07_reverse.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "reverse changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "typescript/08_fill.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "fill changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "typescript/09_copyWithin.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "copyWithin changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/01_append.py",
+      "language": "python",
+      "bug_lines": [
+        3
+      ],
+      "summary": "append changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/02_extend.py",
+      "language": "python",
+      "bug_lines": [
+        3
+      ],
+      "summary": "extend changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/03_insert.py",
+      "language": "python",
+      "bug_lines": [
+        3
+      ],
+      "summary": "insert changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/04_remove.py",
+      "language": "python",
+      "bug_lines": [
+        3
+      ],
+      "summary": "remove changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/05_pop.py",
+      "language": "python",
+      "bug_lines": [
+        3
+      ],
+      "summary": "pop changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/06_clear.py",
+      "language": "python",
+      "bug_lines": [
+        3
+      ],
+      "summary": "clear changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/07_sort.py",
+      "language": "python",
+      "bug_lines": [
+        3
+      ],
+      "summary": "sort changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/08_reverse.py",
+      "language": "python",
+      "bug_lines": [
+        3
+      ],
+      "summary": "reverse changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/09_slice_assignment.py",
+      "language": "python",
+      "bug_lines": [
+        3
+      ],
+      "summary": "slice_assignment changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/01_push.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "push changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/02_pop.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "pop changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/03_insert.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "insert changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/04_remove.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "remove changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/05_swap_remove.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "swap_remove changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/06_retain.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "retain changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/07_sort.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "sort changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/08_sort_by.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "sort_by changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/09_reverse.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "reverse changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/10_truncate.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "truncate changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/11_clear.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "clear changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/12_dedup.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "dedup changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "go/01_index_assignment.go",
+      "language": "go",
+      "bug_lines": [
+        10
+      ],
+      "summary": "index_assignment changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "go/02_append.go",
+      "language": "go",
+      "bug_lines": [
+        10
+      ],
+      "summary": "append changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "go/03_copy.go",
+      "language": "go",
+      "bug_lines": [
+        10
+      ],
+      "summary": "copy changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "typescript/10_set_add.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "set.add changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "typescript/11_set_delete.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "set.delete changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "typescript/12_set_clear.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "set.clear changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "typescript/13_map_set.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "map.set changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "typescript/14_map_delete.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "map.delete changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "typescript/15_map_clear.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "map.clear changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "typescript/16_record_assign.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "record.assign changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "typescript/17_record_delete.ts",
+      "language": "typescript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "record.delete changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/10_set_add.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "set.add changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/11_set_remove.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "set.remove changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/12_set_discard.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "set.discard changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/13_set_pop.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "set.pop changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/14_set_update.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "set.update changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/15_set_intersection_update.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "set.intersection_update changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/16_set_clear.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "set.clear changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/17_dict_update.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "dict.update changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/18_dict_pop.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "dict.pop changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/19_dict_popitem.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "dict.popitem changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/20_dict_setdefault.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "dict.setdefault changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/21_dict_clear.py",
+      "language": "python",
+      "bug_lines": [
+        4
+      ],
+      "summary": "dict.clear changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/22_deque_append.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "deque.append changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/23_deque_appendleft.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "deque.appendleft changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/24_deque_pop.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "deque.pop changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/25_deque_popleft.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "deque.popleft changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/26_deque_extend.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "deque.extend changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/27_deque_rotate.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "deque.rotate changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/28_stringio_write.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "stringio.write changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/29_stringio_seek.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "stringio.seek changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "python/30_stringio_truncate.py",
+      "language": "python",
+      "bug_lines": [
+        5
+      ],
+      "summary": "stringio.truncate changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/13_hashset_insert.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "hashset.insert changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/14_hashset_remove.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "hashset.remove changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/15_hashset_clear.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "hashset.clear changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/16_hashset_retain.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "hashset.retain changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/17_btreeset_insert.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "btreeset.insert changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/18_btreeset_remove.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "btreeset.remove changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/19_btreeset_clear.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "btreeset.clear changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/20_btreeset_retain.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "btreeset.retain changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/21_hashmap_insert.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "hashmap.insert changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/22_hashmap_remove.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "hashmap.remove changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/23_hashmap_clear.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "hashmap.clear changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/24_hashmap_entry_insert.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "hashmap.entry_insert changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/25_hashmap_entry_modify.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "hashmap.entry_modify changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/26_btreemap_insert.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "btreemap.insert changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/27_btreemap_remove.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "btreemap.remove changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/28_btreemap_clear.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "btreemap.clear changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/29_btreemap_entry_insert.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "btreemap.entry_insert changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/30_btreemap_entry_modify.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "btreemap.entry_modify changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/31_string_push.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "string.push changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/32_string_push_str.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "string.push_str changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/33_string_insert.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "string.insert changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/34_string_remove.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "string.remove changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/35_string_truncate.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "string.truncate changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/36_string_clear.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "string.clear changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/37_vecdeque_push_back.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "vecdeque.push_back changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/38_vecdeque_push_front.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "vecdeque.push_front changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/39_vecdeque_pop_back.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "vecdeque.pop_back changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/40_vecdeque_pop_front.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "vecdeque.pop_front changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/41_vec_drain.rs",
+      "language": "rust",
+      "bug_lines": [
+        4
+      ],
+      "summary": "vec.drain changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "rust/42_vec_reserve.rs",
+      "language": "rust",
+      "bug_lines": [
+        6
+      ],
+      "summary": "vec.reserve changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "go/04_map_assign.go",
+      "language": "go",
+      "bug_lines": [
+        11
+      ],
+      "summary": "map.assign changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "go/05_map_delete.go",
+      "language": "go",
+      "bug_lines": [
+        11
+      ],
+      "summary": "map.delete changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "go/06_set_assign.go",
+      "language": "go",
+      "bug_lines": [
+        11
+      ],
+      "summary": "set.assign changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "go/07_set_delete.go",
+      "language": "go",
+      "bug_lines": [
+        11
+      ],
+      "summary": "set.delete changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "go/08_builder_Write.go",
+      "language": "go",
+      "bug_lines": [
+        12
+      ],
+      "summary": "builder.Write changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "go/09_builder_WriteString.go",
+      "language": "go",
+      "bug_lines": [
+        12
+      ],
+      "summary": "builder.WriteString changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "go/10_builder_WriteByte.go",
+      "language": "go",
+      "bug_lines": [
+        12
+      ],
+      "summary": "builder.WriteByte changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "go/11_builder_Reset.go",
+      "language": "go",
+      "bug_lines": [
+        12
+      ],
+      "summary": "builder.Reset changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "go/12_slice_Sort.go",
+      "language": "go",
+      "bug_lines": [
+        11
+      ],
+      "summary": "slice.Sort changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "javascript/01_push.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "push changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "javascript/02_pop.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "pop changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "javascript/03_shift.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "shift changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "javascript/04_unshift.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "unshift changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "javascript/05_splice.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "splice changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "javascript/06_sort.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "sort changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "javascript/07_reverse.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "reverse changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "javascript/08_fill.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "fill changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "javascript/09_copyWithin.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "copyWithin changes the source while preparing an independent result.",
+      "mechanism": "The working collection aliases the source.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "javascript/10_set_add.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "set.add changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "javascript/11_set_delete.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "set.delete changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "javascript/12_set_clear.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "set.clear changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "javascript/13_map_set.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "map.set changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "javascript/14_map_delete.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "map.delete changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "javascript/15_map_clear.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "map.clear changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "javascript/16_record_assign.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "record.assign changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    },
+    {
+      "file": "javascript/17_record_delete.js",
+      "language": "javascript",
+      "bug_lines": [
+        3
+      ],
+      "summary": "record.delete changes source state while preparing an independent result.",
+      "mechanism": "Working storage aliases source state; the preservation assertion exposes the unintended change.",
+      "observed_output": "source changed assertion fails",
+      "exit_code": 1,
+      "deterministic": true,
+      "expected_behavior": "ok"
+    }
+  ]
+}

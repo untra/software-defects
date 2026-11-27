@@ -1,0 +1,832 @@
+{
+  "scope": "P0 susceptibility markers and potential cross-family overlaps",
+  "measurement": "Candidate/misuse trigger or same-document evidence overlaps authored bug lines; safe usage markers are reported separately. Corpus recall is not proof of defects or population accuracy.",
+  "baseline": "coverage-baseline.json",
+  "final": "coverage.json",
+  "baseline_provenance": {
+    "shared_analyzer_revision": "bc1dd1c0556f0764632309b3f57b927a66204035",
+    "construction": "Isolated source snapshot with the pre-change shared analyzer, the in-flight mutex implementation, additive assessment instrumentation, and new P0 detector modules disabled. Uses the same corpus including the 22 Python fixed additions.",
+    "mutex_source_hash": "df26a537c25744421280e37ba85d88ddeff2501ab158373529c382947c9c13ef",
+    "shared_source_hash": "87e4244e0b69509b819aa199ecf36bf6c6e66ad785b0d2be5a4020539ac0a342"
+  },
+  "results": [
+    {
+      "defect": "race-conditions",
+      "baseline_recalled": 6,
+      "recalled": 17,
+      "examples": 19,
+      "recall": 0.8947368421052632,
+      "fixed_risk_flagged": 0,
+      "fixed_scanned": 19,
+      "fixed_risk_rate": 0.0,
+      "target_met": true
+    },
+    {
+      "defect": "resource-contention",
+      "baseline_recalled": 0,
+      "recalled": 17,
+      "examples": 19,
+      "recall": 0.8947368421052632,
+      "fixed_risk_flagged": 4,
+      "fixed_scanned": 19,
+      "fixed_risk_rate": 0.21052631578947367,
+      "target_met": true
+    },
+    {
+      "defect": "cache-invalidation",
+      "baseline_recalled": 0,
+      "recalled": 19,
+      "examples": 22,
+      "recall": 0.8636363636363636,
+      "fixed_risk_flagged": 0,
+      "fixed_scanned": 22,
+      "fixed_risk_rate": 0.0,
+      "target_met": true
+    },
+    {
+      "defect": "insecure-deserialization",
+      "baseline_recalled": 0,
+      "recalled": 17,
+      "examples": 17,
+      "recall": 1.0,
+      "fixed_risk_flagged": 0,
+      "fixed_scanned": 17,
+      "fixed_risk_rate": 0.0,
+      "target_met": true
+    },
+    {
+      "defect": "index-out-of-bounds",
+      "baseline_recalled": 0,
+      "recalled": 17,
+      "examples": 21,
+      "recall": 0.8095238095238095,
+      "fixed_risk_flagged": 0,
+      "fixed_scanned": 21,
+      "fixed_risk_rate": 0.0,
+      "target_met": true
+    },
+    {
+      "defect": "type-errors",
+      "baseline_recalled": 0,
+      "recalled": 18,
+      "examples": 18,
+      "recall": 1.0,
+      "fixed_risk_flagged": 0,
+      "fixed_scanned": 18,
+      "fixed_risk_rate": 0.0,
+      "target_met": true
+    },
+    {
+      "defect": "threading-mutexes",
+      "baseline_recalled": 27,
+      "recalled": 27,
+      "examples": 30,
+      "recall": 0.9,
+      "fixed_risk_flagged": 0,
+      "fixed_scanned": 30,
+      "fixed_risk_rate": 0.0,
+      "target_met": true
+    }
+  ],
+  "divide_by_zero_fixed_risk_flagged": 0,
+  "validation": {
+    "rust": {
+      "passed": 881,
+      "failed": 0,
+      "ignored": 1
+    },
+    "corpus_tests": {
+      "passed": 8,
+      "failed": 0
+    },
+    "editor_unit_tests": {
+      "passed": 40,
+      "failed": 0
+    },
+    "compound_fixtures": [
+      "stale-cache-heisenbug",
+      "untrusted-deserialization",
+      "off-by-one-crash",
+      "pool-exhaustion-heisenbug",
+      "signedness-poisons-aggregate"
+    ],
+    "language_packages": [
+      "javascript",
+      "typescript",
+      "python",
+      "go",
+      "rust"
+    ],
+    "editor_end_to_end": {
+      "mode": "editor-health",
+      "passed": 1529,
+      "failed": 0,
+      "missing": 0,
+      "by_language": {
+        "javascript": {
+          "pass": 327
+        },
+        "typescript": {
+          "pass": 327
+        },
+        "python": {
+          "pass": 309
+        },
+        "go": {
+          "pass": 284
+        },
+        "rust": {
+          "pass": 282
+        }
+      },
+      "report": "../../build/p0-editor-health/verified.json",
+      "checks": [
+        "current snapshots",
+        "source hashes",
+        "ranges",
+        "diagnostic counts and severities",
+        "source decorations",
+        "hover guide and evidence links"
+      ],
+      "snapshot_suite_status": "not passing: historical count baseline and unsupported manifest-specific compound identities"
+    },
+    "protocol_snapshot": {
+      "status": "failed",
+      "report": "../../build/p0-protocol-final/smoke-report.json",
+      "cases": 1529,
+      "problems": {
+        "count-mismatch": 1694,
+        "timeout": 118,
+        "range": 7
+      },
+      "limitations": [
+        "Native inlay expectations do not account for annotation coalescing.",
+        "Manifest-specific compound identities remain unsupported outside the P0 overlap model.",
+        "Seven mutex range failures were fixed after this run; targeted ownership and mutex tests passed."
+      ],
+      "baseline_overwritten": false
+    },
+    "post_audit_regression": {
+      "mutex_tests_passed": 26,
+      "compound_and_range_tests_passed": 3,
+      "coverage_remeasured": true,
+      "coverage_unchanged": true,
+      "range_metadata_fix": "Finding.function now owns the trigger rather than the first lock operation; lock detection logic is unchanged."
+    },
+    "compound_fixtures_require_new_ingredient": true,
+    "corpus_sources_unchanged_after_editor_tests": true
+  },
+  "limitations": {
+    "analysis": "Bounded same-file syntax and flow models; candidates are not whole-program proofs. Planned cells remain unsupported.",
+    "planned_cells": [
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "key-missing-dependency",
+        "language": "go",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "cached-mutable-value",
+        "language": "go",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "cached-mutable-value",
+        "language": "javascript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "cached-mutable-value",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "cached-mutable-value",
+        "language": "typescript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "cached-rejected-promise",
+        "language": "go",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "thundering-herd",
+        "language": "python",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "thundering-herd",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "invalidate-wrong-key",
+        "language": "go",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "invalidate-wrong-key",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "negative-result-without-expiry",
+        "language": "javascript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "negative-result-without-expiry",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "negative-result-without-expiry",
+        "language": "typescript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "mutable-identity-key",
+        "language": "go",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "mutable-identity-key",
+        "language": "python",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "mutable-identity-key",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "one-time-cache-stale",
+        "language": "go",
+        "reason": "No local model for this language and mechanism yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "one-time-cache-stale",
+        "language": "javascript",
+        "reason": "No local model for this language and mechanism yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "one-time-cache-stale",
+        "language": "python",
+        "reason": "No local model for this language and mechanism yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "one-time-cache-stale",
+        "language": "typescript",
+        "reason": "No local model for this language and mechanism yet."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "cache-access",
+        "language": "go",
+        "reason": "Usage marker only; risk findings require a separate locally supported mechanism."
+      },
+      {
+        "defect": "cache-invalidation",
+        "mechanism": "cache-access",
+        "language": "python",
+        "reason": "Usage marker only; risk findings require a separate locally supported mechanism."
+      },
+      {
+        "defect": "race-conditions",
+        "mechanism": "read-suspend-write",
+        "language": "go",
+        "reason": "No Go suspension model yet; launched scopes writing outer bindings are separate contention candidates."
+      },
+      {
+        "defect": "resource-contention",
+        "mechanism": "unbounded-queue",
+        "language": "go",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "resource-contention",
+        "mechanism": "acquire-without-release-on-error",
+        "language": "go",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "resource-contention",
+        "mechanism": "acquire-without-release-on-error",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "resource-contention",
+        "mechanism": "blocking-fan-in",
+        "language": "javascript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "resource-contention",
+        "mechanism": "blocking-fan-in",
+        "language": "python",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "resource-contention",
+        "mechanism": "blocking-fan-in",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "resource-contention",
+        "mechanism": "blocking-fan-in",
+        "language": "typescript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "resource-contention",
+        "mechanism": "acquisition-without-deadline",
+        "language": "javascript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "resource-contention",
+        "mechanism": "acquisition-without-deadline",
+        "language": "python",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "resource-contention",
+        "mechanism": "acquisition-without-deadline",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "resource-contention",
+        "mechanism": "acquisition-without-deadline",
+        "language": "typescript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "resource-contention",
+        "mechanism": "event-loop-blocking",
+        "language": "go",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "resource-contention",
+        "mechanism": "event-loop-blocking",
+        "language": "python",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "resource-contention",
+        "mechanism": "event-loop-blocking",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "resource-contention",
+        "mechanism": "permit-accounting",
+        "language": "go",
+        "reason": "No equivalent source relationship is modeled for this language."
+      },
+      {
+        "defect": "resource-contention",
+        "mechanism": "permit-accounting",
+        "language": "python",
+        "reason": "No equivalent source relationship is modeled for this language."
+      },
+      {
+        "defect": "resource-contention",
+        "mechanism": "permit-accounting",
+        "language": "rust",
+        "reason": "No equivalent source relationship is modeled for this language."
+      },
+      {
+        "defect": "threading-mutexes",
+        "mechanism": "copied-lock",
+        "language": "rust",
+        "reason": "This language/API mechanism is outside the current bounded model."
+      },
+      {
+        "defect": "threading-mutexes",
+        "mechanism": "copied-lock",
+        "language": "python",
+        "reason": "This language/API mechanism is outside the current bounded model."
+      },
+      {
+        "defect": "threading-mutexes",
+        "mechanism": "copied-lock",
+        "language": "javascript",
+        "reason": "This language/API mechanism is outside the current bounded model."
+      },
+      {
+        "defect": "threading-mutexes",
+        "mechanism": "copied-lock",
+        "language": "typescript",
+        "reason": "This language/API mechanism is outside the current bounded model."
+      },
+      {
+        "defect": "threading-mutexes",
+        "mechanism": "blocking-across-suspension",
+        "language": "go",
+        "reason": "This language/API mechanism is outside the current bounded model."
+      },
+      {
+        "defect": "threading-mutexes",
+        "mechanism": "blocking-across-suspension",
+        "language": "javascript",
+        "reason": "This language/API mechanism is outside the current bounded model."
+      },
+      {
+        "defect": "threading-mutexes",
+        "mechanism": "blocking-across-suspension",
+        "language": "typescript",
+        "reason": "This language/API mechanism is outside the current bounded model."
+      },
+      {
+        "defect": "threading-mutexes",
+        "mechanism": "unchecked-acquisition",
+        "language": "javascript",
+        "reason": "This language/API mechanism is outside the current bounded model."
+      },
+      {
+        "defect": "threading-mutexes",
+        "mechanism": "unchecked-acquisition",
+        "language": "typescript",
+        "reason": "This language/API mechanism is outside the current bounded model."
+      },
+      {
+        "defect": "threading-mutexes",
+        "mechanism": "callback-lifetime",
+        "language": "go",
+        "reason": "This language/API mechanism is outside the current bounded model."
+      },
+      {
+        "defect": "threading-mutexes",
+        "mechanism": "callback-lifetime",
+        "language": "rust",
+        "reason": "This language/API mechanism is outside the current bounded model."
+      },
+      {
+        "defect": "threading-mutexes",
+        "mechanism": "callback-lifetime",
+        "language": "python",
+        "reason": "This language/API mechanism is outside the current bounded model."
+      },
+      {
+        "defect": "index-out-of-bounds",
+        "mechanism": "unchecked-optional-access",
+        "language": "go",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "index-out-of-bounds",
+        "mechanism": "unchecked-optional-access",
+        "language": "javascript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "index-out-of-bounds",
+        "mechanism": "unchecked-optional-access",
+        "language": "python",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "index-out-of-bounds",
+        "mechanism": "unchecked-optional-access",
+        "language": "typescript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "decoded-to-sink",
+        "language": "go",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "decoded-to-sink",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "prototype-key",
+        "language": "go",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "prototype-key",
+        "language": "python",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "prototype-key",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "unsafe-loader",
+        "language": "go",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "unsafe-loader",
+        "language": "javascript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "unsafe-loader",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "unsafe-loader",
+        "language": "typescript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "untrusted-length",
+        "language": "go",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "untrusted-length",
+        "language": "javascript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "untrusted-length",
+        "language": "python",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "untrusted-length",
+        "language": "typescript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "unchecked-decode",
+        "language": "javascript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "unchecked-decode",
+        "language": "python",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "unchecked-decode",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "unchecked-decode",
+        "language": "typescript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "reviver-coercion",
+        "language": "go",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "reviver-coercion",
+        "language": "python",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "reviver-coercion",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "decoded-field-assignment",
+        "language": "javascript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "insecure-deserialization",
+        "mechanism": "decoded-field-assignment",
+        "language": "typescript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "falsy-default",
+        "language": "go",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "falsy-default",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "bool-is-int",
+        "language": "go",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "bool-is-int",
+        "language": "javascript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "bool-is-int",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "bool-is-int",
+        "language": "typescript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "mixed-sort",
+        "language": "go",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "mixed-sort",
+        "language": "javascript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "mixed-sort",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "mixed-sort",
+        "language": "typescript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "failed-conversion",
+        "language": "go",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "failed-conversion",
+        "language": "javascript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "failed-conversion",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "failed-conversion",
+        "language": "typescript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "runtime-type-assertion",
+        "language": "javascript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "runtime-type-assertion",
+        "language": "python",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "runtime-type-assertion",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "runtime-type-assertion",
+        "language": "typescript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "runtime-downcast",
+        "language": "go",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "runtime-downcast",
+        "language": "javascript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "runtime-downcast",
+        "language": "python",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "runtime-downcast",
+        "language": "typescript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "format-type-mismatch",
+        "language": "javascript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "format-type-mismatch",
+        "language": "python",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "format-type-mismatch",
+        "language": "rust",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "format-type-mismatch",
+        "language": "typescript",
+        "reason": "Applicable runtime shape has no implemented local detector yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "sequence-repetition",
+        "language": "go",
+        "reason": "No local model for this language and mechanism yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "sequence-repetition",
+        "language": "javascript",
+        "reason": "No local model for this language and mechanism yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "sequence-repetition",
+        "language": "rust",
+        "reason": "No local model for this language and mechanism yet."
+      },
+      {
+        "defect": "type-errors",
+        "mechanism": "sequence-repetition",
+        "language": "typescript",
+        "reason": "No local model for this language and mechanism yet."
+      }
+    ]
+  }
+}

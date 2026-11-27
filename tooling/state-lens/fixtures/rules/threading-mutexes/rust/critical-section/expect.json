@@ -1,0 +1,19 @@
+{
+  "roles": {
+    "failing": {
+      "present": true
+    },
+    "fixed": {
+      "present": true
+    },
+    "intentional": {
+      "present": true
+    },
+    "independent": {
+      "present": true
+    },
+    "breaker": {
+      "present": true
+    }
+  }
+}

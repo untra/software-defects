@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Non-reentrant exclusive lock request. The fixed version preserves the intended operation while enforcing its synchronization contract.",
+  "analysis_limit": "Captures are independent source-token expectations. API identity, guard lifetime, scheduling and control flow require bounded analyzer evidence.",
+  "runtime": {
+    "status": "unsupported",
+    "reason": "Browser Web Locks fixture; Node 22 has no navigator.locks. Parse and analyzer checks remain supported."
+  },
+  "original": {
+    "source_hash": "ce1fb69e46075457fc3161ef139b1354eabb8c7a12819a5540db536236d640e6",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              155,
+              279
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              171,
+              178
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              213,
+              275
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              229,
+              236
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "be9b84712678b4b5f0969e72247eabf3c3be38f373983b435f98d44b7ead4c24",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              155,
+              227
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              171,
+              178
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "stdout_contains": [
+      "completed: false"
+    ]
+  }
+}

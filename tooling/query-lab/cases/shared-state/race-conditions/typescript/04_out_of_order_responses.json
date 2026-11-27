@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Reject stale responses using a monotonically increasing request generation.",
+  "original": {
+    "source_hash": "0d62531c809c61e593e4ea6efde3ba48721dea4405b87ff70cd0db80ed942e4c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              204,
+              248
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              368,
+              404
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              391,
+              404
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              441,
+              489
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              453,
+              488
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              493,
+              549
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              554,
+              560
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "3346ba36bd1294fc6ed6b833ed504fb496b5cd1cc02e1d214abdf7e54288a15d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              224,
+              268
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              414,
+              426
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              452,
+              465
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              507,
+              531
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              568,
+              616
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              580,
+              615
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              620,
+              676
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              681,
+              687
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "'abc-result-1', 'abc-result-2'"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

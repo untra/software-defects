@@ -1,0 +1,124 @@
+{
+  "family": "compound-defects",
+  "class": "runtime-errors",
+  "defect": "integer-overflow-buffer",
+  "name": "Integer Overflow Sizes a Buffer Too Small",
+  "essence": "A size computed by multiplying or incrementing wraps past the integer max to a tiny value; the allocation looks fine, then an in-range-looking index writes off the end.",
+  "category": "computational-exhaustion",
+  "scores": {
+    "python": 1,
+    "typescript": 0,
+    "go": 1,
+    "rust": 1
+  },
+  "cwes": [
+    "CWE-680",
+    "CWE-787"
+  ],
+  "examples": [
+    {
+      "file": "python/01_parcel_capacity.py",
+      "language": "python",
+      "bug_lines": [
+        10,
+        13,
+        19
+      ],
+      "summary": "ctypes narrows the incremented count to zero, creates a zero-length buffer, and an unchecked pointer write spills into its adjacent label..",
+      "mechanism": "ctypes narrows the incremented count to zero, creates a zero-length buffer, and an unchecked pointer write spills into its adjacent label.",
+      "observed_output": "capacity 0 label 65",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Reject the wrapped capacity and preserve label 90.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "increment-decrement-operators",
+          "suggests": "Incrementing the fixed-width count wraps it from 255 to zero.",
+          "evidence": [
+            "count = ctypes.c_uint8(LAST_COUNT)",
+            "count.value += 1"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "index-out-of-bounds",
+          "suggests": "A raw write targets the zero-length parcel buffer and changes the adjacent label.",
+          "evidence": [
+            "ctypes.c_ubyte * count.value",
+            "destination[0] = PARCEL_BYTE"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_parcel_capacity.go",
+      "language": "go",
+      "bug_lines": [
+        11,
+        12,
+        13,
+        15
+      ],
+      "summary": "An increment wraps the allocation size to zero and the subsequent write panics.",
+      "mechanism": "A uint8 wrap produces an undersized slice; Go bounds checking traps the attempted out-of-bounds write rather than corrupting memory.",
+      "observed_output": "panic: runtime error: index out of range [0] with length 0",
+      "exit_code": 2,
+      "deterministic": true,
+      "expected_behavior": "Allocate the full requested capacity or reject the count before incrementing.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "increment-decrement-operators",
+          "suggests": "Increment wraps the narrow unsigned count from its maximum value.",
+          "evidence": [
+            "count := uint8(largestCount)",
+            "count++"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "index-out-of-bounds",
+          "suggests": "The copy uses the requested count rather than the wrapped allocation length.",
+          "evidence": [
+            "slots := make([]byte, int(count))",
+            "slots[i] = 'P'"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_parcel_capacity.rs",
+      "language": "rust",
+      "bug_lines": [
+        6,
+        9
+      ],
+      "summary": "A wrapped allocation count causes a trapped write past the buffer end.",
+      "mechanism": "wrapping_add explicitly wraps the narrow count; Rust bounds checking traps the subsequent indexing write. Incrementing the narrow count wraps it from 255 to 1. The wrapped count sizes a buffer that cannot hold all supplied labels.",
+      "observed_output": "index out of bounds: the len is 1 but the index is 1",
+      "exit_code": 101,
+      "deterministic": true,
+      "expected_behavior": "The size calculation is checked before allocating.",
+      "ingredients": [
+        {
+          "family": "mutated-state",
+          "defect": "increment-decrement-operators",
+          "suggests": "Incrementing the narrow count wraps it from 255 to 1.",
+          "evidence": [
+            "count = count.wrapping_add(EXTRA_PARCELS);"
+          ]
+        },
+        {
+          "family": "unstructured-state",
+          "defect": "index-out-of-bounds",
+          "suggests": "The wrapped count sizes a buffer that cannot hold all supplied labels.",
+          "evidence": [
+            "vec![0_u8; usize::from(count)]",
+            "labels[index] = LABEL;"
+          ]
+        }
+      ]
+    }
+  ]
+}

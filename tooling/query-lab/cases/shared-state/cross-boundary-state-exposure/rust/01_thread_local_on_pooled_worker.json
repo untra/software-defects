@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Scope carts by user instead of reusing one worker-local cart across users.",
+  "original": {
+    "source_hash": "bc674ef5e91587250323530c4e25be51ed4f786cfa0b52653e54d68459c449af",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              247,
+              257
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "ffecd045d3ef8980522c1547240e6a6513cbd59bb7e787696ed1b39cb2bbf388",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/shared-state/cross-boundary-state-exposure/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              315,
+              325
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "bob sees cart [\"socks\"]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Thread-local storage is per thread, not per request. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

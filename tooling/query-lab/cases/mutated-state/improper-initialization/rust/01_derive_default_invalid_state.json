@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Provide valid retry defaults explicitly.",
+  "original": {
+    "source_hash": "d4cedc198da397f8b8b312f6a9891c9be09f16b2bb9652c5ad8021a52fcbd30b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/improper-initialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              326,
+              333
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "284ccfa763fda965b6c2bd48076bfe1e60f2caf14f345a70ea0156180c63a137",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/improper-initialization/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              568,
+              575
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "succeeded: true after 1 calls"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Derived Default sets numeric fields to 0, an illegal state for this type (CWE-1188). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return the constructed label from the map callback.",
+  "original": {
+    "source_hash": "6d943dea2582af5ace4e42771c7c1bf56ab0924a519e2dc5fb1ff5169a68154d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              47,
+              50
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "ea03ec510b321d35a0a792643ee0baf57bd016fcb5acc594d38fa17ed0628533",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              47,
+              50
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "[\"$10\",\"$20\"]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. A function with no return yields undefined, so the array is [null, null] after JSON (CWE-394). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

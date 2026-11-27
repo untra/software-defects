@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Use a signed empty sentinel and reject it before indexing.",
+  "original": {
+    "source_hash": "37c541dea60090aa45a8d6783c566115f500d611bf3a3503e90921ed91097ecc",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/increment-decrement-operators/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              102,
+              106
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "6a6178c5adb7fce29a9663e62ba1891c76042b06e911b867e2ec2a001c4e589c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/increment-decrement-operators/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "last index: -1 within preview: false"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Unsigned arithmetic underflows silently (CWE-191). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

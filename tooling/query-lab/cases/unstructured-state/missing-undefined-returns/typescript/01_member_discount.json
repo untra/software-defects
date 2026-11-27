@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return the zero discount on the guest path.",
+  "original": {
+    "source_hash": "abd466f01fd5b15755895d0d874605cfb2a2acb2afd1c67d1bc8d0ea0816fc9b",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "bc3f58ab4160092aa21d48af40bcd6d378b75fa4468b32dcf3c2b45af51a17be",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "price 100"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The missing return is undefined, and 1 - undefined is NaN (CWE-394). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

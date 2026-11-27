@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "roles": {
+    "failing": {
+      "findings": [
+        {
+          "trigger": "rows[0].append(\"ada\")",
+          "origins": [
+            {
+              "text": "[]",
+              "occurrence": 1
+            },
+            "[ROW] * 3"
+          ],
+          "affected_uses": [
+            "rows[1]"
+          ],
+          "evidence_level": "feasible_under_model",
+          "requirement": "declared-readonly"
+        }
+      ],
+      "repair": {
+        "applicability": "auto"
+      }
+    },
+    "fixed": {
+      "findings": []
+    },
+    "intentional": {
+      "findings": [
+        {
+          "trigger": "views[0].append(\"ada\")",
+          "origins": [
+            "[]",
+            "[shared] * 3"
+          ],
+          "affected_uses": [
+            "views[2]"
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ],
+      "repair": {
+        "applicability": "advisory"
+      }
+    },
+    "independent": {
+      "findings": []
+    },
+    "breaker": {
+      "findings": []
+    }
+  }
+}

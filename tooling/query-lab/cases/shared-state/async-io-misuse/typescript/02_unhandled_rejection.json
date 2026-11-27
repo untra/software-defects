@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Observe the webhook rejection without terminating subsequent order processing.",
+  "original": {
+    "source_hash": "f0ce7533d991591b2d230c7c45293e5f747b79073bf9aa30d8721aaa6b2e0d54",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "async_keyword",
+            "range": [
+              0,
+              5
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              61,
+              84
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              67,
+              84
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              199,
+              235
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              239,
+              276
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              281,
+              303
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              305,
+              362
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              322,
+              357
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "82e728335d462ff72569fd981e32f5cb29e252276086537ca85b6c1768adb942",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "async_keyword",
+            "range": [
+              0,
+              5
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              61,
+              84
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              67,
+              84
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              199,
+              235
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              199,
+              297
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              251,
+              296
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              301,
+              338
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              343,
+              365
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              367,
+              424
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              384,
+              419
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "webhook failed:",
+      "next order processed"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 1,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

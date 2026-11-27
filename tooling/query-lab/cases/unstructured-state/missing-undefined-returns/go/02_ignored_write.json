@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Do not report success after discarding a write error.",
+  "original": {
+    "source_hash": "051f2faf20e008a476d1879bcb24fc1fe75f8518b597384e9e7fb9ae5192869d",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              259,
+              263
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "ad937183ec054c434b915898779cf514e65e8addd9e8de2c15d1ca4893cee092",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              259,
+              263
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "disk full: invoice.txt"
+    ]
+  },
+  "analysis_limit": "These are syntax candidates only. The error return is assigned to blank and never checked (CWE-252). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

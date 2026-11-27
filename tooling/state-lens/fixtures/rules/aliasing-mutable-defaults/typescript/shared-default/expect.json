@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "roles": {
+    "failing": {
+      "findings": [
+        {
+          "trigger": "authed.headers[\"Authorization\"]",
+          "origins": [
+            "{ Accept: \"application/json\" }",
+            {
+              "text": "DEFAULT_HEADERS",
+              "occurrence": 2
+            }
+          ],
+          "affected_uses": [
+            "anon.headers"
+          ],
+          "evidence_level": "feasible_under_model",
+          "requirement": "declared-readonly"
+        }
+      ],
+      "repair": {
+        "applicability": "auto"
+      }
+    },
+    "fixed": {
+      "findings": []
+    },
+    "intentional": {
+      "findings": [],
+      "boundaries": [
+        "dynamic-key"
+      ]
+    },
+    "independent": {
+      "findings": []
+    },
+    "breaker": {
+      "findings": []
+    }
+  },
+  "variants": {
+    "returned-alias": {
+      "findings": [
+        {
+          "trigger": "first.push(\"draft\")",
+          "origins": [
+            {
+              "text": "[]",
+              "occurrence": 2
+            },
+            {
+              "text": "DEFAULT_TAGS",
+              "occurrence": 2
+            }
+          ],
+          "affected_uses": [
+            {
+              "text": "tags()",
+              "occurrence": 2
+            }
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ]
+    },
+    "fresh-default": {
+      "findings": []
+    }
+  }
+}

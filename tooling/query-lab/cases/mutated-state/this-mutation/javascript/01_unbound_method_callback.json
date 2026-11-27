@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Bind the callback to its owner.",
+  "original": {
+    "source_hash": "3abcddab883ab145fa1f695474b5a3b58fa7733f412434e5039e359663e63110",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/this-mutation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              151,
+              155
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "04db5fba4007bfe57816596ccf6dec4280d0cdfd6ee16eee4d3d8453aa89a7db",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/mutated-state/this-mutation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              151,
+              155
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              171,
+              175
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "clicks: 1"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Method references don't carry `this`; class bodies are strict mode. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

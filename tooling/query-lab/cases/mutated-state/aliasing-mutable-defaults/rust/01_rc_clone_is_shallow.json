@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Deep-copy tracks before mutating the independently named playlist.",
+  "original": {
+    "source_hash": "5e315d14118e388a6e2ef8bde1f79ad4c9c9f35f4f4eaf2a73840741aa600526",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              320,
+              325
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              394,
+              404
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "c7eee1e621bfdf36afc1bc8f2df5f804c7672a839ab4f93a6df4c45c4d6136e1",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              320,
+              325
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              394,
+              399
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              470,
+              480
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "road trip: [\"song a\"]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `Rc::clone` bumps a refcount; `RefCell` permits mutation through the shared handle. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

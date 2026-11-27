@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Remove the request-scoped listener at the end of its lifetime.",
+  "original": {
+    "source_hash": "3a34cc46bdbfd413411aec02e991a130b8fd8277aa1cf207de3c3537d112a988",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              260,
+              262
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "91dca6fb76252ff1c7664acda189eb2da9dd8592a07328aad0b22748029e9022",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/shared-state/resource-leaks/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              260,
+              262
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              341,
+              344
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "reload listeners after requests finished: 0"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Listeners retain closures forever (CWE-401). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

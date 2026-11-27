@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Index and read complete Unicode code points.",
+  "original": {
+    "source_hash": "f0d21011104d759db78a88817ae82d5954f8af0e72ac44e9591b3b47ad4d68d3",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              71,
+              81
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "bd1c92b305beb88d769360135f66a1366f4d1d052021593ce532e5025bef271c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/typescript/unstructured-state/index-out-of-bounds/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              83,
+              94
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "code 128512"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. String indexes are UTF-16 code units, so one emoji occupies two indexes (CWE-129). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

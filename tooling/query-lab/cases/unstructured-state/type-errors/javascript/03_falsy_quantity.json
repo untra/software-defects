@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Default absent quantities, preserving zero.",
+  "original": {
+    "source_hash": "9d4679082d9adf348daeed6687a6cc6d17c026861c43dca122d7910765254bed",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/type-errors/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "514f52a94231038cde2aa78c87225915c77236b81af21997b5dada3216f9762a",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/type-errors/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "qty 0"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `!quantity` is true for 0, so a real zero becomes the default (CWE-704). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

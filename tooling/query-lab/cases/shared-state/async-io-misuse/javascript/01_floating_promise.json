@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Await persistence and then let the caller observe completion.",
+  "original": {
+    "source_hash": "1d67ba9a6d24e8345ab6e12afc3d0f3d828eb06b8d63cbf02869d37bae916aaa",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "async_keyword",
+            "range": [
+              77,
+              82
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              120,
+              189
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              151,
+              188
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              195,
+              218
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              258,
+              279
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              303,
+              343
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              315,
+              342
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              345,
+              400
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              380,
+              399
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "11f9d686d41888b3442184d8eee5adf8c827232b966c559e5c68e440050a4680",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "async_keyword",
+            "range": [
+              77,
+              82
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              120,
+              189
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              151,
+              188
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              195,
+              218
+            ]
+          },
+          {
+            "name": "async_keyword",
+            "range": [
+              222,
+              227
+            ]
+          },
+          {
+            "name": "suspension",
+            "range": [
+              264,
+              291
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              270,
+              291
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              315,
+              342
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              315,
+              448
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              364,
+              383
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              389,
+              444
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              424,
+              443
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "profile page shows: new bio"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "family": "compound-defects",
+  "class": "data-corruption",
+  "defect": "type-confusion-corruption",
+  "name": "Type-Confusion Memory Corruption",
+  "essence": "A value read as one type but used as another writes through a bad pointer, corrupting whatever shared memory sits at that address.",
+  "category": "memory-corruption",
+  "scores": {
+    "python": 1,
+    "typescript": 0,
+    "go": 1,
+    "rust": 1
+  },
+  "cwes": [
+    "CWE-119"
+  ],
+  "examples": [
+    {
+      "file": "python/01_parcel_code.py",
+      "language": "python",
+      "bug_lines": [
+        18,
+        19
+      ],
+      "summary": "ctypes casts the address of a two-byte field to a four-byte pointer, so storing a code corrupts the adjacent status..",
+      "mechanism": "ctypes casts the address of a two-byte field to a four-byte pointer, so storing a code corrupts the adjacent status.",
+      "observed_output": "status CD",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "Preserve status OK by respecting the code field's width.",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "A two-byte code field is reinterpreted as a four-byte integer destination.",
+          "evidence": [
+            "CODE_BYTES = 2",
+            "ctypes.POINTER(ctypes.c_uint32)"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "pointer-mismanagement",
+          "suggests": "The reinterpreted raw pointer writes beyond the code field into shared parcel status.",
+          "evidence": [
+            "address = ctypes.addressof(parcel) + Parcel.code.offset",
+            "code[0] = value"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "go/01_parcel_header.go",
+      "language": "go",
+      "bug_lines": [
+        17
+      ],
+      "summary": "A narrow code pointer is treated as a wider pointer and clears the adjacent shared credit.",
+      "mechanism": "unsafe casts a pointer to a uint32 subobject into *uint64; the wider store overwrites an adjacent field in the same Parcel allocation.",
+      "observed_output": "credit 0",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "credit 100",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "A uint32 pointer is reinterpreted as uint64 and written at the wider size.",
+          "evidence": [
+            "wide := (*uint64)(unsafe.Pointer(code))",
+            "*wide = 0"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "pointer-mismanagement",
+          "suggests": "The incompatible pointer write crosses the code field into shared credit storage.",
+          "evidence": [
+            "clearCode(&parcel.code)",
+            "*wide = 0"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "rust/01_parcel_handle.rs",
+      "language": "rust",
+      "bug_lines": [
+        9,
+        10
+      ],
+      "summary": "A 32-bit parcel code is treated as a 64-bit destination, so storing the code overwrites the adjacent credit.",
+      "mechanism": "unsafe pointer reinterpretation changes a u32 field into a u64 destination. write_unaligned avoids alignment dependence but still writes beyond the code subobject into adjacent credit within the owned repr(C) parcel.",
+      "observed_output": "credit 9",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "credit 100",
+      "ingredients": [
+        {
+          "family": "unstructured-state",
+          "defect": "type-errors",
+          "suggests": "The code pointer has type u32 but is reinterpreted as a wider u64 destination.",
+          "evidence": [
+            "fn store_code(code: *mut u32, value: u64)",
+            "let destination = code.cast::<u64>();"
+          ]
+        },
+        {
+          "family": "shared-state",
+          "defect": "pointer-mismanagement",
+          "suggests": "The wider raw-pointer write extends beyond the code field and overwrites its adjacent credit field.",
+          "evidence": [
+            "struct Parcel { code: u32, credit: u32 }",
+            "destination.write_unaligned(value);"
+          ]
+        }
+      ]
+    }
+  ]
+}

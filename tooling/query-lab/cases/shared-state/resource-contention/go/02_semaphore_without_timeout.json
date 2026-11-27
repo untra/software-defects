@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Bound semaphore acquisition with a deadline and expose admission failure.",
+  "original": {
+    "source_hash": "80f4fb9af019b2403d9e2c979d8a493c025db13140eed640e0f0372217092119",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/resource-contention/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              214,
+              218
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "53f2af88ffdef97eebb8e232177bf4ad28fe13d3071d6a29bc5c64978ad25af8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/resource-contention/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              214,
+              218
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "health check within budget: true"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Channel semaphore send has no context/timeout; callers starve. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

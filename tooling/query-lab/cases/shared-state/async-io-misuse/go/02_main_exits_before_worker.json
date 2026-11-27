@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Wait for metric flushing before reporting shutdown completion.",
+  "original": {
+    "source_hash": "934fa0036f52192b4288124586e909ca2cc07679ca1ee592e7dd52ef6b2667e8",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "task_call",
+            "range": [
+              108,
+              132
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              134,
+              164
+            ]
+          },
+          {
+            "name": "launch_keyword",
+            "range": [
+              187,
+              189
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              190,
+              204
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              206,
+              238
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              257,
+              267
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "0dcd1913b2af8cedd4e513fa1882c77e00e2102867635bd094672826ff901df9",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/async-io-misuse/signals.scm",
+        "captures": [
+          {
+            "name": "task_call",
+            "range": [
+              108,
+              132
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              134,
+              164
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              187,
+              201
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              203,
+              235
+            ]
+          },
+          {
+            "name": "task_call",
+            "range": [
+              254,
+              264
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "metrics flushed\nshutdown complete"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

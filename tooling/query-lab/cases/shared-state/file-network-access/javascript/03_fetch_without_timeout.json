@@ -1,0 +1,227 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Abort a stalled request within its deadline and clean up the local server.",
+  "original": {
+    "source_hash": "89357a16a0d2fc5451e5758db3765517d90dfffd31e6115814f5c1f40a1ed6c0",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "io_call",
+            "range": [
+              132,
+              142
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              155,
+              170
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              190,
+              213
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              215,
+              561
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              281,
+              298
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              304,
+              454
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              331,
+              408
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              418,
+              433
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              460,
+              536
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              487,
+              535
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              542,
+              557
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "135689a458022f41f6feeeec570931f48bc94ad12a9c6c7402f2c3d365371e51",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/file-network-access/signals.scm",
+        "captures": [
+          {
+            "name": "io_call",
+            "range": [
+              163,
+              226
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              184,
+              223
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              239,
+              254
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              274,
+              297
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              299,
+              864
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              365,
+              382
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              405,
+              555
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              432,
+              509
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              519,
+              534
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              575,
+              651
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              602,
+              650
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              679,
+              717
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              747,
+              769
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              779,
+              808
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              818,
+              833
+            ]
+          },
+          {
+            "name": "io_call",
+            "range": [
+              845,
+              860
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "exchange rate timed out"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

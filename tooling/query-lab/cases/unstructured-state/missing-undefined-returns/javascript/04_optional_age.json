@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Preserve absent age as an explicit null result.",
+  "original": {
+    "source_hash": "b3035728b70a9e78a02cf671347d092e24cd11a1c3a7b1ff21d0c7211445888e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "93e0cdba5a3136ba23b3d2b7fc5bb1b1c2b8c8997331c5027a3b07d644f88139",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "age 31"
+    ]
+  },
+  "analysis_limit": "These are syntax candidates only. The optional property is undefined on this object, and the sum is NaN (CWE-476). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

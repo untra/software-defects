@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "roles": {
+    "failing": {
+      "findings": [
+        {
+          "trigger": "view[0]",
+          "origins": [
+            "[]string{\"ana\", \"ben\"}",
+            "return r.members"
+          ],
+          "affected_uses": [
+            {
+              "text": "roster.Members()",
+              "occurrence": 2
+            }
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ],
+      "repair": {
+        "applicability": "advisory"
+      }
+    },
+    "fixed": {
+      "findings": []
+    },
+    "intentional": {
+      "findings": [
+        {
+          "trigger": "raw[0]",
+          "origins": [
+            "[]byte{'a', 'b'}",
+            "return b.data"
+          ],
+          "affected_uses": [
+            {
+              "text": "buffer.Bytes()",
+              "occurrence": 2
+            }
+          ],
+          "evidence_level": "feasible_under_model"
+        }
+      ],
+      "repair": {
+        "applicability": "advisory"
+      }
+    },
+    "independent": {
+      "findings": []
+    },
+    "breaker": {
+      "findings": []
+    }
+  }
+}

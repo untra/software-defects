@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Serialize counter updates with a mutex; reads occur after all workers join.",
+  "original": {
+    "source_hash": "b8b00adf2ba141f68b27cc042fc8cad8db1712c6479d40c4608f82ed2eed2aff",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "shared_write",
+            "range": [
+              163,
+              172
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              257,
+              266
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              272,
+              359
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              290,
+              299
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              334,
+              348
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              364,
+              373
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              375,
+              451
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "47191c0d19e84b85acf8fce6c21aa41516f3e79fd1c6e5820aa9ec4d8237d8ed",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/race-conditions/signals.scm",
+        "captures": [
+          {
+            "name": "synchronization_call",
+            "range": [
+              181,
+              192
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              200,
+              213
+            ]
+          },
+          {
+            "name": "shared_write",
+            "range": [
+              215,
+              224
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              309,
+              318
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              324,
+              411
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              342,
+              351
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              386,
+              400
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              416,
+              425
+            ]
+          },
+          {
+            "name": "synchronization_call",
+            "range": [
+              427,
+              503
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "recorded 8000000 of 8000000 views"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Structural operation captures are not defect diagnostics. Relationships require binding/API analysis; timing, unknown receivers, macro expansion and external actors remain unresolved.",
+  "baseline": {
+    "deterministic": false,
+    "exit_code": 0,
+    "contract": "The original must violate the fixed behavioral oracle."
+  }
+}

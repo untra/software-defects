@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Observe the growing queue until all appended retry work is consumed.",
+  "original": {
+    "source_hash": "60a64dbe319ae8b2e1d1e500740b7b582a3f58005cd6d5e518a8c4afcd1b0d5e",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/for-loop-control-flow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              255,
+              259
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "49f0a0475317adc80beabc31c85346ba59b2e2215df0079fa9d062ae3a8b90ac",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/rust/mutated-state/for-loop-control-flow/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              245,
+              249
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "processed job-a-retry",
+      "unprocessed: []"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. `pending` is a snapshot of `len()`; pushes during iteration fall outside the range. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

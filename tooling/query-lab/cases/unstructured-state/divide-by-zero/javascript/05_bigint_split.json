@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return an explicit unavailable value for a zero divisor.",
+  "original": {
+    "source_hash": "8fbd87161fa0981e049b51d3b8f33dbdf9dc846fc6b22ec97c2d1fc972e3cdd2",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "division",
+            "range": [
+              53,
+              70
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              53,
+              61
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              64,
+              70
+            ]
+          },
+          {
+            "name": "operator",
+            "range": [
+              62,
+              63
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "88194611df024a4650111e65136241631441aea6cc43708e95da2267d2818938",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/unstructured-state/divide-by-zero/signals.scm",
+        "captures": [
+          {
+            "name": "division",
+            "range": [
+              76,
+              93
+            ]
+          },
+          {
+            "name": "numerator",
+            "range": [
+              76,
+              84
+            ]
+          },
+          {
+            "name": "denominator",
+            "range": [
+              87,
+              93
+            ]
+          },
+          {
+            "name": "operator",
+            "range": [
+              85,
+              86
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "each null"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "Syntax captures remain in guarded fixes. Production analysis separately checks scoped denominator values and guards; dynamic aliases and dispatch remain unresolved."
+}

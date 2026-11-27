@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Evict failed promises so a later call can retry.",
+  "original": {
+    "source_hash": "0f258ab817b1479a930d1de7004d21deb33f3464aec7522b199a0dace4f469db",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/cache-invalidation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              272,
+              275
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              321,
+              324
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "4b31a3278fedf5c41d00d40f6cc2225479e112abcd0a41e6e81ab7ad96a7d1fd",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/javascript/shared-state/cache-invalidation/signals.scm",
+        "captures": [
+          {
+            "name": "callee",
+            "range": [
+              272,
+              275
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              325,
+              331
+            ]
+          },
+          {
+            "name": "callee",
+            "range": [
+              376,
+              379
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "checkout=enabled"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Failures are cached with no eviction on rejection. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

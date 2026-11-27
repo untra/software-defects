@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Copy the map before applying defaults or deleting authorization in the caller.",
+  "original": {
+    "source_hash": "432012ebb6a4eb3af2409fb8aac5ab2481f2ecf82d7eafd0030adac5e34e68df",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "6b567156608361139ec705c3d6231cdf0fa7f30628e3279ee6dd0f6df292371c",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/mutated-state/aliasing-mutable-defaults/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "signed: map[Authorization:Bearer secret]"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. Maps are reference types; the function returns the same map, not a copy. Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}

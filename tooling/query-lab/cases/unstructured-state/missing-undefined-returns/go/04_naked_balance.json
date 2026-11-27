@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "Return an error for insufficient payment instead of zero success.",
+  "original": {
+    "source_hash": "e82dcdf13efbffeb8074710c717738280e6f0cdf2b355cf4d01787caa95f35c0",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "395d8bf3d836274bdca532135a8d42ba31a6509bac65e820e7d0d40c50e3bb04",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/unstructured-state/missing-undefined-returns/signals.scm",
+        "captures": []
+      }
+    ]
+  },
+  "runtime": {
+    "status": "supported",
+    "stdout_contains": [
+      "err=insufficient payment"
+    ],
+    "exit_code": 0
+  },
+  "analysis_limit": "These are syntax candidates only. The bare return hands back the zero named results, which look like a settled balance (CWE-394). Establishing incorrect behavior requires semantic or domain evidence beyond these captures."
+}
