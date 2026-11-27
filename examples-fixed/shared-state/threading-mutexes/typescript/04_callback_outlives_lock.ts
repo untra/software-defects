@@ -1,3 +1,4 @@
+export {};
 const RESOURCE = "ledger";
 const entries: string[] = [];
 let complete!: () => void;

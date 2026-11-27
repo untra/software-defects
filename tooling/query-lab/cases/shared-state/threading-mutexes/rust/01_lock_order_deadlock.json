@@ -99,5 +99,12 @@
         ]
       }
     ]
+  },
+  "baseline": {
+    "deterministic": false,
+    "exit_code": 0,
+    "stdout_contains": [
+      "transfers still blocked after 500ms"
+    ]
   }
 }

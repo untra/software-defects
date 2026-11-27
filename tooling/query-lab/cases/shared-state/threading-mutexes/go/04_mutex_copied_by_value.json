@@ -85,5 +85,9 @@
         ]
       }
     ]
+  },
+  "baseline": {
+    "deterministic": false,
+    "exit_code": 1
   }
 }

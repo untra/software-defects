@@ -60,8 +60,19 @@ pub struct Compound {
     pub ingredients: [Evidence; 2],
 }
 
+#[derive(Debug, Default, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "kebab-case")]
+pub enum FindingAssessment {
+    #[default]
+    Usage,
+    Candidate,
+    Misuse,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Finding {
+    #[serde(default)]
+    pub assessment: FindingAssessment,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub shared_state: Option<crate::shared::SharedState>,
     #[serde(default, skip_serializing_if = "Option::is_none")]

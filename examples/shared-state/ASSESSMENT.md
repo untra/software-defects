@@ -64,7 +64,7 @@ Score **1–5**: how likely the defect is to show up in everyday code in that la
 **threading-mutexes**
 - Go 5: lock-order deadlock, a non-reentrant `Mutex`, unlock skipped on early return, a copied mutex, and recursive `RLock` with a pending writer.
 - Rust 3: lock-order deadlock, relocking on the same thread, and a guard kept alive by a `match` scrutinee.
-- TS 2: no threads. Hand-rolled async locks still leak on throw and deadlock on order inversion.
+- TS/JS 2: runtime workers provide threads and Web Locks provide cooperative coordination. Promise-based locks can leak on throw, fail to cover asynchronous completion, or deadlock on order inversion. Static types do not change these scheduling semantics.
 - Python 4: `Lock` is not reentrant. Opposite lock order, a nested `acquire`, a `release` skipped after an exception, and a nested call that needed `RLock`. A blocked acquire uses a timeout and prints `blocked`.
 
 **file-network-access**

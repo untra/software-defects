@@ -34,6 +34,27 @@ fn main() -> Result<()> {
             println!("{}", serde_json::to_string_pretty(&facts)?);
             Ok(())
         }
+        Some("scan-isolated") => {
+            let paths: Vec<String> = serde_json::from_reader(std::io::stdin())?;
+            let mut engine = Engine::new()?;
+            for path in paths {
+                let path = Path::new(&path).canonicalize()?;
+                let language = state_lens::analysis::language_name(&path)
+                    .ok_or_else(|| anyhow::anyhow!("unsupported language: {}", path.display()))?;
+                let uri = url::Url::from_file_path(&path)
+                    .map_err(|_| anyhow::anyhow!("invalid path"))?
+                    .to_string();
+                engine.set(
+                    uri.clone(),
+                    language,
+                    std::fs::read_to_string(&path)?,
+                    Some(1),
+                )?;
+                println!("{}", serde_json::to_string(&engine.analyze())?);
+                engine.remove(&uri);
+            }
+            Ok(())
+        }
         Some("scan") => {
             let mut engine = Engine::new()?;
             engine.load(Path::new(args.get(2).map(String::as_str).unwrap_or(".")))?;
@@ -85,7 +106,7 @@ fn main() -> Result<()> {
         }
         _ => {
             eprintln!(
-                "Usage: state-lens scan [PATH] | semantic-facts PATH | repair-check PATH [--finding N] [--hash SHA256] | check-queries | score EXPECTATIONS.json | serve"
+                "Usage: state-lens scan [PATH] | scan-isolated < PATHS.json | semantic-facts PATH | repair-check PATH [--finding N] [--hash SHA256] | check-queries | score EXPECTATIONS.json | serve"
             );
             Ok(())
         }

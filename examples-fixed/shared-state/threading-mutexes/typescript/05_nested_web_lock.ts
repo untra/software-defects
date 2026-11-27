@@ -1,3 +1,4 @@
+export {};
 const RESOURCE = "ledger";
 const WATCHDOG_MS = 100;
 let completed = false;

@@ -126,7 +126,12 @@ fn object_identity(finding: &Finding) -> bool {
     finding.resolution == crate::aliasing::RESOLUTION
 }
 fn warning(finding: &Finding) -> bool {
-    if finding.origin == "direct" && finding.shared_state.as_ref().and_then(|s| s.synchronization.as_ref()).is_some_and(|s| s.assessment == crate::mutex::Assessment::Misuse) { return true; }
+    if finding.origin == "direct"
+        && finding.shared_state.as_ref().and_then(|s| s.synchronization.as_ref())
+            .is_some_and(|s| s.assessment == crate::mutex::Assessment::Misuse)
+    {
+        return true;
+    }
     if finding.family == "unstructured-state" && finding.defect == "missing-undefined-returns" {
         return finding.state_trace.as_ref().is_some_and(|trace| trace.evidence_level == crate::state::EvidenceLevel::FeasibleUnderModel && trace.requirement.as_ref().is_some_and(|r| r.kind == "producer-result"));
     }
@@ -604,6 +609,18 @@ pub fn serve() -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn mutex_diagnostics_warn_only_on_direct_violation_witnesses() {
+        let mut engine = Engine::new().unwrap();
+        engine.set("file:///locks.py".into(), "python", "import threading\nm = threading.Lock()\ndef f():\n    m.acquire()\n    m.acquire()\ndef caller():\n    f()\n".into(), Some(1)).unwrap();
+        let report = engine.analyze();
+        let findings = &report.documents[0].findings;
+        assert!(findings.iter().any(|f| f.defect == crate::mutex::DEFECT && warning(f)));
+        for finding in findings.iter().filter(|f| f.defect == crate::mutex::DEFECT && (f.origin == "propagated" || f.mechanism.as_deref() == Some(crate::mutex::CRITICAL_SECTION))) {
+            assert!(!warning(finding));
+        }
+    }
 
     #[test]
     fn guide_urls_follow_taxonomy_routes() {

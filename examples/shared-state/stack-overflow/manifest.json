@@ -2,7 +2,7 @@
   "family": "shared-state",
   "defect": "stack-overflow",
   "name": "Stack Overflow Bugs",
-  "essence": "A call stack that never unwinds, or a heap that never stops growing, runs out of room.",
+  "essence": "Unbounded recursion or excessively deep call chains can exhaust the call stack.",
   "cwes": [
     "CWE-674",
     "CWE-121",

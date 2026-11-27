@@ -1,0 +1,592 @@
+{
+  "scope": "Inventory and definition audit of 29 base defects; semantic implementation is limited to Threading & Mutexes and its shared-state integration.",
+  "interpretation": "Effect usage is not a diagnosed defect. Propagation requires identity or a resolved call; compounds require connected evidence.",
+  "defects": [
+    {
+      "family": "mutated-state",
+      "defect": "aliasing-mutable-defaults",
+      "manifest": "examples/mutated-state/aliasing-mutable-defaults/manifest.json",
+      "examples_by_language": {
+        "go": 5,
+        "rust": 1,
+        "typescript": 5,
+        "python": 5,
+        "javascript": 5
+      },
+      "missing_fixed_examples": [
+        "python/03_class_body_list.py",
+        "python/05_return_internal_list.py"
+      ],
+      "catalog_cells_by_status": {
+        "supported": 16,
+        "not-applicable": 22,
+        "candidate-only": 8,
+        "planned": 4,
+        "syntax-candidate": 5
+      },
+      "propagation_review": "Propagate along demonstrated shared object identity; fresh deep values or immutable leaves break the relationship."
+    },
+    {
+      "family": "mutated-state",
+      "defect": "for-loop-control-flow",
+      "manifest": "examples/mutated-state/for-loop-control-flow/manifest.json",
+      "examples_by_language": {
+        "go": 3,
+        "rust": 2,
+        "typescript": 4,
+        "python": 4,
+        "javascript": 4
+      },
+      "missing_fixed_examples": [
+        "python/01_delete_while_indexing.py",
+        "python/02_remove_during_iteration.py",
+        "python/03_for_else_after_search.py",
+        "python/04_dict_size_changed.py"
+      ],
+      "catalog_cells_by_status": {
+        "syntax-candidate": 5
+      },
+      "propagation_review": "Track loop-carried writes and collection/index dependencies; loop syntax alone is not a defect."
+    },
+    {
+      "family": "mutated-state",
+      "defect": "improper-initialization",
+      "manifest": "examples/mutated-state/improper-initialization/manifest.json",
+      "examples_by_language": {
+        "go": 5,
+        "rust": 2,
+        "typescript": 4,
+        "python": 4,
+        "javascript": 4
+      },
+      "missing_fixed_examples": [
+        "python/01_attribute_on_one_branch.py",
+        "python/02_or_replaces_zero.py",
+        "python/03_used_before_last_field.py",
+        "python/04_optional_stays_none.py"
+      ],
+      "catalog_cells_by_status": {
+        "syntax-candidate": 4,
+        "planned": 1
+      },
+      "propagation_review": "Track a value from initialization to dependent reads; definite assignment, explicit defaults and validation can discharge the requirement."
+    },
+    {
+      "family": "mutated-state",
+      "defect": "impure-functions",
+      "manifest": "examples/mutated-state/impure-functions/manifest.json",
+      "examples_by_language": {
+        "go": 4,
+        "rust": 2,
+        "typescript": 5,
+        "python": 5,
+        "javascript": 5
+      },
+      "missing_fixed_examples": [
+        "python/01_sort_in_place.py",
+        "python/02_reads_module_global.py",
+        "python/03_appends_to_argument.py",
+        "python/04_cache_hides_global.py",
+        "python/05_random_in_key.py"
+      ],
+      "catalog_cells_by_status": {
+        "syntax-candidate": 5
+      },
+      "propagation_review": "Propagate observable argument/receiver/global effects and external reads; local mutation alone does not establish externally observable impurity."
+    },
+    {
+      "family": "mutated-state",
+      "defect": "increment-decrement-operators",
+      "manifest": "examples/mutated-state/increment-decrement-operators/manifest.json",
+      "examples_by_language": {
+        "go": 3,
+        "rust": 3,
+        "typescript": 3,
+        "python": 2,
+        "javascript": 3
+      },
+      "missing_fixed_examples": [],
+      "catalog_cells_by_status": {
+        "syntax-candidate": 5
+      },
+      "propagation_review": "Track the value consumed before/after the update and numeric bounds; an increment token does not prove an off-by-one error."
+    },
+    {
+      "family": "mutated-state",
+      "defect": "macro-mixin-misuse",
+      "manifest": "examples/mutated-state/macro-mixin-misuse/manifest.json",
+      "examples_by_language": {
+        "go": 2,
+        "rust": 3,
+        "typescript": 3,
+        "python": 3,
+        "javascript": 3
+      },
+      "missing_fixed_examples": [
+        "python/01_mixin_mro_order.py",
+        "python/02_mixin_skips_super.py",
+        "python/03_decorator_calls_twice.py"
+      ],
+      "catalog_cells_by_status": {
+        "syntax-candidate": 4,
+        "planned": 1
+      },
+      "propagation_review": "Expansion and overwritten member identity matter; an invocation alone cannot prove hidden mutation."
+    },
+    {
+      "family": "mutated-state",
+      "defect": "this-mutation",
+      "manifest": "examples/mutated-state/this-mutation/manifest.json",
+      "examples_by_language": {
+        "go": 3,
+        "rust": 1,
+        "typescript": 5,
+        "python": 4,
+        "javascript": 5
+      },
+      "missing_fixed_examples": [],
+      "catalog_cells_by_status": {
+        "syntax-candidate": 4,
+        "planned": 1
+      },
+      "propagation_review": "Track receiver identity through aliases and calls; independent instances do not automatically share state."
+    },
+    {
+      "family": "mutated-state",
+      "defect": "time-money-entropy",
+      "manifest": "examples/mutated-state/time-money-entropy/manifest.json",
+      "examples_by_language": {
+        "go": 3,
+        "rust": 3,
+        "typescript": 5,
+        "python": 5,
+        "javascript": 5
+      },
+      "missing_fixed_examples": [
+        "python/01_float_cents.py",
+        "python/02_clock_read_twice.py",
+        "python/03_random_branch.py",
+        "python/04_round_half_even.py",
+        "python/05_thirty_day_month.py"
+      ],
+      "catalog_cells_by_status": {
+        "syntax-candidate": 4,
+        "planned": 1
+      },
+      "propagation_review": "Track clock/random/date/currency values into consumers; explicit snapshots and appropriate representations break specific failure paths."
+    },
+    {
+      "family": "mutated-state",
+      "defect": "var-let-mut",
+      "manifest": "examples/mutated-state/var-let-mut/manifest.json",
+      "examples_by_language": {
+        "go": 5,
+        "rust": 3,
+        "typescript": 5,
+        "python": 5,
+        "javascript": 5
+      },
+      "missing_fixed_examples": [],
+      "catalog_cells_by_status": {
+        "syntax-candidate": 5
+      },
+      "propagation_review": "Mutable declarations mark capacity; only observable effects propagate to callers."
+    },
+    {
+      "family": "mutated-state",
+      "defect": "volatile-properties",
+      "manifest": "examples/mutated-state/volatile-properties/manifest.json",
+      "examples_by_language": {
+        "typescript": 17,
+        "python": 30,
+        "rust": 42,
+        "go": 12,
+        "javascript": 17
+      },
+      "missing_fixed_examples": [],
+      "catalog_cells_by_status": {
+        "planned": 5
+      },
+      "propagation_review": "Track mutated collection identity and observing aliases; operations on independent copies need not infect their inputs."
+    },
+    {
+      "family": "unstructured-state",
+      "defect": "divide-by-zero",
+      "manifest": "examples/unstructured-state/divide-by-zero/manifest.json",
+      "examples_by_language": {
+        "go": 4,
+        "rust": 3,
+        "typescript": 5,
+        "python": 4,
+        "javascript": 5
+      },
+      "missing_fixed_examples": [],
+      "catalog_cells_by_status": {
+        "syntax-candidate": 5
+      },
+      "propagation_review": "Track denominator facts and invalidation of guards through writes/calls; operator presence alone is a review signal."
+    },
+    {
+      "family": "unstructured-state",
+      "defect": "duck-typing-without-contracts",
+      "manifest": "examples/unstructured-state/duck-typing-without-contracts/manifest.json",
+      "examples_by_language": {
+        "go": 3,
+        "rust": 3,
+        "typescript": 6,
+        "python": 6,
+        "javascript": 6
+      },
+      "missing_fixed_examples": [],
+      "catalog_cells_by_status": {
+        "syntax-candidate": 5
+      },
+      "propagation_review": "Propagate unverified shape requirements through consumers; a checked contract can stop the requirement."
+    },
+    {
+      "family": "unstructured-state",
+      "defect": "index-out-of-bounds",
+      "manifest": "examples/unstructured-state/index-out-of-bounds/manifest.json",
+      "examples_by_language": {
+        "go": 4,
+        "rust": 3,
+        "typescript": 5,
+        "python": 4,
+        "javascript": 5
+      },
+      "missing_fixed_examples": [
+        "python/01_empty_first.py",
+        "python/02_missing_key.py",
+        "python/03_get_then_attribute.py",
+        "python/04_header_field.py"
+      ],
+      "catalog_cells_by_status": {
+        "planned": 5
+      },
+      "propagation_review": "Relate index and current container length; resizing can invalidate a previously valid bound."
+    },
+    {
+      "family": "unstructured-state",
+      "defect": "insecure-deserialization",
+      "manifest": "examples/unstructured-state/insecure-deserialization/manifest.json",
+      "examples_by_language": {
+        "go": 3,
+        "rust": 2,
+        "typescript": 4,
+        "python": 4,
+        "javascript": 4
+      },
+      "missing_fixed_examples": [
+        "python/01_setattr_body.py",
+        "python/02_splat_into_init.py",
+        "python/03_nested_flag.py",
+        "python/04_dict_update.py"
+      ],
+      "catalog_cells_by_status": {
+        "planned": 5
+      },
+      "propagation_review": "Track untrusted bytes into executable or stateful reconstruction; parsing alone is not equivalent to code execution."
+    },
+    {
+      "family": "unstructured-state",
+      "defect": "lack-of-input-validation",
+      "manifest": "examples/unstructured-state/lack-of-input-validation/manifest.json",
+      "examples_by_language": {
+        "go": 5,
+        "rust": 4,
+        "typescript": 6,
+        "python": 6,
+        "javascript": 6
+      },
+      "missing_fixed_examples": [],
+      "catalog_cells_by_status": {
+        "syntax-candidate": 5,
+        "candidate-only": 5
+      },
+      "propagation_review": "Propagate the particular unmet requirement, not a blanket untyped label; validation must dominate relevant uses."
+    },
+    {
+      "family": "unstructured-state",
+      "defect": "missing-undefined-returns",
+      "manifest": "examples/unstructured-state/missing-undefined-returns/manifest.json",
+      "examples_by_language": {
+        "go": 4,
+        "rust": 2,
+        "typescript": 5,
+        "python": 5,
+        "javascript": 5
+      },
+      "missing_fixed_examples": [],
+      "catalog_cells_by_status": {
+        "syntax-candidate": 5
+      },
+      "propagation_review": "Relate producer exit paths and consumer requirements; explicit optional results are intentional."
+    },
+    {
+      "family": "unstructured-state",
+      "defect": "type-errors",
+      "manifest": "examples/unstructured-state/type-errors/manifest.json",
+      "examples_by_language": {
+        "go": 2,
+        "rust": 1,
+        "typescript": 5,
+        "python": 5,
+        "javascript": 5
+      },
+      "missing_fixed_examples": [
+        "python/01_repeat_string.py",
+        "python/02_or_replaces_zero.py",
+        "python/03_true_overwrites_one.py",
+        "python/04_mixed_sort.py",
+        "python/05_int_of_unit.py"
+      ],
+      "catalog_cells_by_status": {
+        "planned": 9,
+        "not-applicable": 6
+      },
+      "propagation_review": "Track actual value operations and conversions; static typing reduces some errors but does not validate external inputs."
+    },
+    {
+      "family": "unstructured-state",
+      "defect": "unconstrained-inputs",
+      "manifest": "examples/unstructured-state/unconstrained-inputs/manifest.json",
+      "examples_by_language": {
+        "go": 7,
+        "rust": 6,
+        "typescript": 7,
+        "python": 7,
+        "javascript": 7
+      },
+      "missing_fixed_examples": [],
+      "catalog_cells_by_status": {
+        "syntax-candidate": 5
+      },
+      "propagation_review": "Relate external dimensions to allocation/work budgets, including multiplication; unknown input alone is not exhaustion."
+    },
+    {
+      "family": "unstructured-state",
+      "defect": "version-library-mismanagement",
+      "manifest": "examples/unstructured-state/version-library-mismanagement/manifest.json",
+      "examples_by_language": {
+        "go": 2,
+        "rust": 3,
+        "typescript": 4,
+        "python": 3,
+        "javascript": 4
+      },
+      "missing_fixed_examples": [
+        "python/01_copied_month_length.py",
+        "python/02_unpinned_resolve.py",
+        "python/03_two_majors.py"
+      ],
+      "catalog_cells_by_status": {
+        "planned": 5
+      },
+      "propagation_review": "Dependency resolution and interface compatibility require build/package evidence beyond a source token."
+    },
+    {
+      "family": "shared-state",
+      "defect": "async-io-misuse",
+      "manifest": "examples/shared-state/async-io-misuse/manifest.json",
+      "examples_by_language": {
+        "go": 3,
+        "rust": 5,
+        "typescript": 5,
+        "python": 4,
+        "javascript": 5
+      },
+      "missing_fixed_examples": [],
+      "catalog_cells_by_status": {
+        "candidate-only": 33,
+        "planned": 7
+      },
+      "propagation_review": "Track launches, result observation, cancellation and completion; async declarations are useful effects, not misuse."
+    },
+    {
+      "family": "shared-state",
+      "defect": "cache-invalidation",
+      "manifest": "examples/shared-state/cache-invalidation/manifest.json",
+      "examples_by_language": {
+        "go": 4,
+        "rust": 3,
+        "typescript": 5,
+        "python": 5,
+        "javascript": 5
+      },
+      "missing_fixed_examples": [
+        "python/01_write_without_delete.py",
+        "python/02_negative_cached.py",
+        "python/03_key_missing_tenant.py",
+        "python/04_cached_dict_mutated.py",
+        "python/05_wrong_key_deleted.py"
+      ],
+      "catalog_cells_by_status": {
+        "planned": 5
+      },
+      "propagation_review": "Relate cache key/entry identity to source writes and lifetime; cached values are not inherently stale."
+    },
+    {
+      "family": "shared-state",
+      "defect": "cross-boundary-state-exposure",
+      "manifest": "examples/shared-state/cross-boundary-state-exposure/manifest.json",
+      "examples_by_language": {
+        "go": 4,
+        "rust": 2,
+        "typescript": 5,
+        "python": 5,
+        "javascript": 5
+      },
+      "missing_fixed_examples": [
+        "python/01_module_current_user.py",
+        "python/02_default_context.py",
+        "python/03_class_cache_no_tenant.py",
+        "python/04_module_trace_id.py",
+        "python/05_lru_cache_per_request.py"
+      ],
+      "catalog_cells_by_status": {
+        "planned": 5
+      },
+      "propagation_review": "Relate actor identity, shared storage and escaped values; local request state must remain independent."
+    },
+    {
+      "family": "shared-state",
+      "defect": "file-network-access",
+      "manifest": "examples/shared-state/file-network-access/manifest.json",
+      "examples_by_language": {
+        "go": 4,
+        "rust": 3,
+        "typescript": 4,
+        "python": 4,
+        "javascript": 4
+      },
+      "missing_fixed_examples": [],
+      "catalog_cells_by_status": {
+        "candidate-only": 15
+      },
+      "propagation_review": "Track resource identity, partial outcomes and retries; I/O usage propagates an effect, not automatic failure."
+    },
+    {
+      "family": "shared-state",
+      "defect": "pointer-mismanagement",
+      "manifest": "examples/shared-state/pointer-mismanagement/manifest.json",
+      "examples_by_language": {
+        "go": 3,
+        "rust": 2,
+        "typescript": 2,
+        "python": 2,
+        "javascript": 2
+      },
+      "missing_fixed_examples": [
+        "python/01_memoryview_across_resize.py",
+        "python/02_weakref_cached_row.py"
+      ],
+      "catalog_cells_by_status": {
+        "planned": 5
+      },
+      "propagation_review": "Track storage lifetime and references; safe language restrictions and unsupported unsafe escapes must be stated."
+    },
+    {
+      "family": "shared-state",
+      "defect": "race-conditions",
+      "manifest": "examples/shared-state/race-conditions/manifest.json",
+      "examples_by_language": {
+        "go": 5,
+        "rust": 2,
+        "typescript": 4,
+        "python": 4,
+        "javascript": 4
+      },
+      "missing_fixed_examples": [],
+      "catalog_cells_by_status": {
+        "planned": 1,
+        "candidate-only": 9,
+        "syntax-candidate": 15
+      },
+      "propagation_review": "Require shared identity plus conflicting access and possible interleaving; count syntax sites separately from runtime actors."
+    },
+    {
+      "family": "shared-state",
+      "defect": "resource-contention",
+      "manifest": "examples/shared-state/resource-contention/manifest.json",
+      "examples_by_language": {
+        "go": 4,
+        "rust": 3,
+        "typescript": 4,
+        "python": 4,
+        "javascript": 4
+      },
+      "missing_fixed_examples": [
+        "python/01_thread_per_item.py",
+        "python/02_unbounded_queue.py",
+        "python/03_lock_held_during_sleep.py",
+        "python/04_gather_without_limit.py"
+      ],
+      "catalog_cells_by_status": {
+        "planned": 5
+      },
+      "propagation_review": "Relate fan-out and hold duration to shared capacity; static operation counts are not runtime demand."
+    },
+    {
+      "family": "shared-state",
+      "defect": "resource-leaks",
+      "manifest": "examples/shared-state/resource-leaks/manifest.json",
+      "examples_by_language": {
+        "go": 4,
+        "rust": 2,
+        "typescript": 4,
+        "python": 4,
+        "javascript": 4
+      },
+      "missing_fixed_examples": [
+        "python/01_file_open_on_error.py",
+        "python/02_callback_never_removed.py",
+        "python/03_timer_never_cancelled.py",
+        "python/04_request_list_grows.py"
+      ],
+      "catalog_cells_by_status": {
+        "planned": 5
+      },
+      "propagation_review": "Track acquisition, ownership transfer and all relevant cleanup paths; RAII/finally/context managers can close the lifetime."
+    },
+    {
+      "family": "shared-state",
+      "defect": "stack-overflow",
+      "manifest": "examples/shared-state/stack-overflow/manifest.json",
+      "examples_by_language": {
+        "go": 2,
+        "rust": 3,
+        "typescript": 4,
+        "python": 3,
+        "javascript": 4
+      },
+      "missing_fixed_examples": [
+        "python/01_cyclic_graph.py",
+        "python/02_mutual_recursion.py",
+        "python/03_recursive_retry.py"
+      ],
+      "catalog_cells_by_status": {
+        "planned": 5
+      },
+      "propagation_review": "Relate recursive calls and boundedness; heap growth is a separate resource problem."
+    },
+    {
+      "family": "shared-state",
+      "defect": "threading-mutexes",
+      "manifest": "examples/shared-state/threading-mutexes/manifest.json",
+      "examples_by_language": {
+        "go": 8,
+        "rust": 5,
+        "typescript": 5,
+        "python": 7,
+        "javascript": 5
+      },
+      "missing_fixed_examples": [],
+      "catalog_cells_by_status": {
+        "supported": 10,
+        "candidate-only": 23,
+        "planned": 12
+      },
+      "propagation_review": "Track lock identity, API semantics and hold lifetime. Safe synchronization remains visible; misuse requires a violating relationship."
+    }
+  ]
+}

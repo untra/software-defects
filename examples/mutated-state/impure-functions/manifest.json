@@ -2,7 +2,7 @@
   "family": "mutated-state",
   "defect": "impure-functions",
   "name": "Impure Functions",
-  "essence": "A function whose result depends on more than its arguments cannot be trusted or tested.",
+  "essence": "Observable effects or hidden mutable inputs can couple callers to execution order and external state.",
   "cwes": [
     "CWE-330",
     "CWE-338",
@@ -125,10 +125,10 @@
       ],
       "summary": "Memoized formatter keys only on amount, ignoring the global locale it reads.",
       "mechanism": "Cache key omits a hidden dependency, returning stale results after state changes.",
-      "observed_output": "€1,234.50\n€1,234.50",
+      "observed_output": "\u20ac1,234.50\n\u20ac1,234.50",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "€1,234.50 / 1.234,50 €"
+      "expected_behavior": "\u20ac1,234.50 / 1.234,50 \u20ac"
     },
     {
       "file": "typescript/04_random_in_cache_key.ts",
@@ -257,10 +257,10 @@
       ],
       "summary": "Memoized formatter keys only on amount, ignoring the global locale it reads.",
       "mechanism": "Cache key omits a hidden dependency, returning stale results after state changes.",
-      "observed_output": "€1,234.50\n€1,234.50",
+      "observed_output": "\u20ac1,234.50\n\u20ac1,234.50",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "€1,234.50 / 1.234,50 €"
+      "expected_behavior": "\u20ac1,234.50 / 1.234,50 \u20ac"
     },
     {
       "file": "javascript/04_random_in_cache_key.js",

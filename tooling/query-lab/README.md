@@ -2,7 +2,7 @@
 
 Query Lab is an external-first development CLI for Tree-sitter queries. It runs the official Tree-sitter CLI against the same grammar packages as State Lens, reads `.scm` edits immediately, and reports exact captures as JSON. It does not execute source during parsing or query testing.
 
-The supported development corpus has 388 original/fixed pairs and 88 experimental language/category packs, including Python volatile-properties, and source-hashed sidecar expectations. These packs expose **syntax candidates**, not validated bug diagnostics. Correct fixes often retain captures. Coverage reports distinguish tested cases from cases containing candidates; neither is detector accuracy. Examples subsequently added in other languages appear separately in `unsupported_cases`; supported-language tests neither execute them nor claim to cover them.
+The supported development corpus has source-hashed sidecar expectations for original/fixed pairs and experimental language/category packs. Use `list` and `coverage` for the current inventory. These packs expose **syntax candidates**, not validated bug diagnostics. Correct fixes often retain captures. Coverage reports distinguish tested cases from cases containing candidates; neither is detector accuracy. Examples subsequently added in other languages appear separately in `unsupported_cases`; supported-language tests neither execute them nor claim to cover them.
 
 ## Setup
 
@@ -49,7 +49,7 @@ The initial expectations were anchored in reviewed source tokens, then checked a
 
 The experimental API-name queries intentionally do not infer receiver types or resolve shadowed functions. A method named `lock`, for example, is only a candidate. The arithmetic query captures division/remainder operators even when guarded correctly. No source filename, manifest explanation, `bug_lines`, or susceptibility score is supplied to a query. Existing `bug_lines` keep their bug-location meaning.
 
-All experimental packs live under this tool, **outside production `queries/`**, because State Lens embeds every `.scm` in that directory. Promotion requires supported semantic handlers, production metadata, independent analyzer expectations, and State Lens validation. Division/remainder queries are also embedded in production, where denominator and guard analysis determine diagnostic severity. Other experimental packs remain separate.
+Experimental packs live under this tool; reviewed promoted counterparts also live in production `queries/`, where State Lens embeds every `.scm`. Promotion requires supported semantic handlers, production metadata, independent analyzer expectations, and State Lens validation. Division/remainder queries are also embedded in production, where denominator and guard analysis determine diagnostic severity. Reviewed shared-state and unstructured-boundary packs also have production counterparts; other experimental packs remain separate.
 
 ## Unstructured input/output boundaries
 
@@ -70,7 +70,7 @@ cargo test --locked --manifest-path tooling/state-lens/Cargo.toml --test query_l
 
 Some example reports measure elapsed time. Their results are development checks, not performance guarantees or proofs of race freedom. Unsupported behavioral checks must carry an explicit reason; they are reported separately. The malformed Rust length-prefix example rejects the invalid record rather than guessing its intended contents; its rationale records that ground-truth ambiguity.
 
-Tests cover adapter failure modes, Unicode/CRLF byte ranges, duplicate/multiline captures, live query edits, malformed syntax, stale hashes, corpus completeness, and a positive/benign-negative syntax control for every pack. The explicit Rust parity test compares all 30 embedded production queries on representative fixtures against direct captures from the pinned Rust bindings. CI separates static query tests from fixed-example execution and uploads both reports.
+Tests cover adapter failure modes, Unicode/CRLF byte ranges, duplicate/multiline captures, live query edits, malformed syntax, stale hashes, corpus completeness, and a positive/benign-negative syntax control for every pack. The explicit Rust parity test compares all embedded production queries on representative fixtures against direct captures from the pinned Rust bindings. CI separates static query tests from fixed-example execution and uploads both reports.
 
 ## Optional external editing assistance
 
@@ -187,3 +187,12 @@ python3 tooling/query-lab/query_lab.py relationships --defect race-conditions --
 
 This report preserves both variants' source-qualified events and blast radii. It checks
 source hashes, retains per-case failures, and does not treat fewer findings as proof of repair.
+
+## Threading and mutexes
+
+The [mutex audit](../../examples/shared-state/threading-mutexes/REVIEW.md) covers
+30 original/fixed pairs across all five languages. Production and experimental
+`boundaries.scm` packs share full-operation captures; historical name-only packs
+are retained separately. Correct fixes retain synchronization captures. Four Web
+Locks fixtures require a browser and are explicitly excluded from Node 22 runtime
+verification, while their capture and analyzer tests remain supported.

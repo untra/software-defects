@@ -28,6 +28,7 @@ export interface SharedState {
   assumptions: string[];
 }
 export interface Finding {
+  assessment?: 'usage' | 'candidate' | 'misuse';
   shared_state?: SharedState;
   state_trace?: StateTrace;
   division_risk?: { confidence: string; outcome: string; mutated: boolean };

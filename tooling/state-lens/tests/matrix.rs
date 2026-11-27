@@ -266,12 +266,31 @@ fn role(defect: &str, language: &str, mechanism: &str, role: &str) {
     let spec = expected["roles"]
         .get(role)
         .unwrap_or_else(|| panic!("{}: missing role {role} in expect.json", file.display()));
+    if catalog::cell(defect, mechanism, language).is_some_and(|cell| cell["role_fixtures"] == true) {
+        let (_, report) = analyze(&file, language);
+        assert!(!report.parse_errors, "{}", file.display());
+        let present = report.findings.iter().any(|f| f.defect == defect && f.origin == "direct" && f.mechanism.as_deref() == Some(mechanism) && f.assessment != state_lens::model::FindingAssessment::Usage);
+        assert_eq!(present, spec["present"].as_bool().unwrap(), "{}: {mechanism}", file.display());
+        return;
+    }
+    if defect == "threading-mutexes" {
+        let (_, report) = analyze(&file, language);
+        let present = report.findings.iter().any(|f| f.defect == defect && f.origin == "direct" && f.mechanism.as_deref() == Some(mechanism));
+        assert_eq!(present, spec["present"].as_bool().unwrap(), "{}: {mechanism}", file.display());
+        return;
+    }
     check_expectation(&file, language, mechanism, spec);
     if role == ROLES[0] {
         for (variant, spec) in expected["variants"].as_object().into_iter().flatten() {
             let file = directory(defect, language, mechanism)
                 .join(format!("{variant}.{}", extension(language)));
-            check_expectation(&file, language, mechanism, spec);
+            if defect == "threading-mutexes" {
+        let (_, report) = analyze(&file, language);
+        let present = report.findings.iter().any(|f| f.defect == defect && f.origin == "direct" && f.mechanism.as_deref() == Some(mechanism));
+        assert_eq!(present, spec["present"].as_bool().unwrap(), "{}: {mechanism}", file.display());
+        return;
+    }
+    check_expectation(&file, language, mechanism, spec);
         }
     }
 }

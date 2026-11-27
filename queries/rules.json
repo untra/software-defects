@@ -1669,6 +1669,492 @@
         "mutex_method",
         "mutex_call"
       ]
+    },
+    {
+      "id": "go.shared-state.cache-invalidation",
+      "language": "go",
+      "family": "shared-state",
+      "defect": "cache-invalidation",
+      "grammar_version": "0.25.0",
+      "query": "go/shared-state/cache-invalidation/signals.scm",
+      "captures": [
+        "cache_operation"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-349",
+        "CWE-524"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "go.shared-state.resource-contention",
+      "language": "go",
+      "family": "shared-state",
+      "defect": "resource-contention",
+      "grammar_version": "0.25.0",
+      "query": "go/shared-state/resource-contention/signals.scm",
+      "captures": [
+        "contention_operation"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-400",
+        "CWE-770",
+        "CWE-833"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "go.unstructured-state.index-out-of-bounds",
+      "language": "go",
+      "family": "unstructured-state",
+      "defect": "index-out-of-bounds",
+      "grammar_version": "0.25.0",
+      "query": "go/unstructured-state/index-out-of-bounds/signals.scm",
+      "captures": [
+        "unstructured_index"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-125",
+        "CWE-787",
+        "CWE-129"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "go.unstructured-state.insecure-deserialization",
+      "language": "go",
+      "family": "unstructured-state",
+      "defect": "insecure-deserialization",
+      "grammar_version": "0.25.0",
+      "query": "go/unstructured-state/insecure-deserialization/signals.scm",
+      "captures": [
+        "unstructured_decode",
+        "unstructured_length",
+        "unstructured_sink"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-502",
+        "CWE-915",
+        "CWE-913",
+        "CWE-20"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "go.unstructured-state.type-errors",
+      "language": "go",
+      "family": "unstructured-state",
+      "defect": "type-errors",
+      "grammar_version": "0.25.0",
+      "query": "go/unstructured-state/type-errors/signals.scm",
+      "captures": [
+        "unstructured_type"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-843",
+        "CWE-704",
+        "CWE-476"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "javascript.shared-state.cache-invalidation",
+      "language": "javascript",
+      "family": "shared-state",
+      "defect": "cache-invalidation",
+      "grammar_version": "0.25.0",
+      "query": "javascript/shared-state/cache-invalidation/signals.scm",
+      "captures": [
+        "cache_operation"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-349",
+        "CWE-524"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "javascript.shared-state.resource-contention",
+      "language": "javascript",
+      "family": "shared-state",
+      "defect": "resource-contention",
+      "grammar_version": "0.25.0",
+      "query": "javascript/shared-state/resource-contention/signals.scm",
+      "captures": [
+        "contention_operation"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-400",
+        "CWE-770",
+        "CWE-833"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "javascript.unstructured-state.index-out-of-bounds",
+      "language": "javascript",
+      "family": "unstructured-state",
+      "defect": "index-out-of-bounds",
+      "grammar_version": "0.25.0",
+      "query": "javascript/unstructured-state/index-out-of-bounds/signals.scm",
+      "captures": [
+        "unstructured_index"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-125",
+        "CWE-787",
+        "CWE-129"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "javascript.unstructured-state.insecure-deserialization",
+      "language": "javascript",
+      "family": "unstructured-state",
+      "defect": "insecure-deserialization",
+      "grammar_version": "0.25.0",
+      "query": "javascript/unstructured-state/insecure-deserialization/signals.scm",
+      "captures": [
+        "unstructured_decode",
+        "unstructured_length",
+        "unstructured_sink"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-502",
+        "CWE-915",
+        "CWE-913",
+        "CWE-20"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "javascript.unstructured-state.type-errors",
+      "language": "javascript",
+      "family": "unstructured-state",
+      "defect": "type-errors",
+      "grammar_version": "0.25.0",
+      "query": "javascript/unstructured-state/type-errors/signals.scm",
+      "captures": [
+        "unstructured_type"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-843",
+        "CWE-704",
+        "CWE-476"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "python.shared-state.cache-invalidation",
+      "language": "python",
+      "family": "shared-state",
+      "defect": "cache-invalidation",
+      "grammar_version": "0.25.0",
+      "query": "python/shared-state/cache-invalidation/signals.scm",
+      "captures": [
+        "cache_operation"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-349",
+        "CWE-524"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "python.shared-state.resource-contention",
+      "language": "python",
+      "family": "shared-state",
+      "defect": "resource-contention",
+      "grammar_version": "0.25.0",
+      "query": "python/shared-state/resource-contention/signals.scm",
+      "captures": [
+        "contention_operation"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-400",
+        "CWE-770",
+        "CWE-833"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "python.unstructured-state.index-out-of-bounds",
+      "language": "python",
+      "family": "unstructured-state",
+      "defect": "index-out-of-bounds",
+      "grammar_version": "0.25.0",
+      "query": "python/unstructured-state/index-out-of-bounds/signals.scm",
+      "captures": [
+        "unstructured_index"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-125",
+        "CWE-787",
+        "CWE-129"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "python.unstructured-state.insecure-deserialization",
+      "language": "python",
+      "family": "unstructured-state",
+      "defect": "insecure-deserialization",
+      "grammar_version": "0.25.0",
+      "query": "python/unstructured-state/insecure-deserialization/signals.scm",
+      "captures": [
+        "unstructured_decode",
+        "unstructured_length",
+        "unstructured_sink"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-502",
+        "CWE-915",
+        "CWE-913",
+        "CWE-20"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "python.unstructured-state.type-errors",
+      "language": "python",
+      "family": "unstructured-state",
+      "defect": "type-errors",
+      "grammar_version": "0.25.0",
+      "query": "python/unstructured-state/type-errors/signals.scm",
+      "captures": [
+        "unstructured_type"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-843",
+        "CWE-704",
+        "CWE-476"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "rust.shared-state.cache-invalidation",
+      "language": "rust",
+      "family": "shared-state",
+      "defect": "cache-invalidation",
+      "grammar_version": "0.24.0",
+      "query": "rust/shared-state/cache-invalidation/signals.scm",
+      "captures": [
+        "cache_operation"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-349",
+        "CWE-524"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "rust.shared-state.resource-contention",
+      "language": "rust",
+      "family": "shared-state",
+      "defect": "resource-contention",
+      "grammar_version": "0.24.0",
+      "query": "rust/shared-state/resource-contention/signals.scm",
+      "captures": [
+        "contention_operation"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-400",
+        "CWE-770",
+        "CWE-833"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "rust.unstructured-state.index-out-of-bounds",
+      "language": "rust",
+      "family": "unstructured-state",
+      "defect": "index-out-of-bounds",
+      "grammar_version": "0.24.0",
+      "query": "rust/unstructured-state/index-out-of-bounds/signals.scm",
+      "captures": [
+        "unstructured_index",
+        "unstructured_optional"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-125",
+        "CWE-787",
+        "CWE-129"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "rust.unstructured-state.insecure-deserialization",
+      "language": "rust",
+      "family": "unstructured-state",
+      "defect": "insecure-deserialization",
+      "grammar_version": "0.24.0",
+      "query": "rust/unstructured-state/insecure-deserialization/signals.scm",
+      "captures": [
+        "unstructured_decode",
+        "unstructured_length",
+        "unstructured_sink"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-502",
+        "CWE-915",
+        "CWE-913",
+        "CWE-20"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "rust.unstructured-state.type-errors",
+      "language": "rust",
+      "family": "unstructured-state",
+      "defect": "type-errors",
+      "grammar_version": "0.24.0",
+      "query": "rust/unstructured-state/type-errors/signals.scm",
+      "captures": [
+        "unstructured_type"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-843",
+        "CWE-704",
+        "CWE-476"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "typescript.shared-state.cache-invalidation",
+      "language": "typescript",
+      "family": "shared-state",
+      "defect": "cache-invalidation",
+      "grammar_version": "0.23.2",
+      "query": "typescript/shared-state/cache-invalidation/signals.scm",
+      "captures": [
+        "cache_operation"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-349",
+        "CWE-524"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "typescript.shared-state.resource-contention",
+      "language": "typescript",
+      "family": "shared-state",
+      "defect": "resource-contention",
+      "grammar_version": "0.23.2",
+      "query": "typescript/shared-state/resource-contention/signals.scm",
+      "captures": [
+        "contention_operation"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-400",
+        "CWE-770",
+        "CWE-833"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "typescript.unstructured-state.index-out-of-bounds",
+      "language": "typescript",
+      "family": "unstructured-state",
+      "defect": "index-out-of-bounds",
+      "grammar_version": "0.23.2",
+      "query": "typescript/unstructured-state/index-out-of-bounds/signals.scm",
+      "captures": [
+        "unstructured_index"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-125",
+        "CWE-787",
+        "CWE-129"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "typescript.unstructured-state.insecure-deserialization",
+      "language": "typescript",
+      "family": "unstructured-state",
+      "defect": "insecure-deserialization",
+      "grammar_version": "0.23.2",
+      "query": "typescript/unstructured-state/insecure-deserialization/signals.scm",
+      "captures": [
+        "unstructured_decode",
+        "unstructured_length",
+        "unstructured_sink"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-502",
+        "CWE-915",
+        "CWE-913",
+        "CWE-20"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
+    },
+    {
+      "id": "typescript.unstructured-state.type-errors",
+      "language": "typescript",
+      "family": "unstructured-state",
+      "defect": "type-errors",
+      "grammar_version": "0.23.2",
+      "query": "typescript/unstructured-state/type-errors/signals.scm",
+      "captures": [
+        "unstructured_type"
+      ],
+      "evidence_level": "bounded-local-relationship-candidate",
+      "limitation": "Bounded source and local binding analysis. External contracts, dynamic dispatch, workload and caller intent are not proven.",
+      "related_cwes": [
+        "CWE-843",
+        "CWE-704",
+        "CWE-476"
+      ],
+      "cwe_relationship": "Taxonomy reference only, not a diagnosed vulnerability."
     }
   ]
 }

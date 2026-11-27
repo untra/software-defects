@@ -102,3 +102,30 @@ test('shared-state hovers distinguish static sites from runtime fan-out', () => 
   assert.match(text, /Runtime fan-out is unknown/);
   assert.match(text, /read → suspend → write/);
 });
+
+test('mutex hovers distinguish usage, candidates and misuse without new labels', () => {
+  for (const assessment of ['usage', 'candidate', 'misuse']) {
+    const value = entry('shared-state', 'threading-mutexes', 'Recognized critical section.');
+    value.finding.origin = 'propagated';
+    value.finding.shared_state = {
+      evidence_level: 'relationship-candidate', sites: { declarations: 0, launches: 0, suspensions: 0, dynamic_fan_out: false },
+      contenders: 0, events: [], assumptions: [],
+      synchronization: { api: 'threading.Lock', lock: 'ledger', assessment, acquisitions: [{ start: 3, end: 8 }], releases: [], protected_regions: [] }
+    };
+    const content = explanation(value).parts.map(part => part.value).join('');
+    assert.ok(content.includes(`Synchronization: ${assessment}`));
+    assert.ok(content.includes('does not mean the caller holds its lock'));
+  }
+});
+
+test('effect assessment and potential overlaps remain distinct from diagnoses', () => {
+  const usage = entry('shared-state', 'cache-invalidation');
+  usage.finding.assessment = 'usage';
+  assert.ok(explanation(usage).parts.some(part => part.value.includes('Assessment: usage.')));
+  const overlap = entry('compound-defects', 'nondeterminism', 'Potential overlap only.');
+  overlap.finding.assessment = 'candidate';
+  overlap.finding.compound = { class: 'nondeterminism', category: 'potential-overlap', ingredients: [] };
+  const hover = explanation(overlap);
+  assert.ok(hover.parts.some(part => part.value.includes('Assessment: candidate.')));
+  assert.ok(hover.parts.some(part => part.value.includes('/en/compound-defects/nondeterminism/>')));
+});

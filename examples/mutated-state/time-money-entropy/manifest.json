@@ -2,7 +2,7 @@
   "family": "mutated-state",
   "defect": "time-money-entropy",
   "name": "Time, Money & Entropy",
-  "essence": "A function that consults wall-clock time or money in floats answers differently every call.",
+  "essence": "Clock reads, randomness, mutable dates and inexact monetary representations can violate assumptions about repeatability or precision.",
   "cwes": [
     "CWE-330",
     "CWE-340",

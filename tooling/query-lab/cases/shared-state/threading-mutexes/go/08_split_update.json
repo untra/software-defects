@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "status": "syntax-candidate",
+  "rationale": "The full read-modify-write invariant needs one critical section. The fixed version preserves the intended operation while enforcing its synchronization contract.",
+  "analysis_limit": "Captures are independent source-token expectations. API identity, guard lifetime, scheduling and control flow require bounded analyzer evidence.",
+  "runtime": {
+    "status": "supported",
+    "exit_code": 0,
+    "stdout_contains": [
+      "count: 2"
+    ]
+  },
+  "original": {
+    "source_hash": "67c79f1262b5dd5e6d74090b3682cb572b85834e8ea7e92789898b2fe1885170",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              219,
+              228
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              222,
+              226
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              252,
+              263
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              255,
+              261
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              299,
+              308
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              302,
+              306
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              335,
+              346
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              338,
+              344
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "fixed": {
+    "source_hash": "9efb5eda6da0b473e825551c32d0eb43b862c4949343ac9fbd28bacddf7fac17",
+    "queries": [
+      {
+        "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/boundaries.scm",
+        "captures": [
+          {
+            "name": "mutex_call",
+            "range": [
+              250,
+              259
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              253,
+              257
+            ]
+          },
+          {
+            "name": "mutex_call",
+            "range": [
+              305,
+              316
+            ]
+          },
+          {
+            "name": "mutex_method",
+            "range": [
+              308,
+              314
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "stdout_contains": [
+      "count: 1"
+    ]
+  }
+}

@@ -1,3 +1,4 @@
+use crate::model::FindingAssessment;
 use crate::model::{DivisionRisk, DocumentReport, Effect, Evidence, Finding, Span};
 use tree_sitter::Node;
 const MAX_VALUE_DEPTH: usize = 16;
@@ -393,6 +394,7 @@ pub fn analyze(operations: &[Node<'_>], s: &str, report: &mut DocumentReport) {
             "May panic for integers or produce a non-finite floating-point result."
         };
         report.findings.push(Finding {
+        assessment: FindingAssessment::Candidate,
         shared_state: None,
             state_trace: None,
             division_risk: Some(DivisionRisk {

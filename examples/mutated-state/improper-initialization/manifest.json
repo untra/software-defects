@@ -2,7 +2,7 @@
   "family": "mutated-state",
   "defect": "improper-initialization",
   "name": "Improper Initialization",
-  "essence": "The first state transition — undefined to defined — is the purest mutated-state bug: use a value before it exists and every later read inherits garbage.",
+  "essence": "A value is read before its initialization contract is satisfied; language checks prevent some forms, while runtime defaults can hide others.",
   "cwes": [
     "CWE-665",
     "CWE-457",

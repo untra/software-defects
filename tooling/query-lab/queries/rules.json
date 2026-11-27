@@ -1764,6 +1764,82 @@
         "mutex_method",
         "mutex_call"
       ]
+    },
+    {
+      "id": "go.shared-state.threading-mutexes-legacy-signals",
+      "language": "go",
+      "family": "shared-state",
+      "defect": "threading-mutexes",
+      "query": "tooling/query-lab/queries/go/shared-state/threading-mutexes/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Historical method-name captures only; retained for comparison, not promoted to production.",
+      "related_cwes": [
+        "CWE-667",
+        "CWE-833",
+        "CWE-820"
+      ],
+      "cwe_relationship": "Taxonomy reference; syntax alone is not a diagnosed vulnerability.",
+      "captures": [
+        "callee"
+      ]
+    },
+    {
+      "id": "rust.shared-state.threading-mutexes-legacy-signals",
+      "language": "rust",
+      "family": "shared-state",
+      "defect": "threading-mutexes",
+      "query": "tooling/query-lab/queries/rust/shared-state/threading-mutexes/signals.scm",
+      "grammar_version": "0.24.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Historical method-name captures only; retained for comparison, not promoted to production.",
+      "related_cwes": [
+        "CWE-667",
+        "CWE-833",
+        "CWE-820"
+      ],
+      "cwe_relationship": "Taxonomy reference; syntax alone is not a diagnosed vulnerability.",
+      "captures": [
+        "callee"
+      ]
+    },
+    {
+      "id": "javascript.shared-state.threading-mutexes-legacy-signals",
+      "language": "javascript",
+      "family": "shared-state",
+      "defect": "threading-mutexes",
+      "query": "tooling/query-lab/queries/javascript/shared-state/threading-mutexes/signals.scm",
+      "grammar_version": "0.25.0",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Historical method-name captures only; retained for comparison, not promoted to production.",
+      "related_cwes": [
+        "CWE-667",
+        "CWE-833",
+        "CWE-820"
+      ],
+      "cwe_relationship": "Taxonomy reference; syntax alone is not a diagnosed vulnerability.",
+      "captures": [
+        "callee"
+      ]
+    },
+    {
+      "id": "typescript.shared-state.threading-mutexes-legacy-signals",
+      "language": "typescript",
+      "family": "shared-state",
+      "defect": "threading-mutexes",
+      "query": "tooling/query-lab/queries/typescript/shared-state/threading-mutexes/signals.scm",
+      "grammar_version": "0.23.2",
+      "evidence_level": "syntax-candidate",
+      "limitation": "Historical method-name captures only; retained for comparison, not promoted to production.",
+      "related_cwes": [
+        "CWE-667",
+        "CWE-833",
+        "CWE-820"
+      ],
+      "cwe_relationship": "Taxonomy reference; syntax alone is not a diagnosed vulnerability.",
+      "captures": [
+        "callee"
+      ]
     }
   ]
 }

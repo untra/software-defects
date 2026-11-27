@@ -120,7 +120,7 @@ fn in_loop(mut n: Node<'_>) -> bool {
     }
     false
 }
-fn emit(
+pub(crate) fn emit(
     report: &mut DocumentReport,
     defect: &str,
     relationship: &str,
@@ -170,6 +170,7 @@ fn emit(
             .collect();
     }
     report.findings.push(Finding {
+        assessment: if candidate { FindingAssessment::Candidate } else { FindingAssessment::Usage },
         shared_state: Some(SharedState {
             synchronization: None,
             source_uri: report.uri.clone(),
@@ -197,7 +198,9 @@ fn emit(
         trigger,
         function: owner(report, trigger),
         blast_radius: regions,
-        effect: if relationship == "async-execution" {
+        effect: if matches!(defect, "resource-contention" | "cache-invalidation") {
+            Effect::ResourceAccess
+        } else if relationship == "async-execution" {
             Effect::AsyncExecution
         } else if relationship == "resource-operation" {
             Effect::ResourceAccess
@@ -439,6 +442,7 @@ pub(crate) fn analyze<'a>(
         let launch = matches!(
             known,
             "asyncio.create_task"
+                | "threading.Thread"
                 | "asyncio.ensure_future"
                 | "asyncio.gather"
                 | "asyncio.TaskGroup.create_task"
@@ -653,6 +657,34 @@ pub(crate) fn analyze<'a>(
             }
         }
     }
+    // Resolve launch arguments and direct same-file calls to lexical function identities.
+    let launched = events.iter().filter(|e| e.kind == "launch").cloned().collect::<Vec<_>>();
+    for launch in launched {
+        let scope = root.descendant_for_byte_range(launch.range.start, launch.range.end)
+            .map(|n| if n.kind() == "go" { n.parent().unwrap_or(n) } else { n });
+        let Some(scope) = scope else { continue; };
+        for reference in crate::annotations::nodes(scope).iter().filter(|n| n.kind() == "identifier") {
+            let candidates = report.functions.iter().filter(|f| f.name == text(*reference, source)).collect::<Vec<_>>();
+            if candidates.len() != 1 { continue; }
+            let function = candidates[0];
+            if binding(text(*reference, source), Span::of(*reference)).is_some_and(|b| !function.range.contains(b)) { continue; }
+            actors.entry(function.range).or_default().push(launch.clone());
+        }
+    }
+    loop {
+        let before = actors.len();
+        for call in all.iter().filter(|n| matches!(n.kind(), "call" | "call_expression")) {
+            let Some(parent) = owner(report, Span::of(*call)) else { continue; };
+            let Some(launches) = actors.get(&parent).cloned() else { continue; };
+            let Some(callee) = call.child_by_field_name("function").filter(|n| n.kind() == "identifier") else { continue; };
+            let candidates = report.functions.iter().filter(|f| f.name == text(callee, source)).collect::<Vec<_>>();
+            if candidates.len() != 1 { continue; }
+            let function = candidates[0];
+            if binding(text(callee, source), Span::of(callee)).is_some_and(|b| !function.range.contains(b)) { continue; }
+            actors.entry(function.range).or_insert(launches);
+        }
+        if actors.len() == before { break; }
+    }
     let mut findings = vec![];
     for (_, capture, write) in captures.iter().filter(|(_, c, _)| *c == "shared_write") {
         let _ = capture;
@@ -662,6 +694,24 @@ pub(crate) fn analyze<'a>(
         let Some(launches) = actors.get(&actor) else {
             continue;
         };
+        let cooperative = matches!(report.language.as_str(), "javascript" | "typescript") || report.language == "python" && source[actor.start..actor.end].trim_start().starts_with("async");
+        if cooperative {
+            let sequence_guard = crate::defect_support::ancestor(*write, &["if_statement"]).and_then(|n| n.child_by_field_name("condition")).is_some_and(|condition| {
+                crate::annotations::nodes(condition).iter().any(|comparison| {
+                    let (Some(a), Some(b)) = (comparison.child_by_field_name("left"), comparison.child_by_field_name("right")) else { return false; };
+                    if !matches!(source[a.end_byte()..b.start_byte()].trim(), "==" | "===") || a.kind() != "identifier" || b.kind() != "identifier" { return false; }
+                    let Some(version) = binding(text(b, source), Span::of(b)).filter(|bound| !actor.contains(*bound)) else { return false; };
+                    crate::defect_support::value(a, &all, source, &binding).is_some_and(|saved| {
+                        events.iter().any(|e| e.kind == "suspend" && e.owner == Some(actor) && e.range.start > saved.end_byte() && e.range.end < write.start_byte()) && crate::annotations::nodes(saved).iter().any(|n| n.kind() == "update_expression") && crate::annotations::nodes(saved).iter().any(|n| n.kind() == "identifier" && binding(text(*n, source), Span::of(*n)) == Some(version))
+                    })
+                })
+            });
+            if sequence_guard { continue; }
+            if matches!(write.kind(), "augmented_assignment_expression" | "augmented_assignment" | "update_expression") { continue; }
+            let suspended = events.iter().any(|e| e.kind == "suspend" && e.owner == Some(actor) && e.range.start < write.start_byte());
+            if !suspended { continue; }
+            if write.child_by_field_name("right").is_some_and(|r| matches!(r.kind(), "object" | "dictionary") && crate::annotations::nodes(r).iter().any(|n| n.kind() == "spread_element")) { continue; }
+        }
         let Some(left) = write
             .child_by_field_name("left")
             .or_else(|| write.named_child(0))
@@ -865,7 +915,45 @@ pub(crate) fn analyze<'a>(
             }
         }
     }
+    for call in all.iter().filter(|n| matches!(n.kind(), "call" | "call_expression")) {
+        let Some(callee) = call.child_by_field_name("function") else { continue; };
+        let Some(receiver) = callee.child_by_field_name("object").or_else(|| callee.child_by_field_name("value")) else { continue; };
+        let method = text(callee, source).rsplit('.').next().unwrap_or("");
+        if !matches!(method, "set" | "add" | "push" | "append") { continue; }
+        let Some(bound) = binding(base(text(receiver, source)), Span::of(receiver)) else { continue; };
+        let own = owner(report, Span::of(*call));
+        if own.is_none_or(|o| o.contains(bound)) { continue; }
+        for read in all.iter().filter(|n| n.end_byte() < call.start_byte() && owner(report, Span::of(**n)) == own && matches!(n.kind(), "call" | "call_expression")) {
+            let Some(c) = read.child_by_field_name("function") else { continue; };
+            let Some(r) = c.child_by_field_name("object").or_else(|| c.child_by_field_name("value")) else { continue; };
+            if !matches!(text(c, source).rsplit('.').next(), Some("has" | "get" | "some" | "includes")) || binding(base(text(r, source)), Span::of(r)) != Some(bound) { continue; }
+            if let Some(suspend) = events.iter().find(|e| e.kind == "suspend" && e.owner == own && e.range.start >= read.end_byte() && e.range.end <= call.start_byte()) {
+                findings.push((RACE, "read-suspend-write", vec![event("read", *read, Some(format!("{}:{}", bound.start, bound.end))), suspend.clone(), event("write", *call, Some(format!("{}:{}", bound.start, bound.end)))], true, SiteCounts::default(), "A shared collection is read before suspension and changed after it; the earlier membership decision may be stale."));
+            }
+        }
+    }
+    for (_, _, write) in captures.iter().filter(|(_, c, _)| *c == "shared_write") {
+        let (Some(left), Some(right)) = (write.child_by_field_name("left"), write.child_by_field_name("right")) else { continue; };
+        let Some(bound) = binding(base(text(left, source)), Span::of(left)) else { continue; };
+        if owner(report, Span::of(*write)).is_none_or(|o| o.contains(bound)) { continue; }
+        if let Some(condition) = crate::defect_support::ancestor(*write, &["if_statement"]).and_then(|n| n.child_by_field_name("condition")) {
+            if text(condition, source).contains(" in ") && crate::annotations::nodes(condition).iter().any(|n| n.kind() == "identifier" && binding(text(*n, source), Span::of(*n)) == Some(bound)) {
+                if let Some(suspend) = events.iter().find(|e| e.kind == "suspend" && e.owner == owner(report, Span::of(*write)) && e.range.start > condition.end_byte() && e.range.end < write.start_byte()) {
+                    findings.push((RACE, "read-suspend-write", vec![event("membership-read", condition, identity(text(left, source), Span::of(left))), suspend.clone(), event("write", *write, identity(text(left, source), Span::of(left)))], true, SiteCounts::default(), "A shared membership decision precedes suspension and an indexed write. Another task can invalidate that decision before the write."));
+                }
+            }
+        }
+        if crate::annotations::nodes(right).iter().any(|n| matches!(n.kind(), "await_expression" | "await")) {
+            findings.push((RACE, "out-of-order-response", vec![event("write", *write, identity(text(left, source), Span::of(left)))], true, SiteCounts::default(), "An awaited result replaces outer state; concurrent requests may complete out of order. Sequence or cancellation ownership is not established."));
+        }
+    }
     for (defect, mechanism, events, candidate, sites, explanation) in findings {
+        if defect == RACE && matches!(mechanism, "concurrent-shared-write" | "read-suspend-write") {
+            let accesses = events.iter().filter(|e| e.kind != "launch").collect::<Vec<_>>();
+            if report.findings.iter().filter_map(|f| f.shared_state.as_ref()?.synchronization.as_ref()).any(|sync| sync.protected_regions.iter().any(|region| accesses.iter().all(|e| region.contains(e.range)))) {
+                continue;
+            }
+        }
         emit(
             report,
             defect,
@@ -881,7 +969,7 @@ pub(crate) fn analyze<'a>(
         let mut compound = race.clone();
         compound.rule_id = format!("{}.compound-defects.read-suspend-write", report.language);
         compound.family = "compound-defects".into();
-        compound.compound = Some(Compound { class: "data-corruption".into(), category: "shared-mutation".into(), ingredients: [Evidence { uri: report.uri.clone(), range: race.trigger, rule_id: race.rule_id.clone() }, Evidence { uri: report.uri.clone(), range: mutation.trigger, rule_id: mutation.rule_id.clone() }] });
+        compound.compound = Some(Compound { class: "nondeterminism".into(), category: "shared-mutation".into(), ingredients: [Evidence { uri: report.uri.clone(), range: race.trigger, rule_id: race.rule_id.clone() }, Evidence { uri: report.uri.clone(), range: mutation.trigger, rule_id: mutation.rule_id.clone() }] });
         compound.explanation = "Shared-state and mutation evidence meet at a saved-value write after suspension; concurrent invocation may lose an update.".into();
         Some(compound)
     }).collect();

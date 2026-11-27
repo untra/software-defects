@@ -85,5 +85,12 @@
         ]
       }
     ]
+  },
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "stdout_contains": [
+      "take() still blocked after 500ms"
+    ]
   }
 }

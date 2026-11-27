@@ -96,7 +96,7 @@
         18
       ],
       "summary": "`take` holds the stock guard and calls `available`, which locks the same mutex.",
-      "mechanism": "std Mutex is not reentrant; relocking on the same thread deadlocks.",
+      "mechanism": "std::sync::Mutex does not support same-thread relocking; the documented outcome may be deadlock or panic.",
       "observed_output": "take() still blocked after 500ms",
       "exit_code": 0,
       "deterministic": true,
@@ -352,7 +352,7 @@
       "file": "typescript/04_callback_outlives_lock.ts",
       "language": "typescript",
       "bug_lines": [
-        6
+        7
       ],
       "summary": "The Web Locks callback returns before its asynchronous write completes.",
       "mechanism": "Lock lifetime follows callback completion.",
@@ -366,7 +366,7 @@
       "file": "typescript/05_nested_web_lock.ts",
       "language": "typescript",
       "bug_lines": [
-        6
+        7
       ],
       "summary": "An exclusive Web Lock callback waits for the same lock again.",
       "mechanism": "Non-reentrant exclusive lock request.",
@@ -389,6 +389,34 @@
       "deterministic": true,
       "expected_behavior": "count: 2",
       "runtime": "tokio"
+    },
+    {
+      "file": "go/08_split_update.go",
+      "language": "go",
+      "bug_lines": [
+        17,
+        22
+      ],
+      "summary": "Separate locked reads and writes lose an update despite protecting each access.",
+      "mechanism": "The full read-modify-write invariant needs one critical section.",
+      "observed_output": "count: 1",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "count: 2"
+    },
+    {
+      "file": "rust/05_split_reservation.rs",
+      "language": "rust",
+      "bug_lines": [
+        8,
+        11
+      ],
+      "summary": "Each buyer checks and updates stock in separate guard lifetimes.",
+      "mechanism": "RAII protects individual accesses but not the check/update invariant.",
+      "observed_output": "sold 5 units with 1 in stock",
+      "exit_code": 0,
+      "deterministic": true,
+      "expected_behavior": "sold 1 units with 1 in stock"
     }
   ]
 }

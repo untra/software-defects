@@ -418,15 +418,24 @@ def coverage(cases):
 def verify_pair(case):
     fixed = verify_fix(case)
     baseline = case.get("expectations", {}).get("baseline", {})
+    if fixed["status"] == "unsupported":
+        return {"id": case["id"], "status": "unsupported", "fixed": fixed,
+                "original": {"status": "unsupported", "reason": fixed["reason"]}}
     if not baseline.get("deterministic"):
         return {"id": case["id"], "status": fixed["status"], "fixed": fixed,
                 "original": {"status": "unsupported", "reason": "Nondeterministic original; use a targeted race-detector or scheduling harness."}}
     original = copy.deepcopy(case)
     original["fixed"] = case["original"]
     original["expectations"]["fixed"] = case["expectations"]["original"]
+    explicit_oracle = any(key in baseline for key in ("stdout", "stdout_contains", "stdout_excludes", "stderr_contains"))
+    if explicit_oracle:
+        runtime = original["expectations"]["runtime"]
+        for key in ("stdout", "stdout_contains", "stdout_excludes", "stderr_contains"):
+            runtime.pop(key, None)
+        runtime.update({key: value for key, value in baseline.items() if key != "deterministic"})
     result = verify_fix(original)
     expected_exit = baseline.get("exit_code", 0)
-    reproduced = result["exit_code"] == expected_exit and result["status"] == "failed"
+    reproduced = result["exit_code"] == expected_exit and result["status"] == ("passed" if explicit_oracle else "failed")
     result["status"] = "reproduced" if reproduced else "not-reproduced"
     return {"id": case["id"], "status": "passed" if fixed["status"] == "passed" and reproduced else "failed", "fixed": fixed, "original": result}
 
@@ -471,6 +480,8 @@ def verify_fix(case):
         passed &= out == runtime["stdout"]
     for fragment in runtime.get("stdout_contains", []):
         passed &= fragment in out
+    for fragment in runtime.get("stderr_contains", []):
+        passed &= fragment in err
     for fragment in runtime.get("stdout_excludes", []):
         passed &= fragment not in out
     return {"id": case["id"], "source_hash": digest(source), "status": "passed" if passed else "failed",

@@ -89,7 +89,7 @@ fn trace(
         requirement: None,
     }
 }
-fn add(
+pub(crate) fn add(
     report: &mut DocumentReport,
     at: Span,
     defect: &str,
@@ -108,6 +108,7 @@ fn add(
     let mut evidence_trace = trace(report, origins, &[at], &[], explanation);
     evidence_trace.required_condition = None;
     report.findings.push(Finding {
+        assessment: if matches!(mechanism, "boundary-input" | "boundary-output") { FindingAssessment::Usage } else { FindingAssessment::Candidate },
         shared_state: None,
         state_trace: Some(evidence_trace),
         division_risk: None,
@@ -134,8 +135,15 @@ fn add(
             })
             .collect(),
         call_path: vec![],
-        related_cwes: vec![],
+        related_cwes: if matches!(defect, "insecure-deserialization" | "index-out-of-bounds" | "type-errors") { crate::analysis::related_cwes(&rule_id) } else { vec![] },
     });
+}
+
+pub(crate) fn usage(report: &mut DocumentReport, at: Span, defect: &str, mechanism: &str, explanation: &str) {
+    add(report, at, defect, mechanism, explanation, &[]);
+    if let Some(finding) = report.findings.iter_mut().find(|f| f.defect == defect && f.trigger == at && f.mechanism.as_deref() == Some(mechanism)) {
+        finding.assessment = FindingAssessment::Usage;
+    }
 }
 
 #[derive(Default, Clone, Copy)]
@@ -387,6 +395,9 @@ pub(crate) fn analyze<F: Fn(&str, Span) -> Option<Span>>(
             _ => {}
         }
     }
+    crate::deserialization::analyze(captures, root, source, report, &resolve);
+    crate::indexing::analyze(captures, root, source, report, &resolve);
+    crate::type_errors::analyze(captures, root, source, report, &resolve);
     relationships(root, source, report, resolve);
 }
 
@@ -850,7 +861,8 @@ fn conditional(mut n: Node<'_>) -> bool {
 pub(crate) fn propagates(finding: &Finding) -> bool {
     matches!(finding.resolution.as_str(), RESOLUTION | "resolved-call")
         && finding.family == FAMILY
-        && (finding.defect == RETURNS || finding.mechanism.as_deref() == Some(BOUNDARY_OUTPUT))
+        && (finding.defect == RETURNS || finding.mechanism.as_deref() == Some(BOUNDARY_OUTPUT)
+            || matches!(finding.defect.as_str(), "insecure-deserialization" | "index-out-of-bounds" | "type-errors") && finding.assessment == FindingAssessment::Candidate)
         && finding.state_trace.is_some()
 }
 

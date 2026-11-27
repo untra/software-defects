@@ -73,7 +73,7 @@ fn main() {
             for (language, cell) in mechanism["cells"].as_object().unwrap() {
                 let name =
                     |role: &str| format!("{defect}__{language}__{id}__{role}").replace('-', "_");
-                if cell["status"] == "supported" {
+                if cell["status"] == "supported" || cell["role_fixtures"] == true {
                     for role in catalog["roles"].as_array().unwrap() {
                         let role = role.as_str().unwrap();
                         tests.push_str(&format!(

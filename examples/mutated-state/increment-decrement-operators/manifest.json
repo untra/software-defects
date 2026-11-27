@@ -2,7 +2,7 @@
   "family": "mutated-state",
   "defect": "increment-decrement-operators",
   "name": "++ / -- & Integer Overflow",
-  "essence": "Pre- versus post-increment hides off-by-one and double-counting; bump a fixed-width integer past its max and it silently wraps to the bottom.",
+  "essence": "Increment order and numeric limits can violate counting invariants; overflow may wrap, trap, or be rejected according to the language and operation.",
   "cwes": [
     "CWE-190",
     "CWE-191",

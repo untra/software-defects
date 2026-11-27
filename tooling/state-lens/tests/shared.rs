@@ -174,3 +174,31 @@ fn local_task_alias_preserves_completion_observation() {
     assert!(has(&report, "task-lifecycle"));
     assert!(!has(&report, "cancellation-unobserved"));
 }
+
+#[test]
+fn named_launch_targets_and_transitive_workers() {
+    for (language, source) in [
+        ("go", "package p\nvar n int\nfunc increment() { n++ }\nfunc worker() { increment() }\nfunc main() { go worker() }"),
+        ("python", "import threading\nn = 0\ndef worker():\n    global n\n    n += 1\nthreading.Thread(target=worker).start()\n"),
+    ] {
+        assert!(has(&analyze(language, source), "concurrent-shared-write"), "{language}");
+    }
+}
+
+#[test]
+fn membership_suspend_insert_and_outer_await_result() {
+    let bad = analyze("javascript", "const users = new Map(); async function add(key) { if (users.has(key)) return; await fetch(key); users.set(key, true); }");
+    assert!(has(&bad, "read-suspend-write"));
+    let fixed = analyze("javascript", "const users = new Map(); async function add(key) { await fetch(key); if (users.has(key)) return; users.set(key, true); }");
+    assert!(!has(&fixed, "read-suspend-write"));
+    let bad = analyze("javascript", "let visible; async function update(key) { visible = await fetch(key); }");
+    assert!(has(&bad, "out-of-order-response"));
+}
+
+#[test]
+fn sequence_guard_and_cooperative_rollback_are_not_shared_write_risks() {
+    let guarded = analyze("javascript", "let generation = 0; let visible; async function update(key) { const ticket = ++generation; const result = await fetch(key); if (ticket === generation) visible = result; } async function main() { await Promise.all([update('a'), update('b')]); }");
+    assert!(!has(&guarded, "concurrent-shared-write"));
+    let rollback = analyze("javascript", "let stock = 1; async function buy() { stock -= 1; try { await fetch('/buy'); } catch { stock += 1; } } async function main() { await Promise.all([buy(), buy()]); }");
+    assert!(!has(&rollback, "concurrent-shared-write"));
+}

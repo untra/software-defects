@@ -11,6 +11,7 @@ examples/
         ├── manifest.json               ground truth for every file in this folder
         ├── go/NN_scenario.go
         ├── rust/NN_scenario.rs
+        ├── javascript/NN_scenario.js
         ├── typescript/NN_scenario.ts
         └── python/NN_scenario.py
 ```
@@ -68,10 +69,10 @@ The Rust examples assume a debug build (plain `rustc`), where integer overflow p
 
 | Family | Status |
 |---|---|
-| [mutated-state](mutated-state/ASSESSMENT.md) | Go · Rust · TypeScript · Python, 125 examples |
-| [unstructured-state](unstructured-state/ASSESSMENT.md) | Go · Rust · TypeScript · Python, 132 examples |
-| [shared-state](shared-state/ASSESSMENT.md) | Go · Rust · TypeScript · Python, 141 examples (see its harness conventions) |
-| [compound-defects](compound-defects/ASSESSMENT.md) | four flagship programs, one language each; scores are 0–2 and are not file counts |
+| [mutated-state](mutated-state/ASSESSMENT.md) | Go · Rust · JavaScript · TypeScript · Python, 286 examples |
+| [unstructured-state](unstructured-state/ASSESSMENT.md) | Go · Rust · JavaScript · TypeScript · Python, 199 examples |
+| [shared-state](shared-state/ASSESSMENT.md) | Go · Rust · JavaScript · TypeScript · Python, 197 examples (see its harness conventions) |
+| [compound-defects](compound-defects/ASSESSMENT.md) | see its own inventory; scores are 0–2 and are not file counts |
 | common-defects | planned |
 
 Shared-state examples marked `"runtime": "tokio"` use the pinned Cargo manifest and lockfile

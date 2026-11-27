@@ -101,7 +101,16 @@ function coverage(row, snapshot) {
 }
 async function check(api, document, row, expected, state) {
   const uri = document.uri;
-  const result = await until(() => api.snapshot(uri.toString()), state, 'snapshot');
+  const result = await until(async () => {
+    if (!api.serverRunning()) return undefined;
+    try {
+      const snapshot = await api.snapshot(uri.toString());
+      return snapshot && !snapshot.audit.indexing && snapshot;
+    } catch (error) {
+      if (!api.serverRunning()) return undefined;
+      throw error;
+    }
+  }, state, 'settled server snapshot');
   if (state.expired) return;
   const snapshot = result.audit;
   const rules = {};
@@ -130,14 +139,20 @@ async function check(api, document, row, expected, state) {
   if ((result.segments > 0) !== (hinted > 0)) row.problems.push(issue('count-mismatch', 'decoration segments differ from hinted functions'));
   const diagnostics = await until(() => lensDiagnostics(uri).length === result.findings && lensDiagnostics(uri), state, 'settled diagnostics');
   if (state.expired) return;
+  const unmatched = [...snapshot.findings];
   for (const diagnostic of diagnostics) {
     const code = typeof diagnostic.code === 'object' ? diagnostic.code.value : diagnostic.code;
-    const entry = snapshot.findings.find(e => e.finding.rule_id === code && diagnostic.range.isEqual(new vscode.Range(e.triggerRange.start.line, e.triggerRange.start.character, e.triggerRange.end.line, e.triggerRange.end.character)));
-    const trace = entry?.finding.state_trace;
-    const declaredAlias = entry?.finding.resolution === 'object-identity' && Boolean(trace?.requirement) && trace?.evidence_level === 'feasible_under_model';
-    const requiredOutput = entry?.finding.defect === 'missing-undefined-returns' && trace?.requirement?.kind === 'producer-result' && trace?.evidence_level === 'feasible_under_model';
-    const warning = ['known-zero', 'possible-zero'].includes(entry?.finding.division_risk?.confidence) || declaredAlias || requiredOutput;
-    if (diagnostic.severity !== (warning ? vscode.DiagnosticSeverity.Warning : vscode.DiagnosticSeverity.Information)) row.problems.push(issue('count-mismatch', 'Unexpected diagnostic severity'));
+    const index = unmatched.findIndex(entry => {
+      if (entry.finding.rule_id !== code || !diagnostic.range.isEqual(new vscode.Range(entry.triggerRange.start.line, entry.triggerRange.start.character, entry.triggerRange.end.line, entry.triggerRange.end.character))) return false;
+      const trace = entry.finding.state_trace;
+      const declaredAlias = entry.finding.resolution === 'object-identity' && Boolean(trace?.requirement) && trace?.evidence_level === 'feasible_under_model';
+      const requiredOutput = entry.finding.defect === 'missing-undefined-returns' && trace?.requirement?.kind === 'producer-result' && trace?.evidence_level === 'feasible_under_model';
+      const synchronizationMisuse = entry.finding.origin === 'direct' && entry.finding.shared_state?.synchronization?.assessment === 'misuse';
+      const warning = ['known-zero', 'possible-zero'].includes(entry.finding.division_risk?.confidence) || declaredAlias || requiredOutput || synchronizationMisuse;
+      return diagnostic.severity === (warning ? vscode.DiagnosticSeverity.Warning : vscode.DiagnosticSeverity.Information);
+    });
+    if (index < 0) row.problems.push(issue('count-mismatch', 'Diagnostic identity or severity differs from snapshot'));
+    else unmatched.splice(index, 1);
   }
   const expectedFindings = expected && Object.values(expected.rule_ids).reduce((a, b) => a + b, 0);
   if (!HEALTH && expected && diagnostics.length !== expectedFindings) row.problems.push(issue('count-mismatch', `${diagnostics.length} diagnostics, baseline ${expectedFindings}`));

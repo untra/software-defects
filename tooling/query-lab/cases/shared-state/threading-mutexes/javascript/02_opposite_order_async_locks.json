@@ -141,5 +141,12 @@
         ]
       }
     ]
+  },
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "stdout_contains": [
+      "sale and refund still blocked after 200ms"
+    ]
   }
 }

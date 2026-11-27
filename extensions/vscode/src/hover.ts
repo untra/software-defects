@@ -11,6 +11,7 @@ const SHORT_EXPLANATIONS: Record<string, string> = {
 };
 
 function defectGuideUrl(family: string, defect: string, compoundClass?: string): string {
+  if (compoundClass === defect) return `${SITE_ORIGIN}/${SITE_LOCALE}/${encodeURIComponent(family)}/${encodeURIComponent(compoundClass)}/`;
   return `${SITE_ORIGIN}/${SITE_LOCALE}/${encodeURIComponent(family)}/${compoundClass ? encodeURIComponent(compoundClass) + "/" : ""}${encodeURIComponent(defect)}/`;
 }
 function escapeHtml(value: string): string {
@@ -24,6 +25,7 @@ export function explanation(entry: Entry, uri?: string, version?: number): vscod
   if (color) text.appendMarkdown(`<span style="color:${color};"><strong>${escapeHtml(entry.finding.defect)}</strong></span>`);
   else text.appendText(entry.finding.defect);
   text.appendText(`\n\n${SHORT_EXPLANATIONS[entry.finding.explanation] ?? entry.finding.explanation}`);
+  if (entry.finding.assessment) text.appendText(`\n\nAssessment: ${entry.finding.assessment}.`);
   const shared = entry.finding.shared_state;
   if (shared) {
     const sync = shared.synchronization;
@@ -34,7 +36,7 @@ export function explanation(entry: Entry, uri?: string, version?: number): vscod
     }
     const sites = shared.sites;
     text.appendText(`\n\nShared-state evidence: ${shared.evidence_level}.`);
-    text.appendText(`\nStatic sites: ${sites.declarations} async declarations, ${sites.launches} launches/compositions, ${sites.suspensions} suspensions.`);
+    if (!sync) text.appendText(`\nStatic sites: ${sites.declarations} async declarations, ${sites.launches} launches/compositions, ${sites.suspensions} suspensions.`);
     if (sites.dynamic_fan_out) text.appendText(' Runtime fan-out is unknown.');
     text.appendText(`\nRelated execution scopes: ${shared.contenders}. Events: ${shared.events.map(event => event.kind).join(' → ')}.`);
     if (shared.assumptions.length) text.appendText(`\nLimits: ${shared.assumptions.join(' ')}`);

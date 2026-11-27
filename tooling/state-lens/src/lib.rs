@@ -23,3 +23,11 @@ pub mod shared;
 mod unstructured;
 
 pub mod mutex;
+
+mod defect_support;
+mod deserialization;
+mod contention;
+mod cache;
+mod indexing;
+mod type_errors;
+mod compounds;

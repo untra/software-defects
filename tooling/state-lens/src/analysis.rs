@@ -437,6 +437,7 @@ impl Engine {
                 f.report.findings.sort_by_key(|x| (x.trigger.start, x.rule_id.clone(), x.origin.clone()));
             }
             f.report.state_graph = Some(graph);
+            crate::compounds::analyze(&mut f.report);
             crate::annotations::build_annotations(&crate::annotations::nodes(parsed.tree.root_node()), &f.source, &mut f.report);
             f.report
         }).collect(), limitations: std::iter::once("Susceptibility is not a bug diagnosis. Dynamic dispatch, general alias escape, macro expansion, type inference and domain invariants are not resolved.".into()).chain(self.skipped.clone()).collect() }
@@ -563,6 +564,7 @@ fn add(
         }
     }
     facts.report.findings.push(Finding {
+        assessment: FindingAssessment::Usage,
         shared_state: None,
         state_trace: None,
         division_risk: None,
@@ -972,8 +974,10 @@ fn extract(uri: &str, parsed: &Parsed, queries: &[(String, Query)]) -> Facts {
         }
     }
     let imports: Vec<_> = facts.imports.iter().map(|i| (i.local.clone(), i.module.clone(), i.symbol.clone())).collect();
-    crate::shared::analyze(&captures, root, source, &mut facts.report, &imports, |name, at| binding(&facts.bindings, name, at).map(|b| b.range));
     crate::mutex::analyze(&captures, root, source, &mut facts.report, &imports, |name, at| binding(&facts.bindings, name, at).map(|b| b.range));
+    crate::shared::analyze(&captures, root, source, &mut facts.report, &imports, |name, at| binding(&facts.bindings, name, at).map(|b| b.range));
+    crate::contention::analyze(&captures, root, source, &mut facts.report, |name, at| binding(&facts.bindings, name, at).map(|b| b.range));
+    crate::cache::analyze(&captures, root, source, &mut facts.report, |name, at| binding(&facts.bindings, name, at).map(|b| b.range));
     crate::division::analyze(&divisions, source, &mut facts.report);
     crate::unstructured::analyze(&captures, root, source, &mut facts.report, &imports, |name, at| binding(&facts.bindings, name, at).map(|b| b.range));
     if root.has_error() {

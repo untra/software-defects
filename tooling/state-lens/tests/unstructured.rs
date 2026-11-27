@@ -589,3 +589,94 @@ fn propagated_cross_document_trace_validates_against_the_origin_graph() {
         .validate(caller.state_graph.as_ref().unwrap())
         .is_err());
 }
+
+#[test]
+fn deserialization_sink_and_allowlist() {
+    for language in ["javascript", "typescript"] {
+        let bad = report(language, "const body = JSON.parse(raw); const user = {}; Object.assign(user, body);");
+        assert!(bad.findings.iter().any(|f| f.defect == "insecure-deserialization" && f.mechanism.as_deref() == Some("decoded-to-sink")));
+        let fixed = report(language, "const body = JSON.parse(raw); const user = {}; user.name = body.name;");
+        assert!(!fixed.findings.iter().any(|f| f.defect == "insecure-deserialization" && f.assessment != state_lens::model::FindingAssessment::Usage));
+    }
+    let bad = report("python", "import pickle\ndef read(raw):\n    return pickle.loads(raw)\n");
+    assert!(bad.findings.iter().any(|f| f.mechanism.as_deref() == Some("unsafe-loader")));
+}
+
+#[test]
+fn runtime_type_candidates_preserve_explicit_operations() {
+    for (language, bad, fixed, mechanism) in [
+        ("javascript", "const x = '2'; console.log(x + 1);", "const x = '2'; console.log(Number(x) + 1);", "implicit-coercion"),
+        ("python", "labels = {1: 'one'}\nlabels[True] = 'yes'\n", "labels = {1: 'one'}\nlabels['true'] = 'yes'\n", "bool-is-int"),
+        ("python", "def qty(raw):\n    return raw or 50\n", "def qty(raw):\n    return 50 if raw is None else raw\n", "falsy-default"),
+    ] {
+        assert!(report(language, bad).findings.iter().any(|f| f.mechanism.as_deref() == Some(mechanism)), "{language}: {mechanism}");
+        assert!(!report(language, fixed).findings.iter().any(|f| f.mechanism.as_deref() == Some(mechanism)), "{language}: fixed {mechanism}");
+    }
+}
+#[test]
+fn literal_index_bounds_and_safe_optional_access() {
+    let bad = report("javascript", "const rows = []; console.log(rows[0].id);");
+    assert!(bad.findings.iter().any(|f| f.mechanism.as_deref() == Some("unguarded-index")));
+    let fixed = report("javascript", "const rows = []; console.log(rows[0]?.id ?? 'none');");
+    assert!(!fixed.findings.iter().any(|f| f.defect == "index-out-of-bounds" && f.assessment != state_lens::model::FindingAssessment::Usage));
+}
+
+#[test]
+fn independent_guards_and_stale_bounds_do_not_suppress_indexing() {
+    for source in [
+        "const rows = []; const other = [1]; if (other.length) console.log(rows[0].id);",
+        "const rows = []; console.log(rows.length ? rows[3] : rows[0].id);",
+    ] {
+        assert!(report("javascript", source).findings.iter().any(|f| f.defect == "index-out-of-bounds" && f.assessment == state_lens::model::FindingAssessment::Candidate));
+    }
+    let fixed = report("python", "rows = []\nprint(rows[0] if rows else 'none')\n");
+    assert!(!fixed.findings.iter().any(|f| f.defect == "index-out-of-bounds"));
+}
+
+#[test]
+fn validated_result_is_distinct_from_an_ignored_validator_result() {
+    let prefix = "import { z } from 'zod'; const schema = z.object({name: z.string()}); const body = JSON.parse(raw); const user = {}; ";
+    let fixed = report("javascript", &(prefix.to_owned() + "const checked = schema.parse(body); Object.assign(user, checked);"));
+    assert!(!fixed.findings.iter().any(|f| f.defect == "insecure-deserialization" && f.assessment != state_lens::model::FindingAssessment::Usage));
+    let bad = report("javascript", &(prefix.to_owned() + "schema.parse(body); Object.assign(user, body);"));
+    assert!(bad.findings.iter().any(|f| f.defect == "insecure-deserialization"));
+}
+
+#[test]
+fn allowlisted_keys_cannot_be_rebound_before_a_merge() {
+    let bad = report("javascript", "const incoming = JSON.parse(raw); const record = {}; for (let key of Object.keys(incoming)) { if (key === 'name') { key = '__proto__'; record[key] = incoming[key]; } }");
+    assert!(bad.findings.iter().any(|f| f.mechanism.as_deref() == Some("prototype-key")));
+    let unrelated = report("go", "package p\nimport \"encoding/json\"\ntype Privilege struct { Enabled bool }\ntype Label struct { Name string }\nfunc read(raw []byte) { var label Label; if err := json.Unmarshal(raw, &label); err != nil { return } }");
+    assert!(!unrelated.findings.iter().any(|f| f.mechanism.as_deref() == Some("decoded-field-assignment")));
+}
+
+#[test]
+fn matching_rust_downcast_does_not_flag_the_following_method_chain() {
+    let fixed = report("rust", "use std::any::Any; fn main() { let stored: Box<dyn Any> = Box::new(12_i64); let qty = stored.downcast_ref::<i64>().copied().expect(\"type\"); }");
+    assert!(!fixed.findings.iter().any(|f| f.mechanism.as_deref() == Some("runtime-downcast")));
+}
+
+#[test]
+fn early_empty_guard_dominates_last_index_until_collection_is_reassigned() {
+    let fixed = report("go", "package p\nfunc last(events []int) int { if len(events) == 0 { return 0 }; return events[len(events)-1] }");
+    assert!(!fixed.findings.iter().any(|f| f.defect == "index-out-of-bounds"));
+    let bad = report("go", "package p\nfunc last(events []int) int { if len(events) == 0 { return 0 }; events = nil; return events[len(events)-1] }");
+    assert!(bad.findings.iter().any(|f| f.defect == "index-out-of-bounds"));
+}
+
+#[test]
+fn inverted_or_optional_key_guards_do_not_establish_an_allowlist() {
+    for condition in ["key !== 'name'", "key === 'name' || allowAll", "key === '__proto__'"] {
+        let source = format!("const incoming = JSON.parse(raw); const record = {{}}; for (const key of Object.keys(incoming)) {{ if ({condition}) record[key] = incoming[key]; }}");
+        assert!(report("javascript", &source).findings.iter().any(|f| f.mechanism.as_deref() == Some("prototype-key")), "{condition}");
+    }
+}
+
+#[test]
+fn pydantic_dump_supplies_the_validated_value_not_the_original_input() {
+    let prefix = "import json\nfrom pydantic import BaseModel\nclass Body(BaseModel):\n    name: str\nraw = json.loads(payload)\nrecord = {}\n";
+    let safe = report("python", &(prefix.to_owned() + "checked = Body.model_validate(raw).model_dump()\nrecord.update(checked)\n"));
+    assert!(!safe.findings.iter().any(|f| f.defect == "insecure-deserialization" && f.assessment != state_lens::model::FindingAssessment::Usage));
+    let bad = report("python", &(prefix.to_owned() + "Body.model_validate(raw)\nrecord.update(raw)\n"));
+    assert!(bad.findings.iter().any(|f| f.mechanism.as_deref() == Some("decoded-to-sink")));
+}

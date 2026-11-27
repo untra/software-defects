@@ -209,3 +209,16 @@ test('shared lifecycle evidence keeps originating snapshot identity after propag
   const evidence = findingEvidence({ rule_id: 'rule', call_path: [], evidence: [], shared_state: { source_uri:'file:///worker.ts', source_hash:'original', events:[{kind:'join',range:{start:4,end:8}}] } });
   assert.deepEqual(evidence, [{uri:'file:///worker.ts',source_hash:'original',range:{start:4,end:8},role:'join',rule_id:'rule'}]);
 });
+
+test('mutex scopes retain Shared labels, exact regions and source-bound evidence', () => {
+  const { decorations, annotations, findingEvidence } = require('../dist/ranges');
+  const entry = { triggerRange: r(1, 2), blastRadius: [r(1, 3), r(5, 7)], functionRange: r(0, 8), finding: {
+    family: 'shared-state', defect: 'threading-mutexes', rule_id: 'python.shared-state.threading-mutexes', origin: 'direct', call_path: [], evidence: [],
+    shared_state: { source_uri: 'file:///locks.py', source_hash: 'original', events: [{ kind: 'acquire', range: { start: 7, end: 20 } }] }
+  } };
+  const snapshot = { findings: [entry], functions: [], annotations: [{ category: 'shared-state', target: 'segment', label: 'Shared', range: r(1, 2), position: r(1, 2).start, functionRange: r(0, 8), findings: [0] }] };
+  assert.deepEqual(decorations(snapshot, false).map(d => d.range), [r(1, 3), r(5, 7)]);
+  assert.equal(annotations(snapshot, false)[0].label, 'Shared');
+  assert.equal(findingEvidence(entry.finding)[0].source_hash, 'original');
+  assert.equal(findingEvidence(entry.finding)[0].role, 'acquire');
+});

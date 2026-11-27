@@ -141,5 +141,12 @@
         ]
       }
     ]
+  },
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 2,
+    "stderr_contains": [
+      "fatal error: all goroutines are asleep - deadlock!"
+    ]
   }
 }

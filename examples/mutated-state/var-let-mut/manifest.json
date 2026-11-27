@@ -2,7 +2,7 @@
   "family": "mutated-state",
   "defect": "var-let-mut",
   "name": "var / let / mut Declarations",
-  "essence": "A binding you can reassign is a binding the next reader cannot trust.",
+  "essence": "Reassignable bindings permit state transitions; stale reads and unintended writes make those transitions defective.",
   "cwes": [
     "CWE-457",
     "CWE-563"
@@ -56,10 +56,10 @@
       ],
       "summary": "A helper reassigns the package-level `currencySymbol`, so every later `formatPrice` call renders euros.",
       "mechanism": "Mutable package var acts as hidden shared state; one caller's temporary change leaks to all subsequent callers.",
-      "observed_output": "$19.99\ninvoice: €25.00\n€19.99",
+      "observed_output": "$19.99\ninvoice: \u20ac25.00\n\u20ac19.99",
       "exit_code": 0,
       "deterministic": true,
-      "expected_behavior": "$19.99 / invoice: €25.00 / $19.99"
+      "expected_behavior": "$19.99 / invoice: \u20ac25.00 / $19.99"
     },
     {
       "file": "rust/01_shadowed_accumulator.rs",

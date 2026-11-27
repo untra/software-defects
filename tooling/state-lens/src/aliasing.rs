@@ -1,3 +1,4 @@
+use crate::model::FindingAssessment;
 use crate::heap::{Event, Observation, Sharing, WriteFact, ANY_ELEMENT};
 use crate::model::{DocumentReport, Effect, Evidence, Finding, Span};
 use crate::state::{
@@ -291,6 +292,7 @@ pub fn detect(graph: &mut StateGraph, report: &mut DocumentReport) {
         });
         let rule_id = format!("{}.{FAMILY}.{DEFECT}", report.language);
         report.findings.push(Finding {
+        assessment: FindingAssessment::Candidate,
         shared_state: None,
             state_trace: Some(trace),
             division_risk: None,

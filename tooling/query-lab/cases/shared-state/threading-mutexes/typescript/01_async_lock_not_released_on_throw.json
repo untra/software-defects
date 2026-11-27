@@ -85,5 +85,12 @@
         ]
       }
     ]
+  },
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "stdout_contains": [
+      "rejected: negative amount\nnext entry still waiting for the ledger lock after 200ms"
+    ]
   }
 }

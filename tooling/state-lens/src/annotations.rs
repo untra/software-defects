@@ -37,6 +37,7 @@ fn add(
     };
     let rule_id = format!("{}.{family}.{defect}", report.language);
     report.findings.push(Finding {
+        assessment: if mechanism == "unsafe-input-execution" { FindingAssessment::Candidate } else { FindingAssessment::Usage },
         shared_state: None,
         state_trace: None,
         division_risk: None,

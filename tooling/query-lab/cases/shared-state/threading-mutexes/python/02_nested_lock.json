@@ -127,5 +127,12 @@
         ]
       }
     ]
+  },
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "stdout_contains": [
+      "blocked False"
+    ]
   }
 }

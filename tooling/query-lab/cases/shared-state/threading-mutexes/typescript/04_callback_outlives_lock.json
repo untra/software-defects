@@ -8,7 +8,7 @@
     "reason": "Browser Web Locks fixture; Node 22 has no navigator.locks. Parse and analyzer checks remain supported."
   },
   "original": {
-    "source_hash": "ec3f3cc1eb5b1ead2e93d82db9bd6bc1d1e3608aec779d3b85c1cee3a2dc1893",
+    "source_hash": "cab85aeb852ddee47eca735979f188148cdefcef50947882e198ccc447b388f0",
     "queries": [
       {
         "query": "tooling/query-lab/queries/typescript/shared-state/threading-mutexes/boundaries.scm",
@@ -16,15 +16,15 @@
           {
             "name": "mutex_call",
             "range": [
-              226,
-              284
+              237,
+              295
             ]
           },
           {
             "name": "mutex_method",
             "range": [
-              242,
-              249
+              253,
+              260
             ]
           }
         ]
@@ -32,7 +32,7 @@
     ]
   },
   "fixed": {
-    "source_hash": "f4bde6e0e3ea08e2381c6567ec0f9988d2e1722e2e3be8e2aecdc4a17000bcd9",
+    "source_hash": "c51f5150bb67d1660a101b6de776aee13abc23a1de9179ba0716c62dc3b0a690",
     "queries": [
       {
         "query": "tooling/query-lab/queries/typescript/shared-state/threading-mutexes/boundaries.scm",
@@ -40,19 +40,26 @@
           {
             "name": "mutex_call",
             "range": [
-              226,
-              321
+              237,
+              332
             ]
           },
           {
             "name": "mutex_method",
             "range": [
-              242,
-              249
+              253,
+              260
             ]
           }
         ]
       }
+    ]
+  },
+  "baseline": {
+    "deterministic": true,
+    "exit_code": 0,
+    "stdout_contains": [
+      "entries: 0"
     ]
   }
 }
